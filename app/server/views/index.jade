@@ -1,0 +1,61 @@
+doctype 5
+html
+	head
+		title Beacon
+		link(rel='stylesheet', href='/style/bootstrap.css')
+		link(rel='stylesheet', href='/style/index.css')
+	body
+		div#header
+			h1.headerTitle Beacon
+		div#banner
+			div.bannerContent
+				img.bannerImg(src='http://204.236.234.28:9001/img/computer.png')
+				div.bannerTextBox
+					h2.bannerTitle Come Together
+					h2.bannerTitle Right Now
+					h2.bannerTitle.hidden Over Me
+					img.tm50(src='http://204.236.234.28:9001/img/facebook.png')
+
+		div.contentBox
+			h3.contentBoxTitle.centered What is Beacon?
+			hr.centerLine
+			p.fs22.justified Beacon is a map based social network for impromptu events. Using either the web or mobile app, friends’ events appear on your map, letting you know an event is happening nearby and who is attending. 
+
+			p.fs22.justified Rather than setting up a Facebook event or mass texting your friends, Beacon offers an easier solution. But more than that, Beacon acts as an initiator, making accidental hangouts a thing. 
+
+			p.fs22.justified We provide the structure to bring people together, let your Facebook friends or Twitter followers know where your event is happening, and manage any payments through Venmo integration.
+
+
+		div.contentBox.videoBox
+			iframe.vid(src="//www.youtube.com/embed/XLjcXys0v-o", frameborder="0", allowfullscreen)
+
+		div.contentBox
+			img.floatRight(src='http://204.236.234.28:9001/img/party2.png')
+			h3.contentBoxTitle Skip the Hassle
+			hr.leftLine
+			p.left Beacon keeps casual events simple. Check your news feed for nearby events planned with friends. Or start the party by suggesting an event.
+
+		div.contentBox
+			img.floatLeft(src='http://204.236.234.28:9001/img/unplug2.png')
+			h3.contentBoxTitle.right Connect Offline
+			hr.rightLine
+			p.right Meet up face to face with ease. Spend less time online and more where it really matters, with friends and family. 
+
+		div.contentBox
+			img.floatRight(src='http://204.236.234.28:9001/img/megaphone2.png')
+			h3.contentBoxTitle Get the Word Out
+			hr.leftLine
+			p.left With integrated Twitter and Facebook use, it’s easy to let your friends know where to be.
+
+		div.contentBox
+			img.floatLeft(src='http://204.236.234.28:9001/img/iPhone2.png')
+			h3.contentBoxTitle.right On The Go
+			hr.rightLine
+			p.right Organize events on the fly with the Beacon iPhone app. 
+
+
+
+		script(type='text/javascript', src='/js/jQuery/jquery-1.10.2.min.js')
+
+		script(type='text/javascript', src='/js/index-controller.js')
+

@@ -1,0 +1,31 @@
+{
+	"name": "Colludo",
+	"version": "0.0.1",
+	"description": "COLLUDO BITCHES",
+	"author": {
+		"name": "Joel Simon",
+		"email": "joelsimon6@gmail.com"
+	},
+	"website":{
+		"url": "http://204.236.234.28:8080"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Sloth6/Colludo"
+	},
+	"private": true,
+	"dependencies": {
+		"express": "3.0.6",
+		"connect" : "2.8.5",
+		"stylus": "0.31.0",
+		"jade": "0.27.7",
+		"socket.io" : "0.9.16",
+		"validator" :  "1.2.1",
+		"stylus" : "0.31.0",
+		"session.socket.io" : "0.1.6"
+	},
+	"engines": {
+		"node": "0.8.14",
+		"npm":  "1.1.65"
+	}
+}

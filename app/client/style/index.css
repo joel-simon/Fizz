@@ -1,0 +1,185 @@
+
+body {
+	height: 100%;
+	width: 100%;
+}
+
+#header {
+	height: 60px;
+	width: 100%;
+}
+
+	.headerTitle {
+		position: absolute;
+		display: block;
+		font-family: Trebuchet, sans-serif;
+		color: gray;
+		margin-top: 10px;
+		margin-left: 15px;
+	}
+
+#banner {
+	height: auto;
+	min-height: 420px;
+	width: 100%;
+	padding: 20px;
+	margin-bottom: 50px;
+
+	/* Mozilla Firefox */ 
+	background-image: -moz-linear-gradient(top, #F5C839 0%, #F49809 100%);
+	/* Opera */ 
+	background-image: -o-linear-gradient(top, #F5C839 0%, #F49809 100%);
+	/* Webkit (Safari/Chrome 10) */ 
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #F5C839), color-stop(1, #F49809));
+	/* Webkit (Chrome 11+) */ 
+	background-image: -webkit-linear-gradient(top, #F5C839 0%, #F49809 100%);
+	/* IE10 Consumer Preview */ 
+	background-image: -ms-linear-gradient(top, #F5C839 0%, #F49809 100%);
+	/* W3C Markup, IE10 Release Preview */ 
+	background-image: linear-gradient(to bottom, #F5C839 0%, #F49809 100%);
+	/* Last Ditch attempt for IE */
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#F5C839, endColorstr=#F49809)
+}
+
+	img.bannerImg {
+		float: left;
+		margin-right: 40px;
+		margin-bottom: 20px;
+	}
+
+	.bannerContent {
+		height: inherit;
+		text-align: center;
+		padding: 20px;
+		max-width: 950px;
+		margin: auto;
+	}
+
+img.floatLeft {
+	float: left;
+	margin-right: 100px;
+	margin-bottom: 20px;
+}
+
+img.floatRight {
+	float: right;
+	margin-left: 100px;
+	margin-bottom: 20px;
+}
+
+
+img.tm50 {
+	margin-top: 50px;
+}
+body {
+	background-image: url('http://beaconbeta/img/orangeGradient.jpeg');
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-size: cover;
+	}
+
+p {
+	font-family: Trebuchet, sans-serif;
+	font-size: 18px;
+}
+
+p.fs22 {
+	font-size: 20px;
+	/*margin-bottom: 50px;*/
+}
+
+h3.right {
+	text-align: right;
+}
+
+p.left {
+	text-align: left;
+}
+
+p.right {
+	text-align: right;
+}
+
+p.justified {
+	text-align: justify;
+}
+
+h3.centered {
+	font-size: 50px;
+	text-align: center;
+}
+
+	.bannerTextBox {
+		display: block
+	}
+		
+		.bannerTitle {
+			display: block;
+			font-family: Trebuchet, sans-serif;
+			font-size: 50px;
+		}
+
+.contentBox {
+	display: block;
+	height: inherit;
+	padding: 20px;
+	max-width: 750px;
+	margin: auto;
+	min-height: 250px;
+}
+
+	.contentBoxTitle {
+		margin: 0;
+		font-family: Trebuchet, sans-serif;
+		font-size: 40px;
+		color: orange;
+	}
+
+	.rightLine {
+		border: none;
+		background-color: #bbb;
+		height: 2px;
+		width: 150px;
+		float: right;
+	}
+
+	.leftLine {
+		border: none;
+		background-color: #bbb;
+		height: 2px;
+		width: 150px;
+		float: left;
+	}
+
+	.centerLine {
+		border: none;
+		background-color: #bbb;
+		height: 2px;
+		width: 200px;
+	}
+
+	.contentBox p.left {
+		margin-top: 50px;
+	}
+
+	.contentBox p.right {
+		margin-top: 50px;
+	}
+
+.hiddent {
+	display: none;
+}
+
+.videoBox {
+	height: 520px;
+}
+
+.vid {
+	width: 630px;
+	height: 460px;
+	position: absolute;
+	left: 50%;
+	margin-left: -315px;
+}
+
+

@@ -1,0 +1,168 @@
+/* funcitonal css */
+
+#map-canvas {
+	height: 400px;
+}
+
+#gallery { float: left; width: 65%; min-height: 12em; }
+.gallery.custom-state-active { background: #eee; }
+.gallery li { float: left; width: 96px; padding: 0.4em; margin: 0 0.4em 0.4em 0; text-align: center; }
+.gallery li h5 { margin: 0 0 0.4em; cursor: move; }
+.gallery li a { float: right; }
+.gallery li a.ui-icon-zoomin { float: left; }
+.gallery li img { width: 100%; cursor: move; }
+
+#trash { float: right; width: 32%; min-height: 18em; padding: 1%; background: none }
+#trash h4 { line-height: 16px; margin: 0 0 0.4em; }
+#trash h4 .ui-icon { float: left; }
+#trash .gallery h5 { display: none; }
+
+/* facebook bullshit */
+#facebook-bsbox {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: auto;
+	height: auto;
+}
+
+
+/* pretty css */
+* {
+	margin: 0;
+	padding: 0;
+}
+
+ul {
+	list-style-type: none;
+}
+
+body {
+	/*245,200,57 -> 244,152,9
+	background-image: linear-gradient(to bottom, #FFAA00 0%, #FFB900 100%);*/
+	background-image: linear-gradient(to bottom, #FFAA00 0%, #FFB900 100%);
+	/*background-image: url('http://204.236.234.28:9001/img/orangeGradient.jpeg');*/
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-size: cover;
+}
+
+#mainTitle {
+	text-align: center;
+	font-size: 80px;
+	margin-top: 10px;
+	font-weight: bolder;
+}
+
+#map-canvas {}
+
+#searchTextField {
+	position: absolute;
+	margin-top: -5px;
+	/*left: 50%;*/
+	margin-left: 120px;
+}
+
+#panel {
+	position: absolute;
+	display: block;
+	left: 50%;
+	margin-left: -288px;
+	top: 120px;
+	z-index: 40;
+}
+
+#beacon-events {
+	position: absolute;
+	left: 50%;
+	margin-left: -300px;
+	/*background: blue;*/
+	margin-top: 8px;
+	height: 40px;
+	width: 600px;
+}
+	#description {
+		width: 400px;
+		margin-left: 40px;
+		height: 34px;
+		border-radius: 2px;
+	}
+
+#beacon-list {
+	position: absolute;
+	left: 50%;
+	margin-left: -300px;
+	margin-top: 70px;
+	/*background: rgba(0,0,0,0.7);*/
+	height: auto;
+	width: 600px;
+	overflow: hidden;
+}
+	li.event {
+		margin-left: 100px;
+		margin-bottom: 10px;
+		/*background: blue;*/
+		width: 480px;
+		height: 100px;
+		overflow: hidden;
+		background-image: linear-gradient(to bottom, #fff, #eee);
+		background: rgba(255,204,190,0.4);
+		/*background-color: #fff;*/
+		border-radius: 3px;
+		border: 1px solid #ffaa00;
+	}
+
+		.event img {
+			border-radius: 2px;
+		}
+
+		p.details {
+			color: black;
+			margin: 5px;
+		}
+
+		img.host-pic {
+			margin-left: 5px;
+			margin-top: 5px;
+			width: 60px;
+			height: 60px;
+		}
+
+		div.attending {
+			/*background: white;*/
+			margin-left: 100px;
+			margin-top: -65px;
+			width: auto;
+			height: 70px;
+			float: left;
+		}
+
+		.horizon {
+			width: 1000px;
+		}
+
+		.horizon img {
+			margin-left: 5px;
+			margin-top: 5px;
+			width: 60px;
+			height: 60px;
+		}
+
+		.event button {
+			position: absolute;
+			margin-left: -90px;
+			margin-top: 45px;
+		}
+
+#friends {
+	position: absolute;
+	margin-top: 360px;
+	left: 50%;
+	margin-left: -300px;
+	width: 600px;
+}
+
+
+
+
+

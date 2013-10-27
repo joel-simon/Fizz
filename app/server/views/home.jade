@@ -1,0 +1,42 @@
+doctype 5
+html
+	head
+		title Beacon
+		link(rel='stylesheet', href='/style/bootstrap.css')
+		link(rel='stylesheet', href='http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css')
+		link(rel='stylesheet', href='/style/home.css')
+	body
+		h1#mainTitle Beacon
+		div#facebook-bsbox
+			div#fb-root
+			fb:login-button(show-faces='true', width='200', max-rows='1')
+
+
+		div#map-canvas
+		div#panel
+			input#searchTextField(type='text', size='50')		
+
+		form#beacon-events
+			input#description(name='description, placeholder='Write Event Description here.', type='text', maxlength='140', width='400')
+			input.btn.btn-success(type='submit', value='Place Beacon')
+
+		ul#beacon-list
+
+
+
+		script(type='text/javascript', src='/socket.io/socket.io.js')
+		script(type='text/javascript', src='/js/jQuery/jquery-1.10.2.min.js')
+		script(src='http://code.jquery.com/ui/1.10.3/jquery-ui.js')
+
+		script(src='http://204.236.234.28:9001/js/client-beacon.js')
+		script(src='http://204.236.234.28:9001/js/beaconKeeper.js')
+		script(type='text/javascript', src='/js/fbLogin.js')
+
+		script(src='https://maps.googleapis.com/maps/api/js?key=AIzaSyD8q1aRi08lwTQg5gFvDJWtpcTkuHgS-zU&sensor=true')
+		script(src='https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places')
+		
+		script(src='http://204.236.234.28:9001/js/googleMaps.js')
+		script(src='http://204.236.234.28:9001/js/home-controller-fromClient.js')
+		script(src='http://204.236.234.28:9001/js/home-controller-fromServer.js')
+		script(src='http://204.236.234.28:9001/js/home-view.js')
+
