@@ -1,23 +1,65 @@
+/*//////////////////////////////////////////////////////////////////////////////
+
+index.css
+
+//////////////////////////////////////////////////////////////////////////////*/
+
+/*
+	Generic and Helpful CSS
+*/
+
+* {
+	margin: auto;
+	padding: 0;
+}
 
 body {
 	height: 100%;
 	width: 100%;
+	margin: 0;
+	padding: 0;
 }
+
+.hidden { 
+	display: none !important;
+	visibility: hidden !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-weight: 500;
+	line-height: 1.1;
+}
+
+p {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 18px;
+}
+
+.left    { text-align: left;    }
+.center  { text-align: center;  }
+.right   { text-align: right;   }
+.justify { text-align: justify; }
+
+/* 
+	Header 
+*/
 
 #header {
 	height: 60px;
 	width: 100%;
 }
 
-	.headerTitle {
+	#header .title {
 		position: absolute;
 		display: block;
-		font-family: Trebuchet, sans-serif;
+		font-size: 30px;
 		color: gray;
-		margin-top: 10px;
+		margin-top: 12px;
 		margin-left: 15px;
 	}
 
+/* Banner */
 #banner {
 	height: auto;
 	min-height: 420px;
@@ -55,6 +97,7 @@ body {
 		margin: auto;
 	}
 
+/* Content */
 img.floatLeft {
 	float: left;
 	margin-right: 100px;
@@ -71,40 +114,9 @@ img.floatRight {
 img.tm50 {
 	margin-top: 50px;
 }
-body {
-	background-image: url('http://beaconbeta/img/orangeGradient.jpeg');
-	background-repeat: no-repeat;
-	background-attachment: fixed;
-	background-size: cover;
-	}
 
-p {
-	font-family: Trebuchet, sans-serif;
-	font-size: 18px;
-}
 
-p.fs22 {
-	font-size: 20px;
-	/*margin-bottom: 50px;*/
-}
-
-h3.right {
-	text-align: right;
-}
-
-p.left {
-	text-align: left;
-}
-
-p.right {
-	text-align: right;
-}
-
-p.justified {
-	text-align: justify;
-}
-
-h3.centered {
+h3.center {
 	font-size: 50px;
 	text-align: center;
 }
@@ -121,11 +133,10 @@ h3.centered {
 
 .contentBox {
 	display: block;
-	height: inherit;
+	clear: both;
 	padding: 20px;
 	max-width: 750px;
 	margin: auto;
-	min-height: 250px;
 }
 
 	.contentBoxTitle {
@@ -165,10 +176,6 @@ h3.centered {
 	.contentBox p.right {
 		margin-top: 50px;
 	}
-
-.hiddent {
-	display: none;
-}
 
 .videoBox {
 	height: 500px;

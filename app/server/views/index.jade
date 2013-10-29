@@ -1,54 +1,60 @@
 doctype 5
 html
 	head
-		title Beacon
-		link(rel='stylesheet', href='/style/bootstrap.css')
+		title Beacon - Get Together with your Friends
+
+		meta(name='description', content='Place a Beacon on a map to let your friends know where and what you want to do. Planning spontaneous events has never been so easy!')
+		meta(name='keywords', content='map, social media, event, events, beacon, beacons, friends, google maps, organize, plan')
+
+		//link(rel='stylesheet', href='/style/bootstrap.css')
 		link(rel='stylesheet', href='/style/index.css')
+
 	body
 		div#header
-			h1.headerTitle Beacon
+			h2.title Beacon
+
 		div#banner
 			div.bannerContent
-				img.bannerImg(src='http://localhost:9001/img/computer.png')
+				img.bannerImg(src='http://localhost:9001/img/computer.png', alt='Computer Graphic displaying a map with Beacons')
 				div.bannerTextBox
 					h2.bannerTitle Come Together
 					h2.bannerTitle Right Now
 					h2.bannerTitle.hidden Over Me
-					img.tm50(src='http://localhost:9001/img/facebook.png')
+					img(src='http://localhost:9001/img/facebook.png', alt='Disabled Facebook Login Button')
 
 		div.contentBox
-			h3.contentBoxTitle.centered What is Beacon?
+			h1.contentBoxTitle.center What is Beacon?
 			hr.centerLine
-			p.fs22.justified Beacon is a map based social network for impromptu events. Using either the web or mobile app, friends’ events appear on your map, letting you know an event is happening nearby and who is attending. 
+			p.justify Beacon is a map based social network for impromptu events. Using either the web or mobile app, friends’ events appear on your map, letting you know an event is happening nearby and who is attending. 
 
-			p.fs22.justified Rather than setting up a Facebook event or mass texting your friends, Beacon offers an easier solution. But more than that, Beacon acts as an initiator, making accidental hangouts a thing. 
+			p.justify Rather than setting up a Facebook event or mass texting your friends, Beacon offers an easier solution. But more than that, Beacon acts as an initiator, making accidental hangouts a thing. 
 
-			p.fs22.justified We provide the structure to bring people together, let your Facebook friends or Twitter followers know where your event is happening, and manage any payments through Venmo integration.
+			p.justify We provide the structure to bring people together, let your Facebook friends or Twitter followers know where your event is happening, and manage any payments through Venmo integration.
 
 
 		div.contentBox.videoBox
 			iframe.vid(src="//www.youtube.com/embed/XLjcXys0v-o", frameborder="0", allowfullscreen)
 
 		div.contentBox
-			img.floatRight(src='http://localhost:9001/img/party2.png')
+			img.floatRight(src='http://localhost:9001/img/party2.png', alt='Party Balloon Graphic')
 			h3.contentBoxTitle Skip the Hassle
 			hr.leftLine
 			p.left Beacon keeps casual events simple. Check your news feed for nearby events planned with friends. Or start the party by suggesting an event.
 
 		div.contentBox
-			img.floatLeft(src='http://localhost:9001/img/unplug2.png')
+			img.floatLeft(src='http://localhost:9001/img/unplug2.png', alt='Unplug Graphic')
 			h3.contentBoxTitle.right Connect Offline
 			hr.rightLine
 			p.right Meet up face to face with ease. Spend less time online and more where it really matters, with friends and family. 
 
 		div.contentBox
-			img.floatRight(src='http://localhost:9001/img/megaphone2.png')
+			img.floatRight(src='http://localhost:9001/img/megaphone2.png', alt='Megaphone Graphic')
 			h3.contentBoxTitle Get the Word Out
 			hr.leftLine
 			p.left With integrated Twitter and Facebook use, it’s easy to let your friends know where to be.
 
 		div.contentBox
-			img.floatLeft(src='http://localhost:9001/img/iPhone2.png')
+			img.floatLeft(src='http://localhost:9001/img/iPhone2.png', alt='iPhone Graphic')
 			h3.contentBoxTitle.right On The Go
 			hr.rightLine
 			p.right Organize events on the fly with the Beacon iPhone app. 

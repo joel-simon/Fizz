@@ -84,51 +84,34 @@ function eraseBeacon(beacon) {
 }
 
 
+function writeBeaconEvent(beacon) {
+	var htmlString = 
+		'<li class="event">'+
+			'<button class="btn btn-primary">Join</button>'+
+			'<p class="details">'+beacon.desc+'</p>';
 
-// function writeBeaconEvent(beacon) {
-// 	// var seen2 = {};
-// 	console.log(beacon);
-// 	// if(seen2[beacon.host]) return ;
-// 	// seen2[beacon.host] = true;
-// 	var htmlString = 
-// 		'<li class="event">'+
-// 			'<button class="btn btn-primary blarg" id="fb-'+beacon.host+'">Join</button>'+
-// 			'<p class="details">'+beacon.desc+'</p>';
+	var attending = beacon.attends;
+	var dude;
+	var c = 0;
+	// console.log(beacon);
 
-// 	var attending = beacon.attends;
-// 	var dude;
-// 	var c = 0;
-// 	// console.log(beacon);
-
-// 	getFbData(''+beacon.host, function(pic, name) {
-// 		// console.log('host img', pic);
-
-// 		htmlString += '<img class="host-pic" src="'+pic+'">'+
-// 					'<div class="attending"><div class="horizon">';
-
-// 		if (beacon.attends.length >= 1) {
-// 			beacon.attends.forEach(function(dude, i) {
-// 				getFbData(''+dude, function(pic, name) {
-// 					console.log('here',dude, pic, name, i);
-// 					htmlString += '<img class="guest-pic" src="'+pic+'">';
-
-// 					if(i = beacon.attends.length){
-// 						htmlString += '</div></div></li>';
-// 						$('#beacon-list').append(htmlString);
-// 					}
-// 				});
-// 			});
-// 		} else {
-// 			htmlString += '</div></div></li>';
-// 			$('#beacon-list').append(htmlString);
-// 		}
+	getFbData(''+beacon.attends[0], function(pic, name) {
+		console.log('host img', pic);
+		htmlString += '<img class="host-pic" src="'+pic+'">'+
+					'<div class="attending"><div class="horizon">';
+		var i = 1;
+		while (i < beacon.attends.length) {
+			dude = beacon.attends[i];
+			getFbData(''+dude, function(pic, name) {
+				htmlString += '<img class="guest-pic" src="'+pic+'">';
+				i++;
+			});
+			
+		}
+		$('#beacon-list').append(htmlString);
 		
-// 		$('button').on('click', function() {
-// 			var host = this.id.substr(3, this.id.length);
-// 			// console.log('join mudafuka!', host);
-// 			socket.emit('joinBeacon', {'host': host, userId: me.id});
-// 		});
-// 	});
+	});
 
-// }
+}
+
 
