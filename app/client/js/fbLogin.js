@@ -1,6 +1,6 @@
 'use strict'; // PRO JS MODE HARDCORE
 
-var SERVER = 'http://204.236.234.28:9001';
+var SERVER = window.location.origin;
 var me; // id, isHosting
 var socket = io.connect(SERVER);
 var BKeeper = new BeaconKeeper();
@@ -13,7 +13,7 @@ var BKeeper = new BeaconKeeper();
 
 window.fbAsyncInit = function() {
 	FB.init({
-		appId      : '202764579903268', // App ID
+		appId      : '470717366375981', //'202764579903268', // App ID
 		channelUrl : '//WWW.YOUR_DOMAIN.COM/channel.html', // Channel File
 		status     : true, // check login status
 		cookie     : true, // enable cookies to allow the server to access the session

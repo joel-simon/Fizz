@@ -12,6 +12,8 @@ $('#beacon-events').on('submit', function(e) {
 		lat = currentPosition.lat();
 		lng = currentPosition.lng();
 	}
+
+	console.log(me);
 	
 	if (BKeeper.getBeacon(me.id)) {
 		BKeeper.removeBeacon(me.id);

@@ -41,7 +41,6 @@ body {
 	/*245,200,57 -> 244,152,9
 	background-image: linear-gradient(to bottom, #FFAA00 0%, #FFB900 100%);*/
 	background-image: linear-gradient(to bottom, #FFAA00 0%, #FFB900 100%);
-	/*background-image: url('http://204.236.234.28:9001/img/orangeGradient.jpeg');*/
 	background-repeat: no-repeat;
 	background-attachment: fixed;
 	background-size: cover;
