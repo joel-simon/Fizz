@@ -13,7 +13,7 @@ var BKeeper = new BeaconKeeper();
 
 window.fbAsyncInit = function() {
 	FB.init({
-		appId      : '470717366375981', //'202764579903268', // App ID
+		appId      : '202764579903268', //'202764579903268', // App ID
 		channelUrl : '//WWW.YOUR_DOMAIN.COM/channel.html', // Channel File
 		status     : true, // check login status
 		cookie     : true, // enable cookies to allow the server to access the session

@@ -1,24 +1,44 @@
+/*
+* Beacon
+* beaconBeta.com
+*/
 var http = require('http')
-  , connect = require('connect')
-  , express = require('express')
-  , app = express()
-  , port = process.env.PORT || 9001
-  , server = app.listen(port)
-  , io = require('socket.io').listen(server)
-  , db = require('./app/server/database.js')
-  , beacon = require('./app/server/server-beacon.js');
+		connect = require('connect')
+		express = require('express')
+		app = express()
+		port = process.env.PORT || 9001
+		server = app.listen(port)
+		io = require('socket.io').listen(server)
+		db = require('./app/server/database.js')
+		redis = require('redis')
+		beacon = require('./app/server/server-beacon.js');
 
-var url = 'redis://redistogo:7771d0cc39827f1664b16523d1b92768@crestfish.redistogo.com:10325/'
+var url = 'redis://redistogo:7771d0cc39827f1664b16523d1b92768@crestfish.redistogo.com:10325/';
 
-var redis = require('redis-url').createClient(url);//
+var rtg  = require("url").parse(url);
+var pub = redis.createClient(rtg.port, rtg.hostname);
+var sub = redis.createClient(rtg.port, rtg.hostname);
+var store = redis.createClient(rtg.port, rtg.hostname);
+pub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
+sub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
+store.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 
-redis.set('foo', 'bar');
+// redis.set('foo', 'bar');
 
-redis.get('foo', function(err, value) {
-	if (err) console.log(err)
-  else console.log('foo is: ' + value);
+// redis.get('foo', function(err, value) {
+// 	if (err) console.log(err)
+//   else console.log('foo is: ' + value);
+// });
+
+io.configure( function(){
+    io.enable('browser client minification');  // send minified client
+    io.enable('browser client etag');          // apply etag caching logic based on version number
+    io.enable('browser client gzip');          // gzip the file
+    io.set('log level', 1);                    // reduce logging
+
+    var RedisStore = require('socket.io/lib/stores/redis');
+    io.set('store', new RedisStore({redis: redis, redisPub:pub, redisSub:sub, redisClient:store}));
 });
-
 
 // stores a single beacon 
 var beacons = new beacon.Beacon_keeper();
