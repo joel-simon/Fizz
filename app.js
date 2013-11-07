@@ -7,8 +7,21 @@ var http = require('http')
   , io = require('socket.io').listen(server)
   , db = require('./app/server/database.js')
   , beacon = require('./app/server/server-beacon.js');
-  // stores a single beacon 
-  var beacons = new beacon.Beacon_keeper();
+
+var url = 'redis://redistogo:7771d0cc39827f1664b16523d1b92768@crestfish.redistogo.com:10325/'
+
+var redis = require('redis-url').createClient(url);//
+
+redis.set('foo', 'bar');
+
+redis.get('foo', function(err, value) {
+	if (err) console.log(err)
+  else console.log('foo is: ' + value);
+});
+
+
+// stores a single beacon 
+var beacons = new beacon.Beacon_keeper();
 
 // var B = new beacon.Beacon(100000157939878, 42.36152477429757, -71.11566066741943, "Bored, anyone want to hang?");
 // var C = new beacon.Beacon(564952156, 42.36152477420757, -71.11566066741945, "Game of Go anyone?");
@@ -32,17 +45,17 @@ app.configure('development', function(){
 	app.use(express.errorHandler());
 });
 require('./app/server/router')(app);
-
 io.set('log level', 1);
 
+
 io.sockets.on('connection', function (socket) {
-  socket.emit('news', { data: ' hello world.' });
 
-  // setTimeout(function(){
-  // 	joinBeacon({hostId: '100000157939878', guestId: '1380180579'});
-  // }, 2000);
+	redis.subscribe('realtime');
+
+	redis.on("message", function(channel, message) {
+      client.send(message);
+  });
   
-
   socket.on('login', function (data) {
     console.log(data.id, "has logged in!");
 
