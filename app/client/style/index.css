@@ -77,32 +77,25 @@ hr {
 
 #banner {
 	height: auto;
-	min-height: 420px;
 	width: 100%;
 	margin-bottom: 50px;
 	padding-top: 20px;
 	padding-bottom: 20px;
 
-	/* Mozilla Firefox */ 
-	background-image: -moz-linear-gradient(top, #F5C839 0%, #F49809 100%);
-	/* Opera */ 
-	background-image: -o-linear-gradient(top, #F5C839 0%, #F49809 100%);
-	/* Webkit (Safari/Chrome 10) */ 
-	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #F5C839), color-stop(1, #F49809));
-	/* Webkit (Chrome 11+) */ 
-	background-image: -webkit-linear-gradient(top, #F5C839 0%, #F49809 100%);
-	/* IE10 Consumer Preview */ 
-	background-image: -ms-linear-gradient(top, #F5C839 0%, #F49809 100%);
-	/* W3C Markup, IE10 Release Preview */ 
-	background-image: linear-gradient(to bottom, #F5C839 0%, #F49809 100%);
-	/* Last Ditch attempt for IE */
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#F5C839, endColorstr=#F49809)
+	background-color: #F49809; /* For browsers without gradient support */
+	background-image: -moz-linear-gradient(top, #F5C839 0%, #F49809 100%); /* Mozilla Firefox */ 
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #F5C839), color-stop(1, #F49809)); /* Webkit (Safari/Chrome 10) */ 
+	background-image: -webkit-linear-gradient(top, #F5C839 0%, #F49809 100%); /* Webkit (Chrome 11+) */
+	background-image: -o-linear-gradient(top, #F5C839 0%, #F49809 100%); /* Opera */
+	background-image: -ms-linear-gradient(top, #F5C839 0%, #F49809 100%); /* IE10 Consumer Preview */ 
+	background-image: linear-gradient(to bottom, #F5C839 0%, #F49809 100%); /* W3C Markup, IE10 Release Preview */ 
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#F5C839, endColorstr=#F49809); /* Last Ditch attempt for IE */
 }
 
 	img.bannerImg {
 		float: left;
 		margin-right: 40px;
-		margin-bottom: 20px;
+		/*margin-bottom: 20px;*/
 	}
 
 	img.tm50 {
@@ -110,7 +103,6 @@ hr {
 	}
 
 	.bannerContent {
-		height: inherit;
 		text-align: center;
 		padding: 20px;
 		max-width: 950px;
@@ -124,6 +116,7 @@ hr {
 		.bannerTitle {
 			display: block;
 			font-size: 50px;
+			margin-bottom: 30px;
 		}
 
 
