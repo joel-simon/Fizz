@@ -1,3 +1,4 @@
+
 socket.on('getFriends', function(data) {
 	FB.api('/me/friends', function(response) {
 		// console.log(response);
