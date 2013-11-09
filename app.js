@@ -23,12 +23,12 @@ pub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 sub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 store.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 
-// redis.set('foo', 'bar');
+store.set('foo', 'bar');
+store.get('foo', function(err, value) {
+	if (err) console.log(err)
+  else console.log('foo is: ' + value);
+});
 
-// redis.get('foo', function(err, value) {
-// 	if (err) console.log(err)
-//   else console.log('foo is: ' + value);
-// });
 
 io.configure( function(){
     io.enable('browser client minification');  // send minified client
@@ -64,23 +64,16 @@ app.configure(function(){
 app.configure('development', function(){
 	app.use(express.errorHandler());
 });
+
 require('./app/server/router')(app);
 io.set('log level', 1);
 
 
-io.sockets.on('connection', function (socket) {
-
-	redis.subscribe('realtime');
-
-	redis.on("message", function(channel, message) {
-      client.send(message);
-  });
-  
+io.sockets.on('connection', function(socket) {
   socket.on('login', function (data) {
     console.log(data.id, "has logged in!");
-
-    db.getFriends(data.id, function(id, friends) {
-    	if (true) {
+    db.getFriends(data.id, function(friends) {
+    	if (friends.length == 0) {
     		newUser(data.id, socket);
     	} else {
     		existingUser(data.id, friends, socket);
@@ -150,7 +143,7 @@ function newUser (id, socket) {
 	// console.log('New user registration', id);
 	socket.emit('getFriends', {});
 	socket.on('friendsList', function (friends) {
-		// db.addPlayer (id, friends);
+		db.addPlayer (id, friends);
 		existingUser(id, friends, socket);
 	});
 }
