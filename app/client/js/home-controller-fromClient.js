@@ -2,7 +2,7 @@
 $('#myBeacon').on('submit', function(e) {
 	e.preventDefault();
 	var form = this;
-	var desc = (form.name.value) ? form.name.value : 'My Event!';
+	var desc = (form.title.value) ? form.title.value : 'My Event!';
 	var lat, lng;
 
 	if (tempMarker) {
