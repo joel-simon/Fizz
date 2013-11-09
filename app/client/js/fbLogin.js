@@ -13,7 +13,7 @@ var BKeeper = new BeaconKeeper();
 
 window.fbAsyncInit = function() {
 	FB.init({
-		appId      : '470717366375981', //'202764579903268', // App ID
+		appId      : '202764579903268', // App ID
 		channelUrl : '//WWW.YOUR_DOMAIN.COM/channel.html', // Channel File
 		status     : true, // check login status
 		cookie     : true, // enable cookies to allow the server to access the session
@@ -73,35 +73,6 @@ function login() {
 		socket.emit('login', {id: me.id})    
 	});
 }
-
-socket.on('getFriends', function(data) {
-	FB.api('/me/friends', function(response) {
-		// console.log(response);
-		var friends = [];
-		response.data.forEach(function(elem, i) {
-			friends.push(elem.id);
-		});
-		socket.emit('friendsList', friends);
-	});
-});
-
-socket.on('newBeacon', function(data) {
-	var beacon = data.beacon;
-	console.log(beacon, BKeeper.table[beacon.host]);
-	if (BKeeper.table[beacon.host]) BKeeper.removeBeacon(beacon.host);
-	BKeeper.renewBeacon(beacon.host, beacon.desc, beacon.lat, beacon.lng, beacon.attends);
-});
-
-socket.on('newBeacons', function(data) {
-	// console.log('new beacons:',data);
-	data.forEach(function(B, i) {
-		BKeeper.renewBeacon(B.host, B.desc, B.lat, B.lng, B.attends);
-	});
-});
-
-socket.on('deleteBeacon', function(data) {
-	BKeeper.removeBeacon(data.host);
-});
 
 
 function getFbData(id, callback) {
