@@ -16,6 +16,7 @@
 	"private": true,
 	"dependencies": {
 		"express": "3.0.6",
+		"redis": "0.9.0",
 		"connect" : "2.8.5",
 		"stylus": "0.31.0",
 		"jade": "0.27.7",
