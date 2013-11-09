@@ -71,14 +71,7 @@ io.set('log level', 1);
 
 io.sockets.on('connection', function(socket) {
   socket.on('login', function (data) {
-    console.log(data.id, "has logged in!");
-    db.getFriends(data.id, function(friends) {
-    	if (friends.length == 0) {
-    		newUser(data.id, socket);
-    	} else {
-    		existingUser(data.id, friends, socket);
-    	}
-    });
+  	login(data.id, socket);
   });
 
   // function to add new guest to event
@@ -138,9 +131,17 @@ io.sockets.on('connection', function(socket) {
 
 });
 
+function login (id, socket) {
+	console.log(id, "has logged in!");
+  db.getFriends(id, function(err, friends) {
+  	if (err) console.log(err);
+  	else if (!friends) newUser(id, socket);
+  	else existingUser(id, friends, socket);
+  });
+}
 
 function newUser (id, socket) {
-	// console.log('New user registration', id);
+	console.log('New user registration', id);
 	socket.emit('getFriends', {});
 	socket.on('friendsList', function (friends) {
 		db.addPlayer (id, friends);
@@ -150,9 +151,8 @@ function newUser (id, socket) {
 
 
 function existingUser(id, friends, socket) {
-	// console.log('existing user', id, 'has', friends.length,'friends');
+	console.log('existing user', id, 'has', friends.length,'friends');
 	var allBeacons = getAllBeacons(friends, id);
-
 	console.log('all beacons', allBeacons);
 	socket.emit('newBeacons', allBeacons);
 	joinRooms(socket, friends, id);
