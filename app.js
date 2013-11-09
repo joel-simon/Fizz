@@ -11,7 +11,8 @@ var http = require('http')
 		io = require('socket.io').listen(server)
 		db = require('./app/server/database.js')
 		redis = require('redis')
-		beacon = require('./app/server/server-beacon.js');
+		Beacon = require('./app/server/server-beacon.js'),
+		BeaconKeeper = require('./app/server/beaconKeeper.js');
 
 var url = 'redis://redistogo:7771d0cc39827f1664b16523d1b92768@crestfish.redistogo.com:10325/';
 
@@ -23,30 +24,19 @@ pub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 sub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 store.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 
-store.set('foo', 'bar');
-store.get('foo', function(err, value) {
-	if (err) console.log(err)
-  else console.log('foo is: ' + value);
-});
-
-
 io.configure( function(){
-    io.enable('browser client minification');  // send minified client
-    io.enable('browser client etag');          // apply etag caching logic based on version number
-    io.enable('browser client gzip');          // gzip the file
-    io.set('log level', 1);                    // reduce logging
+  io.enable('browser client minification');  // send minified client
+  io.enable('browser client etag');          // apply etag caching logic based on version number
+  io.enable('browser client gzip');          // gzip the file
+  io.set('log level', 1);                    // reduce logging
 
-    var RedisStore = require('socket.io/lib/stores/redis');
-    io.set('store', new RedisStore({redis: redis, redisPub:pub, redisSub:sub, redisClient:store}));
+  var RedisStore = require('socket.io/lib/stores/redis');
+  io.set('store', new RedisStore({redis: redis, redisPub:pub, redisSub:sub, redisClient:store}));
 });
 
 // stores a single beacon 
-var beacons = new beacon.Beacon_keeper();
+var beacons = new BeaconKeeper(store);
 
-// var B = new beacon.Beacon(100000157939878, 42.36152477429757, -71.11566066741943, "Bored, anyone want to hang?");
-// var C = new beacon.Beacon(564952156, 42.36152477420757, -71.11566066741945, "Game of Go anyone?");
-// beacons.insert(B); // insert into database class sends push notification, or do I? 
-// beacons.insert(C);
 console.log('Starting Beacon Server on ', port);
 
 app.configure(function(){
@@ -68,15 +58,25 @@ app.configure('development', function(){
 require('./app/server/router')(app);
 io.set('log level', 1);
 
+// var B = new Beacon('me', '1','2', 'hi');
+// beacons.insert(B);
+// beacons.get('me', function(err, vals) {
+// 	console.log(err, vals);
+// 	beacons.del_guest('me', '123');
+// });
+
+// beacons.get('me', function(err, vals) {
+// 	console.log(err, vals);
+// });
+// beacons.get('you', function(err, vals) {
+// 	console.log(err, vals);
+// });
 
 io.sockets.on('connection', function(socket) {
   socket.on('login', function (data) {
   	login(data.id, socket);
   });
 
-  // function to add new guest to event
-  // adds guest to the attendees list on global, adds beacon to your list, and adds you as an
-  // attendee to all attendee's lists
   socket.on('joinBeacon', function (data) {
   	console.log('joining socket:',socket.id);
 	  joinBeacon(data);
@@ -91,30 +91,9 @@ io.sockets.on('connection', function(socket) {
   socket.on('leaveBeacon', function (data) {
   	var host = data.host,
   			guest = data.guest;
-
   	beacons.del_guest( host, guest );
 	  emit(data.host, 'newBeacon', {'beacon': beacons.get(host)});
   });
-
-  function joinBeacon(data) {
-  	var host = data.host;
-  	var userId = data.userId;
-  	if ( host == userId ) return;
-  	// adds guest to global beacon keeper. 
-	  beacons.add_guest( host, userId ); 
-	  console.log('host, userid',host, userId);
-	  console.log('full table', beacons.table);
-    var B = beacons.get(host);
-    if (B != 'undefined') {
-      // socket.emit('newBeacon', B);
-      // console.log()
-	    // tells all guests to add new guest
-	    emit(host, 'newBeacon', {'beacon': B});  
-	    // add new guest to room
-	  } else {
-      console.log("user event not found: join failed\n");
-		}
-  }
 
   // when a guest leaves an event
   socket.on('leaveBeacon', function (data) {
@@ -123,13 +102,13 @@ io.sockets.on('connection', function(socket) {
     emit(socket, data.hostId, 'remBeacon', data.hostId);      
   });
 
-
-	socket.on('newBeacon', function (data) {
-		beacons.insert(data); // insert into database class sends push notification, or do I? 
-		emit(data.host, 'newBeacon', {"beacon" : data});
+	socket.on('newBeacon', function (B) {
+		beacons.insert(B); 
+		// db.newBeacon(B);
+		emit(B.host, 'newBeacon', {"beacon" : B});
 	});
-
 });
+
 
 function login (id, socket) {
 	console.log(id, "has logged in!");
@@ -149,13 +128,33 @@ function newUser (id, socket) {
 	});
 }
 
-
 function existingUser(id, friends, socket) {
 	console.log('existing user', id, 'has', friends.length,'friends');
-	var allBeacons = getAllBeacons(friends, id);
-	console.log('all beacons', allBeacons);
-	socket.emit('newBeacons', allBeacons);
-	joinRooms(socket, friends, id);
+	beacons.getAllFriends(friends, id, function(err, allBeacons){
+		console.log('all beacons', allBeacons);
+		socket.emit('newBeacons', allBeacons);
+		joinRooms(socket, friends, id);
+	});	
+}
+
+function joinBeacon(data) {
+	var host = data.host;
+	var userId = data.userId;
+	if ( host == userId ) return;
+	// adds guest to global beacon keeper. 
+  beacons.add_guest( host, userId ); 
+  console.log('host, userid',host, userId);
+  console.log('full table', beacons.table);
+  var B = beacons.get(host);
+  if (B != 'undefined') {
+    // socket.emit('newBeacon', B);
+    // console.log()
+    // tells all guests to add new guest
+    emit(host, 'newBeacon', {'beacon': B});  
+    // add new guest to room
+  } else {
+    console.log("user event not found: join failed\n");
+	}
 }
 
 function joinRooms(socket, friends, id) {
@@ -166,7 +165,7 @@ function joinRooms(socket, friends, id) {
 }
 	
 
-function getAllBeacons(friends, id) {
+function getAllBeacons(friends, id, callback) {
 	var b;
 	var friendsBeacons = [];
 	//check for our own event. 
@@ -181,7 +180,7 @@ function getAllBeacons(friends, id) {
 			friendsBeacons.push(b);
 		}
 	});
-	return friendsBeacons;
+	callback(null, friendsBeacons);
 }
 
 
