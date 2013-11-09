@@ -91,15 +91,11 @@ io.sockets.on('connection', function(socket) {
   socket.on('leaveBeacon', function (data) {
   	var host = data.host,
   			guest = data.guest;
-  	beacons.del_guest( host, guest );
-	  emit(data.host, 'newBeacon', {'beacon': beacons.get(host)});
-  });
-
-  // when a guest leaves an event
-  socket.on('leaveBeacon', function (data) {
-    beacons.rem_guest
-    socket.emit('remBeacon', data.hostId);
-    emit(socket, data.hostId, 'remBeacon', data.hostId);      
+  	beacons.del_guest( host, guest, function() {
+  		beacons.get(host, function(err, b){
+  			emit(data.host, 'newBeacon', {'beacon': b});
+  		});
+  	});
   });
 
 	socket.on('newBeacon', function (B) {
@@ -142,19 +138,11 @@ function joinBeacon(data) {
 	var userId = data.userId;
 	if ( host == userId ) return;
 	// adds guest to global beacon keeper. 
-  beacons.add_guest( host, userId ); 
-  console.log('host, userid',host, userId);
-  console.log('full table', beacons.table);
-  var B = beacons.get(host);
-  if (B != 'undefined') {
-    // socket.emit('newBeacon', B);
-    // console.log()
-    // tells all guests to add new guest
-    emit(host, 'newBeacon', {'beacon': B});  
-    // add new guest to room
-  } else {
-    console.log("user event not found: join failed\n");
-	}
+  beacons.add_guest( host, userId, function(err){
+  	beacons.get(host, function(err, b){
+  		emit(host, 'newBeacon', {'beacon': b});  
+	  });
+  }); 
 }
 
 function joinRooms(socket, friends, id) {
@@ -164,24 +152,6 @@ function joinRooms(socket, friends, id) {
 	socket.join(id);
 }
 	
-
-function getAllBeacons(friends, id, callback) {
-	var b;
-	var friendsBeacons = [];
-	//check for our own event. 
-	b = beacons.get(id);
-	if (b) {
-		friendsBeacons.push(b);
-	}
-	/// check every one of our friends. 
-	friends.forEach(function(friend) {
-		b = beacons.get(friend);
-		if (b) {
-			friendsBeacons.push(b);
-		}
-	});
-	callback(null, friendsBeacons);
-}
 
 
 function emit(userId, eventName, data) {

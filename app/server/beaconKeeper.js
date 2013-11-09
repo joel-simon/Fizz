@@ -9,17 +9,17 @@ BeaconKeeper.prototype.insert = function(B) {
   this.store.hmset(q, redis.print);
 }
 
-BeaconKeeper.prototype.remove = function(userId) {
+BeaconKeeper.prototype.remove = function(userId, callback) {
   this.store.del(userId, redis.print);
-  this.store.del('a'+userId, redis.print);
+  this.store.del('a'+userId, callback);
 }
 
-BeaconKeeper.prototype.add_guest = function(hostId, guestId) {
-  this.store.sadd('a'+hostId, guestId, redis.print);
+BeaconKeeper.prototype.add_guest = function(hostId, guestId, callback) {
+  this.store.sadd('a'+hostId, guestId, callback);
 }
 
-BeaconKeeper.prototype.del_guest = function(hostId, guestId) {
-  this.store.srem('a'+hostId, guestId, redis.print);
+BeaconKeeper.prototype.del_guest = function(hostId, guestId, callback) {
+  this.store.srem('a'+hostId, guestId, callback);
 }
 
 // returns null on failure
@@ -32,7 +32,9 @@ BeaconKeeper.prototype.get = function(userId, callback) {
     store.hgetall(userId, function(err, b) {
       if(err || !b) return callback(err, null);
       store.smembers('a'+userId, function(err, members){
+
         b.attends = members;
+        if(!callback) console.trace();
         callback(err, b);
       });
     });
@@ -44,14 +46,16 @@ BeaconKeeper.prototype.get = function(userId, callback) {
 BeaconKeeper.prototype.getAllFriends = function(friends, userId, callback) {
   var beacons = [];
   friends.push(userId);
+  var responses = 0;
   for (var i = 0; i < friends.length; i++) {
     this.get(friends[i], function(err, b) {
-      if (!err && b) {
+      if (!err && b)
         beacons.push(b);
-      };
+      if (++responses == friends.length)
+          callback(null, beacons);
     });
   }
-  callback(null, beacons);
+  
 }
 
 
