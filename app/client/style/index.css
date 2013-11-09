@@ -48,10 +48,9 @@ hr {
 .float-left  { float: left;  }
 .float-right { float: right; }
 
-.clear-both  { clear: both; }
+.clear-both  { clear: both;  }
 .clear-left  { clear: left;  }
 .clear-right { clear: right; }
-
 
 /* 
 	Header 
@@ -169,17 +168,5 @@ h3.center {
 		margin-top: 50px;
 	}
 
-.videoBox {
-	height: 500px;
-	margin-bottom: 20px;
-}
-
-.vid {
-	width: 630px;
-	height: 460px;
-	position: absolute;
-	left: 50%;
-	margin-left: -315px;
-}
 
 

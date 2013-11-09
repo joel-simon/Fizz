@@ -1,8 +1,8 @@
 
-$('#beacon-events').on('submit', function(e) {
+$('#myBeacon').on('submit', function(e) {
 	e.preventDefault();
 	var form = this;
-	var desc = (form.description.value) ? form.description.value : 'My Event!';
+	var desc = (form.name.value) ? form.name.value : 'My Event!';
 	var lat, lng;
 
 	if (tempMarker) {
@@ -12,14 +12,11 @@ $('#beacon-events').on('submit', function(e) {
 		lat = currentPosition.lat();
 		lng = currentPosition.lng();
 	}
-
-	console.log(me);
 	
 	if (BKeeper.getBeacon(me.id)) {
 		BKeeper.removeBeacon(me.id);
 	}
 	var B = BKeeper.newBeacon(me.id, desc, lat, lng);
-	// console.log(B);
 	socket.emit('newBeacon', {
 		'host':B.host, 
 		'lat':B.lat, 

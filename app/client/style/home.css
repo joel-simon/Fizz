@@ -1,165 +1,127 @@
-/* funcitonal css */
+/*
+	Generic CSS
+*/
 
-#map-canvas {
-	height: 400px;
-}
-
-#gallery { float: left; width: 65%; min-height: 12em; }
-.gallery.custom-state-active { background: #eee; }
-.gallery li { float: left; width: 96px; padding: 0.4em; margin: 0 0.4em 0.4em 0; text-align: center; }
-.gallery li h5 { margin: 0 0 0.4em; cursor: move; }
-.gallery li a { float: right; }
-.gallery li a.ui-icon-zoomin { float: left; }
-.gallery li img { width: 100%; cursor: move; }
-
-#trash { float: right; width: 32%; min-height: 18em; padding: 1%; background: none }
-#trash h4 { line-height: 16px; margin: 0 0 0.4em; }
-#trash h4 .ui-icon { float: left; }
-#trash .gallery h5 { display: none; }
-
-/* facebook bullshit */
-#facebook-bsbox {
-	position: absolute;
-	top: 0;
-	right: 0;
-	width: auto;
-	height: auto;
-}
-
-
-/* pretty css */
 * {
 	margin: 0;
 	padding: 0;
 }
 
-ul {
-	list-style-type: none;
-}
-
 body {
-	/*245,200,57 -> 244,152,9
-	background-image: linear-gradient(to bottom, #FFAA00 0%, #FFB900 100%);*/
-	background-image: linear-gradient(to bottom, #FFAA00 0%, #FFB900 100%);
-	background-repeat: no-repeat;
-	background-attachment: fixed;
-	background-size: cover;
+	height: 100%;
+	width: 100%;
+
+	margin: 0;
+	padding: 0;
+
+	background-color: orange;
 }
 
-#mainTitle {
-	text-align: center;
-	font-size: 80px;
-	margin-top: 10px;
-	font-weight: bolder;
+.hidden { 
+	display: none !important;
+	visibility: hidden !important;
 }
 
-#map-canvas {}
-
-#searchTextField {
-	position: absolute;
-	margin-top: -5px;
-	/*left: 50%;*/
-	margin-left: 120px;
+h1, h2, h3, h4, h5, h6 {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-weight: 500;
+	line-height: 1.1;
 }
 
-#panel {
-	position: absolute;
-	display: block;
-	left: 50%;
-	margin-left: -288px;
-	top: 120px;
-	z-index: 40;
+p {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 18px;
+	margin-bottom: 12px;
 }
 
-#beacon-events {
-	position: absolute;
-	left: 50%;
-	margin-left: -300px;
-	/*background: blue;*/
-	margin-top: 8px;
-	height: 40px;
-	width: 600px;
+input { padding: 0 4px; }
+.input-long { width: 300px; }
+
+.text-left    { text-align: left;    }
+.text-center  { text-align: center;  }
+.text-right   { text-align: right;   }
+.text-justify { text-align: justify; }
+
+.float-left   { float: left;  }
+.float-right  { float: right; }
+
+.clear-both   { clear: both;  }
+.clear-left   { clear: left;  }
+.clear-right  { clear: right; }
+
+
+/*
+	Header
+*/
+
+#header {
+	height: 60px;
+	width: 100%;
 }
-	#description {
-		width: 400px;
-		margin-left: 40px;
-		height: 34px;
-		border-radius: 2px;
+
+	#header .title {
+		position: absolute;
+		font-size: 32px;
+		margin-top: 10px;
+		margin-left: 15px;
 	}
+
+
+/*
+	Map
+*/
+
+#map {
+	position: relative;
+	width: inherit;
+	height: 400px;	
+}
+
+	#map-canvas {
+		width: inherit;
+		height: inherit;
+	}
+
+	#searchTextField {
+		height: 25px;
+		width: 400px;
+
+		margin: 8px auto 0 auto;
+		position: absolute;
+		top: 0; left: 0; bottom: 0; right: 0;
+	}
+
+
+/*
+	Beacon Creator
+*/
+
+#myBeacon {
+	position: relative;
+	text-align: center;
+	padding: 5px;
+}
+
+
+/*
+	Beacon List
+*/
 
 #beacon-list {
-	position: absolute;
-	left: 50%;
-	margin-left: -300px;
-	margin-top: 70px;
-	/*background: rgba(0,0,0,0.7);*/
-	height: auto;
-	width: 600px;
-	overflow: hidden;
+	text-align: center;
+	padding: 5px;
+	margin: 0 auto;
 }
-	li.event {
-		margin-left: 100px;
-		margin-bottom: 10px;
-		/*background: blue;*/
-		width: 480px;
-		height: 100px;
-		overflow: hidden;
-		background-image: linear-gradient(to bottom, #fff, #eee);
-		background: rgba(255,204,190,0.4);
-		/*background-color: #fff;*/
-		border-radius: 3px;
-		border: 1px solid #ffaa00;
+
+	.event {
+		width: 400px;
+		background-color: #FF8C00;
 	}
 
-		.event img {
-			border-radius: 2px;
-		}
 
-		p.details {
-			color: black;
-			margin: 5px;
-		}
 
-		img.host-pic {
-			margin-left: 5px;
-			margin-top: 5px;
-			width: 60px;
-			height: 60px;
-		}
 
-		div.attending {
-			/*background: white;*/
-			margin-left: 100px;
-			margin-top: -65px;
-			width: auto;
-			height: 70px;
-			float: left;
-		}
 
-		.horizon {
-			width: 1000px;
-		}
-
-		.horizon img {
-			margin-left: 5px;
-			margin-top: 5px;
-			width: 60px;
-			height: 60px;
-		}
-
-		.event button {
-			position: absolute;
-			margin-left: -90px;
-			margin-top: 45px;
-		}
-
-#friends {
-	position: absolute;
-	margin-top: 360px;
-	left: 50%;
-	margin-left: -300px;
-	width: 600px;
-}
 
 
 
