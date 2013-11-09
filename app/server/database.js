@@ -10,8 +10,9 @@ function addPlayer (id, friends) {
 
 
 function getFriends(id, callback) {
-	db.users.find({'_id': id}, function(err, docs) {
-		console.log(err, docs);
+	db.users.findOne({'_id': id}, function(err, user) {
+		if( !user ) callback (err, null)
+		else callback (err, user.friends);
 	});
 }
 
