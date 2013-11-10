@@ -11,20 +11,84 @@ function drawBeacon(beacon) {
 	// Place the beacon marker on the google map.
 	setBeacon(beacon);
 
-	// Put the beacon info into the beacon-list.
-	createHtmlString(beacon, function(htmlString) {
-		// console.log(htmlString);
-		$('#beacon-list').prepend(htmlString);
-		$('#host-'+beacon.host).on('click', function() {
-			if ( beacon.host == me.id ) {
-				disbandBeacon( beacon.host );
-			} else if ( beacon.hasGuest(me.id) ) {
-				leaveBeacon( beacon.host, me.id );
-			} else {
-				joinBeacon( beacon.host );
-			}
+	if (beacon.host === 'admin') {
+
+		// Put the beacon info into the beacon-list.
+		createPublicHtmlString(beacon, function(htmlString) {
+			// console.log(htmlString);
+			$('#beacon-list').prepend(htmlString);
+			$('#host-'+beacon.host).on('click', function() {
+				if ( beacon.host == me.id ) {
+					disbandBeacon( beacon.host );
+				} else if ( beacon.hasGuest(me.id) ) {
+					leaveBeacon( beacon.host, me.id );
+				} else {
+					joinBeacon( beacon.host );
+				}
+			});
 		});
-	});
+
+	} else {
+
+		// Put the beacon info into the beacon-list.
+		createHtmlString(beacon, function(htmlString) {
+			// console.log(htmlString);
+			$('#beacon-list').prepend(htmlString);
+			$('#host-'+beacon.host).on('click', function() {
+				if ( beacon.host == me.id ) {
+					disbandBeacon( beacon.host );
+				} else if ( beacon.hasGuest(me.id) ) {
+					leaveBeacon( beacon.host, me.id );
+				} else {
+					joinBeacon( beacon.host );
+				}
+			});
+		});
+
+	}
+}
+
+// Helper function for drawBeacon.
+function createPublicHtmlString(beacon, callback) {
+	var color, label;
+	if ( beacon.hasGuest(me.id) ) {
+		color = 'btn-danger';
+		label = 'Leave';
+	} else {
+		color = 'btn-primary';
+		label = 'Join';
+	}
+	var htmlString = 
+		'<li class="event">'+
+			'<button class="btn '+color+' blarg" id="host-'+beacon.host+'">'+
+				label+
+			'</button>'+
+			'<p class="details">'+beacon.desc+'</p>';
+
+	var counter = 0;
+	// Gets and displays the host info.
+	
+	htmlString += '<img class="host-pic" title="'+beacon.host+'" src="/img/party2.png">'+
+		'<div class="attending"><div class="horizon">';
+
+	if (beacon.attends.length) {
+		// Loops through the guests and gets and displays their info.
+		beacon.attends.forEach(function(guest, i) {
+			getFbData(guest, function(guestPic, guestName) {
+				htmlString += '<img class="guest-pic" title="'+guestName+'" src="'+guestPic+'">';
+				if (++counter == beacon.attends.length) {
+					htmlString += '</div></div></li>';
+					callback(htmlString);
+					return;
+				}
+			});
+		});
+	} else {
+		htmlString += '</div></div></li>';
+		callback(htmlString);
+		return;
+	}
+	
 }
 
 // Helper function for drawBeacon.

@@ -78,6 +78,7 @@ function login() {
 function getFbData(id, callback) {
 	// console.log(id);
 	// console.trace();
+	if (id === 'admin') return null;
 	FB.api('/'+id+'?fields=picture,name', function(response) {
 		// console.log(response, id);
 		callback(response.picture.data.url, response.name);
