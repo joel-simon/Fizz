@@ -10,6 +10,10 @@ module.exports = function(app) {
 		res.render('home', {});
 	})
 
+	app.get('/admin', function(req, res) {
+		res.render('admin', {});
+	})
+
 	app.get('*', function(req, res) { res.render('404', { title: 'Page Not Found'}); });
 
 };
