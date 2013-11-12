@@ -1,4 +1,5 @@
 $(document).ready(function() {
+	console.log(me);
 	if (!me) socket.emit('login', {'admin' : ''});
 });
 
