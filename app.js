@@ -25,13 +25,13 @@ sub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 store.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 
 io.configure( function(){
-  io.enable('browser client minification');  // send minified client
-  io.enable('browser client etag');          // apply etag caching logic based on version number
-  io.enable('browser client gzip');          // gzip the file
-  io.set('log level', 1);                    // reduce logging
+	io.enable('browser client minification');  // send minified client
+	io.enable('browser client etag');          // apply etag caching logic based on version number
+	io.enable('browser client gzip');          // gzip the file
+	io.set('log level', 1);                    // reduce logging
 
-  var RedisStore = require('socket.io/lib/stores/redis');
-  io.set('store', new RedisStore({redis: redis, redisPub:pub, redisSub:sub, redisClient:store}));
+	var RedisStore = require('socket.io/lib/stores/redis');
+	io.set('store', new RedisStore({redis: redis, redisPub:pub, redisSub:sub, redisClient:store}));
 });
 
 // stores a single beacon 
@@ -58,63 +58,57 @@ app.configure('development', function(){
 require('./app/server/router')(app);
 io.set('log level', 1);
 
-// var B = new Beacon('me', '1','2', 'hi');
-// beacons.insert(B);
-// beacons.get('me', function(err, vals) {
-// 	console.log(err, vals);
-// 	beacons.del_guest('me', '123');
-// });
-
-// beacons.get('me', function(err, vals) {
-// 	console.log(err, vals);
-// });
-// beacons.get('you', function(err, vals) {
-// 	console.log(err, vals);
-// });
-
 io.sockets.on('connection', function(socket) {
-  socket.on('login', function (data) {
-  	login(data.id, socket);
-  });
+	socket.on('login', function (data) {
+		if (data.id) login(data.id, socket);
+		else if (data.admin) admonLogin(data.admin, socket);
+	});
 
-  socket.on('joinBeacon', function (data) {
-  	console.log('joining socket:',socket.id);
-	  joinBeacon(data);
-  });
+	socket.on('joinBeacon', function (data) {
+		console.log('joining socket:',socket.id);
+		joinBeacon(data);
+	});
 
-  socket.on('deleteBeacon', function (data) {
-  	console.log('deleteBeacon:',data);
-  	beacons.remove( data.host );
-	  emit(data.host, 'deleteBeacon', {host: data.host});
-  });
+	socket.on('deleteBeacon', function (data) {
+		console.log('deleteBeacon:',data);
+		beacons.remove( data.host );
+		emit(data.host, 'deleteBeacon', {host: data.host});
+	});
 
-  socket.on('leaveBeacon', function (data) {
-  	var host = data.host,
-  			guest = data.guest;
-  	beacons.del_guest( host, guest, function() {
-  		beacons.get(host, function(err, b){
-  			emit(data.host, 'newBeacon', {'beacon': b});
-  		});
-  	});
-  });
+	socket.on('leaveBeacon', function (data) {
+		var host = data.host,
+				guest = data.guest;
+		beacons.del_guest( host, guest, function() {
+			beacons.get(host, function(err, b){
+				emit(data.host, 'newBeacon', {'beacon': b});
+			});
+		});
+	});
 
 	socket.on('newBeacon', function (B) {
 		beacons.insert(B); 
-		// db.newBeacon(B);
-		emit(B.host, 'newBeacon', {"beacon" : B});
+		if (B.pub)
+			io.sockets.emit('newBeacon', {"beacon" : B});
+		else
+			emit(B.host, 'newBeacon', {"beacon" : B});
 	});
 });
 
 
 function login (id, socket) {
 	console.log(id, "has logged in!");
-  db.getFriends(id, function(err, friends) {
-  	if (err) console.log(err);
-  	else if (!friends) newUser(id, socket);
-  	else existingUser(id, friends, socket);
-  });
+	db.getFriends(id, function(err, friends) {
+		if (err) console.log(err);
+		else if (!friends) newUser(id, socket);
+		else existingUser(id, friends, socket);
+	});
 }
 
+function adminLogin (pass, socket) {
+	console.log("Admin has logged in!");
+	socket.join('admins');
+	
+}
 function newUser (id, socket) {
 	console.log('New user registration', id);
 	socket.emit('getFriends', {});
@@ -126,7 +120,7 @@ function newUser (id, socket) {
 
 function existingUser(id, friends, socket) {
 	console.log('existing user', id, 'has', friends.length,'friends');
-	beacons.getAllFriends(friends, id, function(err, allBeacons){
+	beacons.getVisible(friends, id, function(err, allBeacons){
 		console.log('all beacons', allBeacons);
 		socket.emit('newBeacons', allBeacons);
 		joinRooms(socket, friends, id);
@@ -138,11 +132,11 @@ function joinBeacon(data) {
 	var userId = data.userId;
 	if ( host == userId ) return;
 	// adds guest to global beacon keeper. 
-  beacons.add_guest( host, userId, function(err){
-  	beacons.get(host, function(err, b){
-  		emit(host, 'newBeacon', {'beacon': b});  
-	  });
-  }); 
+	beacons.add_guest( host, userId, function(err){
+		beacons.get(host, function(err, b){
+			emit(host, 'newBeacon', {'beacon': b});  
+		});
+	}); 
 }
 
 function joinRooms(socket, friends, id) {
@@ -156,8 +150,8 @@ function joinRooms(socket, friends, id) {
 
 function emit(userId, eventName, data) {
 	console.log('PUSHING DATA', data);
-	// console.log(io.sockets.clients(userId).map(function(a){return a.id})); //[0].map(function(a))
 	io.sockets.in(userId).emit(eventName, data);
+	io.sockets.in('admins').emit(eventName, data);
 }
 
 

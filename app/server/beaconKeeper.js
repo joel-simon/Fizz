@@ -4,10 +4,25 @@ function BeaconKeeper(store) {
   this.store = store;
 }
 
-BeaconKeeper.prototype.insert = function(B) {
-  var q = [B.host, "host",B.host,"lat",B.lat, "lng",B.lng, "desc",B.desc, "title",B.title];
-  this.store.hmset(q, redis.print);
+
+BeaconKeeper.prototype.insert = function(B, callback) {
+  var self = this;
+  if (B.pub) insertPublic(B); 
+  else insertPrivate(B);
+
+  function insertPublic (B) {
+    self.store.sadd('publicBeacons', JSON.stringify(B), done);
+  }
+  function insertPrivate (B) {
+    var q = [B.host, "host", B.host, "lat", B.lat, "lng", B.lng,
+     "desc", B.desc, "title", B.title];
+    self.store.hmset(q, done);
+  }
+  function done() {
+    if (callback) callback (null);
+  }
 }
+
 
 BeaconKeeper.prototype.remove = function(userId, callback) {
   this.store.del(userId, redis.print);
@@ -38,23 +53,29 @@ BeaconKeeper.prototype.get = function(userId, callback) {
         callback(err, b);
       });
     });
-
   });
 }
 
 // returns null on failure
-BeaconKeeper.prototype.getAllFriends = function(friends, userId, callback) {
+BeaconKeeper.prototype.getVisible = function(friends, userId, callback) {
   var beacons = [];
+  var self = this;
   friends.push(userId);
-  var responses = 0;
-  for (var i = 0; i < friends.length; i++) {
-    this.get(friends[i], function(err, b) {
-      if (!err && b)
-        beacons.push(b);
-      if (++responses == friends.length)
-          callback(null, beacons);
-    });
-  }
+
+  (function() {
+    var responses = 0;
+    for (var i = 0; i < friends.length; i++) {
+      self.get(friends[i], function(err, b) {
+        if (!err && b)
+          beacons.push(b);
+        if (++responses == friends.length)
+            callback(null, beacons);
+      });
+    }
+  })();
+  
+  // this.store.smembers('publicBeacons', );
+
   
 }
 
