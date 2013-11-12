@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 /*
-	home-view.js - Draws objects on and Erases objects from the site
+	admin-view.js - Draws objects on and Erases objects from the site
 */
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -11,6 +11,7 @@ function drawBeacon(beacon) {
 	// Place the beacon marker on the google map.
 	setBeacon(beacon);
 
+
 	if (beacon.host === 'admin') {
 
 		// Put the beacon info into the beacon-list.
@@ -18,11 +19,7 @@ function drawBeacon(beacon) {
 			// console.log(htmlString);
 			$('#beacon-list').prepend(htmlString);
 			$('#host-'+beacon.host).on('click', function() {
-				if ( beacon.hasGuest(me.id) ) {
-					leaveBeacon( beacon.host, me.id );
-				} else {
-					joinBeacon( beacon.host );
-				}
+				disbandBeacon( beacon.host );
 			});
 		});
 
@@ -33,29 +30,19 @@ function drawBeacon(beacon) {
 			// console.log(htmlString);
 			$('#beacon-list').prepend(htmlString);
 			$('#host-'+beacon.host).on('click', function() {
-				if ( beacon.host == me.id ) {
-					disbandBeacon( beacon.host );
-				} else if ( beacon.hasGuest(me.id) ) {
-					leaveBeacon( beacon.host, me.id );
-				} else {
-					joinBeacon( beacon.host );
-				}
+				disbandBeacon( beacon.host );
 			});
 		});
 
 	}
 }
 
+
 // Helper function for drawBeacon.
 function createPublicHtmlString(beacon, callback) {
-	var color, label;
-	if ( beacon.hasGuest(me) ) {
-		color = 'btn-danger';
-		label = 'Leave';
-	} else {
-		color = 'btn-primary';
-		label = 'Join';
-	}
+	var color = 'btn-danger';
+	var label = 'Disband';
+	
 	var htmlString = 
 		'<li class="event">'+
 			'<button class="btn '+color+'" id="host-'+beacon.host+'">'+
@@ -91,17 +78,9 @@ function createPublicHtmlString(beacon, callback) {
 
 // Helper function for drawBeacon.
 function createHtmlString(beacon, callback) {
-	var color, label;
-	if ( beacon.host == me.id ) {
-		color = 'btn-danger';
-		label = 'Disband';
-	} else if ( beacon.hasGuest(me.id) ) {
-		color = 'btn-danger';
-		label = 'Leave';
-	} else {
-		color = 'btn-primary';
-		label = 'Join';
-	}
+	var color = 'btn-danger';
+	var label = 'Disband';
+	
 	var htmlString = 
 		'<li class="event">'+
 			'<button class="btn '+color+'" id="host-'+beacon.host+'">'+
