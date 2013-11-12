@@ -70,6 +70,14 @@ input { padding: 0 4px; }
 		margin-left: 15px;
 	}
 
+	#header .title2 {
+		position: absolute;
+		font-size: 32px;
+		right: 0;
+		margin-top: 10px;
+		margin-right: 15px;
+	}
+
 
 /*
 	Map
@@ -101,6 +109,12 @@ input { padding: 0 4px; }
 */
 
 #myBeacon {
+	position: relative;
+	text-align: center;
+	padding: 5px;
+}
+
+#publicBeacon {
 	position: relative;
 	text-align: center;
 	padding: 5px;

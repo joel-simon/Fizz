@@ -1,9 +1,8 @@
 'use strict'; // PRO JS MODE HARDCORE
 
-var SERVER = window.location.origin;
+
 var me; // id, isHosting
-var socket = io.connect(SERVER);
-var BKeeper = new BeaconKeeper();
+
 
 // socket.on('news', function (data) {
 //   console.log('data:', data);

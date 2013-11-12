@@ -51,7 +51,7 @@ function drawBeacon(beacon) {
 // Helper function for drawBeacon.
 function createPublicHtmlString(beacon, callback) {
 	var color, label;
-	if ( beacon.hasGuest(me.id) ) {
+	if ( beacon.hasGuest(me) ) {
 		color = 'btn-danger';
 		label = 'Leave';
 	} else {

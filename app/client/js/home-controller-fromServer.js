@@ -1,3 +1,7 @@
+var SERVER = window.location.origin;
+var socket = io.connect(SERVER);
+var BKeeper = new BeaconKeeper();
+
 
 socket.on('getFriends', function(data) {
 	FB.api('/me/friends', function(response) {
