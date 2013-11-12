@@ -1,17 +1,17 @@
 {
-	"name": "Colludo",
+	"name": "Beacon",
 	"version": "0.0.1",
-	"description": "COLLUDO BITCHES",
+	"description": "Beacon, helping you be with friends.",
 	"author": {
 		"name": "Joel Simon",
 		"email": "joelsimon6@gmail.com"
 	},
 	"website":{
-		"url": "http://204.236.234.28:8080"
+		"url": "beaconBeta.com"
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Sloth6/Colludo"
+		"url": "https://github.com/Sloth6/Beacon"
 	},
 	"private": true,
 	"dependencies": {
