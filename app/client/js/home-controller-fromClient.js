@@ -1,3 +1,6 @@
+$(document).ready(function() {
+	if (!me) socket.emit('login', {'admin' : ''});
+});
 
 $('#myBeacon').on('submit', function(e) {
 	e.preventDefault();

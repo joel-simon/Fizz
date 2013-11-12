@@ -69,7 +69,7 @@ function login() {
 	// console.log('Welcome!  Fetching your information.... ');
 	FB.api('/me', function(response) {
 		me = response;
-		socket.emit('login', {id: me.id})    
+		socket.emit('login', {id: me.id});
 	});
 }
 
