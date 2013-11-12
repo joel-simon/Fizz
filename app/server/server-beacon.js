@@ -3,15 +3,15 @@
 // @var desc: decription; limit to 140 character 
 // @var error: displays an error if object was not properly constructed 
 // @var attends: everyone attending the event (starts with just host)
-function Beacon(userId, lat, lng, desc) {
-    this.host = userId;
-    this.lat = lat;
-    this.lng = lng;
-    this.desc = desc;
-    this.title = "myTitle";
-    this.marker = null;
-
-    this.attends = [];
+function Beacon(userId, lat, lng, desc, pub) {
+  this.host = userId;
+  this.lat = lat;
+  this.lng = lng;
+  this.desc = desc;
+  this.title = "myTitle";
+  this.marker = null;
+  this.pub = pub || false;
+  this.attends = [];
 }
 
 Beacon.prototype.add_guest = function(guestId) {
@@ -34,7 +34,6 @@ Beacon.prototype.update_desc = function(desc) {
   } 
   this.desc = desc;
   return true; 
-  // send push notification
 }
 
 module.exports = Beacon;
