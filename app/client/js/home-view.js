@@ -51,7 +51,7 @@ function drawBeacon(beacon) {
 // Helper function for drawBeacon.
 function createPublicHtmlString(beacon, callback) {
 	var color, label;
-	if ( beacon.hasGuest(me.id) ) {
+	if ( beacon.hasGuest(me) ) {
 		color = 'btn-danger';
 		label = 'Leave';
 	} else {
@@ -60,7 +60,7 @@ function createPublicHtmlString(beacon, callback) {
 	}
 	var htmlString = 
 		'<li class="event">'+
-			'<button class="btn '+color+' blarg" id="host-'+beacon.host+'">'+
+			'<button class="btn '+color+'" id="host-'+beacon.host+'">'+
 				label+
 			'</button>'+
 			'<p class="details">'+beacon.desc+'</p>';
@@ -93,8 +93,11 @@ function createPublicHtmlString(beacon, callback) {
 
 // Helper function for drawBeacon.
 function createHtmlString(beacon, callback) {
-	var color, label;
-	if ( beacon.host == me.id ) {
+	var color, label, htmlString;
+	if (!me) {
+		color = null;
+		label = null;
+	} else if ( beacon.host == me.id ) {
 		color = 'btn-danger';
 		label = 'Disband';
 	} else if ( beacon.hasGuest(me.id) ) {
@@ -104,12 +107,18 @@ function createHtmlString(beacon, callback) {
 		color = 'btn-primary';
 		label = 'Join';
 	}
-	var htmlString = 
-		'<li class="event">'+
-			'<button class="btn '+color+' blarg" id="host-'+beacon.host+'">'+
-				label+
-			'</button>'+
-			'<p class="details">'+beacon.desc+'</p>';
+	if (color && label) {
+		htmlString = 
+			'<li class="event">'+
+				'<button class="btn '+color+'" id="host-'+beacon.host+'">'+
+					label+
+				'</button>'+
+				'<p class="details">'+beacon.desc+'</p>';
+	} else {
+		htmlString = 
+			'<li class="event">'+
+				'<p class="details">'+beacon.desc+'</p>';
+	}
 
 	var counter = 0;
 	// Gets and displays the host info.
