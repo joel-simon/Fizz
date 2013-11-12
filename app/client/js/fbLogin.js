@@ -1,8 +1,6 @@
 'use strict'; // PRO JS MODE HARDCORE
 
 
-var me; // id, isHosting
-
 
 // socket.on('news', function (data) {
 //   console.log('data:', data);

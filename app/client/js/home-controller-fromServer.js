@@ -1,6 +1,7 @@
 var SERVER = window.location.origin;
 var socket = io.connect(SERVER);
 var BKeeper = new BeaconKeeper();
+var me; // id, isHosting
 
 
 socket.on('getFriends', function(data) {
