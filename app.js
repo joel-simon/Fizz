@@ -60,6 +60,7 @@ io.set('log level', 1);
 
 io.sockets.on('connection', function(socket) {
 	socket.on('login', function (data) {
+		console.log(data.admin);
 		if (data.id) login(data.id, socket);
 		else if (data.admin) admonLogin(data.admin, socket);
 	});
