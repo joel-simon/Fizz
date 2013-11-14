@@ -1,4 +1,4 @@
-'use strict'; // PRO JS MODE HARDCORE
+'use strict'; // PRO JS MODE HARDCORE-ish
 
 
 

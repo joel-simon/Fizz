@@ -1,9 +1,11 @@
 // facebook SDK
 
 window.fbAsyncInit = function() {
+	if (window.location.origin.match('localhost')) var id = '1413129718920861'
+	else var id = '202764579903268'
 	// init the FB JS SDK
 	FB.init({
-		appId      : '202764579903268',                    // App ID from the app dashboard
+		appId      : id,                                   // App ID from the app dashboard
 		channelUrl : '//WWW.YOUR_DOMAIN.COM/channel.html', // Channel file for x-domain comms
 		status     : true,                                 // Check Facebook Login status
 		xfbml      : true                                  // Look for social plugins on the page
