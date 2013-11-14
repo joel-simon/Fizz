@@ -6,9 +6,15 @@ html
 		meta(name='description', content='Place a Beacon on a map to let your friends know where and what you want to do. Planning spontaneous events has never been so easy!')
 		meta(name='keywords', content='map, social media, event, events, beacon, beacons, friends, google maps, organize, plan, beacon events')
 
+		link(rel='stylesheet', href='/style/bootstrap.css')
 		link(rel='stylesheet', href='/style/index.css')
 
 	body
+		//- Facebook SDK
+		div#fb-root
+		script(src='/js/fb-sdk.js')
+
+		//- actual document
 		div#header
 			h2.title Beacon
 
@@ -19,7 +25,8 @@ html
 					h2.bannerTitle Come Together
 					h2.bannerTitle Right Now
 					h2.bannerTitle.hidden Over Me
-					img.tm50(src='/img/facebook.png', alt='Disabled Facebook Login Button')
+					button.signup-facebook.btn.tm50(type='button') Sign up with Facebook
+					//- img.tm50(src='/img/facebook.png', alt='Disabled Facebook Login Button')
 				div.clear-both
 
 		div.contentBox
@@ -54,4 +61,12 @@ html
 			h3.contentBoxTitle.text-right On The Go
 			hr.float-right
 			p.text-right.clear-right Organize events on the fly with the Beacon iPhone app. 
+
+
+
+		script(type='text/javascript', src='/js/jQuery/jquery-1.10.2.min.js')
+		script(src='/js/index-controller.js')
+
+
+
 
