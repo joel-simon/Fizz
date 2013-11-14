@@ -9,8 +9,10 @@
 
 
 window.fbAsyncInit = function() {
+	if (window.location.origin.match('localhost')) var id = '1413129718920861'
+	else var id = '202764579903268'
 	FB.init({
-		appId      : '202764579903268', // App ID
+		appId      : id, // App ID
 		channelUrl : '//WWW.YOUR_DOMAIN.COM/channel.html', // Channel File
 		status     : true, // check login status
 		cookie     : true, // enable cookies to allow the server to access the session

@@ -1,0 +1,4 @@
+*.env
+*.tar
+*.log
+*.DS_Store

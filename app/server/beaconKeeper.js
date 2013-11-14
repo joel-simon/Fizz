@@ -68,13 +68,20 @@ BeaconKeeper.prototype.getVisible = function(friends, userId, callback) {
       self.get(friends[i], function(err, b) {
         if (!err && b)
           beacons.push(b);
-        if (++responses == friends.length)
-            callback(null, beacons);
+        if (++responses == friends.length){
+          // callback(err, beacons);
+          self.store.smembers('publicBeacons', function(err, pubs) {
+            callback(err, beacons);
+            // callback(err, beacons.concat(pubs.map(JSON.parse)));
+            // console.log(err, beacons.map(JSON.parse));
+          });
+        }
+            
       });
     }
   })();
   
-  // this.store.smembers('publicBeacons', );
+  // 
 
   
 }

@@ -14,7 +14,7 @@ var http = require('http')
 		Beacon = require('./app/server/server-beacon.js'),
 		BeaconKeeper = require('./app/server/beaconKeeper.js');
 
-var url = 'redis://redistogo:7771d0cc39827f1664b16523d1b92768@crestfish.redistogo.com:10325/';
+var url = process.env.REDISTOGO_URL;//'redis://redistogo:7771d0cc39827f1664b16523d1b92768@crestfish.redistogo.com:10325/';
 
 var rtg  = require("url").parse(url);
 var pub = redis.createClient(rtg.port, rtg.hostname);
@@ -59,10 +59,11 @@ require('./app/server/router')(app);
 io.set('log level', 1);
 
 io.sockets.on('connection', function(socket) {
+
 	socket.on('login', function (data) {
 		console.log(data.admin);
 		if (data.id) login(data.id, socket);
-		else if (data.admin) admonLogin(data.admin, socket);
+		else if (data.admin) adminLogin(data.admin, socket);
 	});
 
 	socket.on('joinBeacon', function (data) {
@@ -108,6 +109,10 @@ function login (id, socket) {
 function adminLogin (pass, socket) {
 	console.log("Admin has logged in!");
 	socket.join('admins');
+	beacons.getVisible([], [], function(err, allBeacons){
+		console.log('all beacons', allBeacons);
+		socket.emit('newBeacons', allBeacons);
+	});	
 	
 }
 function newUser (id, socket) {
