@@ -15,6 +15,7 @@ var http = require('http')
 		BeaconKeeper = require('./app/server/beaconKeeper.js');
 
 var url = process.env.REDISTOGO_URL;//'redis://redistogo:7771d0cc39827f1664b16523d1b92768@crestfish.redistogo.com:10325/';
+console.log('REDIS URL:', url);
 
 var rtg  = require("url").parse(url);
 var pub = redis.createClient(rtg.port, rtg.hostname);

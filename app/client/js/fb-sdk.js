@@ -3,6 +3,7 @@
 window.fbAsyncInit = function() {
 	if (window.location.origin.match('localhost')) var id = '1413129718920861'
 	else var id = '202764579903268'
+	console.log(id);
 	// init the FB JS SDK
 	FB.init({
 		appId      : id,                                   // App ID from the app dashboard
