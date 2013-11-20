@@ -2,6 +2,7 @@ var SERVER = window.location.origin;
 var socket = io.connect(SERVER);
 var BKeeper = new BeaconKeeper();
 
+socket.emit('login', {admin: true});
 
 socket.on('newBeacon', function(data) {
 	var beacon = data.beacon;

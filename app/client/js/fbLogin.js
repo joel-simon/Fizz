@@ -1,16 +1,9 @@
 'use strict'; // PRO JS MODE HARDCORE-ish
 
 
-
-// socket.on('news', function (data) {
-//   console.log('data:', data);
-// });
-
-
-
 window.fbAsyncInit = function() {
-	if (window.location.origin.match('localhost')) var id = '1413129718920861'
-	else var id = '202764579903268'
+	if (window.location.origin.match('localhost')) var id = '182282665307149'
+	else var id = '451762954934201'
 	FB.init({
 		appId      : id, // App ID
 		channelUrl : '//WWW.YOUR_DOMAIN.COM/channel.html', // Channel File
@@ -66,7 +59,7 @@ window.fbAsyncInit = function() {
 
 
 function login() {
-	// console.log('Welcome!  Fetching your information.... ');
+	console.log('Welcome!  Fetching your information.... ');
 	FB.api('/me', function(response) {
 		me = response;
 		socket.emit('login', {id: me.id});
@@ -76,7 +69,7 @@ function login() {
 
 function getFbData(id, callback) {
 	// console.log(id);
-	// console.trace();
+	console.trace();
 	if (id === 'admin') return null;
 	FB.api('/'+id+'?fields=picture,name', function(response) {
 		// console.log(response, id);

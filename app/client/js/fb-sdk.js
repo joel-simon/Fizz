@@ -1,8 +1,9 @@
 // facebook SDK
 
 window.fbAsyncInit = function() {
-	if (window.location.origin.match('localhost')) var id = '1413129718920861'
-	else var id = '202764579903268'
+	if (window.location.origin.match('localhost')) var id = '182282665307149'
+	else var id = '451762954934201'
+	console.log(id);
 	// init the FB JS SDK
 	FB.init({
 		appId      : id,                                   // App ID from the app dashboard

@@ -5,9 +5,9 @@
 // @var description: decribes the nature of the event; limit to 140 characters 
 // @var error: displays an error if object was not properly constructed 
 // @var marker: the googleMaps marker associated with the beacon
-function Beacon(latitude, longitude, title, description, userId) {
+function Beacon(latitude, longitude, title, description, userId, pub) {
+	console.log('kjgkh',this.pub);
 	// (description.length > 140) ? this.error = "length_error" : this.error = "";
-
 	if (userId) {
 		this.host = userId;
 		this.attends = [userId];
@@ -20,6 +20,7 @@ function Beacon(latitude, longitude, title, description, userId) {
 	this.lon = longitude;
 	this.title = '';
 	this.desc = userId+': '+description;
+	this.pub = pub || false;
 }
 
 Beacon.prototype.add_guest = function(guestId) {

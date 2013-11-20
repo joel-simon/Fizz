@@ -15,6 +15,7 @@ var http = require('http')
 		BeaconKeeper = require('./app/server/beaconKeeper.js');
 
 var url = process.env.REDISTOGO_URL;//'redis://redistogo:7771d0cc39827f1664b16523d1b92768@crestfish.redistogo.com:10325/';
+console.log('HAVE REDIS URL:', !!url);
 
 var rtg  = require("url").parse(url);
 var pub = redis.createClient(rtg.port, rtg.hostname);
@@ -23,20 +24,16 @@ var store = redis.createClient(rtg.port, rtg.hostname);
 pub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 sub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 store.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
-
 io.configure( function(){
 	io.enable('browser client minification');  // send minified client
 	io.enable('browser client etag');          // apply etag caching logic based on version number
 	io.enable('browser client gzip');          // gzip the file
 	io.set('log level', 1);                    // reduce logging
-
 	var RedisStore = require('socket.io/lib/stores/redis');
 	io.set('store', new RedisStore({redis: redis, redisPub:pub, redisSub:sub, redisClient:store}));
 });
-
-// stores a single beacon 
 var beacons = new BeaconKeeper(store);
-
+beacons.clearPublic();
 console.log('Starting Beacon Server on ', port);
 
 app.configure(function(){

@@ -3,7 +3,7 @@
 var mongojs = require('mongojs');
 
 var connString = process.env.MONGOHQ_UR;//'beacon:derptopia@paulo.mongohq.com:10096/app18950623';//
-console.log(connString);
+// console.log('MONGO URL:',connString);
 var db = mongojs(connString, ['users', 'beacons']);
 
 /*

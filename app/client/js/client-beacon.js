@@ -4,7 +4,7 @@
 */
 ////////////////////////////////////////////////////////////////////////////////
 
-function Beacon(host, description, latitude, longitude, attends) {
+function Beacon(host, description, latitude, longitude, attends, pub) {
 	this.host = host;
 	this.attends = attends || [];
 	this.title = ''; // potential feature of the beacon to be added later
@@ -12,6 +12,7 @@ function Beacon(host, description, latitude, longitude, attends) {
 	this.lat = latitude;
 	this.lng = longitude;
 	this.marker = createMarker(latitude, longitude);
+	this.pub = pub || false;
 }
 
 // Adds a guest to the attends list of this beacon.

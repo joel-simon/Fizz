@@ -6,12 +6,12 @@
 
 // Draws all necessary viewable parts of the given beacon.
 function drawBeacon(beacon) {
-	// console.log('Drawing:', beacon);
+	console.log('Drawing:', beacon);
 	// console.trace();
 	// Place the beacon marker on the google map.
 	setBeacon(beacon);
 
-	if (beacon.host === 'admin') {
+	if (beacon.pub) {
 
 		// Put the beacon info into the beacon-list.
 		createPublicHtmlString(beacon, function(htmlString) {
