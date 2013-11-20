@@ -25,7 +25,7 @@ BeaconKeeper.prototype.insert = function(B, callback) {
 
 
 BeaconKeeper.prototype.remove = function(userId, callback) {
-  this.store.del(userId, redis.print);
+  this.store.del(userId, function(){});
   this.store.del('a'+userId, callback);
 }
 
@@ -68,11 +68,11 @@ BeaconKeeper.prototype.getVisible = function(friends, userId, callback) {
       self.get(friends[i], function(err, b) {
         if (!err && b)
           beacons.push(b);
-        if (++responses == friends.length){
+        if (++responses == friends.length) {
           // callback(err, beacons);
           self.store.smembers('publicBeacons', function(err, pubs) {
-            callback(err, beacons);
-            // callback(err, beacons.concat(pubs.map(JSON.parse)));
+            // callback(err, beacons);
+            callback(err, beacons.concat(pubs.map(JSON.parse)));
             // console.log(err, beacons.map(JSON.parse));
           });
         }
@@ -80,10 +80,10 @@ BeaconKeeper.prototype.getVisible = function(friends, userId, callback) {
       });
     }
   })();
-  
-  // 
+}
 
-  
+BeaconKeeper.prototype.clearPublic = function() {
+  this.store.del('publicBeacons', redis.print);
 }
 
 

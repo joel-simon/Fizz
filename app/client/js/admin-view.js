@@ -11,8 +11,9 @@ function drawBeacon(beacon) {
 	// Place the beacon marker on the google map.
 	setBeacon(beacon);
 
+	console.log('drawing', beacon);
 
-	if (beacon.host === 'admin') {
+	if (beacon.pub) {
 
 		// Put the beacon info into the beacon-list.
 		createPublicHtmlString(beacon, function(htmlString) {
@@ -87,6 +88,11 @@ function createHtmlString(beacon, callback) {
 				label+
 			'</button>'+
 			'<p class="details">'+beacon.desc+'</p>';
+
+
+	htmlString += '</div></div></li>';
+	callback(htmlString);
+	return;
 
 	var counter = 0;
 	// Gets and displays the host info.
