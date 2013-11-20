@@ -20,6 +20,7 @@ function drawBeacon(beacon) {
 			// console.log(htmlString);
 			$('#beacon-list').prepend(htmlString);
 			$('#host-'+beacon.host).on('click', function() {
+				console.log('clicked the damn button.');
 				disbandBeacon( beacon.host );
 			});
 		});
@@ -56,6 +57,10 @@ function createPublicHtmlString(beacon, callback) {
 	
 	htmlString += '<img class="host-pic" title="'+beacon.host+'" src="/img/party2.png">'+
 		'<div class="attending"><div class="horizon">';
+
+	htmlString += '</div></div></li>';
+	callback(htmlString);
+	return;
 
 	if (beacon.attends.length) {
 		// Loops through the guests and gets and displays their info.

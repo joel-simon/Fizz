@@ -20,8 +20,8 @@ BeaconKeeper.prototype.renewBeacon = function(host, desc, lat, lng, attends, pub
 }
 
 // Create a new beacon.
-BeaconKeeper.prototype.newBeacon = function(host, desc, lat, lng, draw) {
-	var beacon = new Beacon(host, desc, lat, lng);
+BeaconKeeper.prototype.newBeacon = function(host, desc, lat, lng, draw, pub) {
+	var beacon = new Beacon(host, desc, lat, lng, null, pub);
 	if (this.table[host]) this.removeBeacon( this.table[host] );
 	this.table[host] = beacon;
 	this.count++;
