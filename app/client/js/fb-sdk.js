@@ -15,6 +15,7 @@ window.fbAsyncInit = function() {
 	if (document.getElementById('facebook-jssdk')) {
 		console.log('FB SDK is ready!');
 		FB.getLoginStatus(function(response) {
+			console.log(response);
 			if (response.status === 'connected') {
 				// the user is logged in and has authenticated your
 				// app, and response.authResponse supplies
