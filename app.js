@@ -33,7 +33,7 @@ io.configure( function(){
 	io.set('store', new RedisStore({redis: redis, redisPub:pub, redisSub:sub, redisClient:store}));
 });
 var beacons = new BeaconKeeper(store);
-beacons.clearPublic();
+// beacons.clearPublic();
 console.log('Starting Beacon Server on ', port);
 
 app.configure(function(){
@@ -64,7 +64,6 @@ io.sockets.on('connection', function(socket) {
 	});
 
 	socket.on('joinBeacon', function (data) {
-		console.log('joining socket:',socket.id);
 		joinBeacon(data);
 	});
 
@@ -141,13 +140,19 @@ function existingUser(id, friends, socket) {
 }
 
 function joinBeacon(data) {
+	console.log(data);
 	var host = data.host;
 	var userId = data.userId;
 	if ( host == userId ) return;
 	// adds guest to global beacon keeper. 
 	beacons.add_guest( host, userId, function(err){
 		beacons.get(host, function(err, b){
-			emit(host, 'newBeacon', {'beacon': b});  
+			if (err) return console.log(err);
+			if (b.pub) {
+				emitPublic('newBeacon', {'beacon': b});  
+			} else {
+				emit(host, 'newBeacon', {'beacon': b});  
+			}
 		});
 	}); 
 }
