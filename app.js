@@ -33,7 +33,7 @@ io.configure( function(){
 	io.set('store', new RedisStore({redis: redis, redisPub:pub, redisSub:sub, redisClient:store}));
 });
 var beacons = new BeaconKeeper(store);
-// beacons.clearPublic();
+beacons.clearPublic();
 console.log('Starting Beacon Server on ', port);
 
 app.configure(function(){
@@ -128,10 +128,15 @@ function newUser (id, socket) {
 
 function existingUser(id, friends, socket) {
 	console.log('existing user', id, 'has', friends.length,'friends');
-	beacons.getVisible(friends, id, function(err, allBeacons){
-		console.log('all beacons', allBeacons);
-		socket.emit('newBeacons', allBeacons);
-		joinRooms(socket, friends, id);
+	beacons.getVisible(friends, id, function(err, allBeacons) {
+		if (err) {
+			console.log('getVisible Err:', err);
+		} else {
+			console.log('all beacons', allBeacons);
+			socket.emit('newBeacons', allBeacons);
+			joinRooms(socket, friends, id);
+		}
+		
 	});	
 }
 
