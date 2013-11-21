@@ -33,7 +33,7 @@ io.configure( function(){
 	io.set('store', new RedisStore({redis: redis, redisPub:pub, redisSub:sub, redisClient:store}));
 });
 var beacons = new BeaconKeeper(store);
-beacons.clearPublic();
+// beacons.clearPublic();
 console.log('Starting Beacon Server on ', port);
 
 app.configure(function(){
@@ -106,7 +106,8 @@ function login (id, socket) {
 function adminLogin (pass, socket) {
 	console.log("Admin has logged in!");
 	socket.join('admins');
-	beacons.getVisible([], [], function(err, allBeacons){
+	beacons.getAll(function(err, allBeacons){
+		if (err) return console.log('ERROR:', err);
 		console.log('all beacons', allBeacons);
 		socket.emit('newBeacons', allBeacons);
 	});	
