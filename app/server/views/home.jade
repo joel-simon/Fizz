@@ -9,12 +9,17 @@ html
 		link(rel='stylesheet', href='/style/bootstrap.css')
 		link(rel='stylesheet', href='/style/home.css')
 	body
+		//- Facebook SDK
+		div#fb-root
+		script(src='/js/fb-sdk.js')
+
 		div#header
 			h2.title Beacon
 
 			div#fb-container.float-right
-				div#fb-root
-				fb:login-button(show-faces='true', width='200', max-rows='1')
+				img#host-pic(alt='Profile Picture')
+				p#host-name Host Name
+				button#logout.btn.btn-xs Log out
 
 		div#map
 			div#map-canvas
@@ -35,7 +40,6 @@ html
 
 		script(src='/js/client-beacon.js')
 		script(src='/js/beaconKeeper.js')
-		script(type='text/javascript', src='/js/fbLogin.js')
 
 		script(src='https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyD8q1aRi08lwTQg5gFvDJWtpcTkuHgS-zU&sensor=true&libraries=places')
 		

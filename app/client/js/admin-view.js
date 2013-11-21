@@ -21,7 +21,7 @@ function drawBeacon(beacon) {
 			$('#beacon-list').prepend(htmlString);
 			$('#host-'+beacon.host).on('click', function() {
 				console.log('clicked the damn button.');
-				disbandBeacon( beacon.host );
+				disbandBeacon( beacon.host, true );
 			});
 		});
 
@@ -32,7 +32,7 @@ function drawBeacon(beacon) {
 			// console.log(htmlString);
 			$('#beacon-list').prepend(htmlString);
 			$('#host-'+beacon.host).on('click', function() {
-				disbandBeacon( beacon.host );
+				disbandBeacon( beacon.host, false );
 			});
 		});
 

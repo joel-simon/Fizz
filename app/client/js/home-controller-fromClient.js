@@ -18,6 +18,7 @@ $('#myBeacon').on('submit', function(e) {
 		BKeeper.removeBeacon(me.id);
 	}
 	var B = BKeeper.newBeacon(me.id, desc, lat, lng);
+	console.log('SENDING: ', B);
 	socket.emit('newBeacon', {
 		'host':B.host, 
 		'lat':B.lat, 
