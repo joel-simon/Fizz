@@ -89,9 +89,7 @@ input { padding: 0 4px; }
 	}
 
 	#logout {
-		position: absolute;
-		margin-top: -50px;
-		margin-left: -70px;
+		margin-top: 20px;
 	}
 
 
