@@ -43,18 +43,37 @@ BeaconKeeper.prototype.del_guest = function(hostId, guestId, callback) {
 
 // returns null on failure
 BeaconKeeper.prototype.get = function(userId, callback) {
-  // console.log('gert');
-  var store = this.store
-  store.hget('privateBeacons', userId, function(err, bString) {
-    if (err) return callback(err);
-    if (!bString) return callback(null, null)
-    store.smembers('a'+userId, function(err, members){
-      var b = JSON.parse(bString);
-      b.attends = members;
-      callback(err, b);
-    });
+  var store = this.store;
+  store.hexists('publicBeacons', userId, function(err, isIn) {
+    if(err) return callback(err);
+    if (isIn == 1) {
+      g('publicBeacons', userId);
+    } else {
+      store.hexists('privateBeacons', userId, function(err, isIn) {
+        if(err) return callback(err);
+        if (isIn == 1) {
+          g('privateBeacons', userId);
+        } else {
+          callback(null, null);
+        }
+      });
+    }
   });
+
+  function g(hash, id) {
+    store.hget(hash, id, function(err, bString) {
+      if (err) return callback(err);
+      if (!bString) return callback(null, null)
+      store.smembers('a'+userId, function(err, members) {
+        var b = JSON.parse(bString);
+        b.attends = members;
+        callback(err, b);
+      });
+    });
+  }
 }
+
+
 // returns null on failure
 BeaconKeeper.prototype.getVisible = function(friends, userId, callback) {
   var beacons = [];
@@ -69,7 +88,7 @@ BeaconKeeper.prototype.getVisible = function(friends, userId, callback) {
           beacons.push(b);
         if (++responses == friends.length) {
           console.log(beacons);
-          self.getPublic(function(err, pubs) {
+          self.getAllPublic(function(err, pubs) {
             if (err) return callback(err);
             callback(err, beacons.concat(pubs));
           });
@@ -89,8 +108,8 @@ BeaconKeeper.prototype.getAll = function(callback) {
       self = this;
 
   if (!callback) return null;
-  self.getPublic(cont);
-  self.getPrivate(cont);
+  self.getAllPublic(cont);
+  self.getAllPrivate(cont);
 
   function cont(err, newArr) {
     if (err) return callback(err);
@@ -99,7 +118,7 @@ BeaconKeeper.prototype.getAll = function(callback) {
   }
 
 }
-BeaconKeeper.prototype.getPrivate = function(callback) {
+BeaconKeeper.prototype.getAllPrivate = function(callback) {
   var store = this.store;
   if (!callback) return null;
 
@@ -122,7 +141,7 @@ BeaconKeeper.prototype.getPrivate = function(callback) {
     })(i);
   }
 }
-BeaconKeeper.prototype.getPublic = function(callback) {
+BeaconKeeper.prototype.getAllPublic = function(callback) {
   var store = this.store;
   if (!callback) return null;
 
