@@ -6,5 +6,5 @@
 
 
 $('.signup-facebook').on('click', function() {
-	
+	console.log('I clicky the button');
 });

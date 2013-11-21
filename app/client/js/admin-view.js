@@ -58,10 +58,6 @@ function createPublicHtmlString(beacon, callback) {
 	htmlString += '<img class="host-pic" title="'+beacon.host+'" src="/img/party2.png">'+
 		'<div class="attending"><div class="horizon">';
 
-	htmlString += '</div></div></li>';
-	callback(htmlString);
-	return;
-
 	if (beacon.attends.length) {
 		// Loops through the guests and gets and displays their info.
 		beacon.attends.forEach(function(guest, i) {
@@ -94,10 +90,6 @@ function createHtmlString(beacon, callback) {
 			'</button>'+
 			'<p class="details">'+beacon.desc+'</p>';
 
-
-	htmlString += '</div></div></li>';
-	callback(htmlString);
-	return;
 
 	var counter = 0;
 	// Gets and displays the host info.
