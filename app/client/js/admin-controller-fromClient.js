@@ -5,7 +5,8 @@ $(document).ready(function() {
 $('#publicBeacon').on('submit', function(e) {
 	e.preventDefault();
 	var form = this;
-	var desc = (form.title.value) ? form.title.value : 'My Event!';
+	var desc = form.title.value || 'My Event!';
+	var host = form.host.value || 'admin'+Math.floor( Math.random() * 10000000);
 	var lat, lng;
 
 	if (tempMarker) {
@@ -16,8 +17,7 @@ $('#publicBeacon').on('submit', function(e) {
 		lng = currentPosition.lng();
 	}
 	
-	var B = BKeeper.newBeacon('admin'+Math.floor( Math.random() * 10000000), 
-		desc, lat, lng, false, true);
+	var B = BKeeper.newBeacon(host, desc, lat, lng, false, true);
 	socket.emit('newBeacon', {
 		'host':B.host, 
 		'lat':B.lat, 

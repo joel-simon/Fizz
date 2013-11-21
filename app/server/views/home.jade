@@ -17,7 +17,7 @@ html
 			h2.title Beacon
 
 			div#fb-container.float-right
-				img#host-pic(alt='Profile Picture')
+				img#host-pic.float-left(src='', alt='Profile Picture')
 				p#host-name Host Name
 				button#logout.btn.btn-xs Log out
 
@@ -27,7 +27,7 @@ html
 
 		form#myBeacon
 			input(type='text', name='title', placeholder='My Event!')
-			input.input-long(type='text', name='description', placeholder='Write your Event description here.')
+			//- input.input-long(type='text', name='description', placeholder='Write your Event description here.')
 			input.btn.btn-success(type='submit', value='Place Beacon')
 
 		ul#beacon-list

@@ -1,5 +1,5 @@
 // facebook SDK
-var me = {}; // id, isHosting
+var me; // id, isHosting
 
 window.fbAsyncInit = function() {
 	if (window.location.origin.match('localhost')) var id = '182282665307149'
@@ -66,13 +66,16 @@ function login() {
 	FB.api('/me', function(response) {
 		me = response;
 		socket.emit('login', {id: me.id});
+		getFbData(me.id, function(hostPic, hostName) {
+			console.log('host stuff: ', hostPic, hostName);
+			drawUserInfo(hostPic, hostName);
+		});
 	});
 }
 
 
 function getFbData(id, callback) {
 	// console.log(id);
-	console.trace();
 	if (id === 'admin') return null;
 	FB.api('/'+id+'?fields=picture,name', function(response) {
 		// console.log(response, id);
