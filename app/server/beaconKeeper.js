@@ -11,16 +11,9 @@ BeaconKeeper.prototype.insert = function(B, callback) {
   else insertPrivate(B);
 
   function insertPublic (B) {
-    self.store.sadd('publicBeacons', JSON.stringify(B), done);
+    self.store.hset('publicBeacons', B.host, JSON.stringify(B), done);
   }
   function insertPrivate (B) {
-
-    // var beaconData = [B.host, "host", B.host, "lat", B.lat, "lng", B.lng,
-    //  "desc", B.desc, "title", B.title];
-    // self.store.hmset(beaconData, done);
-
-    // var query = ['privateBeacons', "host", B.host, "lat", B.lat, "lng", B.lng,
-    //  "desc", B.desc, "title", B.title];
      self.store.hset('privateBeacons', B.host, JSON.stringify(B),  done);
   }
   function done(err) {
@@ -38,6 +31,7 @@ BeaconKeeper.prototype.remove = function(userId, callback) {
 }
 
 BeaconKeeper.prototype.add_guest = function(hostId, guestId, callback) {
+  console.log(arguments);
   this.store.sadd('a'+hostId, guestId, callback);
 }
 
@@ -55,28 +49,12 @@ BeaconKeeper.prototype.get = function(userId, callback) {
     if (err) return callback(err);
     if (!bString) return callback(null, null)
     store.smembers('a'+userId, function(err, members){
-        var b = JSON.parse(bString);
-        b.attends = members;
-        callback(err, b);
-      });
+      var b = JSON.parse(bString);
+      b.attends = members;
+      callback(err, b);
+    });
   });
-
-  // store.hexists('privateEvents', 'host', function(err, exists) {
-  //   if (err) return callback(err)
-  //   if (!exists) return callback(null, null)
-
-  //   store.hgetall(userId, function(err, b) {
-  //     if(err || !b) return callback(err, null);
-  //     store.smembers('a'+userId, function(err, members){
-
-  //       b.attends = members;
-  //       if(!callback) console.trace();
-  //       callback(err, b);
-  //     });
-  //   });
-  // });
 }
-BeaconKeeper.prototype.getPublic 
 // returns null on failure
 BeaconKeeper.prototype.getVisible = function(friends, userId, callback) {
   var beacons = [];
@@ -89,15 +67,11 @@ BeaconKeeper.prototype.getVisible = function(friends, userId, callback) {
       self.get(friends[i], function(err, b) {
         if (!err && b)
           beacons.push(b);
-        // console.log(responses, friends.length)
         if (++responses == friends.length) {
           console.log(beacons);
-          // callback(err, beacons);
-          self.store.smembers('publicBeacons', function(err, pubs) {
-            // callback(err, beacons);
-
-            callback(err, beacons.concat(pubs.map(JSON.parse)));
-            // console.log(err, beacons.map(JSON.parse));
+          self.getPublic(function(err, pubs) {
+            if (err) return callback(err);
+            callback(err, beacons.concat(pubs));
           });
         }
             
@@ -126,20 +100,50 @@ BeaconKeeper.prototype.getAll = function(callback) {
 
 }
 BeaconKeeper.prototype.getPrivate = function(callback) {
+  var store = this.store;
   if (!callback) return null;
-  var self = this;
-  self.store.hvals('privateBeacons', function(err, privates) {
-    if (err) return callback(err)
-    else callback(null, privates.map(JSON.parse));
+
+  store.hvals('privateBeacons', function(err, privates) {
+    if (err) callback(err)
+    else if (!privates || !privates.length)callback(err, []);
+    else fillAttends(privates);
   });
+
+  function fillAttends(bl) {
+    var arraysRecieved = 0;
+    for (var i = 0; i < bl.length; i++) (function(j) {
+      var B = JSON.parse(bl[j]);
+      store.smembers('a'+B.host, function(err, members) {
+        if (err) return callback(err)
+        B.attends = members;
+        bl[j] = B;
+        if (++arraysRecieved === bl.length) callback(null, bl);
+      });
+    })(i);
+  }
 }
 BeaconKeeper.prototype.getPublic = function(callback) {
+  var store = this.store;
   if (!callback) return null;
-  var self = this;
-  self.store.smembers('publicBeacons', function(err, privates) {
-    if (err) return callback(err)
-    else callback(null, privates.map(JSON.parse));
+
+  store.hvals('publicBeacons', function(err, publics) {
+    if (err) callback(err)
+    else if (!publics || !publics.length)callback(err, []);
+    else fillAttends(publics);
   });
+
+  function fillAttends(bl) {
+    var arraysRecieved = 0;
+    for (var i = 0; i < bl.length; i++) (function(j) {
+      var B = JSON.parse(bl[j]);
+      store.smembers('a'+B.host, function(err, members) {
+        if (err) return callback(err)
+        B.attends = members;
+        bl[j] = B;
+        if (++arraysRecieved === bl.length) callback(null, bl);
+      });
+    })(i);
+  }
 }
 
 BeaconKeeper.prototype.clearPublic = function() {
