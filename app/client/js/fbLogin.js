@@ -19,6 +19,7 @@ window.fbAsyncInit = function() {
 	FB.Event.subscribe('auth.authResponseChange', function(response) {
 		// Here we specify what we do with the response anytime this event occurs. 
 		if (response.status === 'connected') {
+			console.log(response);
 			// The response object is returned with a status field that lets the app know the current
 			// login status of the person. In this case, we're handling the situation where they 
 			// have logged in to the app.
@@ -69,7 +70,7 @@ function login() {
 
 function getFbData(id, callback) {
 	// console.log(id);
-	console.trace();
+	// console.trace();
 	if (id === 'admin') return null;
 	FB.api('/'+id+'?fields=picture,name', function(response) {
 		// console.log(response, id);

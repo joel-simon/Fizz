@@ -32,6 +32,7 @@ BeaconKeeper.prototype.insert = function(B, callback) {
 
 BeaconKeeper.prototype.remove = function(userId, callback) {
   this.store.hdel('privateBeacons', ''+userId, function(){});
+  this.store.hdel('publicBeacons', ''+userId, function(){});
   // this.store.del(userId, function(){});
   this.store.del('a'+userId, callback);
 }
@@ -88,7 +89,7 @@ BeaconKeeper.prototype.getVisible = function(friends, userId, callback) {
       self.get(friends[i], function(err, b) {
         if (!err && b)
           beacons.push(b);
-        console.log(responses, friends.length)
+        // console.log(responses, friends.length)
         if (++responses == friends.length) {
           console.log(beacons);
           // callback(err, beacons);
@@ -119,9 +120,7 @@ BeaconKeeper.prototype.getAll = function(callback) {
 
   function cont(err, newArr) {
     if (err) return callback(err);
-    
     arr = arr.concat(newArr);
-    // console.log(arr);
     if (++recieved === total) callback(null, arr);
   }
 

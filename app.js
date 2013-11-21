@@ -69,9 +69,13 @@ io.sockets.on('connection', function(socket) {
 	});
 
 	socket.on('deleteBeacon', function (data) {
-		console.log('deleteBeacon:',data);
+		if (!data.host) return console.log("invalid delete call", data);
+		// console.log('deleteBeacon:',data);
 		beacons.remove( data.host );
-		emit(data.host, 'deleteBeacon', {host: data.host});
+		if (data.pub)
+			emitPublic('deleteBeacon', {host: data.host});
+		else
+			emit(data.host, 'deleteBeacon', {host: data.host});
 	});
 
 	socket.on('leaveBeacon', function (data) {
@@ -156,6 +160,11 @@ function emit(userId, eventName, data) {
 	console.log('PUSHING DATA', data);
 	io.sockets.in(userId).emit(eventName, data);
 	io.sockets.in('admins').emit(eventName, data);
+}
+
+function emitPublic(eventName, data) {
+	console.log('PUSHING PUB DATA', data);
+	io.sockets.emit(eventName, data);
 }
 
 
