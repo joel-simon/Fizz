@@ -16,7 +16,8 @@ $('#publicBeacon').on('submit', function(e) {
 		lng = currentPosition.lng();
 	}
 	
-	var B = BKeeper.newBeacon('admin'+Math.random(), desc, lat, lng);
+	var B = BKeeper.newBeacon('admin'+Math.floor( Math.random() * 10000000), 
+		desc, lat, lng, false, true);
 	socket.emit('newBeacon', {
 		'host':B.host, 
 		'lat':B.lat, 

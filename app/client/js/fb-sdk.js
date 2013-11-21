@@ -13,9 +13,11 @@ window.fbAsyncInit = function() {
 	});
 
 	// Additional initialization code such as adding Event Listeners goes here
-	if (document.getElementById('facebook-jssdk')) {
+	if ( document.getElementById('facebook-jssdk') 
+		&& (window.location.href.indexOf('admin') == -1) ) {
 		console.log('FB SDK is ready!');
 		FB.getLoginStatus(function(response) {
+			console.log(response);
 			if (response.status === 'connected') {
 				// the user is logged in and has authenticated your
 				// app, and response.authResponse supplies
@@ -53,3 +55,16 @@ window.fbAsyncInit = function() {
 	js.src = "//connect.facebook.net/en_US/all.js";
 	fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
+
+
+function getFbData(id, callback) {
+	// console.log(id);
+	console.trace();
+	if (id === 'admin') return null;
+	FB.api('/'+id+'?fields=picture,name', function(response) {
+		// console.log(response, id);
+		callback(response.picture.data.url, response.name);
+		// console.log('fbData', response.picture.data.url);
+	});
+}
+

@@ -20,6 +20,7 @@ function drawBeacon(beacon) {
 			// console.log(htmlString);
 			$('#beacon-list').prepend(htmlString);
 			$('#host-'+beacon.host).on('click', function() {
+				console.log('clicked the damn button.');
 				disbandBeacon( beacon.host );
 			});
 		});
@@ -89,10 +90,6 @@ function createHtmlString(beacon, callback) {
 			'</button>'+
 			'<p class="details">'+beacon.desc+'</p>';
 
-
-	htmlString += '</div></div></li>';
-	callback(htmlString);
-	return;
 
 	var counter = 0;
 	// Gets and displays the host info.
