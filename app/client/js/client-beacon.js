@@ -23,7 +23,6 @@ Beacon.prototype.addGuest = function(guest) {
 Beacon.prototype.hasGuest = function(guest) {
 	for (var i = 0; i < this.attends.length; i++) {
 		if (this.attends[i] == guest) return true;
-		else if (i == this.attends.length - 1) return false;
 	}
 }
 

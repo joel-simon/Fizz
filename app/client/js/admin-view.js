@@ -4,6 +4,7 @@
 */
 ////////////////////////////////////////////////////////////////////////////////
 
+
 // Draws all necessary viewable parts of the given beacon.
 function drawBeacon(beacon) {
 	// console.log('Drawing:', beacon);
@@ -157,5 +158,20 @@ function writeBeaconEvent(beacon) {
 	});
 
 }
+
+
+$('#removePublic').on('click', function() {
+
+});
+
+
+$('#removeAll').on('click', function() {
+	for (var beacon in BKeeper.table) {
+		
+	}
+});
+
+
+
 
 
