@@ -1,7 +1,6 @@
 var SERVER = window.location.origin;
 var socket = io.connect(SERVER);
 var BKeeper = new BeaconKeeper();
-var me; // id, isHosting
 
 
 socket.on('getFriends', function(data) {
@@ -17,7 +16,7 @@ socket.on('getFriends', function(data) {
 
 socket.on('newBeacon', function(data) {
 	var beacon = data.beacon;
-	console.log(beacon, BKeeper.table[beacon.host]);
+	console.log('RECEIVING: ', beacon, BKeeper.table[beacon.host]);
 	if (BKeeper.table[beacon.host]) BKeeper.removeBeacon(beacon.host);
 	BKeeper.renewBeacon(beacon.host, beacon.desc, beacon.lat, beacon.lng, beacon.attends, beacon.pub);
 });

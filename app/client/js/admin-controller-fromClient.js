@@ -31,6 +31,6 @@ $('#publicBeacon').on('submit', function(e) {
 });
 
 
-function disbandBeacon(host) {
-	socket.emit('deleteBeacon', {'host':host});
+function disbandBeacon(host, pub) {
+	socket.emit('deleteBeacon', {'host':host, 'pub':pub});
 }

@@ -1,4 +1,5 @@
 // facebook SDK
+var me = {}; // id, isHosting
 
 window.fbAsyncInit = function() {
 	if (window.location.origin.match('localhost')) var id = '182282665307149'
@@ -26,8 +27,11 @@ window.fbAsyncInit = function() {
 				// and signed request each expire
 				var uid = response.authResponse.userID;
 				var accessToken = response.authResponse.accessToken;
+				login();
 
-				window.location+='home/';
+				if (window.location.href.indexOf('home') == -1) {
+					window.location+='home/';
+				}
 
 				// console.log('i is logged in');
 				// FB.api('/'+uid+'?fields=picture,name', function(response) {
@@ -55,6 +59,15 @@ window.fbAsyncInit = function() {
 	js.src = "//connect.facebook.net/en_US/all.js";
 	fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
+
+
+function login() {
+	console.log('Welcome! Fetching your data...');
+	FB.api('/me', function(response) {
+		me = response;
+		socket.emit('login', {id: me.id});
+	});
+}
 
 
 function getFbData(id, callback) {
