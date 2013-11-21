@@ -21,9 +21,15 @@ Beacon.prototype.addGuest = function(guest) {
 }
 
 Beacon.prototype.hasGuest = function(guest) {
+	// console.log('checking if you are a guest...', this.attends, typeof guest, me.id);
 	for (var i = 0; i < this.attends.length; i++) {
-		if (this.attends[i] == guest) return true;
+		if (this.attends[i] == guest) {
+			// console.log('you are a guest!');
+			return true;
+		}
 	}
+	// console.log('you are not a guest!');
+	return false;
 }
 
 // Removes a guest from the attends list of this beacon.

@@ -166,9 +166,8 @@ $('#removePublic').on('click', function() {
 
 
 $('#removeAll').on('click', function() {
-	for (var beacon in BKeeper.table) {
-		
-	}
+	// for (var beacon in BKeeper.table) {	
+	// }
 });
 
 
