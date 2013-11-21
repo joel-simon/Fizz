@@ -4,6 +4,13 @@
 */
 ////////////////////////////////////////////////////////////////////////////////
 
+// Place FB pic and name
+function drawUserInfo(hostPic, hostName) {
+	$('#host-pic').attr('src', hostPic);
+	$('#host-name').html(hostName);
+}
+
+
 // Draws all necessary viewable parts of the given beacon.
 function drawBeacon(beacon) {
 	console.log('Drawing:', beacon);

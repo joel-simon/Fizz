@@ -1,4 +1,11 @@
 
+$('#logout').on('click', function() {
+	FB.logout(function(response) {
+		var address = window.location.href;
+		window.location = address.substr(0, address.indexOf('home'));
+	});
+});
+
 
 $('#myBeacon').on('submit', function(e) {
 	e.preventDefault();
