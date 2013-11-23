@@ -2,180 +2,68 @@
 * Beacon
 * beaconBeta.com
 */
-var http = require('http')
-		connect = require('connect')
-		express = require('express')
-		app = express()
-		port = process.env.PORT || 9001
-		server = app.listen(port)
-		io = require('socket.io').listen(server)
-		db = require('./app/server/database.js')
-		redis = require('redis')
-		Beacon = require('./app/server/server-beacon.js'),
-		BeaconKeeper = require('./app/server/beaconKeeper.js');
+var http    = require('http'),
+    connect = require('connect'),
+    express = require('express'),
+    app     = express(),
+    port    = process.env.PORT || 9001,
+    server  = app.listen(port),
+    io      = require('socket.io').listen(server)
+    db      = require('./app/server/database.js'),
+    redis   = require('redis'),
+    Beacon  = require('./app/server/server-beacon.js'),
+    keeper  = require('./app/server/beaconKeeper.js'),
+    handler = require('./app/server/socketHandler.js'),
+    url = process.env.REDISTOGO_URL;
 
-var url = process.env.REDISTOGO_URL;//'redis://redistogo:7771d0cc39827f1664b16523d1b92768@crestfish.redistogo.com:10325/';
-console.log('HAVE REDIS URL:', !!url);
-
+// create pub/sub channels for sockets using redis. 
 var rtg  = require("url").parse(url);
+console.log(rtg.port, rtg.hostname);
 var pub = redis.createClient(rtg.port, rtg.hostname);
 var sub = redis.createClient(rtg.port, rtg.hostname);
 var store = redis.createClient(rtg.port, rtg.hostname);
 pub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 sub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 store.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
+
+// object to manage beacons. 
+var beacons = new keeper(store);
+
+// Configure socketio.
 io.configure( function(){
-	io.enable('browser client minification');  // send minified client
-	io.enable('browser client etag');          // apply etag caching logic based on version number
-	io.enable('browser client gzip');          // gzip the file
-	io.set('log level', 1);                    // reduce logging
-	var RedisStore = require('socket.io/lib/stores/redis');
-	io.set('store', new RedisStore({redis: redis, redisPub:pub, redisSub:sub, redisClient:store}));
-});
-var beacons = new BeaconKeeper(store);
-// beacons.clearPublic();
-console.log('Starting Beacon Server on ', port);
-
-app.configure(function(){
-	app.set('views', __dirname + '/app/server/views');
-	app.set('view engine', 'jade');
-	app.locals.pretty = true;
-
-	app.use(express.bodyParser());
-	app.use(express.methodOverride());
-
-	app.use(require('stylus').middleware({ src: __dirname + '/app/client' }));
-	app.use(express.static(__dirname + '/app/client'));
+  io.enable('browser client minification');  // send minified client
+  io.enable('browser client etag');          // apply etag caching logic based on version number
+  io.enable('browser client gzip');          // gzip the file
+  io.set('log level', 1);                    // reduce logging
+  var RedisStore = require('socket.io/lib/stores/redis');
+  io.set('store', new RedisStore({redis: redis, redisPub:pub, redisSub:sub, redisClient:store}));
+  io.set('log level', 1);
 });
 
-app.configure('development', function(){
-	app.use(express.errorHandler());
+// Configure express app.
+app.configure('development',function(){
+  app.set('views', __dirname + '/app/server/views');
+  app.set('view engine', 'jade');
+  app.locals.pretty = true;
+  app.use(express.bodyParser());
+  app.use(express.methodOverride());
+  app.use(require('stylus').middleware({ src: __dirname + '/app/client' }));
+  app.use(express.static(__dirname + '/app/client'));
+  app.use(express.errorHandler());
 });
 
-require('./app/server/router')(app);
-io.set('log level', 1);
-
+// Bind socket handlers. 
 io.sockets.on('connection', function(socket) {
-
-	socket.on('login', function (data) {
-		console.log(data.admin);
-		if (data.id) login(data.id, socket);
-		else if (data.admin) adminLogin(data.admin, socket);
-	});
-
-	socket.on('joinBeacon', function (data) {
-		joinBeacon(data);
-	});
-
-	socket.on('deleteBeacon', function (data) {
-		if (!data.host) return console.log("invalid delete call", data);
-		// console.log('deleteBeacon:',data);
-		beacons.remove( data.host );
-		if (data.pub)
-			emitPublic('deleteBeacon', {host: data.host});
-		else
-			emit(data.host, 'deleteBeacon', {host: data.host});
-	});
-
-	socket.on('leaveBeacon', function (data) {
-		var host = data.host,
-				guest = data.guest;
-		beacons.del_guest( host, guest, function() {
-			beacons.get(host, function(err, b){
-				emit(data.host, 'newBeacon', {'beacon': b});
-			});
-		});
-	});
-
-	socket.on('newBeacon', function (B) {
-		beacons.insert(B); 
-		if (B.pub)
-			io.sockets.emit('newBeacon', {"beacon" : B});
-		else
-			emit(B.host, 'newBeacon', {"beacon" : B});
-	});
+  socket.on('login', function(data){ handler.login(data,socket, beacons) });
+  socket.on('joinBeacon', function(data){ handler.joinBeacon(data,socket, beacons) });
+  socket.on('deleteBeacon', function(data){ handler.deleteBeacon(data,socket, beacons) });
+  socket.on('leaveBeacon', function(data){ handler.leaveBeacon(data,socket, beacons) });
+  socket.on('newBeacon', function(data){ handler.newBeacon(data,socket, beacons) });
 });
 
+// Get all routes. 
+require('./app/server/router')(app);
 
-function login (id, socket) {
-	console.log(id, "has logged in!");
-	db.getFriends(id, function(err, friends) {
-		if (err) console.log(err);
-		else if (!friends) newUser(id, socket);
-		else existingUser(id, friends, socket);
-	});
-}
-
-function adminLogin (pass, socket) {
-	console.log("Admin has logged in!");
-	socket.join('admins');
-	beacons.getAll(function(err, allBeacons){
-		if (err) return console.log('ERROR:', err);
-		console.log('all beacons', allBeacons);
-		socket.emit('newBeacons', allBeacons);
-	});	
-	
-}
-function newUser (id, socket) {
-	console.log('New user registration', id);
-	socket.emit('getFriends', {});
-	socket.on('friendsList', function (friends) {
-		db.addPlayer (id, friends);
-		existingUser(id, friends, socket);
-	});
-}
-
-function existingUser(id, friends, socket) {
-	console.log('existing user', id, 'has', friends.length,'friends');
-	beacons.getVisible(friends, id, function(err, allBeacons) {
-		if (err) {
-			console.log('getVisible Err:', err);
-		} else {
-			console.log('all beacons', allBeacons);
-			socket.emit('newBeacons', allBeacons);
-			joinRooms(socket, friends, id);
-		}
-		
-	});	
-}
-
-function joinBeacon(data) {
-	console.log(data);
-	var host = data.host;
-	var userId = data.userId;
-	if ( host == userId ) return;
-	// adds guest to global beacon keeper. 
-	beacons.add_guest( host, userId, function(err){
-		beacons.get(host, function(err, b){
-			if (err) return console.log(err);
-			if (b.pub) {
-				emitPublic('newBeacon', {'beacon': b});  
-			} else {
-				emit(host, 'newBeacon', {'beacon': b});  
-			}
-		});
-	}); 
-}
-
-function joinRooms(socket, friends, id) {
-	friends.forEach(function(friend){
-		socket.join(friend);
-	});
-	socket.join(id);
-}
-	
-
-
-function emit(userId, eventName, data) {
-	console.log('PUSHING DATA', data);
-	io.sockets.in(userId).emit(eventName, data);
-	io.sockets.in('admins').emit(eventName, data);
-}
-
-function emitPublic(eventName, data) {
-	console.log('PUSHING PUB DATA', data);
-	io.sockets.emit(eventName, data);
-}
 
 
 
