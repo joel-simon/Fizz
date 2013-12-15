@@ -65,12 +65,16 @@ function login() {
 	console.log('Welcome! Fetching your data...');
 	FB.api('/me', function(response) {
 		me = response;
-		socket.emit('login', {id: me.id});
+		getFriends(function(friends){
+			socket.emit('login', {'id': me.id, 'friends': friends});
+		});
+		
 		getFbData(me.id, function(hostPic, hostName) {
 			console.log('host stuff: ', hostPic, hostName);
 			drawUserInfo(hostPic, hostName);
 		});
 	});
+
 }
 
 
@@ -78,9 +82,20 @@ function getFbData(id, callback) {
 	// console.log(id);
 	if (id === 'admin') return null;
 	FB.api('/'+id+'?fields=picture,name', function(response) {
-		// console.log(response, id);
+		console.log(response);
 		callback(response.picture.data.url, response.name);
 		// console.log('fbData', response.picture.data.url);
+	});
+}
+
+
+function getFriends(callback) {
+	FB.api('/me/friends', function(response) {
+		var friends = [];
+		response.data.forEach(function(elem, i) {
+			friends.push(elem.id);
+		});
+		callback(friends)
 	});
 }
 

@@ -1,3 +1,11 @@
+var io, beacons;
+
+
+module.exports.set = function(sio){
+  io = sio;
+
+  return module.exports;
+}
 
 /**
  * Handle login socket
@@ -7,14 +15,17 @@
  */
 module.exports.login = function(data, socket, beacons) {
   var id = data.id || null,
-      admin = data.admin || null;
+      admin = data.admin || null,
+      friends = data.friends || null;
   if (id) {
     console.log(id, "has logged in.");
-    db.getFriends(id, function(err, friends) {
-      if (err) console.log(err);
-      else if (!friends) newUser(id, socket, beacons);
-      else existingUser(id, friends, socket, beacons);
-    });
+    existingUser(id, friends, socket, beacons);
+
+    // db.getFriends(id, function(err, friends) {
+    //   if (err) console.log(err);
+    //   else if (!friends) newUser(id, socket, beacons);
+    //   else existingUser(id, friends, socket, beacons);
+    // });
   } else if (admin) {
     console.log("Admin has logged in!");
     socket.join('admins');
@@ -31,7 +42,7 @@ module.exports.login = function(data, socket, beacons) {
  * @param {Object} Data - contains .id and .admin
  * @param {Object} Beacons - object for managing all beacons
  */
-module.exports.joinBeacon = function(data, beacons) {
+module.exports.joinBeacon = function(data, socket, beacons) {
   console.log(data);
   var host = data.host;
   var userId = data.userId;
@@ -56,8 +67,9 @@ module.exports.joinBeacon = function(data, beacons) {
  * @param {Object} Beacons - object for managing all beacons
  */
 module.exports.deleteBeacon = function(data, socket, beacons) {
-  var host = data.host.
-      pub = data.pub;
+  var host = data.host;
+  var pub = data.pub;
+
   if (!host) return console.log("invalid delete call", data);
   beacons.remove( host );
   if (pub) emitPublic('deleteBeacon', {host: host});
@@ -111,7 +123,7 @@ function newUser (id, socket, beacons) {
 /**
  * Handle and existing user logging in. 
  * @param {Number} id - the users id
- * @param {Int Array} - the users friends
+ * @param {Array} - the users friends as an int array of their id's
  * @param {Object} Socket - contains user user socket
  * @param {Object} Beacons - object for managing all beacons
  */

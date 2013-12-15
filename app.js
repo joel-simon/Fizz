@@ -13,10 +13,10 @@ var http    = require('http'),
     redis   = require('redis'),
     Beacon  = require('./app/server/server-beacon.js'),
     keeper  = require('./app/server/beaconKeeper.js'),
-    handler = require('./app/server/socketHandler.js'),
+    handler = require('./app/server/socketHandler.js').set(io),
     url = process.env.REDISTOGO_URL;
 
-// create pub/sub channels for sockets using redis. 
+// Create pub/sub channels for sockets using redis. 
 var rtg  = require("url").parse(url);
 console.log(rtg.port, rtg.hostname);
 var pub = redis.createClient(rtg.port, rtg.hostname);
@@ -26,7 +26,7 @@ pub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 sub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 store.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 
-// object to manage beacons. 
+// Object to manage beacons. 
 var beacons = new keeper(store);
 
 // Configure socketio.
@@ -54,14 +54,14 @@ app.configure('development',function(){
 
 // Bind socket handlers. 
 io.sockets.on('connection', function(socket) {
-  socket.on('login', function(data){ handler.login(data,socket, beacons) });
-  socket.on('joinBeacon', function(data){ handler.joinBeacon(data,socket, beacons) });
-  socket.on('deleteBeacon', function(data){ handler.deleteBeacon(data,socket, beacons) });
-  socket.on('leaveBeacon', function(data){ handler.leaveBeacon(data,socket, beacons) });
-  socket.on('newBeacon', function(data){ handler.newBeacon(data,socket, beacons) });
+  socket.on('login',        function(data){ handler.login       (data, socket, beacons) });
+  socket.on('joinBeacon',   function(data){ handler.joinBeacon  (data, socket, beacons) });
+  socket.on('deleteBeacon', function(data){ handler.deleteBeacon(data, socket, beacons) });
+  socket.on('leaveBeacon',  function(data){ handler.leaveBeacon (data, socket, beacons) });
+  socket.on('newBeacon',    function(data){ handler.newBeacon   (data, socket, beacons) });
 });
 
-// Get all routes. 
+// Route all routes. 
 require('./app/server/router')(app);
 
 

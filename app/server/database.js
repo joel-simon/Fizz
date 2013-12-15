@@ -39,6 +39,10 @@ function newBeacon(B, callback) {
 	}
 }
 
+function storeBeacon() {
+	return;	
+}
+
 module.exports.newBeacon = newBeacon;
 module.exports.addPlayer = addPlayer;
 module.exports.getFriends = getFriends;
