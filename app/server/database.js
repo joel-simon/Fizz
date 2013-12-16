@@ -1,9 +1,10 @@
 // Abstraction for all database interactions.
 
-var mongojs = require('mongojs');
+var mongojs = require('mongojs'),
+		pwds    = require('./../../pwds.json');
 
-var connString = process.env.MONGOHQ_UR;//'beacon:derptopia@paulo.mongohq.com:10096/app18950623';//
-// console.log('MONGO URL:',connString);
+
+var connString = pwds.MONGOHQ_UR;
 var db = mongojs(connString, ['users', 'beacons']);
 
 /*

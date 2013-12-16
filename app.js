@@ -14,11 +14,14 @@ var http    = require('http'),
     Beacon  = require('./app/server/server-beacon.js'),
     keeper  = require('./app/server/beaconKeeper.js'),
     handler = require('./app/server/socketHandler.js').set(io),
-    url = process.env.REDISTOGO_URL;
+    pwds    = require('./pwds.json'),
+    colors  = require('colors'),
+    url = pwds.REDISTOGO_URL;
+
+// console.log(pwds);
 
 // Create pub/sub channels for sockets using redis. 
 var rtg  = require("url").parse(url);
-console.log(rtg.port, rtg.hostname);
 var pub = redis.createClient(rtg.port, rtg.hostname);
 var sub = redis.createClient(rtg.port, rtg.hostname);
 var store = redis.createClient(rtg.port, rtg.hostname);
@@ -37,7 +40,6 @@ io.configure( function(){
   io.set('log level', 1);                    // reduce logging
   var RedisStore = require('socket.io/lib/stores/redis');
   io.set('store', new RedisStore({redis: redis, redisPub:pub, redisSub:sub, redisClient:store}));
-  io.set('log level', 1);
 });
 
 // Configure express app.
@@ -64,6 +66,21 @@ io.sockets.on('connection', function(socket) {
 // Route all routes. 
 require('./app/server/router')(app);
 
+colors.setTheme({
+  info: 'rainbow',
+  debug: 'blue',
+  error: 'red'
+});
+
+var domo = '╲╲╭━━━━╮╲╲\n'+
+'╭╮┃▆┈┈▆┃╭╮\n'+
+'┃╰┫▽▽▽▽┣╯┃\n'+
+'╰━┫△△△△┣━╯\n'+
+'╲╲┃┈┈┈┈┃╲╲\n'+
+'╲╲┃┈┏┓┈┃╲╲\n'+
+'▔▔╰━╯╰━╯▔▔'
+console.log(domo);
+console.log('Beacon running on port:'.info, (''+port).bold);
 
 
 
