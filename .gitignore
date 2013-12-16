@@ -1,3 +1,4 @@
 *.tar
+pwds.json
 *.log
 *.DS_Store
