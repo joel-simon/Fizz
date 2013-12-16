@@ -4,7 +4,7 @@ from fabric.contrib.console import confirm
 
 env.hosts = ['204.236.234.28']
 env.user = 'ec2-user'
-env.key_filename = '/Users/joelsimon/Dropbox/colludo/transistor.pem'
+env.key_filename = '/home/ec2-user/transistor.pem'
 
 beacon_dir = '/var/www/html/Beacon'
 
@@ -18,7 +18,8 @@ def local_uname():
 def remote_uname():
     run('uname -a')
 
-def foo():
+def deploy():
 	with cd(beacon_dir):
-		run("git pull")
+		remote("git pull")
+		remote("forever restartall")
 		# run('touch %sfoo.txt' % beacon_dir)
