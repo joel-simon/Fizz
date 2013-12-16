@@ -62,7 +62,7 @@ window.fbAsyncInit = function() {
 
 
 function login() {
-	console.log('Welcome! Fetching your data...');
+	console.log('Welcome!! Fetching your data...');
 	FB.api('/me', function(response) {
 		me = response;
 		getFriends(function(friends){
