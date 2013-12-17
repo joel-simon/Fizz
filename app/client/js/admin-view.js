@@ -121,6 +121,8 @@ function createHtmlString(beacon, callback) {
 
 // Removes all visible traces of the beacon!
 function eraseBeacon(beacon) {
+	console.trace();
+	console.log(beacon);
 	// Remove the beacon marker from the google map.
 	if (beacon.marker) removeMarker(beacon.marker);
 

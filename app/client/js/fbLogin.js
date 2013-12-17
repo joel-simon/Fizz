@@ -1,5 +1,11 @@
-'use strict'; // PRO JS MODE HARDCORE-ish
+///////////////////////////////////////////////////////////////////////////////
+/*
+	[Depricated - see fb-sdk.js] Facebook Login SDK - contains old code that 
+		connects the Beacon website to the Beacon App on Facebook.
+*/
+////////////////////////////////////////////////////////////////////////////////
 
+'use strict'; // PRO JS MODE HARDCORE-ish from Joel Simon
 
 window.fbAsyncInit = function() {
 	if (window.location.origin.match('localhost')) var id = '182282665307149'
