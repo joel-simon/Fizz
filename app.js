@@ -16,9 +16,8 @@ var http    = require('http'),
     handler = require('./app/server/socketHandler.js').set(io),
     pwds    = require('./pwds.json'),
     colors  = require('colors'),
-    url = pwds.REDISTOGO_URL;
+    url     = pwds.REDISTOGO_URL;
 
-// console.log(pwds);
 
 // Create pub/sub channels for sockets using redis. 
 var rtg  = require("url").parse(url);
@@ -73,15 +72,7 @@ colors.setTheme({
 });
 
 var domo =  ''+
-"################################################################################\n"+
-" . _  .    .__  .  .  __,-- \n "+
-"         ' /__\\ __,-- \n "+
-"  .  ' . '|  o |    \n "+
-"          [IIII]`--._ \n"+
-"           |  |       `--._ \n"+
-"           | :|             `--._ \n"+
-"           |  |                   `--._ \n"+
-"._,,.-,.__.'__`.___.,.,.-..,_.,.,.,-._..`--..-.,._.,,._,-,..,._..,.,_,,\n"+
+"#####################################\n"+
 'DOMOS HOSTS THE BEACON INTO THE CLOUD \n'+
 '╲╲╭━━━━╮╲╲╲╲╭━━━━╮╲╲╲╲╭━━━━╮╲╲\n'+
 '╭╮┃▆┈┈▆┃╭╮╭╮┃▆┈┈▆┃╭╮╭╮┃▆┈┈▆┃╭╮\n'+
@@ -92,8 +83,6 @@ var domo =  ''+
 '▔▔╰━╯╰━╯▔▔▔▔╰━╯╰━╯▔▔▔▔╰━╯╰━╯▔▔'
 
 console.log(domo.info);
+console.log("#####################################".info);
 console.log('Port:', (''+port).bold);
-console.log("################################################################################".info);
-
-
 

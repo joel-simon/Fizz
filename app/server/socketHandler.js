@@ -1,9 +1,11 @@
 var io, beacons;
+var utils = require('./utilities.js');
+var logError = utils.logError;
+var log = utils.log;
+var debug = utils.debug;
 
-
-module.exports.set = function(sio){
+module.exports.set = function(sio) {
   io = sio;
-
   return module.exports;
 }
 
@@ -18,19 +20,14 @@ module.exports.login = function(data, socket, beacons) {
       admin = data.admin || null,
       friends = data.friends || null;
   if (id) {
-    console.log(id, "has logged in.");
+    log(id, "has logged in.");
     existingUser(id, friends, socket, beacons);
 
-    // db.getFriends(id, function(err, friends) {
-    //   if (err) console.log(err);
-    //   else if (!friends) newUser(id, socket, beacons);
-    //   else existingUser(id, friends, socket, beacons);
-    // });
   } else if (admin) {
-    console.log("Admin has logged in!");
+    log("Admin has logged in!");
     socket.join('admins');
     beacons.getAll(function(err, allBeacons){
-      if (err) return console.log('ERROR:', err);
+      if (err) return logError(err);
       console.log('all beacons', allBeacons);
       socket.emit('newBeacons', allBeacons);
     }); 
@@ -43,17 +40,17 @@ module.exports.login = function(data, socket, beacons) {
  * @param {Object} Beacons - object for managing all beacons
  */
 module.exports.joinBeacon = function(data, socket, beacons) {
-  console.log(data);
   var host = data.host;
   var userId = data.userId;
   if ( host == userId ) return;
   // adds guest to global beacon keeper. 
   beacons.add_guest( host, userId, function(err){
     beacons.get(host, function(err, b){
-      if (err) return console.log(err);
+      if (err) return error(err);
       if (b.pub) {
         emitPublic('newBeacon', {'beacon': b});  
       } else {
+        log(userId,'joined', host);
         emit(host, 'newBeacon', {'beacon': b});  
       }
     });
@@ -70,10 +67,11 @@ module.exports.deleteBeacon = function(data, socket, beacons) {
   var host = data.host;
   var pub = data.pub;
 
-  if (!host) return console.log("invalid delete call", data);
+  if (!host) return logError("invalid delete call", data);
   beacons.remove( host );
   if (pub) emitPublic('deleteBeacon', {host: host});
   else emit(host, 'deleteBeacon', {host: host});
+  log('Deleted beacon', host);
 }
 
 /**
@@ -88,6 +86,7 @@ module.exports.leaveBeacon = function(data, socket, beacons) {
   beacons.del_guest( host, guest, function() {
     beacons.get(host, function(err, b){
       emit(data.host, 'newBeacon', {'beacon': b});
+      log(guest,'left', host);
     });
   });
 }
@@ -99,9 +98,15 @@ module.exports.leaveBeacon = function(data, socket, beacons) {
  * @param {Object} Beacons - object for managing all beacons
  */
 module.exports.newBeacon = function (B, socket, beacons) {
-  beacons.insert(B); 
-  if (B.pub) io.sockets.emit('newBeacon', {"beacon" : B});
-  else emit(B.host, 'newBeacon', {"beacon" : B});
+  beacons.insert(B, function(err){
+    if (err) logError(err, B);
+    else {
+      if (B.pub) io.sockets.emit('newBeacon', {"beacon" : B});
+      else emit(B.host, 'newBeacon', {"beacon" : B});
+      log('New beacon by', B.host);
+    }
+    
+  }); 
 }
 
 /**
@@ -128,10 +133,10 @@ function newUser (id, socket, beacons) {
  * @param {Object} Beacons - object for managing all beacons
  */
 function existingUser(id, friends, socket, beacons) {
-  console.log('existing user', id, 'has', friends.length,'friends');
+  // console.log('existing user', id, 'has', friends.length,'friends');
   beacons.getVisible(friends, id, function(err, allBeacons) {
     if (err) {
-      console.log('getVisible Err:', err);
+      logError('getVisible Err:', err);
     } else {
       // console.log('all beacons', allBeacons);
       socket.emit('newBeacons', allBeacons);
@@ -150,7 +155,7 @@ function existingUser(id, friends, socket, beacons) {
  * @param {Object} Data
  */
 function emit(userId, eventName, data) {
-  console.log('PUSHING DATA', data);
+  debug('PUSHING DATA', data);
   io.sockets.in(userId).emit(eventName, data);
   io.sockets.in('admins').emit(eventName, data);
 }
@@ -161,6 +166,6 @@ function emit(userId, eventName, data) {
  * @param {Object} Data
  */
 function emitPublic(eventName, data) {
-  console.log('PUSHING PUB DATA', data);
+  debug('PUSHING PUB DATA', data);
   io.sockets.emit(eventName, data);
 }
