@@ -1,6 +1,17 @@
-// facebook SDK
-var me; // id, isHosting
+////////////////////////////////////////////////////////////////////////////////
+/*
+	Facebook SDK - contains all the code responsible for connecting the app to
+		Facebook when logging in and checking information. In future, this will
+		also contain code for posting Beacons to Facebook as well as other 
+		features.
+*/
+////////////////////////////////////////////////////////////////////////////////
 
+var me; // the Facebook ID of the User of this instance of the Beacon website.
+
+/**
+ * Connects the Beacon website to the Beacon App on Facebook.
+ */
 window.fbAsyncInit = function() {
 	if (window.location.origin.match('localhost')) var id = '182282665307149'
 	else var id = '451762954934201'
@@ -51,7 +62,9 @@ window.fbAsyncInit = function() {
 	}
 };
 
-// Load the SDK asynchronously
+/** 
+ * Loads the Facebook SDK asynchronously once the HTML document is ready.
+ */
 (function(d, s, id) {
 	var js, fjs = d.getElementsByTagName(s)[0];
 	if (d.getElementById(id)) {return;}
@@ -60,7 +73,10 @@ window.fbAsyncInit = function() {
 	fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
 
-
+/**
+ * Fetches the User's Facebook ID upon logging into Beacon, and displays the
+ * User's info on the website.
+ */
 function login() {
 	console.log('Welcome!!! Fetching your data...');
 	FB.api('/me', function(response) {
@@ -77,7 +93,12 @@ function login() {
 
 }
 
-
+/**
+ * Returns the Facebook picture and name of a particular Beacon User.
+ * @param {string} id - The ID of the User that's information is being requested.
+ * @param {function} callback - Expects the Facebook picture url and name string
+ *     to be passed in.
+ */
 function getFbData(id, callback) {
 	// console.log(id);
 	if (id === 'admin') return null;

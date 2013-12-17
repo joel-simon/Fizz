@@ -1,3 +1,13 @@
+///////////////////////////////////////////////////////////////////////////////
+/*
+	Google Maps Interface - This is the code interacting with Google Maps API
+		and Google Places API.
+
+	Helper Functions for quick interation begin at LINE 146.
+*/
+////////////////////////////////////////////////////////////////////////////////
+
+
 var autocomplete, map, currentPosition, tempMarker;
 
 function initialize() {
@@ -139,7 +149,12 @@ function placeTempMarker(position, map) {
 */
 ////////////////////////////////////////////////////////////////////////////////
 
-// Make the beacon's marker and put it on the map.
+/** 
+ * Creates a Google Maps marker for the Beacon based on its latitude and 
+ * longitude, and puts it on the map.
+ * @param {int} lat - The latitude of the Beacon.
+ * @param {int} lng - The longitude of the Beacon.
+ */
 function createMarker(lat, lng) {
 	if (lat && lng)
 		var pos = new google.maps.LatLng(lat, lng);
@@ -151,7 +166,12 @@ function createMarker(lat, lng) {
 	return marker;
 }
 
-
+/** 
+ * Creates a Google Maps marker for the Beacon based on its latitude and 
+ * longitude, and puts it on the map.
+ * @param {int} lat - The latitude of the Beacon.
+ * @param {int} lng - The longitude of the Beacon.
+ */
 function setMarkerInfo(marker, title, desc) {
 	// set the marker's title and content
 	marker.setTitle(title);
@@ -167,20 +187,34 @@ function setMarkerInfo(marker, title, desc) {
 	});
 }
 
+/** 
+ * Removes a marker from the map.
+ * @param {object} marker - The Google Maps marker correlating to a Beacon.
+ */
 function removeMarker(marker) {
 	marker.setMap(null);
 }
 
+/** 
+ * Centers the User's Map around a specific Beacon's marker
+ * @param {object} marker - The Google Maps marker correlating to a Beacon.
+ */
 function centerMap(marker) {
 	map.panTo(marker.position);
 }
 
+/** 
+ * Centers the User's Map to the location of the User's device.
+ */
 function centerMapHere() {
 	map.panTo(currentPosition);
 }
 
-
-// Places the Beacon on the map in the appropriate place with the given info.
+/** 
+ * Transfers the Beacon's data over to Google Maps so it can be properly
+ * displayed on the map with all the relevant info.
+ * @param {object} beacon - see client-beacon.js
+ */
 function setBeacon(beacon) {
 	//lat, lng, title, desc
 	if (beacon.marker) removeMarker(beacon.marker);
