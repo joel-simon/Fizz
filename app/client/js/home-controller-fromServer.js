@@ -11,6 +11,7 @@ socket.on('getFriends', function(data) {
 			friends.push(elem.id);
 		});
 		socket.emit('friendsList', friends);
+		localStorage.setItem('friendsList', JSON.stringify(friends));
 	});
 });
 

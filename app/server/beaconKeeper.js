@@ -1,10 +1,37 @@
 var Beacon = require('./server-beacon.js');
 
+/**
+ * BeaconKeeper is the class for managing all the beacons that the server hold.
+ * As of now it is an abstraction wrapper for dealing with redis where current
+ * beacons live. 
+ * 
+ * @param {Object} Store - takes a redis conenction object
+ */
 function BeaconKeeper(store) {
   this.store = store;
 }
 
+/** Verify  a beacon. w
+ * 
+ * @param {Object} B - the beacon to insert
+ * @return {Bool} - 
+ */
+function validate (b) {
+    if (!b.host || typeof b.host != 'number') return false;
+    if (!b.lat  || !b.lng) return false;
+    if (!b.desc || typeof b.desc != 'string') return false;
+    if (!(b.attends && b.attends instanceof Array)) return false;
 
+    return true;
+}
+
+/**
+ * BeaconKeeper is the class for managing all the beacons that the server hold.
+ * As of now it is an abstraction wrapper for dealing with redis where current
+ * beacons live. 
+ * 
+ * @param {Object} B - the beacon to insert
+ */
 BeaconKeeper.prototype.insert = function(B, callback) {
   var self = this;
   if (B.pub) insertPublic(B); 

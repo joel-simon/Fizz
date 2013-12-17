@@ -66,9 +66,13 @@ window.fbAsyncInit = function() {
 
 
 function login() {
+	var pastFriends = [];
 	console.log('Welcome!  Fetching your information.... ');
 	FB.api('/me', function(response) {
 		me = response;
+		
+		// pastFriends = JSON.parse();
+
 		socket.emit('login', {id: me.id});
 	});
 }
@@ -84,9 +88,3 @@ function getFbData(id, callback) {
 		// console.log('fbData', response.picture.data.url);
 	});
 }
-
-
-
-
-
-
