@@ -1,5 +1,6 @@
 var Beacon = require('./server-beacon.js');
 
+
 /**
  * BeaconKeeper is the class for managing all the beacons that the server hold.
  * As of now it is an abstraction wrapper for dealing with redis where current
@@ -17,12 +18,12 @@ function BeaconKeeper(store) {
  * @return {Bool} - 
  */
 function validate (b) {
-    if (!b.host || typeof b.host != 'number') return false;
-    if (!b.lat  || !b.lng) return false;
-    if (!b.desc || typeof b.desc != 'string') return false;
-    if (!(b.attends && b.attends instanceof Array)) return false;
+  if (!b.host || typeof (+b.host) != 'number') return false;
+  if (!b.lat  || !b.lng) return false;
+  if (!b.desc || typeof b.desc != 'string') return false;
+  if (!(b.attends && b.attends instanceof Array)) return false;
 
-    return true;
+  return true;
 }
 
 /**
@@ -34,8 +35,11 @@ function validate (b) {
  */
 BeaconKeeper.prototype.insert = function(B, callback) {
   var self = this;
-  if (B.pub) insertPublic(B); 
-  else insertPrivate(B);
+  if (validate(B)) {
+    (B.pub) ? insertPublic(B) : insertPrivate(B);
+  } else if (callback) {
+    return callback("Invalid Beacon.");
+  }
 
   function insertPublic (B) {
     self.store.hset('publicBeacons', B.host, JSON.stringify(B), done);
@@ -58,7 +62,6 @@ BeaconKeeper.prototype.remove = function(userId, callback) {
 }
 
 BeaconKeeper.prototype.add_guest = function(hostId, guestId, callback) {
-  console.log(arguments);
   this.store.sadd('a'+hostId, guestId, callback);
 }
 
@@ -77,7 +80,7 @@ BeaconKeeper.prototype.get = function(userId, callback) {
       g('publicBeacons', userId);
     } else {
       store.hexists('privateBeacons', userId, function(err, isIn) {
-        if(err) return callback(err);
+        if (err) return callback(err);
         if (isIn == 1) {
           g('privateBeacons', userId);
         } else {
@@ -114,7 +117,6 @@ BeaconKeeper.prototype.getVisible = function(friends, userId, callback) {
         if (!err && b)
           beacons.push(b);
         if (++responses == friends.length) {
-          console.log(beacons);
           self.getAllPublic(function(err, pubs) {
             if (err) return callback(err);
             callback(err, beacons.concat(pubs));

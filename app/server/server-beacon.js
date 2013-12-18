@@ -1,3 +1,15 @@
+// function Chat() {
+
+// }
+
+// chat.prototype.add = function() {
+
+// }
+
+// function Message() {
+
+// }
+
 // @var host: the facebook id of the host
 // @var loc: the long/lat of the event (defaults to host location)
 // @var desc: decription; limit to 140 character 
@@ -12,6 +24,7 @@ function Beacon(userId, lat, lng, desc, pub) {
   this.marker = null;
   this.pub = pub || false;
   this.attends = [];
+  this.chat = {}
 }
 
 Beacon.prototype.add_guest = function(guestId) {

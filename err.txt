@@ -1,0 +1,38 @@
+Error @ Tue Dec 17 2013 14:51:53 GMT-0500 (EST)
+	Invalid Beacon.
+Error @ Tue Dec 17 2013 14:53:13 GMT-0500 (EST)
+	Invalid Beacon.
+Error @ Tue Dec 17 2013 14:53:15 GMT-0500 (EST)
+	Invalid Beacon.
+Error @ Tue Dec 17 2013 14:59:20 GMT-0500 (EST)
+	Invalid Beacon.
+	[object Object]
+
+Error @ Tue Dec 17 2013 14:59:23 GMT-0500 (EST)
+	Invalid Beacon.
+	[object Object]
+
+Error @ Tue Dec 17 2013 15:01:20 GMT-0500 (EST)
+	Invalid Beacon.
+	{"host":"1380180579","lat":38.981396612675304,"lng":-77.16384887695312,"desc":"My Event!","attends":[],"marker":null,"title":""}
+
+Error @ Tue Dec 17 2013 15:01:23 GMT-0500 (EST)
+	Invalid Beacon.
+	{"host":"1380180579","lat":38.979094717746534,"lng":-77.16590881347656,"desc":"My Event!","attends":[],"marker":null,"title":""}
+
+Error @ Tue Dec 17 2013 15:13:34 GMT-0500 (EST)
+	Invalid Beacon.
+	{"host":"1380180579","lat":38.98284776884266,"lng":-77.16410636901855,"desc":"My Event!","attends":[],"marker":null,"title":""}
+
+Error @ Tue Dec 17 2013 15:14:25 GMT-0500 (EST)
+	Invalid Beacon.
+	{"host":"1380180579","lat":38.981480013260615,"lng":-77.16378450393677,"desc":"My Event!","attends":[],"marker":null,"title":""}
+
+Error @ Tue Dec 17 2013 15:23:54 GMT-0500 (EST)
+	Invalid Beacon.
+	{"host":"1380180579","lat":38.98189701471359,"lng":-77.17217445373535,"desc":"My Event!","attends":[],"marker":null,"title":""}
+
+Error @ Tue Dec 17 2013 15:24:36 GMT-0500 (EST)
+	Invalid Beacon.
+	{"host":"1380180579","lat":38.98049588009387,"lng":-77.17288255691528,"desc":"My Event!","attends":[],"marker":null,"title":""}
+
