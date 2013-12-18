@@ -87,7 +87,14 @@ module.exports.leaveBeacon = function(data, socket, beacons) {
       guest = data.guest;
   beacons.del_guest( host, guest, function() {
     beacons.get(host, function(err, b){
-      emit(data.host, 'newBeacon', {'beacon': b});
+      // sorry Joel, needed to change this - based off of joinBeacon
+      if (err) return console.log(err);
+      if (b.pub) {
+        emitPublic('newBeacon', {'beacon': b});  
+      } else {
+        emit(host, 'newBeacon', {'beacon': b});  
+      }
+      // emit(host, 'newBeacon', {'beacon': b});
     });
   });
 }
