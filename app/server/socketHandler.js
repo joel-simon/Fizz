@@ -104,10 +104,18 @@ module.exports.newBeacon = function (B, socket, beacons) {
       if (B.pub) io.sockets.emit('newBeacon', {"beacon" : B});
       else emit(B.host, 'newBeacon', {"beacon" : B});
       log('New beacon by', B.host);
+      beacons.addComment(B.host, '123', 'hello world', function(){});
     }
     
   }); 
 }
+
+module.exports.comment = function(data, socket, beacons) {
+  beacons.addComment(hostId, guestId, comment, function(){
+    
+  });
+}
+
 
 /**
  * Handle a new user login in
@@ -147,6 +155,8 @@ function existingUser(id, friends, socket, beacons) {
     }
   });
 }
+
+
 
 /**
  * Emit from a certain person
