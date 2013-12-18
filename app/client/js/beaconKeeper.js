@@ -87,16 +87,32 @@ BeaconKeeper.prototype.removeGuest = function(host, guest) {
  */
 BeaconKeeper.prototype.removeBeacon = function(host) {
 	eraseBeacon( this.table[host] );
-	this.table[host] = null;
+	delete this.table[host];
+	this.count--;
 }
 
-/** 
- * Draws all Beacons in BeaconKeeper's table.
+/**
+ * Removes all public Beacons.
  */
-BeaconKeeper.prototype.drawAllBeacons = function() {
-	this.table.forEach(function(beacon, host) {
-		drawBeacon(beacon);
-	});
+BeaconKeeper.prototype.removePublicBeacons = function() {
+	for (var host in this.table) {
+		if (this.table[host].pub) {
+			this.removeBeacon(host);
+			socket.emit('deleteBeacon', {'host':host, 'pub':true});
+		}
+	}
+}
+
+/**
+ * Removes all Beacons.
+ */
+BeaconKeeper.prototype.removeAllBeacons = function() {
+	var pub;
+	for (var host in this.table) {
+		pub = this.table[host].pub;
+		this.removeBeacon(host);
+		socket.emit('deleteBeacon', {'host':host, 'pub':pub});
+	}
 }
 
 

@@ -30,6 +30,18 @@ $('#publicBeacon').on('submit', function(e) {
 	});
 });
 
+$('#removePublic').on('click', function(e) {
+	e.preventDefault();
+	// console.log('Remove Public Beacons.');
+	BKeeper.removePublicBeacons();
+});
+
+$('#removeAll').on('click', function(e) {
+	e.preventDefault();
+	// console.log('Remove All Beacons.');
+	BKeeper.removeAllBeacons();
+});
+
 
 function disbandBeacon(host, pub) {
 	socket.emit('deleteBeacon', {'host':host, 'pub':pub});
