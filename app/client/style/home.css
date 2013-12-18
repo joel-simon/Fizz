@@ -134,6 +134,9 @@ input { padding: 0 4px; }
 	padding: 5px;
 }
 
+#adminButtons {
+	text-align: center;
+}
 
 /*
 	Beacon List
