@@ -109,7 +109,9 @@ function getFbData(id, callback) {
 	});
 }
 
-
+/**
+ * Depricated
+ */
 function getFriends(callback) {
 	FB.api('/me/friends', function(response) {
 		var friends = [];
