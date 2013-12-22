@@ -1,6 +1,6 @@
 var colors  = require('colors');
 var fs = require('fs');
-var debug = false;
+var debug = true;
 
 colors.setTheme({
   info: 'rainbow',

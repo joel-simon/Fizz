@@ -1,10 +1,10 @@
 // Abstraction for all database interactions.
 
 var mongojs = require('mongojs'),
-		pwds    = require('./../../pwds.json');
+		config  = require('./../../config.json');
 
 
-var connString = pwds.MONGOHQ_UR;
+var connString = config.DB.MONGOHQ_UR;
 var db = mongojs(connString, ['users', 'beacons']);
 
 /*

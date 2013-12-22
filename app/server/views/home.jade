@@ -11,7 +11,7 @@ html
 	body
 		//- Facebook SDK
 		div#fb-root
-		script(src='/js/fb-sdk.js')
+		//- script(src='/js/fb-sdk.js')
 
 		div#header
 			h2.title Beacon
@@ -38,7 +38,9 @@ html
 		script(type='text/javascript', src='/socket.io/socket.io.js')
 		script(type='text/javascript', src='/js/jQuery/jquery-1.10.2.min.js')
 		script(src='http://code.jquery.com/ui/1.10.3/jquery-ui.js')
+		script(type='text/javascript', src='/js/jQuery/cookie.min.js')
 
+		
 		script(src='/js/client-beacon.js')
 		script(src='/js/beaconKeeper.js')
 
@@ -49,3 +51,4 @@ html
 		script(src='/js/home-controller-fromServer.js')
 		script(src='/js/home-view.js')
 
+		script(src='/js/fb.js')

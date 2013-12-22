@@ -3,6 +3,16 @@
 	home-view.js - Draws objects on and Erases objects from the site
 */
 ////////////////////////////////////////////////////////////////////////////////
+function hasGuest(b, guest) {
+	for (var i = 0; i < b.attends.length; i++) {
+		if (b.attends[i] == guest) {
+			// console.log('you are a guest!');
+			return true;
+		}
+	}
+	// console.log('you are not a guest!');
+	return false;
+}
 
 // Place FB pic and name
 function drawUserInfo(hostPic, hostName) {
@@ -25,10 +35,10 @@ function drawBeacon(beacon) {
 			// console.log(htmlString);
 			$('#beacon-list').prepend(htmlString);
 			$('#host-'+beacon.host).on('click', function() {
-				if ( beacon.hasGuest(me.id) ) {
-					leaveBeacon( beacon.host, me.id );
+				if ( hasGuest(beacon, me.id) ) {
+					leaveBeacon( beacon, me.id );
 				} else {
-					joinBeacon( beacon.host );
+					joinBeacon( beacon);
 				}
 			});
 		});
@@ -41,11 +51,11 @@ function drawBeacon(beacon) {
 			$('#beacon-list').prepend(htmlString);
 			$('#host-'+beacon.host).on('click', function() {
 				if ( beacon.host == me.id ) {
-					disbandBeacon( beacon.host );
-				} else if ( beacon.hasGuest(me.id) ) {
-					leaveBeacon( beacon.host, me.id );
+					disbandBeacon( beacon );
+				} else if ( hasGuest(beacon, me.id) ) {
+					leaveBeacon( beacon, me.id );
 				} else {
-					joinBeacon( beacon.host );
+					joinBeacon( beacon );
 				}
 			});
 		});
@@ -56,7 +66,7 @@ function drawBeacon(beacon) {
 // Helper function for drawBeacon.
 function createPublicHtmlString(beacon, callback) {
 	var color, label;
-	if ( beacon.hasGuest(me.id) ) {
+	if ( hasGuest(beacon, me.id) ) {
 		color = 'btn-danger';
 		label = 'Leave';
 	} else {
@@ -68,7 +78,7 @@ function createPublicHtmlString(beacon, callback) {
 			'<button class="btn '+color+'" id="host-'+beacon.host+'">'+
 				label+
 			'</button>'+
-			'<p class="details">'+beacon.desc+'</p>';
+			'<p class="details">'+beacon.title+'</p>';
 
 	var counter = 0;
 	// Gets and displays the host info.
@@ -102,7 +112,7 @@ function createHtmlString(beacon, callback) {
 	if ( beacon.host == me.id ) {
 		color = 'btn-danger';
 		label = 'Disband';
-	} else if ( beacon.hasGuest(me.id) ) {
+	} else if ( hasGuest(beacon, me.id) ) {
 		color = 'btn-danger';
 		label = 'Leave';
 	} else {
@@ -114,7 +124,7 @@ function createHtmlString(beacon, callback) {
 			'<button class="btn '+color+'" id="host-'+beacon.host+'">'+
 				label+
 			'</button>'+
-			'<p class="details">'+beacon.desc+'</p>';
+			'<p class="details">'+beacon.title+'</p>';
 
 	var counter = 0;
 	// Gets and displays the host info.
@@ -157,7 +167,7 @@ function writeBeaconEvent(beacon) {
 	var htmlString = 
 		'<li class="event">'+
 			'<button class="btn btn-primary">Join</button>'+
-			'<p class="details">'+beacon.desc+'</p>';
+			'<p class="details">'+beacon.title+'</p>';
 
 	var attending = beacon.attends;
 	var dude;
