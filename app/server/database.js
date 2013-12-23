@@ -1,5 +1,9 @@
-// Abstraction for all database interactions.
+module.exports.newBeacon = newBeacon;
+module.exports.addPlayer = addPlayer;
+module.exports.getGroup = getGroup;
 
+
+// Abstraction for all database interactions.
 var mongojs = require('mongojs'),
 		config  = require('./../../config.json');
 
@@ -10,19 +14,19 @@ var db = mongojs(connString, ['users', 'beacons']);
 /*
 *	New Player	
 */
-function addPlayer (id, friends) {
-	db.users.insert({'_id': id, 'friends': friends}, function(err){
+function addPlayer (id, group) {
+	db.users.insert({'_id': id, 'group': group}, function(err){
 		if(err)console.log(err);
 	});
 }
 
 /*
-*	Get friends	
+*	Get group	
 */
-function getFriends(id, callback) {
+function getGroup(id, callback) {
 	db.users.findOne({'_id': id}, function(err, user) {
 		if( !user ) callback (err, null)
-		else callback (err, user.friends);
+		else callback (err, user.group);
 	});
 }
 
@@ -44,6 +48,3 @@ function storeBeacon() {
 	return;	
 }
 
-module.exports.newBeacon = newBeacon;
-module.exports.addPlayer = addPlayer;
-module.exports.getFriends = getFriends;

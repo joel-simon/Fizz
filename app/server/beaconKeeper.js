@@ -1,4 +1,5 @@
 var async = require('async');
+var validate = require('./utilities').validate;
 /**
  * BeaconKeeper is the class for managing all the beacons that the server hold.
  * As of now it is an abstraction wrapper for dealing with redis where current
@@ -75,7 +76,6 @@ BeaconKeeper.prototype.getComments = function(id, callback) {
   this.store.lrange('comments'+id,0,-1, callback);
 }
 
-
 // returns null on failure
 BeaconKeeper.prototype.get = function(id, callback) {
   var self = this;
@@ -126,7 +126,6 @@ BeaconKeeper.prototype.get = function(id, callback) {
     });
   }
 }
-
 
 // returns null on failure
 BeaconKeeper.prototype.getVisible = function(friends, userId, callback) {
@@ -249,38 +248,7 @@ BeaconKeeper.prototype.getAllPublic = function(callback) {
 BeaconKeeper.prototype.clearPublic = function() {
   this.store.del('publicBeacons', redis.print);
 }
-/** Verify  a beacon.
- * 
- * @param {Object} B - the beacon to insert
- * @return {Bool} - if it is a valid beacon
- */
-function validate (b) {
-  if (!b.id   || typeof b.id !== 'number' || b.id%1!==0 ) {
-    console.log('1');
-  }
-  if (!b.host || typeof b.host !== 'string') {
-    console.log('2');
-  }
-  if (typeof b.title !== 'string') {
-    console.log('3');
-  }
-  if (!b.lat  || typeof b.lat  !== 'number') {
-    console.log('4');
-  }
-  if (!b.lng  || typeof b.lng  !== 'number') {
-    console.log('5');
-  }
-  if (typeof b.pub  !== 'boolean')  {
-    console.log('6');
-  }
-  if (!(b.attends && b.attends instanceof Array)) {
-    console.log('7');
-  }
-  if (!(b.comments && b.comments instanceof Array)) {
-    console.log('7');
-  }
-  return true;
-}
+
 
 
 
