@@ -14,15 +14,15 @@
  * @param {array} attends - An array of people who are attending the Beacon. 
  * @param {bool} pub - A boolean that is True when the Beacon is public and false otherwise.
  */
-function Beacon(host, description, latitude, longitude, attends, pub) {
-	this.host = host;
-	this.attends = attends || [];
-	this.title = ''; // potential feature of the beacon to be added later
-	this.desc = description;
-	this.lat = latitude;
-	this.lng = longitude;
-	this.marker = createMarker(latitude, longitude);
-	this.pub = pub || false;
+function Beacon(b) {
+	var self = this;
+	for (var key in b) {
+
+    if(b.hasOwnProperty(key)) {
+    	self[key] = b[key];
+    }
+	}
+	
 }
 
 /** 

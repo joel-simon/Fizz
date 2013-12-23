@@ -1,5 +1,7 @@
 *.tar
 pwds.json
+config.json
+err.txt
 *.env
 *.log
 *.DS_Store

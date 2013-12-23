@@ -1,34 +1,44 @@
 var SERVER = window.location.origin;
-var socket = io.connect(SERVER);
+
 var BKeeper = new BeaconKeeper();
+var  socket = io.connect(SERVER);
 
-
-socket.on('getFriends', function(data) {
-	FB.api('/me/friends', function(response) {
-		// console.log(response);
-		var friends = [];
-		response.data.forEach(function(elem, i) {
-			friends.push(elem.id);
-		});
-		socket.emit('friendsList', friends);
-		localStorage.setItem('friendsList', JSON.stringify(friends));
-	});
-});
-
-socket.on('newBeacon', function(data) {
-	var beacon = data.beacon;
-	console.log('RECEIVING: ', beacon, BKeeper.table[beacon.host]);
-	if (BKeeper.table[beacon.host]) BKeeper.removeBeacon(beacon.host);
-	BKeeper.renewBeacon(beacon.host, beacon.desc, beacon.lat, beacon.lng, beacon.attends, beacon.pub);
-});
+socket.on('newBeacon', function(data) { BKeeper.newBeacon(data.beacon) });
+// 	var b = data.beacon;
+// 	if (validate(b) && !BKeeper.table[b.id]) {
+// 		BKeeper.new(b);
+// 	}
+// 	// console.log('RECEIVING: ', beacon, BKeeper.table[beacon.host]);
+// 	// if (BKeeper.table[beacon.host]) BKeeper.removeBeacon(beacon.host);
+// });
 
 socket.on('newBeacons', function(data) {
-	// console.log('new beacons:',data);
+	console.log('new beacons:',data, socket);
 	data.forEach(function(B, i) {
-		BKeeper.renewBeacon(B.host, B.desc, B.lat, B.lng, B.attends, B.pub);
+		BKeeper.newBeacon(B);
 	});
 });
 
 socket.on('deleteBeacon', function(data) {
-	BKeeper.removeBeacon(data.host);
+	console.log('detete', data);
+	BKeeper.removeBeacon(data.id);
 });
+
+socket.on('addGuest', function(data) {
+	console.log('addGuest', data);
+	var id = data.id;
+	var guest = data.guest;
+	BKeeper.addGuest(id, guest);
+});
+
+socket.on('subGuest', function(data) {
+	console.log('subGuest', data);
+	var id = data.id;
+	var guest = data.guest;
+	BKeeper.removeGuest(id, guest);
+});
+
+socket.on('guest', function(data) {
+});
+
+

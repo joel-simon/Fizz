@@ -1,16 +1,17 @@
 
 $('#logout').on('click', function() {
-	FB.logout(function(response) {
-		var address = window.location.href;
-		window.location = address.substr(0, address.indexOf('home'));
-	});
+	var address = window.location.href;
+	window.location.pathname = '/logout';
+	// console.log(window.location);
+	// window.location = address.substr(0, address.indexOf('home'));
 });
 
 
 $('#myBeacon').on('submit', function(e) {
 	e.preventDefault();
 	var form = this;
-	var desc = (form.title.value) ? form.title.value : 'My Event!';
+	var title = (form.title.value) ? form.title.value : 'My Event!';
+	var firstComment = { 'user':me.id , 'comment':title };
 	var lat, lng;
 
 	if (tempMarker) {
@@ -21,38 +22,33 @@ $('#myBeacon').on('submit', function(e) {
 		lng = currentPosition.lng();
 	}
 	
-	if (BKeeper.getBeacon(me.id)) {
-		BKeeper.removeBeacon(me.id);
-	}
-	var B = BKeeper.newBeacon(me.id, desc, lat, lng);
-	console.log('SENDING: ', B);
-	socket.emit('newBeacon', {
-		'host':B.host, 
-		'lat':B.lat, 
-		'lng':B.lng, 
-		'desc':B.desc, 
-		'attends':B.attends,
-		'marker':null,
-		'title':'',
-	});
+	var beacon = {
+		'id' : null,
+		'host' : me.id, 
+		'lat' : lat, 
+		'lng' : lng,  
+		'attends' : [],
+		'comments' : [firstComment],
+		'title': title
+	};
+	console.log('SENDING: ', beacon);
+	socket.emit('newBeacon', beacon);
 });
 
 
-function joinBeacon(host) {
-	// console.log('Clicked!');
-	// console.log(host, me.id);
-	if (host != me.id && !BKeeper.getBeacon(host).hasGuest(me.id)) {
-		// BKeeper.addGuest(host, me.id);
-		// console.log('Joining', host, me.id);
-		socket.emit('joinBeacon', {'host':host, userId:me.id});
+function joinBeacon(b) {
+	if (b.host != me.id && !b.hasGuest(me.id)) {
+		socket.emit('joinBeacon', {'id':b.id , 'host':b.host });
 	}
 }
 
 
-function disbandBeacon(host) {
-	socket.emit('deleteBeacon', {'host':host});
+function disbandBeacon(b) {
+	console.trace();
+	console.log('delete', b.id);
+	socket.emit('deleteBeacon', { host:b.host, id:b.id });
 }
 
-function leaveBeacon(host, guest) {
-	socket.emit('leaveBeacon', {'host':host, 'guest':guest});
+function leaveBeacon(b) {
+	socket.emit('leaveBeacon', {'host':b.host, 'id':b.id});
 }
