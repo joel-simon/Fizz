@@ -4,7 +4,7 @@ var logError = utils.logError;
 var log = utils.log;
 var debug = utils.debug;
 var fb = require('./fb.js');
-// var applePush = require('./applePush.js');
+var applePush = require('./applePush.js');
 
 module.exports.set = function(sio) {
   io = sio;

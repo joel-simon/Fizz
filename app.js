@@ -19,7 +19,9 @@ var http    = require('http'),
     passport = require('passport'),
     FacebookStrategy = require('passport-facebook').Strategy,
     passportSocketIo = require("passport.socketio"),
-    redisStore = require('connect-redis')(express);
+    redisStore = require('connect-redis')(express),
+    applePush  = require('./app/server/applePush.js');
+
 
 // Create pub/sub channels for sockets using redis. 
 var rtg  = require("url").parse(config.DB.REDISTOGO_URL);
@@ -49,7 +51,7 @@ passport.use(new FacebookStrategy({
   }
 ));
 
-
+applePush.push('BC45506F3DD570B9C51363068DFBEF0FE178B7F7318D3CA7485F6040F980B74A', 'Hello World!');
 // Configure express app.
 app.configure('development',function(){
   app.set('views', __dirname + '/app/server/views');
@@ -107,6 +109,13 @@ io.sockets.on('connection', function(socket) {
 // Route all routes. 
 require('./app/server/router')(app, passport);
 
+process.on('uncaughtException', function (err) {
+  console.error('uncaughtException:', err.message)
+  console.error(err.stack)
+process.exit(1)})
+                  
+
+                  
 var domo =  ''+
 "#####################################\n"+
 'DOMOS HOSTS THE BEACON INTO THE CLOUD \n'+
