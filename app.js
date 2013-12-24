@@ -33,7 +33,7 @@ store.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 
 var sessionStore = new redisStore({client: store}); // socket.io sessions
 var beacons = new keeper(store); // Object to manage beacons. 
-var users = require('./app/server/users.js').set(store); 
+var users = null;//require('./app/server/users.js').set(store); 
 var handler = require('./app/server/socketHandler.js').set(io, beacons, users);
 
 passport.serializeUser(function(user, done) { done(null, user); });
@@ -41,7 +41,7 @@ passport.deserializeUser(function(obj, done) { done(null, obj); });
 passport.use(new FacebookStrategy({
     clientID: config.FB.FACEBOOK_APP_ID,
     clientSecret: config.FB.FACEBOOK_APP_SECRET,
-    callbackURL: "http://localhost:9001/auth/facebook/callback"
+    callbackURL: config.HOST+"auth/facebook/callback"
   },
   function(accessToken, refreshToken, profile, done) {
     process.nextTick(function () {
@@ -52,7 +52,7 @@ passport.use(new FacebookStrategy({
 ));
 
 // Configure express app.
-app.configure('development',function(){
+app.configure('development',function() {
   app.set('views', __dirname + '/app/server/views');
   app.set('view engine', 'jade');
   app.locals.pretty = true;

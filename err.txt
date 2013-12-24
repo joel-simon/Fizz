@@ -100,6 +100,11 @@ Error @ Tue Dec 24 2013 09:52:04 GMT-0500 (EST)
 	invalid delete call
 	{"id":"121"}
 
+<<<<<<< HEAD
+Error @ Tue Dec 24 2013 12:28:47 GMT-0500 (EST)
+	Invalid Beacon.
+	{"id":137,"host":"1380180579","lat":40.7764706,"lng":-73.9515958,"attends":[],"comments":[{"user":"1380180579","comment":"b"}],"title":"a","pub":false}
+=======
 Error @ Tue Dec 24 2013 12:36:47 GMT-0500 (EST)
 	Invalid Beacon.
 	{"host":"798172051","lat":38.985076899999996,"lng":-77.17549600000001,"attends":[],"comments":[{"user":"798172051","comment":"first comment"}],"title":"My Event!","id":143,"pub":false}
@@ -107,4 +112,5 @@ Error @ Tue Dec 24 2013 12:36:47 GMT-0500 (EST)
 Error @ Tue Dec 24 2013 12:48:45 GMT-0500 (EST)
 	Invalid Beacon.
 	{"host":"798172051","lat":38.98518290023178,"lng":-77.17556476593018,"attends":[],"comments":[{"user":"798172051","comment":"sdflkj"}],"title":"sdfjkl","id":144,"pub":false}
+>>>>>>> 71f5b7a09fd34e3eb0bbecfe5a130b501c730960
 

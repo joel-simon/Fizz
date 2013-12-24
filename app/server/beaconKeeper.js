@@ -135,14 +135,18 @@ BeaconKeeper.prototype.getVisible = function(friends, userId, callback) {
   var responses = 0;
   for (var i = 0; i < friends.length; i++) (function(f) {
     self.store.smembers('hostedBy'+f, function(err, data) {
-      foo(data, function(err, bcns) {
-        beacons.concat(bcns);
-        if ((++responses) == friends.length) {
-          callback(null, beacons);              
-        }
-      });
+      if (data.length>0) {
+        foo(data, function(err, bcns) {
+          beacons = beacons.concat(bcns);
+          // console.log(responses, friends.length);
+          if ((++responses) == friends.length) {
+            callback(null, beacons);              
+          }
+        });
+      } else {
+        responses++;
+      }
     });
-
   })(friends[i]);
 
   function foo(d, cb) {
@@ -153,29 +157,11 @@ BeaconKeeper.prototype.getVisible = function(friends, userId, callback) {
         if (err) return callback(err);
         bcns.push(b);
         if ((++c) == d.length) {
-          callback(null, bcns);              
+          cb(null, bcns);              
         }
       });
     }
   }
-
-  //  {
-
-
-  //   self.get(friends[i], function(err, b) {
-  //     if (!err && b)
-  //       beacons.push(b);
-  //     if (++responses == friends.length) {
-  //       self.getAllPublic(function(err, pubs) {
-  //         if (err) return callback(err);
-  //         callback(err, beacons.concat(pubs));
-  //       });
-  //     }
-          
-  //   });
-  // }
-
-
 }
 /*
   the admin calls this to get everything

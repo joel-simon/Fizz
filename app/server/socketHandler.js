@@ -125,7 +125,7 @@ module.exports.newBeacon = function (B, socket) {
   }); 
 }
 
-module.exports.addComment = function(data, socket) {
+module.exports.newComment = function(data, socket) {
   beacons.addComment(data.id, data.comment, function(){  
   });
 }
@@ -180,7 +180,8 @@ function existingUser(id, friends, socket) {
     if (err) {
       logError('getVisible Err:', err);
     } else {
-      // console.log('all beacons', allBeacons.length);
+      // console.log('all beacons', allBeacons);
+
       socket.emit('newBeacons', allBeacons);
       
       
