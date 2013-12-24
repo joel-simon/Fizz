@@ -84,6 +84,17 @@ BeaconKeeper.prototype.addComment = function(id, user, comment) {
 
 
 /** 
+ * Updates the title of the Beacon.
+ */
+BeaconKeeper.prototype.updateTitle = function(id, title) {
+	var beacon = this.table[id];
+	beacon.updateTitle(title);
+	eraseBeacon(beacon);
+	drawBeacon(beacon);
+}
+
+
+/** 
  * Removes the host's Beacon.
  * @param {string} host - The host ID of the person or company hosting the Beacon.
  */
@@ -106,12 +117,12 @@ BeaconKeeper.prototype.removeBeacon = function(id) {
 /**
  * Removes all Beacons.
  */
-BeaconKeeper.prototype.removeAllBeacons = function() {
-	for (var id in this.table) {
-		this.removeBeacon(id);
-		socket.emit('deleteBeacon', {'id':id});
-	}
-}
+// BeaconKeeper.prototype.removeAllBeacons = function() {
+// 	for (var id in this.table) {
+// 		this.removeBeacon(id);
+// 		socket.emit('deleteBeacon', {'id':id});
+// 	}
+// }
 
 
 /** Verify  a beacon.
@@ -119,14 +130,14 @@ BeaconKeeper.prototype.removeAllBeacons = function() {
  * @param {Object} b - the beacon to insert
  * @return {Bool} - if it is a valid beacon
  */
-function validate (b) {
-  if (!b.id   || typeof b.id   !== 'number' || b.id%1 !== 0) return false;
-  if (!b.host || typeof b.host !== 'string') return false;
-  if (!b.lat  || typeof b.lat  !== 'number') return false;
-  if (!b.lng  || typeof b.lng  !== 'number') return false;
-  if (typeof b.title !== 'string')  return false;
-  // if (!b.pub  || typeof b.pub  !== 'boolean')  return false;
-  if (!(b.attends && b.attends instanceof Array)) return false;
-  if (!(b.comments && b.comments instanceof Array)) return false;
-  return true;
-}
+// function validate (b) {
+//   if (!b.id   || typeof b.id   !== 'number' || b.id%1 !== 0) return false;
+//   if (!b.host || typeof b.host !== 'string') return false;
+//   if (!b.lat  || typeof b.lat  !== 'number') return false;
+//   if (!b.lng  || typeof b.lng  !== 'number') return false;
+//   if (typeof b.title !== 'string')  return false;
+//   // if (!b.pub  || typeof b.pub  !== 'boolean')  return false;
+//   if (!(b.attends && b.attends instanceof Array)) return false;
+//   if (!(b.comments && b.comments instanceof Array)) return false;
+//   return true;
+// }

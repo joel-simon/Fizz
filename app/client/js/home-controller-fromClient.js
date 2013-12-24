@@ -2,8 +2,6 @@
 $('#logout').on('click', function() {
 	var address = window.location.href;
 	window.location.pathname = '/logout';
-	// console.log(window.location);
-	// window.location = address.substr(0, address.indexOf('home'));
 });
 
 

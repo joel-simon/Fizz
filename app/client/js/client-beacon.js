@@ -64,10 +64,10 @@ Beacon.prototype.addComment = function(user, comment) {
 }
 
 /** 
- * [Depricated] Updates the description of this Beacon.
- * @param {string} description - Information relating to this Beacon.
+ * Updates the title of this Beacon.
+ * @param {string} title - Information relating to this Beacon.
  */
-// Beacon.prototype.updateDescription = function(description) {
-// 	this.desc = description;
-// 	setMarkerInfo(this.marker, this.title, description);
-// }
+Beacon.prototype.updateTitle = function(title) {
+	this.title = title;
+	setMarkerInfo(this.marker, title);
+}

@@ -45,5 +45,7 @@ socket.on('newComment', function(data) {
 
 socket.on('updateTitle', function(data) {
 	console.log('UPDATING TITLE', data);
-	
+	var id = data.id;
+	var title = data.title;
+	BKeeper.updateTitle(id, title);
 });
