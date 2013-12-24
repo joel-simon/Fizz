@@ -180,7 +180,8 @@ function existingUser(id, friends, socket) {
     if (err) {
       logError('getVisible Err:', err);
     } else {
-      // console.log('all beacons', allBeacons.length);
+      // console.log('all beacons', allBeacons);
+
       socket.emit('newBeacons', allBeacons);
       
       

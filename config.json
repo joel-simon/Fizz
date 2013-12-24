@@ -15,5 +15,6 @@
 	},
 	"SECRET" : {
 		"cookieParser": "supersleepysushisloth"
-	}
+	},
+	"HOST": "http://localhost:9001/"
 }
