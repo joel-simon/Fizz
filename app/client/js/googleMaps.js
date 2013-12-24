@@ -172,11 +172,11 @@ function createMarker(lat, lng) {
  * @param {int} lat - The latitude of the Beacon.
  * @param {int} lng - The longitude of the Beacon.
  */
-function setMarkerInfo(marker, title, desc) {
+function setMarkerInfo(marker, title) {
 	// set the marker's title and content
 	marker.setTitle(title);
 	var infowindow = new google.maps.InfoWindow({
-		content: desc
+		content: title
 	});
 	// open the infowindow as the default
 	infowindow.open(marker.get('map'), marker);
@@ -220,7 +220,7 @@ function setBeacon(beacon) {
 	if (beacon.marker) removeMarker(beacon.marker);
 	beacon.marker = createMarker(beacon.lat, beacon.lng);
 	
-	setMarkerInfo(beacon.marker, beacon.title, beacon.desc);
+	setMarkerInfo(beacon.marker, beacon.title);
 }
 
 

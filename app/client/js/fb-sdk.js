@@ -112,13 +112,13 @@ function getFbData(id, callback) {
 /**
  * Depricated
  */
-function getFriends(callback) {
-	FB.api('/me/friends', function(response) {
-		var friends = [];
-		response.data.forEach(function(elem, i) {
-			friends.push(elem.id);
-		});
-		callback(friends)
-	});
-}
+// function getFriends(callback) {
+// 	FB.api('/me/friends', function(response) {
+// 		var friends = [];
+// 		response.data.forEach(function(elem, i) {
+// 			friends.push(elem.id);
+// 		});
+// 		callback(friends)
+// 	});
+// }
 

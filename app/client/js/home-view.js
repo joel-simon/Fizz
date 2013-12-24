@@ -3,16 +3,6 @@
 	home-view.js - Draws objects on and Erases objects from the site
 */
 ////////////////////////////////////////////////////////////////////////////////
-function hasGuest(b, guest) {
-	for (var i = 0; i < b.attends.length; i++) {
-		if (b.attends[i] == guest) {
-			// console.log('you are a guest!');
-			return true;
-		}
-	}
-	// console.log('you are not a guest!');
-	return false;
-}
 
 // Place FB pic and name
 function drawUserInfo(hostPic, hostName) {
@@ -28,83 +18,43 @@ function drawBeacon(beacon) {
 	// Place the beacon marker on the google map.
 	setBeacon(beacon);
 
-	if (beacon.pub) {
+	// if (beacon.pub) {
+	// 	// Put the beacon info into the beacon-list.
+	// 	createPublicHtmlString(beacon, function(htmlString) {
+	// 		// console.log(htmlString);
+	// 		$('#beacon-list').prepend(htmlString);
+	// 		$('#host-'+beacon.host).on('click', function() {
+	// 			if ( beacon.hasGuest(me.id) ) {
+	// 				leaveBeacon( beacon, me.id );
+	// 			} else {
+	// 				joinBeacon( beacon);
+	// 			}
+	// 		});
+	// 	});
+	// } else {
 
-		// Put the beacon info into the beacon-list.
-		createPublicHtmlString(beacon, function(htmlString) {
-			// console.log(htmlString);
-			$('#beacon-list').prepend(htmlString);
-			$('#host-'+beacon.host).on('click', function() {
-				if ( hasGuest(beacon, me.id) ) {
-					leaveBeacon( beacon, me.id );
-				} else {
-					joinBeacon( beacon);
-				}
-			});
+
+	// Put the beacon info into the beacon-list.
+	createHtmlString(beacon, function(htmlString) {
+		// console.log(htmlString);
+		$('#beacon-list').prepend(htmlString);
+		$('#beacon-'+beacon.id).on('click', function() {
+			if ( beacon.host == me.id ) {
+				disbandBeacon( beacon );
+			} else if ( beacon.hasGuest(me.id) ) {
+				leaveBeacon( beacon, me.id );
+			} else {
+				joinBeacon( beacon );
+			}
 		});
-
-	} else {
-
-		// Put the beacon info into the beacon-list.
-		createHtmlString(beacon, function(htmlString) {
-			// console.log(htmlString);
-			$('#beacon-list').prepend(htmlString);
-			$('#host-'+beacon.host).on('click', function() {
-				if ( beacon.host == me.id ) {
-					disbandBeacon( beacon );
-				} else if ( hasGuest(beacon, me.id) ) {
-					leaveBeacon( beacon, me.id );
-				} else {
-					joinBeacon( beacon );
-				}
-			});
+		$('#comments-'+beacon.id).on('submit', function() {
+			addComment( beacon, this.comment.value, me.id );
 		});
+	});
 
-	}
 }
 
-// Helper function for drawBeacon.
-function createPublicHtmlString(beacon, callback) {
-	var color, label;
-	if ( hasGuest(beacon, me.id) ) {
-		color = 'btn-danger';
-		label = 'Leave';
-	} else {
-		color = 'btn-primary';
-		label = 'Join';
-	}
-	var htmlString = 
-		'<li class="event">'+
-			'<button class="btn '+color+'" id="host-'+beacon.host+'">'+
-				label+
-			'</button>'+
-			'<p class="details">'+beacon.title+'</p>';
 
-	var counter = 0;
-	// Gets and displays the host info.
-	
-	htmlString += '<img class="host-pic" title="'+beacon.host+'" src="/img/party2.png">'+
-		'<div class="attending"><div class="horizon">';
-
-	if (beacon.attends.length) {
-		// Loops through the guests and gets and displays their info.
-		beacon.attends.forEach(function(guest, i) {
-			getFbData(guest, function(guestPic, guestName) {
-				htmlString += '<img class="guest-pic" title="'+guestName+'" src="'+guestPic+'">';
-				if (++counter == beacon.attends.length) {
-					htmlString += '</div></div></li>';
-					callback(htmlString);
-					return;
-				}
-			});
-		});
-	} else {
-		htmlString += '</div></div></li>';
-		callback(htmlString);
-		return;
-	}
-	
-}
 
 // Helper function for drawBeacon.
 function createHtmlString(beacon, callback) {
@@ -112,7 +62,7 @@ function createHtmlString(beacon, callback) {
 	if ( beacon.host == me.id ) {
 		color = 'btn-danger';
 		label = 'Disband';
-	} else if ( hasGuest(beacon, me.id) ) {
+	} else if ( beacon.hasGuest(me.id) ) {
 		color = 'btn-danger';
 		label = 'Leave';
 	} else {
@@ -121,35 +71,73 @@ function createHtmlString(beacon, callback) {
 	}
 	var htmlString = 
 		'<li class="event">'+
-			'<button class="btn '+color+'" id="host-'+beacon.host+'">'+
+			'<button class="btn '+color+'" id="beacon-'+beacon.id+'">'+
 				label+
 			'</button>'+
 			'<p class="details">'+beacon.title+'</p>';
 
-	var counter = 0;
 	// Gets and displays the host info.
 	getFbData(beacon.host, function(hostPic, hostName) {
 		htmlString += '<img class="host-pic" title="'+hostName+'" src="'+hostPic+'">'+
 			'<div class="attending"><div class="horizon">';
 
-		if (beacon.attends.length) {
-			// Loops through the guests and gets and displays their info.
-			beacon.attends.forEach(function(guest, i) {
-				getFbData(guest, function(guestPic, guestName) {
-					htmlString += '<img class="guest-pic" title="'+guestName+'" src="'+guestPic+'">';
-					if (++counter == beacon.attends.length) {
-						htmlString += '</div></div></li>';
-						callback(htmlString);
-						return;
-					}
-				});
+		getAttendsString(beacon, function(attendsString) {
+			htmlString += attendsString;
+			getCommentsString(beacon, function(commentsString) {
+				htmlString += commentsString;
+				htmlString += 
+						'<form id="comments-'+beacon.id+'">'+
+							'<input type="text", name="comment", placeholder="Write a comment">'+
+						'</form>'+
+					'</li>';
+				// console.log(htmlString);
+				callback(htmlString);
 			});
-		} else {
-			htmlString += '</div></div></li>';
-			callback(htmlString);
-			return;
-		}
+		});
 	});
+}
+
+
+function getAttendsString(beacon, callback) {
+	var counter = 0;
+	var string = '';
+	if (beacon.attends.length) {
+		// Loops through the guests and gets and displays their info.
+		beacon.attends.forEach(function(guest, i) {
+			getFbData(guest, function(guestPic, guestName) {
+				string += '<img class="guest-pic" title="'+guestName+'" src="'+guestPic+'">';
+				if (++counter == beacon.attends.length) {
+					string += '</div></div>';
+					callback(string);
+					return;
+				}
+			});
+		});
+	} else {
+		string += '</div></div>';
+		callback(string);
+		return;
+	}
+}
+
+
+function getCommentsString(beacon, callback) {
+	var counter = 0;
+	var string = '<div id="commentList">';
+	if (beacon.comments.length) {
+		beacon.comments.forEach(function(com, i) {
+			string += '<p>'+com.user+': '+com.comment+'</p>';
+			if (++counter == beacon.comments.length) {
+				string += '</div>';
+				callback(string);
+				return;
+			}
+		});
+	} else {
+		string += '</div>';
+		callback(string);
+		return;
+	}
 }
 
 

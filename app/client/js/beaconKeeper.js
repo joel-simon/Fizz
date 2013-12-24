@@ -16,7 +16,7 @@ function BeaconKeeper() {
 }
 
 /**
- * Refreshes a given Beacon to keep all the information up to date for the User.
+ * [Depricated - handled by renewBeacon] Refreshes a given Beacon to keep all the information up to date for the User.
  * @param {string} host - The host ID of the person or company hosting the Beacon.
  * @param {string} desc - Currently acting as the title of the Beacon rather than an actual description.
  * @param {number} lat - The latitude of the Beacon location.
@@ -33,7 +33,7 @@ function BeaconKeeper() {
 // }
 
 /**
- * [Depricated - handled by renewBeacon] Creates a new beacon.
+ * Creates a new beacon.
  * @param {string} host - The host ID of the person or company hosting the Beacon.
  * @param {string} desc - Currently acting as the title of the Beacon rather than an actual description.
  * @param {number} lat - The latitude of the Beacon location.
@@ -42,10 +42,9 @@ function BeaconKeeper() {
  * @param {bool} pub - True when the Beacon is public, and False otherwise.
  */
 BeaconKeeper.prototype.newBeacon = function(b) {
-	if(validate(b)) {
+	if (validate(b)) {
 		var B = new Beacon(b);
-		this.table[b.id]  = B;
-		// console.log(this.table[b.id]);
+		this.table[b.id] = B;
 		this.count++;
 		drawBeacon(B);
 	} else {
@@ -102,35 +101,31 @@ BeaconKeeper.prototype.removeBeacon = function(id) {
 /**
  * Removes all public Beacons.
  */
-BeaconKeeper.prototype.removePublicBeacons = function() {
-	for (var host in this.table) {
-		if (this.table[host].pub) {
-			this.removeBeacon(host);
-			socket.emit('deleteBeacon', {'host':host, 'pub':true});
-		}
-	}
-}
+// BeaconKeeper.prototype.removePublicBeacons = function() {
+// 	for (var id in this.table) {
+// 		this.removeBeacon(id);
+// 		socket.emit('deleteBeacon', {'id':id});
+// 	}
+// }
 
 /**
  * Removes all Beacons.
  */
 BeaconKeeper.prototype.removeAllBeacons = function() {
-	var pub;
-	for (var host in this.table) {
-		pub = this.table[host].pub;
-		this.removeBeacon(host);
-		socket.emit('deleteBeacon', {'host':host, 'pub':pub});
+	for (var id in this.table) {
+		this.removeBeacon(id);
+		socket.emit('deleteBeacon', {'id':id});
 	}
 }
 
 
 /** Verify  a beacon.
  * 
- * @param {Object} B - the beacon to insert
+ * @param {Object} b - the beacon to insert
  * @return {Bool} - if it is a valid beacon
  */
 function validate (b) {
-  if (!b.id   || typeof b.id != 'number' || b.id%1!==0 ) return false;
+  if (!b.id   || typeof b.id   !== 'number' || b.id%1 !== 0) return false;
   if (!b.host || typeof b.host !== 'string') return false;
   if (!b.lat  || typeof b.lat  !== 'number') return false;
   if (!b.lng  || typeof b.lng  !== 'number') return false;
