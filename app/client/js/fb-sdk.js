@@ -7,18 +7,15 @@
 */
 ////////////////////////////////////////////////////////////////////////////////
 
-var me = {
-	id :  $.cookie('userId')
-}; // the Facebook ID of the User of this instance of the Beacon website.
-console.log(me);
-// console
+var me; // the Facebook ID of the User of this instance of the Beacon website.
+
 /**
  * Connects the Beacon website to the Beacon App on Facebook.
  */
 window.fbAsyncInit = function() {
 	if (window.location.origin.match('localhost')) var id = '182282665307149'
 	else var id = '451762954934201'
-	// console.log(id);
+	console.log(id);
 	// init the FB JS SDK
 	FB.init({
 		appId      : id,                                   // App ID from the app dashboard
@@ -30,9 +27,9 @@ window.fbAsyncInit = function() {
 	// Additional initialization code such as adding Event Listeners goes here
 	if ( document.getElementById('facebook-jssdk') 
 		&& (window.location.href.indexOf('admin') == -1) ) {
-		// console.log('FB SDK is ready!');
+		console.log('FB SDK is ready!');
 		FB.getLoginStatus(function(response) {
-			// console.log(response);
+			console.log(response);
 			if (response.status === 'connected') {
 				// the user is logged in and has authenticated your
 				// app, and response.authResponse supplies
@@ -81,11 +78,15 @@ window.fbAsyncInit = function() {
  * User's info on the website.
  */
 function login() {
+	console.log('Welcome!!! Fetching your data...');
 	FB.api('/me', function(response) {
 		me = response;
-		initSockets();
+		getFriends(function(friends){
+			socket.emit('login', {'id': me.id, 'friends': friends});
+		});
+		
 		getFbData(me.id, function(hostPic, hostName) {
-			// console.log('host stuff: ', hostPic, hostName);
+			console.log('host stuff: ', hostPic, hostName);
 			drawUserInfo(hostPic, hostName);
 		});
 	});
@@ -102,22 +103,15 @@ function getFbData(id, callback) {
 	// console.log(id);
 	if (id === 'admin') return null;
 	FB.api('/'+id+'?fields=picture,name', function(response) {
-		// console.log(response);
+		console.log(response);
 		callback(response.picture.data.url, response.name);
 		// console.log('fbData', response.picture.data.url);
 	});
 }
-// function getFbData(id, callback) {
-	
-// 	$.ajax({
-// 	  url: 'graph.facebook.com/'+id+'?fields=picture,name',
-// 	  success: function( data ) {
-// 	      console.log( "Sample of data:", data );
-// 	  }
-// 	});
-// }
 
-
+/**
+ * Depricated
+ */
 // function getFriends(callback) {
 // 	FB.api('/me/friends', function(response) {
 // 		var friends = [];

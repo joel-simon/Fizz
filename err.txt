@@ -72,3 +72,31 @@ Error @ Fri Dec 20 2013 22:27:02 GMT-0500 (EST)
 	invalid delete call
 	{"host":"1380180579"}
 
+Error @ Tue Dec 24 2013 09:16:12 GMT-0500 (EST)
+	invalid delete call
+	{"host":"1380180579","pub":false}
+
+Error @ Tue Dec 24 2013 09:16:16 GMT-0500 (EST)
+	invalid delete call
+	{"id":"121"}
+
+Error @ Tue Dec 24 2013 09:22:17 GMT-0500 (EST)
+	invalid delete call
+	{"id":"121"}
+
+Error @ Tue Dec 24 2013 09:22:17 GMT-0500 (EST)
+	invalid delete call
+	{"id":"125"}
+
+Error @ Tue Dec 24 2013 09:22:17 GMT-0500 (EST)
+	invalid delete call
+	{"id":"126"}
+
+Error @ Tue Dec 24 2013 09:52:02 GMT-0500 (EST)
+	invalid delete call
+	{"host":"1380180579","pub":false}
+
+Error @ Tue Dec 24 2013 09:52:04 GMT-0500 (EST)
+	invalid delete call
+	{"id":"121"}
+

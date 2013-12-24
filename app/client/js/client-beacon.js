@@ -7,22 +7,17 @@
 /**
  * Represents a Beacon Event.
  * @constructor
- * @param {string} host - The host ID of the person or company hosting the Beacon.
- * @param {string} description - Currently acting as the title of the Beacon rather than an actual description.
- * @param {number} latitude - The latitude of the Beacon location.
- * @param {number} longitude - The longitude of the Beacon location.
- * @param {array} attends - An array of people who are attending the Beacon. 
- * @param {bool} pub - A boolean that is True when the Beacon is public and false otherwise.
+ * @param {object} b - The Beacon given by the server. Contains: id, lat, lng,
+ *     host, attends, title, comments
  */
 function Beacon(b) {
 	var self = this;
 	for (var key in b) {
-
-    if(b.hasOwnProperty(key)) {
-    	self[key] = b[key];
-    }
+		if(b.hasOwnProperty(key)) {
+			self[key] = b[key];
+		}
 	}
-	
+	self.marker = createMarker(b.lat, b.lng);
 }
 
 /** 
@@ -61,11 +56,19 @@ Beacon.prototype.removeGuest = function(guest) {
 	}
 }
 
+/**
+ * Adds a comment to the message chain.
+ */
+Beacon.prototype.addComment = function(user, comment) {
+	this.comments.push({'user' : user, 'comment' : comment});
+	console.log(this.comments, user, comment);
+}
+
 /** 
- * Updates the description of this Beacon.
+ * [Depricated] Updates the description of this Beacon.
  * @param {string} description - Information relating to this Beacon.
  */
-Beacon.prototype.updateDescription = function(description) {
-	this.desc = description;
-	setMarkerInfo(this.marker, this.title, description);
-}
+// Beacon.prototype.updateDescription = function(description) {
+// 	this.desc = description;
+// 	setMarkerInfo(this.marker, this.title, description);
+// }
