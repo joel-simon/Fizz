@@ -1,4 +1,4 @@
-var io, beacons;
+var io, beacons, users;
 var utils = require('./utilities.js');
 var logError = utils.logError;
 var log = utils.log;
@@ -6,8 +6,10 @@ var debug = utils.debug;
 var fb = require('./fb.js');
 // var applePush = require('./applePush.js');
 
-module.exports.set = function(sio) {
+module.exports.set = function(sio, b, u) {
   io = sio;
+  beacons = b;
+  users = u;
   return module.exports;
 }
 
@@ -17,7 +19,7 @@ module.exports.set = function(sio) {
  * @param {Object} Socket - contains user user socket
  * @param {Object} Beacons - object for managing all beacons
  */
-module.exports.login = function(socket, beacons) {
+module.exports.login = function(socket) {
   var user = getUser(socket);
   var idArr = [];
   fb.get(user.token, '/me/friends', function(err, friends){
@@ -46,7 +48,7 @@ module.exports.login = function(socket, beacons) {
  * @param {Object} Data - contains .id and .admin
  * @param {Object} Beacons - object for managing all beacons
  */
-module.exports.joinBeacon = function(data, socket, beacons) {
+module.exports.joinBeacon = function(data, socket) {
   var user = getUser(socket);
   var id = data.id;
   var host = data.host;
@@ -54,11 +56,7 @@ module.exports.joinBeacon = function(data, socket, beacons) {
   beacons.add_guest( id, user.id, function(err) {
     if (err) return logError('join beacon', err);
     log(user.name, 'joined beacon', id);
-    // if (b.pub) {
-    //   emitPublic('addGuest', {'id':id, 'guest':user.id });  
-    // } else {
     emit(host, 'addGuest', {'id':id, 'guest':user.id });  
-    // }
   }); 
 }
 
@@ -68,7 +66,7 @@ module.exports.joinBeacon = function(data, socket, beacons) {
  * @param {Object} Socket - contains user user socket
  * @param {Object} Beacons - object for managing all beacons
  */
-module.exports.deleteBeacon = function(data, socket, beacons) {
+module.exports.deleteBeacon = function(data, socket) {
   var host = data.host;
   var id = data.id;
   var pub = data.pub;
@@ -87,7 +85,7 @@ module.exports.deleteBeacon = function(data, socket, beacons) {
  * @param {Object} Socket - contains user user socket
  * @param {Object} Beacons - object for managing all beacons
  */
-module.exports.leaveBeacon = function(data, socket, beacons) {
+module.exports.leaveBeacon = function(data, socket) {
   var host  = data.host,
       id    = data.id,
       guest = getUser(socket);
@@ -98,7 +96,7 @@ module.exports.leaveBeacon = function(data, socket, beacons) {
       if (false) {
         emitPublic('subGuest', {'id': id, 'guest': guest.id});  
       } else {
-        log(guest,'left', host);
+        log(guest.name, 'left', host);
         emit(host, 'subGuest', {'id': id, 'guest': guest.id}); 
         // emit(host, 'newBeacon', {'beacon': b});  
       }
@@ -112,7 +110,7 @@ module.exports.leaveBeacon = function(data, socket, beacons) {
  * @param {Object} Socket - contains user user socket
  * @param {Object} Beacons - object for managing all beacons
  */
-module.exports.newBeacon = function (B, socket, beacons) {
+module.exports.newBeacon = function (B, socket) {
   var user = getUser(socket);
   beacons.getNextId(function(err1, id){
     if (err1) return logError(err1, B);
@@ -127,17 +125,24 @@ module.exports.newBeacon = function (B, socket, beacons) {
   }); 
 }
 
-module.exports.addComment = function(data, socket, beacons) {
+module.exports.addComment = function(data, socket) {
   beacons.addComment(data.id, data.comment, function(){  
   });
 }
 
-module.exports.moveBeacon = function(data, socket, beacons) {
+module.exports.moveBeacon = function(data, socket) {
   var id = data.id;
   var lat = data.lat;
   var lng = data.lng; 
   if(!id || !lat || !lng) logError('Invalid move beacon call', data);
   beacons.moveBeacon(id, lat, lng);
+}
+
+module.exports.changeGroup = function(data, socket) {
+  var self = this;
+  var user = getUser(socket);
+
+
 }
 
 
@@ -147,7 +152,7 @@ module.exports.moveBeacon = function(data, socket, beacons) {
  * @param {Object} Socket - contains user user socket
  * @param {Object} Beacons - object for managing all beacons
  */
-function newUser (id, socket, beacons) {
+function newUser (id, socket) {
   console.log('New user registration', id);
   socket.emit('getFriends', {});
   socket.on('friendsList', function (friends) {
@@ -156,7 +161,6 @@ function newUser (id, socket, beacons) {
   });
 }
 
-
 /**
  * Handle and existing user logging in. 
  * @param {Number} id - the users id
@@ -164,7 +168,7 @@ function newUser (id, socket, beacons) {
  * @param {Object} Socket - contains user user socket
  * @param {Object} Beacons - object for managing all beacons
  */
-function existingUser(id, friends, socket, beacons) {
+function existingUser(id, friends, socket) {
   var user = getUser(socket);
   log(user.name, "has logged in.");
   socket.join(''+id);

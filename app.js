@@ -13,13 +13,14 @@ var http    = require('http'),
     redis   = require('redis'),
     Beacon  = require('./app/server/server-beacon.js'),
     keeper  = require('./app/server/beaconKeeper.js'),
-    handler = require('./app/server/socketHandler.js').set(io),
     config    = require('./config.json'),
     colors  = require('colors'),
     passport = require('passport'),
     FacebookStrategy = require('passport-facebook').Strategy,
     passportSocketIo = require("passport.socketio"),
     redisStore = require('connect-redis')(express);
+    // applePush  = require('./app/server/applePush.js');
+
 
 // Create pub/sub channels for sockets using redis. 
 var rtg  = require("url").parse(config.DB.REDISTOGO_URL);
@@ -32,7 +33,8 @@ store.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 
 var sessionStore = new redisStore({client: store}); // socket.io sessions
 var beacons = new keeper(store); // Object to manage beacons. 
- 
+var users = require('./app/server/users.js').set(store); 
+var handler = require('./app/server/socketHandler.js').set(io, beacons, users);
 
 passport.serializeUser(function(user, done) { done(null, user); });
 passport.deserializeUser(function(obj, done) { done(null, obj); });
@@ -48,7 +50,6 @@ passport.use(new FacebookStrategy({
     });
   }
 ));
-
 
 // Configure express app.
 app.configure('development',function(){
@@ -67,8 +68,6 @@ app.configure('development',function(){
 });
 
 
-
-
 var ioRedisStore = require('socket.io/lib/stores/redis');
 // Configure socketio.
 io.configure( function(){
@@ -84,29 +83,23 @@ io.set('authorization', passportSocketIo.authorize({
   key:         'connect.sid',       // the name of the cookie where express/connect stores its session_id
   secret:      config.SECRET.cookieParser,    // the session_secret to parse the cookie
   store:       sessionStore,        // we NEED to use a sessionstore. no memorystore please
-  fail:        onAuthorizeFail,     // *optional* callback on fail/error - read more below
 }));
-
-function onAuthorizeFail(data, message, error, accept){
-  // console.log('failed connection to socket.io:', message);
-  // We use this callback to log all of our failed connections.
-  accept(null, false);
-}
 
 // Bind socket handlers. 
 io.sockets.on('connection', function(socket) {
-  handler.login(socket, beacons);
-  socket.on('joinBeacon',   function(data){ handler.joinBeacon  (data, socket, beacons) });
-  socket.on('deleteBeacon', function(data){ handler.deleteBeacon(data, socket, beacons) });
-  socket.on('leaveBeacon',  function(data){ handler.leaveBeacon (data, socket, beacons) });
-  socket.on('newBeacon',    function(data){ handler.newBeacon   (data, socket, beacons) });
-  socket.on('newComment',   function(data){ handler.newComment  (data, socket, beacons) });
-  socket.on('moveBeacon',   function(data){ handler.moveBeacon  (data, socket, beacons) });
+  handler.login(socket);
+  socket.on('joinBeacon',   function(data){ handler.joinBeacon  (data, socket) });
+  socket.on('deleteBeacon', function(data){ handler.deleteBeacon(data, socket) });
+  socket.on('leaveBeacon',  function(data){ handler.leaveBeacon (data, socket) });
+  socket.on('newBeacon',    function(data){ handler.newBeacon   (data, socket) });
+  socket.on('newComment',   function(data){ handler.newComment  (data, socket) });
+  socket.on('moveBeacon',   function(data){ handler.moveBeacon  (data, socket) });
+  socket.on('changeGroup',  function(data){ handler.moveBeacon  (data, socket) });
 });
 
 // Route all routes. 
 require('./app/server/router')(app, passport);
-
+                  
 var domo =  ''+
 "#####################################\n"+
 'DOMOS HOSTS THE BEACON INTO THE CLOUD \n'+
