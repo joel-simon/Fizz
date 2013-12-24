@@ -1,7 +1,7 @@
 module.exports = function(app, passport) {
 	
 	app.get('/auth/facebook',
-  passport.authenticate('facebook', { display: 'popup', scope: ['user_friends', 'user_groups', 'email'] }),
+  passport.authenticate('facebook', { display: 'page', scope: ['user_friends', 'user_groups', 'email'] }),
   function(req, res){
   });
 
