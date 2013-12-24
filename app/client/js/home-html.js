@@ -23,7 +23,7 @@ function createHtmlString(beacon, callback) {
 			'<button class="btn '+color+'" id="beacon-'+beacon.id+'">'+
 				label+
 			'</button>'+
-			'<p class="details">'+beacon.title+'</p>';
+			'<p class="title">'+beacon.title+'</p>';
 
 	// Gets and displays the host info.
 	getFbData(beacon.host, function(hostPic, hostName) {
@@ -39,7 +39,6 @@ function createHtmlString(beacon, callback) {
 							'<input type="text", name="comment", placeholder="Write a comment">'+
 						'</form>'+
 					'</li>';
-				// console.log(htmlString);
 				callback(htmlString);
 			});
 		});
@@ -50,11 +49,14 @@ function createHtmlString(beacon, callback) {
 function getAttendsString(beacon, callback) {
 	var counter = 0;
 	var string = '';
+	var guestClass;
 	if (beacon.attends.length) {
 		// Loops through the guests and gets and displays their info.
 		beacon.attends.forEach(function(guest, i) {
 			getFbData(guest, function(guestPic, guestName) {
-				string += '<img class="guest-pic" title="'+guestName+'" src="'+guestPic+'">';
+				guestClass = 'gc'+beacon.id+'-'+guest;
+				string += '<img class="guest-pic '+guestClass+
+					'" title="'+guestName+'" src="'+guestPic+'">';
 				if (++counter == beacon.attends.length) {
 					string += '</div></div>';
 					callback(string);
@@ -73,9 +75,10 @@ function getAttendsString(beacon, callback) {
 function getCommentsString(beacon, callback) {
 	var counter = 0;
 	var string = '<div id="commentList">';
+	console.log(beacon.comments);
 	if (beacon.comments.length) {
 		beacon.comments.forEach(function(com, i) {
-			string += '<p>'+com.user+': '+com.comment+'</p>';
+			string += '<p id="com'+com.id+'">'+com.user+': '+com.comment+'</p>';
 			if (++counter == beacon.comments.length) {
 				string += '</div>';
 				callback(string);

@@ -40,6 +40,7 @@ socket.on('newComment', function(data) {
 	var id = data.id;
 	var user = data.comment.user;
 	var comment = data.comment.comment;
+	var commentID = data.comment.id;
 	BKeeper.addComment(id, user, comment);
 });
 
@@ -49,3 +50,15 @@ socket.on('updateTitle', function(data) {
 	var title = data.title;
 	BKeeper.updateTitle(id, title);
 });
+
+socket.on('updateLocation', function(data) {
+	console.log('UPDATING LOCATION', data);
+	var id = data.id;
+	var lat = data.lat;
+	var lng = data.lng;
+	BKeeper.updateLocation(id, lat, lng);
+});
+
+
+
+
