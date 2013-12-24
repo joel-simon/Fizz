@@ -30,7 +30,8 @@ function drawBeacon(beacon) {
 				joinBeacon( beacon );
 			}
 		});
-		$('#comments-'+beacon.id).on('submit', function() {
+		$('#comments-'+beacon.id).on('submit', function(e) {
+			e.preventDefault();
 			addComment( beacon, this.comment.value, me.id );
 		});
 	});
@@ -44,7 +45,7 @@ function eraseBeacon(beacon) {
 	if (beacon.marker) removeMarker(beacon.marker);
 
 	// Remove the beacon from the beacon-list.
-	$('#host-'+beacon.host).parent().remove();
+	$('#host-'+beacon.id).parent().remove();
 }
 
 
