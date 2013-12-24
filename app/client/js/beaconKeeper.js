@@ -16,7 +16,7 @@ function BeaconKeeper() {
 }
 
 /**
- * [Depricated - handled by renewBeacon] Refreshes a given Beacon to keep all the information up to date for the User.
+ * [Depricated - handled by newBeacon] Refreshes a given Beacon to keep all the information up to date for the User.
  * @param {string} host - The host ID of the person or company hosting the Beacon.
  * @param {string} desc - Currently acting as the title of the Beacon rather than an actual description.
  * @param {number} lat - The latitude of the Beacon location.
@@ -43,6 +43,7 @@ function BeaconKeeper() {
  */
 BeaconKeeper.prototype.newBeacon = function(b) {
 	if (validate(b)) {
+		if (this.table[b.id]) this.removeBeacon(b.id);
 		var B = new Beacon(b);
 		this.table[b.id] = B;
 		this.count++;
@@ -87,6 +88,19 @@ BeaconKeeper.prototype.removeGuest = function(id, guest) {
 	drawBeacon(beacon);
 	// this.table[host].removeGuest(guest);
 }
+
+
+/** 
+ * Adds a comment to the Beacon.
+ */
+BeaconKeeper.prototype.addComment = function(id, user, comment) {
+	var beacon = this.table[id];
+	beacon.addComment(user, comment);
+	eraseBeacon(beacon);
+	drawBeacon(beacon);
+	// this.table[host].removeGuest(guest);
+}
+
 
 /** 
  * Removes the host's Beacon.
