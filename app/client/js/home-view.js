@@ -45,7 +45,7 @@ function eraseBeacon(beacon) {
 	if (beacon.marker) removeMarker(beacon.marker);
 
 	// Remove the beacon from the beacon-list.
-	$('#host-'+beacon.id).parent().remove();
+	$('#beacon-'+beacon.id).parent().remove();
 }
 
 
