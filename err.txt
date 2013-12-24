@@ -100,3 +100,7 @@ Error @ Tue Dec 24 2013 09:52:04 GMT-0500 (EST)
 	invalid delete call
 	{"id":"121"}
 
+Error @ Tue Dec 24 2013 12:28:47 GMT-0500 (EST)
+	Invalid Beacon.
+	{"id":137,"host":"1380180579","lat":40.7764706,"lng":-73.9515958,"attends":[],"comments":[{"user":"1380180579","comment":"b"}],"title":"a","pub":false}
+

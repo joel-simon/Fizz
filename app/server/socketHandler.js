@@ -125,7 +125,7 @@ module.exports.newBeacon = function (B, socket) {
   }); 
 }
 
-module.exports.addComment = function(data, socket) {
+module.exports.newComment = function(data, socket) {
   beacons.addComment(data.id, data.comment, function(){  
   });
 }

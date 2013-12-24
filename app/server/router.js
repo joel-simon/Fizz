@@ -9,12 +9,9 @@ module.exports = function(app, passport) {
 	  passport.authenticate('facebook', { failureRedirect: '/' }),
 	  function(req, res) {
 	  	var user = req['user'];
-	  	// var user = req.session;
 	  	res.cookie('userId', user.id, { maxAge: 2592000000 });
-	  	// res.cookie('userName', user.id, { maxAge: 2592000000 });
 	    res.redirect('/home');
   });
-
 
 	app.get('/', function(req, res) {
 		res.render('index', {});

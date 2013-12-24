@@ -48,22 +48,23 @@ module.exports.logError = function(err, detail) {
     }
 	}); 
 }
-module.exports.posInt = function(i) {
-	return (typeof b.id === 'number' && i%1!==0 && i >= 0);
-}
 
+module.exports.posInt = posInt;
+function posInt(i) {
+	return ((typeof i === 'number') && (i%1 === 0) && (i >= 0));
+}
 /** Verify  a beacon.
  * 
  * @param {Object} B - the beacon to insert
  * @return {Bool} - if it is a valid beacon
  */
 module.exports.validate = function (b) {
-  if (!this.isPosInt(b.id)) return false;
-  if (!b.host || typeof b.host !== 'string') return false;
+  if (!posInt(b.id)) return false;
+  if (typeof b.host !== 'string') return false;
   if (typeof b.title !== 'string') return false;
   if (!b.lat  || typeof b.lat  !== 'number') return false;
   if (!b.lng  || typeof b.lng  !== 'number') return false;
-  if (typeof b.pub  !== 'boolean')  return false;
+  // if (typeof b.pub  !== 'boolean')  return false;
   if (!(b.attends && b.attends instanceof Array)) return false;
   if (!(b.comments && b.comments instanceof Array)) return false;
   return true;

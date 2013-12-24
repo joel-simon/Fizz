@@ -15,9 +15,7 @@ if (me.name && me.picture) {
 	});
 }
 
-// getFbData('1380180579');
 function getFbData(id, callback) {
-	
 	$.ajax({
 	  url: 'http://graph.facebook.com/'+id+'?fields=picture,name',
 	  success: function( data ) {
