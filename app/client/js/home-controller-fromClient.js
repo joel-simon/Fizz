@@ -57,7 +57,8 @@ function leaveBeacon(b) {
 
 function addComment(beacon, comment, poster) {
 	beacon.addComment(poster, comment);
-	socket.emit('newComment', { 'id':beacon.id, 
-		'comment':{'user':poster, 'comment':comment} });
+	socket.emit('newComment', 
+		{ 'id':beacon.id, 'comment':{'user':poster, 'comment':comment} }
+	);
 }
 
