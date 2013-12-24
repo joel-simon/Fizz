@@ -43,3 +43,7 @@ socket.on('newComment', function(data) {
 	BKeeper.addComment(id, user, comment);
 });
 
+socket.on('updateTitle', function(data) {
+	console.log('UPDATING TITLE', data);
+	
+});
