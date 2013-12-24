@@ -35,5 +35,3 @@ socket.on('removeGuest', function(data) {
 });
 
 
-
-
