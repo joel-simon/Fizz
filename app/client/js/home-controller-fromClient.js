@@ -24,7 +24,6 @@ $('#myBeacon').on('submit', function(e) {
 	}
 	
 	var beacon = {
-		'id' : null,
 		'host' : me.id, 
 		'lat' : lat, 
 		'lng' : lng,  
@@ -32,33 +31,34 @@ $('#myBeacon').on('submit', function(e) {
 		'comments' : [firstComment],
 		'title': title
 	};
-	console.log('SENDING: ', beacon);
+	console.log('SENDING [newBeacon]: ', beacon);
 	socket.emit('newBeacon', beacon);
 });
 
 
 function joinBeacon(b) {
 	if (b.host != me.id && !b.hasGuest(me.id)) {
+		console.log('SENDING [joinBeacon]: ', b.id, b.host);
 		socket.emit('joinBeacon', {'id':b.id , 'host':b.host });
 	}
 }
 
-
-function disbandBeacon(b) {
-	console.trace();
-	console.log('delete', b.id);
-	socket.emit('deleteBeacon', { 'host':b.host, 'id':b.id });
-}
-
 function leaveBeacon(b) {
+	console.log('SENDING [leaveBeacon]: ', b.host, b.id);
 	socket.emit('leaveBeacon', {'host':b.host, 'id':b.id});
 }
 
 
-function addComment(beacon, comment, poster) {
-	beacon.addComment(poster, comment);
+function disbandBeacon(b) {
+	console.log('SENDING [deleteBeacon]: ', b.host, b.id);
+	socket.emit('deleteBeacon', { 'host':b.host, 'id':b.id });
+}
+
+
+function addComment(beacon, comment, user) {
+	console.log('SENDING [addComment]: ', beacon.id, user, comment);
 	socket.emit('newComment', 
-		{ 'id':beacon.id, 'comment':{'user':poster, 'comment':comment} }
+		{ 'id':beacon.id, 'comment':{'user':user, 'comment':comment} }
 	);
 }
 

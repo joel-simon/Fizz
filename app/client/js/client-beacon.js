@@ -61,7 +61,6 @@ Beacon.prototype.removeGuest = function(guest) {
  */
 Beacon.prototype.addComment = function(user, comment) {
 	this.comments.push({'user' : user, 'comment' : comment});
-	console.log(this.comments, user, comment);
 }
 
 /** 
