@@ -9,7 +9,7 @@ socket.on('newBeacon', function(data) {
 });
 
 socket.on('newBeacons', function(data) {
-	console.log('BEACON UPLOAD:', data, socket);
+	console.log('BEACON UPLOAD:', data);
 	data.forEach(function(B, i) {
 		console.log('NEW BEACON:', B);
 		BKeeper.newBeacon(B);
