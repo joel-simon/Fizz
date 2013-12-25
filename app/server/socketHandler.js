@@ -87,25 +87,38 @@ module.exports.deleteBeacon = function(data, socket) {
  */
 module.exports.leaveBeacon = function(data, socket) {
   try {
-    var host  = data.host,
-        id    = data.id,
-        guest = getUser(socket);
-    beacons.del_guest( id, guest.id, function(err) {
-      if (err) logError(err);
-      beacons.get(host, function(err1, b){
-        if (err1) return error(err1);
-        if (false) {
-          emitPublic('subGuest', {'id': id, 'guest': guest.id});  
-        } else {
-          log(guest.name, 'left', host);
-          emit(host, 'subGuest', {'id': id, 'guest': guest.id}); 
-          // emit(host, 'newBeacon', {'beacon': b});  
-        }
-      });
-    });
+    var user = getUser(socket);
+    var id = data.id;
+    var host = data.host;
+
+    beacons.del_guest( id, user.id, function(err) {
+      if (err) return logError('leave beacon', err);
+      log(user.name, 'left beacon', id);
+      emit(host, 'removeGuest', {'id':id, 'guest':user.id });  
+    }); 
   } catch (e) {
     logError('leaveBeacon', e);
   }
+  // try {
+  //   var host  = data.host,
+  //       id    = data.id,
+  //       guest = getUser(socket);
+  //   beacons.del_guest( id, guest.id, function(err) {
+  //     if (err) logError(err);
+  //     beacons.get(host, function(err1, b){
+  //       if (err1) return error(err1);
+  //       if (false) {
+  //         emitPublic('removeGuest', {'id': id, 'guest': guest.id});  
+  //       } else {
+  //         log(guest.name, 'left', host);
+  //         emit(host, 'removeGuest', {'id': id, 'guest': guest.id}); 
+  //         // emit(host, 'newBeacon', {'beacon': b});  
+  //       }
+  //     });
+  //   });
+  // } catch (e) {
+  //   logError('leaveBeacon', e);
+  // }
 }
 
 /**
