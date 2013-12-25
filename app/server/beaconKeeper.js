@@ -24,10 +24,14 @@ BeaconKeeper.prototype.insert = function(B, callback) {
   var store = self.store;
   var key;
 
+
   if (validate(B)) {
     key = 'hostedBy'+B.host;
     (B.pub) ? insertPublic(B) : insertPrivate(B);
-    
+    if (B.comments.length > 0) {
+      var c = B.comments[0];
+      self.addComment(B.id, c.user, c.comment);
+    }
   } else if (callback) {
     return callback("Invalid Beacon.");
   }
@@ -68,12 +72,19 @@ BeaconKeeper.prototype.del_guest = function(id, guestId, callback) {
 }
 
 BeaconKeeper.prototype.addComment = function(id, guestId, comment, callback) {
-  var entry = JSON.stringify({'id':guestId, 'comment':comment});
-  this.store.rpush('comments'+id, entry);
+  var entry = JSON.stringify({'user':guestId, 'comment':comment});
+  this.store.rpush('comments'+id, entry, callback);
 }
 
 BeaconKeeper.prototype.getComments = function(id, callback) {
-  this.store.lrange('comments'+id,0,-1, callback);
+  this.store.lrange('comments'+id,0,-1, function(err, data) {
+    if (err) callback (err);
+    else { 
+      // console.log('comments', data);
+      // callback(null, data);
+      callback(null, data.map(function(e){return JSON.parse(e)}));
+    }
+  });
 }
 
 // returns null on failure
@@ -113,7 +124,7 @@ BeaconKeeper.prototype.get = function(id, callback) {
         });
       },
       comments: function(cb){
-        store.lrange('comments'+id,0,-1, cb);
+        self.getComments(id, cb);
       } 
     },
     function(err, results) {
@@ -121,7 +132,6 @@ BeaconKeeper.prototype.get = function(id, callback) {
       var B = results.data;
       B.comments = results.comments;
       B.attends = results.attends;
-      // console.log(B);
       callback(null, B);
     });
   }

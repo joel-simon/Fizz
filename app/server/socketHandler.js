@@ -20,27 +20,19 @@ module.exports.set = function(sio, b, u) {
  * @param {Object} Beacons - object for managing all beacons
  */
 module.exports.login = function(socket) {
-  var user = getUser(socket);
-  var idArr = [];
-  fb.get(user.token, '/me/friends', function(err, friends){
-    if (err) return logError('from facebook.get()', err); 
-    friends.data.forEach(function(elem, i) {
-      idArr.push(elem.id);
+  try {
+    var user = getUser(socket);
+    var idArr = [];
+    fb.get(user.token, '/me/friends', function(err, friends){
+      if (err) return logError('from facebook.get()', err); 
+      friends.data.forEach(function(elem, i) {
+        idArr.push(elem.id);
+      });
+      existingUser(user.id, idArr, socket, beacons);
     });
-    existingUser(user.id, idArr, socket, beacons);
-  });
-  
-    // existingUser(id, friends, socket, beacons);
-
-  // } else if (admin) {
-  //   log("Admin has logged in!");
-  //   socket.join('admins');
-  //   beacons.getAll(function(err, allBeacons){
-  //     if (err) return logError(err);
-  //     console.log('all beacons', allBeacons);
-  //     socket.emit('newBeacons', allBeacons);
-  //   }); 
-  // }
+  } catch (e) {
+    logError('login', e);
+  }
 }
 
 /**
@@ -49,15 +41,19 @@ module.exports.login = function(socket) {
  * @param {Object} Beacons - object for managing all beacons
  */
 module.exports.joinBeacon = function(data, socket) {
-  var user = getUser(socket);
-  var id = data.id;
-  var host = data.host;
+  try {
+    var user = getUser(socket);
+    var id = data.id;
+    var host = data.host;
 
-  beacons.add_guest( id, user.id, function(err) {
-    if (err) return logError('join beacon', err);
-    log(user.name, 'joined beacon', id);
-    emit(host, 'addGuest', {'id':id, 'guest':user.id });  
-  }); 
+    beacons.add_guest( id, user.id, function(err) {
+      if (err) return logError('join beacon', err);
+      log(user.name, 'joined beacon', id);
+      emit(host, 'addGuest', {'id':id, 'guest':user.id });  
+    }); 
+  } catch (e) {
+    logError('joinBeacon', e);
+  }
 }
 
 /**
@@ -67,16 +63,20 @@ module.exports.joinBeacon = function(data, socket) {
  * @param {Object} Beacons - object for managing all beacons
  */
 module.exports.deleteBeacon = function(data, socket) {
-  var host = data.host;
-  var id = data.id;
-  var pub = data.pub;
-  if (!host) return logError("invalid delete call", data);
-  if (!id)  return logError("invalid delete call", data);
+  try {
+    var host = data.host;
+    var id = data.id;
+    var pub = data.pub;
+    if (!host) return logError("invalid delete call", data);
+    if (!id)  return logError("invalid delete call", data);
 
-  beacons.remove( id, host, pub );
-  if (pub) emitPublic('deleteBeacon', {host: host});
-  else emit(host, 'deleteBeacon', {id:id, host:host});
-  log('Deleted beacon', host);
+    beacons.remove( id, host, pub );
+    if (pub) emitPublic('deleteBeacon', {host: host});
+    else emit(host, 'deleteBeacon', {id:id, host:host});
+    log('Deleted beacon', host);
+  } catch (e) {
+    logError('deleteBeacon', e);
+  }
 }
 
 /**
@@ -86,22 +86,26 @@ module.exports.deleteBeacon = function(data, socket) {
  * @param {Object} Beacons - object for managing all beacons
  */
 module.exports.leaveBeacon = function(data, socket) {
-  var host  = data.host,
-      id    = data.id,
-      guest = getUser(socket);
-  beacons.del_guest( id, guest.id, function(err) {
-    if (err) logError(err);
-    beacons.get(host, function(err1, b){
-      if (err1) return error(err1);
-      if (false) {
-        emitPublic('subGuest', {'id': id, 'guest': guest.id});  
-      } else {
-        log(guest.name, 'left', host);
-        emit(host, 'subGuest', {'id': id, 'guest': guest.id}); 
-        // emit(host, 'newBeacon', {'beacon': b});  
-      }
+  try {
+    var host  = data.host,
+        id    = data.id,
+        guest = getUser(socket);
+    beacons.del_guest( id, guest.id, function(err) {
+      if (err) logError(err);
+      beacons.get(host, function(err1, b){
+        if (err1) return error(err1);
+        if (false) {
+          emitPublic('subGuest', {'id': id, 'guest': guest.id});  
+        } else {
+          log(guest.name, 'left', host);
+          emit(host, 'subGuest', {'id': id, 'guest': guest.id}); 
+          // emit(host, 'newBeacon', {'beacon': b});  
+        }
+      });
     });
-  });
+  } catch (e) {
+    logError('leaveBeacon', e);
+  }
 }
 
 /**
@@ -111,37 +115,59 @@ module.exports.leaveBeacon = function(data, socket) {
  * @param {Object} Beacons - object for managing all beacons
  */
 module.exports.newBeacon = function (B, socket) {
-  var user = getUser(socket);
-  beacons.getNextId(function(err1, id){
-    if (err1) return logError(err1, B);
-    B.id = id;
-    B.pub = false;
-    beacons.insert(B, function(err2) {
-      if (err2) return logError(err2, B);
-      if (B.pub) io.sockets.emit('newBeacon', {"beacon" : B});
-      else emit(B.host, 'newBeacon', {"beacon" : B});
-      log('New beacon by', user.name);
-    });
-  }); 
+  try {
+    var user = getUser(socket);
+    beacons.getNextId(function(err1, id){
+      if (err1) return logError(err1, B);
+      B.id = id;
+      B.pub = false;
+      beacons.insert(B, function(err2) {
+        if (err2) return logError(err2, B);
+        if (B.pub) io.sockets.emit('newBeacon', {"beacon" : B});
+        else emit(B.host, 'newBeacon', {"beacon" : B});
+        log('New beacon by', user.name);
+      });
+    }); 
+  } catch (e) {
+    logError('newBeacon', e);
+  }
 }
 
 module.exports.newComment = function(data, socket) {
-  beacons.addComment(data.id, data.comment, function(){  
-  });
+  try {
+    var BID = data.id,
+        host = data.host,
+        comment = data.comment.comment,
+        poster = data.comment.user;
+
+      beacons.addComment(BID, poster, comment, function(err) {  
+        emit(data.host, 'newComment', data);
+        log('new comment', data); 
+    });
+  } catch (e) {
+    logError('newComment', e);
+  }
 }
 
 module.exports.moveBeacon = function(data, socket) {
-  var id = data.id;
-  var lat = data.lat;
-  var lng = data.lng; 
-  if(!id || !lat || !lng) logError('Invalid move beacon call', data);
-  beacons.moveBeacon(id, lat, lng);
+  try {
+    var id = data.id;
+    var lat = data.lat;
+    var lng = data.lng; 
+    if(!id || !lat || !lng) logError('Invalid move beacon call', data);
+    beacons.moveBeacon(id, lat, lng);
+  } catch (e) {
+    logError('moveBeacon', e);
+  }
 }
 
 module.exports.changeGroup = function(data, socket) {
-  var self = this;
-  var user = getUser(socket);
-
+  try {
+    var self = this;
+    var user = getUser(socket);
+  } catch (e) {
+    logError('changeGroup', e);
+  }
 
 }
 

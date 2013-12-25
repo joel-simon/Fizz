@@ -58,7 +58,7 @@ function disbandBeacon(b) {
 function addComment(beacon, comment, user) {
 	console.log('SENDING [addComment]: ', beacon.id, user, comment);
 	socket.emit('newComment', 
-		{ 'id':beacon.id, 'comment':{'user':user, 'comment':comment} }
+		{ 'id':beacon.id, 'host': beacon.host, comment:{'user':user, 'comment':comment} }
 	);
 }
 
