@@ -33,6 +33,7 @@ function drawBeacon(beacon) {
 		$('#comments-'+beacon.id).on('submit', function(e) {
 			e.preventDefault();
 			addComment( beacon, this.comment.value, me.id );
+			this.comment.value = '';
 		});
 	});
 

@@ -36,11 +36,9 @@ Beacon.prototype.addGuest = function(guest) {
 Beacon.prototype.hasGuest = function(guest) {
 	for (var i = 0; i < this.attends.length; i++) {
 		if (this.attends[i] == guest) {
-			// console.log('you are a guest!');
 			return true;
 		}
 	}
-	// console.log('you are not a guest!');
 	return false;
 }
 
@@ -64,10 +62,20 @@ Beacon.prototype.addComment = function(user, comment) {
 }
 
 /** 
- * [Depricated] Updates the description of this Beacon.
- * @param {string} description - Information relating to this Beacon.
+ * Updates the title of this Beacon.
+ * @param {string} title - Information relating to this Beacon.
  */
-// Beacon.prototype.updateDescription = function(description) {
-// 	this.desc = description;
-// 	setMarkerInfo(this.marker, this.title, description);
-// }
+Beacon.prototype.updateTitle = function(title) {
+	this.title = title;
+	setMarkerInfo(this.marker, title);
+}
+
+/** 
+ * Updates the location of this Beacon.
+ * @param {float} lat - lattitude
+ * @param {float} lng - lng
+ */
+Beacon.prototype.updateLocation = function(lat, lng) {
+	removeMarker(this.marker);
+	this.marker = createMarker(lat, lng);
+}

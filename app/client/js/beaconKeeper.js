@@ -18,7 +18,7 @@ function BeaconKeeper() {
 /**
  * Creates a new beacon.
  * @param {string} host - The host ID of the person or company hosting the Beacon.
- * @param {string} desc - Currently acting as the title of the Beacon rather than an actual description.
+ * @param {string} title - The title of the Beacon event.
  * @param {number} lat - The latitude of the Beacon location.
  * @param {number} lng - The longitude of the Beacon location.
  * @param {bool} draw - True when the Beacon should be drawn, and False otherwise.
@@ -37,8 +37,8 @@ BeaconKeeper.prototype.newBeacon = function(b) {
 }
 
 /** 
- * Returns the host's Beacon object.
- * @param {string} host - The host ID of the person or company hosting the Beacon.
+ * Returns the id's Beacon object.
+ * @param {int} id - The unique Beacon ID.
  */
 BeaconKeeper.prototype.getBeacon = function(id) {
 	return this.table[id];
@@ -46,7 +46,7 @@ BeaconKeeper.prototype.getBeacon = function(id) {
 
 /** 
  * Adds a guest to the host's beacon.
- * @param {string} host - The host ID of the person or company hosting the Beacon.
+ * @param {int} id - The unique Beacon ID.
  * @param {string} guest - The guest ID of the person joining the Beacon.
  */
 BeaconKeeper.prototype.addGuest = function(id, guest) {
@@ -58,7 +58,7 @@ BeaconKeeper.prototype.addGuest = function(id, guest) {
 
 /** 
  * Removes a guest from the host's Beacon.
- * @param {string} host - The host ID of the person or company hosting the Beacon.
+ * @param {int} id - The unique Beacon ID.
  * @param {string} guest - The guest ID of the person leaving the Beacon.
  */
 BeaconKeeper.prototype.removeGuest = function(id, guest) {
@@ -84,8 +84,27 @@ BeaconKeeper.prototype.addComment = function(id, user, comment) {
 
 
 /** 
+ * Updates the title of the Beacon.
+ */
+BeaconKeeper.prototype.updateTitle = function(id, title) {
+	var beacon = this.table[id];
+	beacon.updateTitle(title);
+	eraseBeacon(beacon);
+	drawBeacon(beacon);
+}
+
+/** 
+ * Updates the location of the Beacon.
+ */
+BeaconKeeper.prototype.updateLocation = function(id, lat, lng) {
+	var beacon = this.table[id];
+	beacon.updateLocation(lat, lng);
+}
+
+
+/** 
  * Removes the host's Beacon.
- * @param {string} host - The host ID of the person or company hosting the Beacon.
+ * @param {int} id - The unique Beacon ID.
  */
 BeaconKeeper.prototype.removeBeacon = function(id) {
 	eraseBeacon( this.table[id] );
@@ -106,12 +125,12 @@ BeaconKeeper.prototype.removeBeacon = function(id) {
 /**
  * Removes all Beacons.
  */
-BeaconKeeper.prototype.removeAllBeacons = function() {
-	for (var id in this.table) {
-		this.removeBeacon(id);
-		socket.emit('deleteBeacon', {'id':id});
-	}
-}
+// BeaconKeeper.prototype.removeAllBeacons = function() {
+// 	for (var id in this.table) {
+// 		this.removeBeacon(id);
+// 		socket.emit('deleteBeacon', {'id':id});
+// 	}
+// }
 
 
 /** Verify  a beacon.
