@@ -98,7 +98,7 @@ module.exports.leaveBeacon = function(data, socket) {
           emitPublic('subGuest', {'id': id, 'guest': guest.id});  
         } else {
           log(guest.name, 'left', host);
-          emit(host, 'subGuest', {'id': id, 'guest': guest.id}); 
+          emit(host, 'removeGuest', {'id': id, 'guest': guest.id}); 
           // emit(host, 'newBeacon', {'beacon': b});  
         }
       });
