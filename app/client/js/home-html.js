@@ -75,7 +75,6 @@ function getAttendsString(beacon, callback) {
 function getCommentsString(beacon, callback) {
 	var counter = 0;
 	var string = '<div id="commentList">';
-	console.log(beacon.comments);
 	if (beacon.comments.length) {
 		beacon.comments.forEach(function(com, i) {
 			string += '<p id="com'+com.id+'">'+com.user+': '+com.comment+'</p>';

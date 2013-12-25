@@ -36,7 +36,7 @@ $('#myBeacon').on('submit', function(e) {
 
 function joinBeacon(b) {
 	if (b.host != me.id && !b.hasGuest(me.id)) {
-		console.log('SENDING [joinBeacon]: ', b.id, b.host);
+		console.log('SENDING [joinBeacon]: ', b.host, b.id);
 		socket.emit('joinBeacon', {'id':b.id , 'host':b.host });
 	}
 }
