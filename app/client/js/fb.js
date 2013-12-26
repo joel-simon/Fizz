@@ -1,25 +1,33 @@
 var me = {};
-me.id = $.cookie('userId');
-me.name = $.cookie('userName');
-me.picture = $.cookie('userPicture');
+var fbInfo = {};
 
-if (me.name && me.picture) {
-	console.log('Received FB info from cookies.');
-	drawUserInfo(me.picture, me.name);
-} else {
-	console.log('Getting info from FB...');
-	getFbData(me.id, function(hostPic, hostName) {
-		drawUserInfo(hostPic, hostName);
-		$.cookie('userName', hostName, { expires: 7 });
-		$.cookie('userPicture', hostPic, { expires: 7 });
-	});
-}
+$(document).ready(function() {
+	me.id = $.cookie('userId');
+	me.name = $.cookie('userName');
+	me.pic = $.cookie('userPicture');
+
+	if (me.name && me.pic) {
+		fbInfo[me.id] = {'name':me.name, 'pic':me.pic};
+		console.log('Received FB info from cookies:', fbInfo);
+		drawUserInfo(me.pic, me.name);
+	} else {
+		console.log('Getting info from FB...');
+		getFbData(me.id, function(pic, name) {
+			drawUserInfo(pic, name);
+			$.cookie('userName', name, { expires: 7 });
+			$.cookie('userPicture', pic, { expires: 7 });
+		});
+	}
+});
 
 function getFbData(id, callback) {
 	$.ajax({
 		url: 'http://graph.facebook.com/'+id+'?fields=picture,name',
 		success: function( data ) {
-			callback(data.picture.data.url, data.name);
+			var pic  = data.picture.data.url;
+			var name = data.name;
+			fbInfo[id] = {'name':name, 'pic':pic};
+			callback(pic, name);
 		}
 	});
 }

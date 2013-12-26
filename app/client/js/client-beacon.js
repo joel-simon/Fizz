@@ -11,13 +11,14 @@
  *     host, attends, title, comments
  */
 function Beacon(b) {
-	var self = this;
-	for (var key in b) {
-		if(b.hasOwnProperty(key)) {
-			self[key] = b[key];
-		}
-	}
-	self.marker = createMarker(b.lat, b.lng);
+	this.id       = b.id;
+	this.lat      = b.lat;
+	this.lng      = b.lng;
+	this.marker   = createMarker(b.lat, b.lng);
+	this.title    = b.title;
+	this.host     = b.host;
+	this.attends  = b.attends;
+	this.comments = b.comments;
 }
 
 /** 
@@ -57,8 +58,8 @@ Beacon.prototype.removeGuest = function(guest) {
 /**
  * Adds a comment to the message chain.
  */
-Beacon.prototype.addComment = function(user, comment) {
-	this.comments.push({'user' : user, 'comment' : comment});
+Beacon.prototype.addComment = function(user, comment, comId) {
+	this.comments.push({'id':comId, 'user':user, 'comment':comment});
 }
 
 /** 

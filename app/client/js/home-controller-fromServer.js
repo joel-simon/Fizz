@@ -42,7 +42,7 @@ socket.on('newComment', function(data) {
 	var user = data.comment.user;
 	var comment = data.comment.comment;
 	var commentID = data.comment.id;
-	BKeeper.addComment(id, user, comment);
+	BKeeper.addComment(id, user, comment, commentID);
 });
 
 socket.on('updateTitle', function(data) {

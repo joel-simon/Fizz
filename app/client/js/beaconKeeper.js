@@ -73,9 +73,9 @@ BeaconKeeper.prototype.removeGuest = function(id, guest) {
 /** 
  * Adds a comment to the Beacon.
  */
-BeaconKeeper.prototype.addComment = function(id, user, comment) {
+BeaconKeeper.prototype.addComment = function(id, user, comment, comId) {
 	var beacon = this.table[id];
-	beacon.addComment(user, comment);
+	beacon.addComment(user, comment, comId);
 	eraseBeacon(beacon);
 	drawBeacon(beacon);
 }
