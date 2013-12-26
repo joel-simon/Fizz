@@ -31,6 +31,11 @@ $('#myBeacon').on('submit', function(e) {
 	};
 	console.log('SENDING [newBeacon]: ', beacon);
 	socket.emit('newBeacon', beacon);
+	// clear form
+	form.title.value = '';
+	form.comment.value = '';
+	form.comment.focus();
+	form.comment.blur();
 });
 
 

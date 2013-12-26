@@ -37,7 +37,7 @@ function drawBeacon(beacon) {
 	});
 }
 
-function drawGuest(id, guest) {
+function drawAddedGuest(id, guest) {
 	getFbData(guest, function(guestPic, guestName) {
 		guestId = 'g-'+id+'-'+guest;
 		string = '<img id="'+guestId+'" class="guest-pic" title="'
@@ -48,6 +48,10 @@ function drawGuest(id, guest) {
 		.removeClass('btn-primary')
 		.addClass('btn-danger')
 		.text('Leave');
+}
+
+function drawAddedComment(id, user, comment) {
+
 }
 
 
@@ -61,7 +65,7 @@ function eraseBeacon(beacon) {
 }
 
 
-function eraseGuest(id, guest) {
+function eraseRemovedGuest(id, guest) {
 	$('#g-'+id+'-'+guest).remove();
 	$('#button-'+id)
 		.removeClass('btn-danger')
