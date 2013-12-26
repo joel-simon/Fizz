@@ -16,12 +16,11 @@ function drawBeacon(beacon) {
 	// Place the beacon marker on the google map.
 	setBeacon(beacon);
 
-
 	// Put the beacon info into the beacon-list.
 	createHtmlString(beacon, function(htmlString) {
 		// console.log(htmlString);
 		$('#beacon-list').prepend(htmlString);
-		$('#beacon-'+beacon.id).on('click', function() {
+		$('#button-'+beacon.id).on('click', function() {
 			if ( beacon.host == me.id ) {
 				disbandBeacon( beacon );
 			} else if ( beacon.hasGuest(me.id) ) {
@@ -30,12 +29,28 @@ function drawBeacon(beacon) {
 				joinBeacon( beacon );
 			}
 		});
-		$('#comments-'+beacon.id).on('submit', function(e) {
+		$('#newComment-'+beacon.id).on('submit', function(e) {
 			e.preventDefault();
 			addComment( beacon, this.comment.value, me.id );
 			this.comment.value = '';
 		});
 	});
+}
+
+function drawAddedGuest(id, guest) {
+	getFbData(guest, function(guestPic, guestName) {
+		guestId = 'g-'+id+'-'+guest;
+		string = '<img id="'+guestId+'" class="guest-pic" title="'
+			+guestName+'" src="'+guestPic+'">';
+		$('#beacon-'+id+' .attending').append(string);
+	});
+	$('#button-'+id)
+		.removeClass('btn-primary')
+		.addClass('btn-danger')
+		.text('Leave');
+}
+
+function drawAddedComment(id, user, comment) {
 
 }
 
@@ -46,7 +61,16 @@ function eraseBeacon(beacon) {
 	if (beacon.marker) removeMarker(beacon.marker);
 
 	// Remove the beacon from the beacon-list.
-	$('#beacon-'+beacon.id).parent().remove();
+	$('#beacon-'+beacon.id).remove();
+}
+
+
+function eraseRemovedGuest(id, guest) {
+	$('#g-'+id+'-'+guest).remove();
+	$('#button-'+id)
+		.removeClass('btn-danger')
+		.addClass('btn-primary')
+		.text('Join');
 }
 
 
