@@ -1,24 +1,25 @@
 var SERVER = window.location.origin;
 
 var BKeeper = new BeaconKeeper();
-var  socket = io.connect(SERVER);
+var socket = io.connect(SERVER);
+
+socket.on('newBeacons', function(data) {
+	console.log('BEACON UPLOAD:', data);
+	data.forEach(function(B, i) {
+		console.log('BEACON '+i+':', B);
+		BKeeper.newBeacon(B);
+	});
+});
 
 socket.on('newBeacon', function(data) { 
 	console.log('NEW BEACON:', data);
 	BKeeper.newBeacon(data.beacon);
 });
 
-socket.on('newBeacons', function(data) {
-	console.log('BEACON UPLOAD:', data);
-	data.forEach(function(B, i) {
-		console.log('NEW BEACON:', B);
-		BKeeper.newBeacon(B);
-	});
-});
-
 socket.on('deleteBeacon', function(data) {
 	console.log('DELETING BEACON:', data);
-	BKeeper.removeBeacon(data.id);
+	var id = data.id;
+	BKeeper.removeBeacon(id);
 });
 
 socket.on('addGuest', function(data) {

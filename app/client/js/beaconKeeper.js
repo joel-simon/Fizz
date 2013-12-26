@@ -52,8 +52,7 @@ BeaconKeeper.prototype.getBeacon = function(id) {
 BeaconKeeper.prototype.addGuest = function(id, guest) {
 	var beacon = this.table[id];
 	beacon.addGuest(guest);
-	eraseBeacon(beacon);
-	drawBeacon(beacon);
+	drawGuest(id, guest);
 }
 
 /** 
@@ -67,8 +66,7 @@ BeaconKeeper.prototype.removeGuest = function(id, guest) {
 	if (index > -1) {
 		beacon.attends.splice(index, 1);
 	}
-	eraseBeacon(beacon);
-	drawBeacon(beacon);
+	eraseGuest(id, guest);
 }
 
 
