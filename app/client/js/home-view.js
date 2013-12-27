@@ -5,9 +5,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 // Place FB pic and name
-function drawUserInfo(hostPic, hostName) {
-	$('#host-pic').attr('src', hostPic);
-	$('#host-name').html(hostName);
+function drawUserInfo(pic, name) {
+	$('#host-pic').attr('src', pic);
+	$('#host-name').html(name);
 }
 
 
@@ -50,8 +50,15 @@ function drawAddedGuest(id, guest) {
 		.text('Leave');
 }
 
-function drawAddedComment(id, user, comment) {
-
+function drawAddedComment(id, com) {
+	// comId = com.id || i;
+	// string += '<p id="c-'+beacon.id+'-'+comId+'">'+com.user+': '
+	// 	+com.comment+'</p>';
+	// if (++counter == beacon.comments.length) {
+	// 	string += '</div>';
+	// 	callback(string);
+	// 	return;
+	// }
 }
 
 
