@@ -50,15 +50,10 @@ function drawAddedGuest(id, guest) {
 		.text('Leave');
 }
 
-function drawAddedComment(id, com) {
-	// comId = com.id || i;
-	// string += '<p id="c-'+beacon.id+'-'+comId+'">'+com.user+': '
-	// 	+com.comment+'</p>';
-	// if (++counter == beacon.comments.length) {
-	// 	string += '</div>';
-	// 	callback(string);
-	// 	return;
-	// }
+function drawAddedComment(bid, cid, user, comment) {
+	var string = '<p id="c-'+bid+'-'+cid+'">'+user+': '
+	 	+comment+'</p>';
+	$('#beacon-'+bid+' .commentList').append(string);
 }
 
 
