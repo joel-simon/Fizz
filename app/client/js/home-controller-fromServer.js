@@ -38,27 +38,36 @@ socket.on('removeGuest', function(data) {
 
 socket.on('newComment', function(data) {
 	console.log('NEW COMMENT', data);
-	var id = data.id;
+	var bid = data.id;
 	var user = data.comment.user;
 	var comment = data.comment.comment;
-	var commentID = data.comment.id;
-	BKeeper.addComment(id, user, comment, commentID);
+	var cid = data.comment.id;
+	BKeeper.addComment(bid, user, comment, cid);
 });
 
-socket.on('updateTitle', function(data) {
-	console.log('UPDATING TITLE', data);
+socket.on('updateBeacon', function(data)  {
+	console.log('UPDATING BEACON', data);
 	var id = data.id;
+	var loc = data.location;
 	var title = data.title;
-	BKeeper.updateTitle(id, title);
+	if (title) BKeeper.updateTitle(id, title);
+	if (loc)   BKeeper.updateLocation(id, loc.lat, loc.lng);
 });
 
-socket.on('updateLocation', function(data) {
-	console.log('UPDATING LOCATION', data);
-	var id = data.id;
-	var lat = data.lat;
-	var lng = data.lng;
-	BKeeper.updateLocation(id, lat, lng);
-});
+// socket.on('updateTitle', function(data) {
+//   console.log('UPDATING TITLE', data);
+//   var id = data.id;
+//   var title = data.title;
+//   BKeeper.updateTitle(id, title);
+// });
+
+// socket.on('updateLocation', function(data) {
+//   console.log('UPDATING LOCATION', data);
+//   var id = data.id;
+//   var lat = data.lat;
+//   var lng = data.lng;
+//   BKeeper.updateLocation(id, lat, lng);
+// });
 
 
 

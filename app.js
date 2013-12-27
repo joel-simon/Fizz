@@ -11,7 +11,6 @@ var http    = require('http'),
     io      = require('socket.io').listen(server),
     db      = require('./app/server/database.js'),
     redis   = require('redis'),
-    Beacon  = require('./app/server/server-beacon.js'),
     keeper  = require('./app/server/beaconKeeper.js'),
     config    = require('./config.json'),
     colors  = require('colors'),
@@ -94,7 +93,8 @@ io.sockets.on('connection', function(socket) {
   socket.on('newBeacon',    function(data){ handler.newBeacon   (data, socket) });
   socket.on('newComment',   function(data){ handler.newComment  (data, socket) });
   socket.on('moveBeacon',   function(data){ handler.moveBeacon  (data, socket) });
-  socket.on('changeGroup',  function(data){ handler.moveBeacon  (data, socket) });
+  socket.on('changeGroup',  function(data){ handler.changeGroup (data, socket) });
+  socket.on('updateBeacon', function(data){ handler.updateBeacon(data, socket) });
 });
 
 // Route all routes. 

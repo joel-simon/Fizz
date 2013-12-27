@@ -45,8 +45,8 @@ BeaconKeeper.prototype.insert = function(B, callback) {
     store.sadd(key, B.id);
   }
   function done(err) {
-    if(err) console.log('ERR:',err);
-    if (callback) callback (null);
+    if (err) callback(err);
+    else if (callback) callback (null);
   }
 }
 
@@ -84,6 +84,22 @@ BeaconKeeper.prototype.getComments = function(id, callback) {
       // callback(null, data);
       callback(null, data.map(function(e){return JSON.parse(e)}));
     }
+  });
+}
+
+BeaconKeeper.prototype.updateFields = function (data, callback) {
+  var self = this;
+  self.get(data.id, function(err, b) {
+    for (var e in data) {
+      if (b.hasOwnProperty(e)) {
+        b[e] = data[e];
+      }
+    }
+    
+    self.insert(b, function(err) {
+      if (err) callback(err);
+      else callback(null);
+    });
   });
 }
 

@@ -131,6 +131,7 @@ module.exports.leaveBeacon = function(data, socket) {
 module.exports.newBeacon = function (B, socket) {
   try {
     var user = getUser(socket);
+    var self = this;
     beacons.getNextId(function(err1, id){
       if (err1) return logError(err1, B);
       B.id = id;
@@ -140,6 +141,7 @@ module.exports.newBeacon = function (B, socket) {
         if (B.pub) io.sockets.emit('newBeacon', {"beacon" : B});
         else emit(B.host, 'newBeacon', {"beacon" : B});
         log('New beacon by', user.name);
+
       });
     }); 
   } catch (e) {
@@ -163,18 +165,6 @@ module.exports.newComment = function(data, socket) {
   }
 }
 
-module.exports.moveBeacon = function(data, socket) {
-  try {
-    var id = data.id;
-    var lat = data.lat;
-    var lng = data.lng; 
-    if(!id || !lat || !lng) logError('Invalid move beacon call', data);
-    beacons.moveBeacon(id, lat, lng);
-  } catch (e) {
-    logError('moveBeacon', e);
-  }
-}
-
 module.exports.changeGroup = function(data, socket) {
   try {
     var self = this;
@@ -182,9 +172,33 @@ module.exports.changeGroup = function(data, socket) {
   } catch (e) {
     logError('changeGroup', e);
   }
-
 }
 
+module.exports.updateBeacon = function(data, socket) {
+  var user = getUser(socket);
+  if (!verify()) return logError('invalid updateBeacon', data);
+  // try {
+    
+    beacons.updateFields(data, function(err){
+      if (err) logError('updateBeacon..', err);
+      else {
+        log(user.name, 'updated beacon', data.id);
+        emit(data.host, 'updateBeacon', data);
+      }
+    });
+  // } catch (e) {
+  //   logError('updateBeacon', e);
+  // }
+  function verify() {
+    if (!data.host || !data.id) return false;
+    if (data.location) {
+      if (!data.location.lng || typeof data.location.lng !== 'number') return false;
+      if (!data.location.lat || typeof data.location.lat !== 'number') return false;
+    }
+    if (data.title && typeof data.title !== 'string') return false;
+    return true;
+  }
+}
 
 /**
  * Handle a new user login in
