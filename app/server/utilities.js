@@ -41,12 +41,13 @@ module.exports.logError = function(err, detail) {
 	} else {
 		s += ('\t' + err + '\n\n');
 	}
-  
-  fs.appendFile("./err.txt", s, function(err2) {
-    if(err2) {
-      console.log(err2);
-    }
-	}); 
+	
+  console.log(s);
+ //  fs.appendFile("./err.txt", s, function(err2) {
+ //    if(err2) {
+ //      console.log(err2);
+ //    }
+	// }); 
 }
 
 module.exports.posInt = posInt;
