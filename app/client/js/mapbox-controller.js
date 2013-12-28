@@ -41,6 +41,10 @@ map.markerLayer.on('layeradd', function(e) {
 	marker.setIcon(L.icon(feature.properties.icon));
 });
 
+function centerMap(lat, lng) {
+	map.setView([lat, lng]);
+}
+
 function findMarker(bid) {
 	for (var i = 0; i < bids.length; i++) {
 		if (bids[i] == bid) {

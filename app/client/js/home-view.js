@@ -20,8 +20,9 @@ function drawBeacon(beacon) {
 
 	// Put the beacon info into the beacon-list.
 	createHtmlString(beacon, function(htmlString) {
-		// console.log(htmlString);
+		// put the beacon onto the html page
 		$('#beacon-list').prepend(htmlString);
+		// join/leave/disband the beacon depending on the situation
 		$('#button-'+beacon.id).on('click', function() {
 			if ( beacon.host == me.id ) {
 				disbandBeacon( beacon );
@@ -31,6 +32,11 @@ function drawBeacon(beacon) {
 				joinBeacon( beacon );
 			}
 		});
+		// when the beacon is clicked, pan map over to that beacon
+		$('#beacon-'+beacon.id).on('click', function() {
+			centerMap(beacon.lat, beacon.lng);
+		});
+		// add a new comment to the beacon
 		$('#newComment-'+beacon.id).on('submit', function(e) {
 			e.preventDefault();
 			addComment( beacon, this.comment.value, me.id );
