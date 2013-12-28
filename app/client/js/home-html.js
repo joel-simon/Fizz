@@ -55,8 +55,8 @@ function getAttendsString(beacon, callback) {
 		beacon.attends.forEach(function(guest, i) {
 			getFbData(guest, function(guestPic, guestName) {
 				guestId = 'g-'+beacon.id+'-'+guest;
-				string += '<img id="'+guestId+'" class="guest-pic" title="'
-					+guestName+'" src="'+guestPic+'">';
+				string += '<img id="'+guestId+'" class="guest-pic" title="'+
+					guestName+'" src="'+guestPic+'">';
 				if (++counter == beacon.attends.length) {
 					string += '</div>';
 					callback(string);
@@ -75,12 +75,14 @@ function getAttendsString(beacon, callback) {
 function getCommentsString(beacon, callback) {
 	var counter = 0;
 	var string = '<div class="commentList">';
-	var comId;
+	var comId, guestPic, imgString;
 	if (beacon.comments.length) {
 		beacon.comments.forEach(function(com, i) {
 			comId = com.id || i;
-			string += '<p id="c-'+beacon.id+'-'+comId+'">'+com.user+': '
-				+com.comment+'</p>';
+			guestPic = fbInfo[com.user].pic;
+			imgString = '<img src="'+guestPic+'">';
+			string += '<p id="c-'+beacon.id+'-'+comId+'">'+imgString+
+				' '+com.comment+'</p>';
 			if (++counter == beacon.comments.length) {
 				string += '</div>';
 				callback(string);
