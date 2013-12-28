@@ -14,7 +14,6 @@ function Beacon(b) {
 	this.id       = b.id;
 	this.lat      = b.lat;
 	this.lng      = b.lng;
-	this.marker   = createMarker(b.lat, b.lng);
 	this.title    = b.title;
 	this.host     = b.host;
 	this.attends  = b.attends;
@@ -68,7 +67,7 @@ Beacon.prototype.addComment = function(user, comment, comId) {
  */
 Beacon.prototype.updateTitle = function(title) {
 	this.title = title;
-	setMarkerInfo(this.marker, title);
+	// setMarkerInfo(this.marker, title);
 }
 
 /** 
@@ -77,6 +76,6 @@ Beacon.prototype.updateTitle = function(title) {
  * @param {float} lng - lng
  */
 Beacon.prototype.updateLocation = function(lat, lng) {
-	removeMarker(this.marker);
-	this.marker = createMarker(lat, lng);
+	// removeMarker(this.marker);
+	// this.marker = createMarker(lat, lng);
 }

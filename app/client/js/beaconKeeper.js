@@ -87,8 +87,8 @@ BeaconKeeper.prototype.addComment = function(id, user, comment, comId) {
 BeaconKeeper.prototype.updateTitle = function(id, title) {
 	var beacon = this.table[id];
 	beacon.updateTitle(title);
-	eraseBeacon(beacon);
-	drawBeacon(beacon);
+	// eraseBeacon(beacon);
+	// drawBeacon(beacon);
 }
 
 /** 

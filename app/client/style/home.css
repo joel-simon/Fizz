@@ -103,7 +103,7 @@ input { padding: 0 4px; }
 	height: 400px;	
 }
 
-	#map-canvas {
+	/*#map-canvas {
 		width: inherit;
 		height: inherit;
 	}
@@ -115,7 +115,7 @@ input { padding: 0 4px; }
 		margin: 8px auto 0 auto;
 		position: absolute;
 		top: 0; left: 0; bottom: 0; right: 0;
-	}
+	}*/
 
 
 /*

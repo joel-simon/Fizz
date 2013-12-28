@@ -13,8 +13,10 @@ function drawUserInfo(pic, name) {
 
 // Draws all necessary viewable parts of the given beacon.
 function drawBeacon(beacon) {
-	// Place the beacon marker on the google map.
-	setBeacon(beacon);
+	getFbData(beacon.host, function(pic, name) {
+		createMarker(beacon.id, beacon.lat, beacon.lng, beacon.title, 
+			beacon.comments[0].comment, pic);
+	});
 
 	// Put the beacon info into the beacon-list.
 	createHtmlString(beacon, function(htmlString) {
@@ -51,16 +53,16 @@ function drawAddedGuest(id, guest) {
 }
 
 function drawAddedComment(bid, cid, user, comment) {
-	var string = '<p id="c-'+bid+'-'+cid+'">'+user+': '
-	 	+comment+'</p>';
+	var imgString = '<img src="'+fbInfo[user].pic+'">';
+	var string = '<p id="c-'+bid+'-'+cid+'">'+imgString+' '+
+	 	comment+'</p>';
 	$('#beacon-'+bid+' .commentList').append(string);
 }
 
 
 // Removes all visible traces of the beacon!
 function eraseBeacon(beacon) {
-	// Remove the beacon marker from the google map.
-	if (beacon.marker) removeMarker(beacon.marker);
+	removeMarker(beacon.id);
 
 	// Remove the beacon from the beacon-list.
 	$('#beacon-'+beacon.id).remove();

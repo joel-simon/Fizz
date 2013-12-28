@@ -11,20 +11,20 @@ $('#myBeacon').on('submit', function(e) {
 	var title = (form.title.value) ? form.title.value : 'My Event!';
 	var comment = (form.comment.value) ? form.comment.value : 'first comment'; 
 	var firstComment = { 'user':me.id , 'comment':comment };
-	var lat, lng;
+	// var lat, lng;
 
-	if (tempMarker) {
-		lat = tempMarker.position.lat();
-		lng = tempMarker.position.lng();
-	} else {
-		lat = currentPosition.lat();
-		lng = currentPosition.lng();
-	}
+	// if (tempMarker) {
+	// 	lat = tempMarker.position.lat();
+	// 	lng = tempMarker.position.lng();
+	// } else {
+	// 	lat = currentPosition.lat();
+	// 	lng = currentPosition.lng();
+	// }
 	
 	var beacon = {
 		'host' : me.id, 
-		'lat' : lat, 
-		'lng' : lng,  
+		'lat' : geo.lat, 
+		'lng' : geo.lng,  
 		'attends' : [],
 		'comments' : [firstComment],
 		'title': title
