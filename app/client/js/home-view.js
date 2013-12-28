@@ -52,10 +52,12 @@ function drawAddedGuest(id, guest) {
 			+guestName+'" src="'+guestPic+'">';
 		$('#beacon-'+id+' .attending').append(string);
 	});
-	$('#button-'+id)
-		.removeClass('btn-primary')
-		.addClass('btn-danger')
-		.text('Leave');
+	if ( guest == me.id ) {
+		$('#button-'+id)
+			.removeClass('btn-primary')
+			.addClass('btn-danger')
+			.text('Leave');
+	}
 }
 
 function drawAddedComment(bid, cid, user, comment) {
@@ -77,10 +79,12 @@ function eraseBeacon(beacon) {
 
 function eraseRemovedGuest(id, guest) {
 	$('#g-'+id+'-'+guest).remove();
-	$('#button-'+id)
-		.removeClass('btn-danger')
-		.addClass('btn-primary')
-		.text('Join');
+	if ( guest == me.id ) {
+		$('#button-'+id)
+			.removeClass('btn-danger')
+			.addClass('btn-primary')
+			.text('Join');
+	}
 }
 
 
