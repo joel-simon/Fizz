@@ -79,15 +79,16 @@ function getCommentsString(beacon, callback) {
 	if (beacon.comments.length) {
 		beacon.comments.forEach(function(com, i) {
 			comId = com.id || i;
-			guestPic = fbInfo[com.user].pic;
-			imgString = '<img src="'+guestPic+'">';
-			string += '<p id="c-'+beacon.id+'-'+comId+'">'+imgString+
-				' '+com.comment+'</p>';
-			if (++counter == beacon.comments.length) {
-				string += '</div>';
-				callback(string);
-				return;
-			}
+			getFbData(com.user, function(pic, name) {
+				imgString = '<img src="'+pic+'">';
+				string += '<p id="c-'+beacon.id+'-'+comId+'">'+imgString+
+					' '+com.comment+'</p>';
+				if (++counter == beacon.comments.length) {
+					string += '</div>';
+					callback(string);
+					return;
+				}
+			});
 		});
 	} else {
 		string += '</div>';

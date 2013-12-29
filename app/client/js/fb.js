@@ -21,13 +21,16 @@ $(document).ready(function() {
 });
 
 function getFbData(id, callback) {
-	$.ajax({
-		url: 'http://graph.facebook.com/'+id+'?fields=picture,name',
-		success: function( data ) {
-			var pic  = data.picture.data.url;
-			var name = data.name;
-			fbInfo[id] = {'name':name, 'pic':pic};
-			callback(pic, name);
-		}
-	});
+	if (fbInfo[id]) callback(fbInfo[id].pic, fbInfo[id].name);
+	else {
+		$.ajax({
+			url: 'http://graph.facebook.com/'+id+'?fields=picture,name',
+			success: function( data ) {
+				var pic  = data.picture.data.url;
+				var name = data.name;
+				fbInfo[id] = {'name':name, 'pic':pic};
+				callback(pic, name);
+			}
+		});
+	}
 }

@@ -61,10 +61,12 @@ function drawAddedGuest(id, guest) {
 }
 
 function drawAddedComment(bid, cid, user, comment) {
-	var imgString = '<img src="'+fbInfo[user].pic+'">';
-	var string = '<p id="c-'+bid+'-'+cid+'">'+imgString+' '+
-	 	comment+'</p>';
-	$('#beacon-'+bid+' .commentList').append(string);
+	getFbData(user, function(pic, name) {
+		var imgString = '<img src="'+pic+'">';
+		var string = '<p id="c-'+bid+'-'+cid+'">'+imgString+' '+
+		 	comment+'</p>';
+		$('#beacon-'+bid+' .commentList').append(string);
+	});
 }
 
 
