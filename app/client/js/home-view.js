@@ -61,10 +61,12 @@ function drawAddedGuest(id, guest) {
 }
 
 function drawAddedComment(bid, cid, user, comment) {
-	var imgString = '<img src="'+fbInfo[user].pic+'">';
-	var string = '<p id="c-'+bid+'-'+cid+'">'+imgString+' '+
-	 	comment+'</p>';
-	$('#beacon-'+bid+' .commentList').append(string);
+	getFbData(user, function(pic, name) {
+		var imgString = '<img src="'+pic+'">';
+		var string = '<p id="c-'+bid+'-'+cid+'">'+imgString+' '+
+		 	comment+'</p>';
+		$('#beacon-'+bid+' .commentList').append(string);
+	});
 }
 
 
@@ -79,13 +81,12 @@ function eraseBeacon(beacon) {
 
 function eraseRemovedGuest(id, guest) {
 	$('#g-'+id+'-'+guest).remove();
-	if (guest == me.id) {
+]	if (guest == me.id) {
 		$('#button-'+id)
 		.removeClass('btn-danger')
 		.addClass('btn-primary')
 		.text('Join');	
 	}
-	
 }
 
 
