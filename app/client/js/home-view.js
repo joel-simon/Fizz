@@ -81,7 +81,7 @@ function eraseBeacon(beacon) {
 
 function eraseRemovedGuest(id, guest) {
 	$('#g-'+id+'-'+guest).remove();
-]	if (guest == me.id) {
+	if (guest == me.id) {
 		$('#button-'+id)
 		.removeClass('btn-danger')
 		.addClass('btn-primary')
