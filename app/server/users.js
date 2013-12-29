@@ -51,7 +51,6 @@ module.exports.addUser = function(id, data, callback) {
 *	Get group	
 */
 module.exports.getUser = function(id, callback) {
-	console.log('getuser', id);
 	db.users.findOne({'_id': id}, function(err, user) {
 		if (err) callback(err);
 		else if( !user ) callback (null, null);
