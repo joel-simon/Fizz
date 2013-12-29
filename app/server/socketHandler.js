@@ -1,15 +1,18 @@
-var io, beacons, users;
-var utils = require('./utilities.js');
-var logError = utils.logError;
-var log = utils.log;
-var debug = utils.debug;
-var fb = require('./fb.js');
+var io, 
+    beacons   = require('./beaconKeeper.js'),
+    utils     = require('./utilities.js'),
+    logError  = utils.logError,
+    log       = utils.log,
+    debug     = utils.debug,
+    fb        = require('./fb.js'),
+    users     = require('./users.js'),
+    async = require('async');
+
 // var applePush = require('./applePush.js');
 
 module.exports.set = function(sio, b, u) {
   io = sio;
-  beacons = b;
-  users = u;
+  // users = u;
   return module.exports;
 }
 
@@ -20,21 +23,50 @@ module.exports.set = function(sio, b, u) {
  * @param {Object} Beacons - object for managing all beacons
  */
 module.exports.login = function(socket) {
-  try {
-    var user = getUser(socket);
-    var idArr = [];
-    fb.get(user.token, '/me/friends', function(err, friends){
-      if (err) return logError('from facebook.get()', err); 
-      friends.data.forEach(function(elem, i) {
-        idArr.push(elem.id);
-      });
-      existingUser(user.id, idArr, socket, beacons);
-    });
-  } catch (e) {
-    logError('login', e);
-  }
+
+  var user = getUser(socket);
+  var friends = [];
+  users.incConnections(user.id, function(err, conn) {
+    if (err) logError(err);
+    else log(conn)
+  });
+  users.getUser(user.id, function(err, userData) {
+    // console.log(userData);
+    if (err) logError(err);
+    else if (!userData) newUser(user, socket);
+    else existingUser(user, socket);
+  });
 }
 
+function newUser(user, socket) {
+  console.log('newUser', user.name);
+  var idArr = [];
+  fb.get(user.token, '/me/friends', function(err, friends) {
+    if (err) return logError('from facebook.get', err);
+    for (var i = 0; i < friends.data.length; i++) {
+      idArr.push(friends.data[i])
+    };
+    users.addUser(user.id, {group: idArr}, function(err2, doc){
+      if (err2) return logError(err2);
+      existingUser(user, socket);
+    });
+   });
+}
+function existingUser(user, socket) {
+  log(user.name, "has logged in.");
+  socket.join(''+user.id);
+
+  // console.log('existing user', id, 'has', friends.length,'friends');
+  users.getVisible(user.id, function(err, beaconIds) {
+    if (err) return logError('getVisible Err:', err);
+    console.log(beaconIds);
+    async.map(beaconIds, beacons.get, function(err2, bArr) {
+      if (err2) return logError(err2);
+      console.log('visible beacons:',bArr);
+      socket.emit('newBeacons', bArr);   
+    });    
+  });
+}
 /**
  * Handle joinBeacon socket
  * @param {Object} Data - contains .id and .admin
@@ -69,10 +101,15 @@ module.exports.deleteBeacon = function(data, socket) {
     var pub = data.pub;
     if (!host) return logError("invalid delete call", data);
     if (!id)  return logError("invalid delete call", data);
-
     beacons.remove( id, host, pub );
-    if (pub) emitPublic('deleteBeacon', {host: host});
-    else emit(host, 'deleteBeacon', {id:id, host:host});
+    emit(host, 'deleteBeacon', {id:id, host:host});
+    users.getUser(host, function(err3, userData) {
+        if (err3) return logError(err3);
+        users.deleteVisible(host, id, function(){});
+        async.each(userData.group, function(friendId, callback) {
+          users.deleteVisible(friendId, id, callback);
+        });
+      });
     log('Deleted beacon', host);
   } catch (e) {
     logError('deleteBeacon', e);
@@ -129,24 +166,29 @@ module.exports.leaveBeacon = function(data, socket) {
  * @param {Object} Beacons - object for managing all beacons
  */
 module.exports.newBeacon = function (B, socket) {
-  try {
-    var user = getUser(socket);
-    var self = this;
-    beacons.getNextId(function(err1, id){
-      if (err1) return logError(err1, B);
-      B.id = id;
-      B.pub = false;
-      beacons.insert(B, function(err2) {
-        if (err2) return logError(err2, B);
-        if (B.pub) io.sockets.emit('newBeacon', {"beacon" : B});
-        else emit(B.host, 'newBeacon', {"beacon" : B});
-        log('New beacon by', user.name);
 
+  var user = getUser(socket);
+  var self = this;
+  beacons.getNextId(function(err1, id) {
+    if (err1) return logError(err1, B);
+    B.id = id;
+    B.pub = false;
+    B.host = +B.host;
+    beacons.insert(B, function(err2) {
+      if (err2) return logError(err2, B);
+      
+      emit(B.host, 'newBeacon', {"beacon" : B});
+      users.getUser(user.id, function(err3, userData) {
+        if (err3) return logError(err3);
+        users.addVisible(user.id, id, function(){});
+        async.each(userData.group, function(friendId, callback) {
+          users.addVisible(friendId, id, callback);
+        });
       });
-    }); 
-  } catch (e) {
-    logError('newBeacon', e);
-  }
+      log('New beacon by', user.name);
+    });
+  }); 
+
 }
 
 module.exports.newComment = function(data, socket) {
@@ -156,7 +198,8 @@ module.exports.newComment = function(data, socket) {
         comment = data.comment.comment,
         poster = data.comment.user;
 
-      beacons.addComment(BID, poster, comment, function(err) {  
+      beacons.addComment(BID, poster, comment, function(err, commentWithId) { 
+        data.comment = commentWithId;
         emit(data.host, 'newComment', data);
         log('new comment', data); 
     });
@@ -169,6 +212,21 @@ module.exports.changeGroup = function(data, socket) {
   try {
     var self = this;
     var user = getUser(socket);
+    var group = data.group;
+    var idArr = [];
+    if (!group) return logError('invalid change group', data);
+
+    fb.get(user.token, '/me/friends', function(err, friends) {
+      if (err) return logError('from facebook.get()', err); 
+      friends.data.forEach(function(elem, i) {
+        idArr.push(elem.id);
+      });
+      if (!utils.isSubSet(group, friends)) {
+        logError('adding a non fb friend');
+      } else {
+        user.setGroup(user.id, group);
+      }
+    });
   } catch (e) {
     logError('changeGroup', e);
   }
@@ -200,51 +258,22 @@ module.exports.updateBeacon = function(data, socket) {
   }
 }
 
-/**
- * Handle a new user login in
- * @param {Number} id - the users id
- * @param {Object} Socket - contains user user socket
- * @param {Object} Beacons - object for managing all beacons
- */
-function newUser (id, socket) {
-  console.log('New user registration', id);
-  socket.emit('getFriends', {});
-  socket.on('friendsList', function (friends) {
-    db.addPlayer (id, friends);
-    existingUser(id, friends, socket, beacons);
+module.exports.disconnect = function(socket) {
+  var self = this, user = getUser(socket);
+  users.decConnections(user.id, function(err){
+    if(err) logError(err);
   });
 }
+// module.exports.followBeacon = function(data, socket) {
+//   var user = getUser(socket);
+//   var id = data.id;
+  
+// }
 
-/**
- * Handle and existing user logging in. 
- * @param {Number} id - the users id
- * @param {Array} - the users friends as an int array of their id's
- * @param {Object} Socket - contains user user socket
- * @param {Object} Beacons - object for managing all beacons
- */
-function existingUser(id, friends, socket) {
-  var user = getUser(socket);
-  log(user.name, "has logged in.");
-  socket.join(''+id);
-  friends.forEach(function(friend) {
-    socket.join(''+friend);
-  });
-  // console.log('existing user', id, 'has', friends.length,'friends');
-  beacons.getVisible(friends, id, function(err, allBeacons) {
-    if (err) {
-      logError('getVisible Err:', err);
-    } else {
-      // console.log('all beacons', allBeacons);
-
-      socket.emit('newBeacons', allBeacons);
-      
-      
-    }
-  });
-}
 
 function getUser(socket) {
-  return socket.handshake.user;
+  if (!socket || !socket.handshake) return null;
+  return socket.handshake.user || null;
 }
 
 /**
@@ -254,9 +283,20 @@ function getUser(socket) {
  * @param {Object} Data
  */
 function emit(userId, eventName, data) {
-  // console.log('PUSHING DATA',userId, eventName+':',data, 'to', io.sockets.clients(userId).length);
-  io.sockets.in(''+userId).emit(eventName, data);
-  io.sockets.in('admins').emit(eventName, data);
+  io.sockets.in(userId).emit(eventName, data);
+  users.getUser(userId, function(err, userData) {
+    if (err) return logError(err);
+    if (!userData) return logError('no userData found');
+    async.each(userData.group, function(id, callback){
+      users.isConnected(id, function(err, isCon) {
+        if (isCon) {
+          io.sockets.in(id).emit(eventName, data);
+        }
+      });
+    });
+  });
+  // io.sockets.in(''+userId).emit(eventName, data);
+  // io.sockets.in('admins').emit(eventName, data);
 }
 
 /**

@@ -137,8 +137,9 @@ BeaconKeeper.prototype.removeBeacon = function(id) {
  * @return {Bool} - if it is a valid beacon
  */
 function validate (b) {
+	if (!b) return false;
   if (!b.id   || typeof b.id   !== 'number' || b.id%1 !== 0) return false;
-  if (!b.host || typeof b.host !== 'string') return false;
+  if (!b.host || typeof b.host !== 'number') return false;
   if (!b.lat  || typeof b.lat  !== 'number') return false;
   if (!b.lng  || typeof b.lng  !== 'number') return false;
   if (typeof b.title !== 'string')  return false;
