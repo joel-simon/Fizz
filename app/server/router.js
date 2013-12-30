@@ -44,6 +44,7 @@ module.exports = function(app, passport) {
 //   the request will proceed.  Otherwise, the user will be redirected to the
 //   login page.
 function ensureAuthenticated(req, res, next) {
+	// console.log(req.cookies);
   if (req.isAuthenticated()) { return next(); }
   res.redirect('/index');
 }

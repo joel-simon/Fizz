@@ -23,7 +23,6 @@ module.exports.set = function(sio, b, u) {
  * @param {Object} Beacons - object for managing all beacons
  */
 module.exports.login = function(socket) {
-
   var user = getUser(socket);
   var friends = [];
   users.incConnections(user.id, function(err, conn) {
@@ -44,7 +43,7 @@ function newUser(user, socket) {
   fb.get(user.token, '/me/friends', function(err, friends) {
     if (err) return logError('from facebook.get', err);
     for (var i = 0; i < friends.data.length; i++) {
-      idArr.push(friends.data[i])
+      idArr.push(friends.data[i].id)
     };
     users.addUser(user.id, {group: idArr}, function(err2, doc){
       if (err2) return logError(err2);
@@ -288,11 +287,11 @@ function emit(userId, eventName, data) {
     if (err) return logError(err);
     if (!userData) return logError('no userData found');
     async.each(userData.group, function(id, callback){
-      users.isConnected(id, function(err, isCon) {
-        if (isCon) {
+      // users.isConnected(id, function(err, isCon) {
+      //   if (isCon) {
           io.sockets.in(id).emit(eventName, data);
-        }
-      });
+        // }
+      // });
     });
   });
   // io.sockets.in(''+userId).emit(eventName, data);
