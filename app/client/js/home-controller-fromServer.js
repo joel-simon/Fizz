@@ -3,6 +3,12 @@ var SERVER = window.location.origin;
 var BKeeper = new BeaconKeeper();
 var socket = io.connect(SERVER);
 
+socket.on('friendsList', function(data) {
+	console.log('FRIENDS LIST:', data);
+	friends = data;
+	loadGroup();
+});
+
 socket.on('newBeacons', function(data) {
 	console.log('BEACON UPLOAD:', data);
 	data.forEach(function(B, i) {

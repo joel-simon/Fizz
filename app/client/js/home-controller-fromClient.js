@@ -38,6 +38,14 @@ $('#myBeacon').on('submit', function(e) {
 	form.comment.blur();
 });
 
+$('#group-button').on('click', function() {
+	$('#groupManager').removeClass('hidden');
+});
+
+$('#saveGroup').on('click', function() {
+	$('#groupManager').addClass('hidden');
+});
+
 
 function joinBeacon(b) {
 	if (b.host != me.id && !b.hasGuest(me.id)) {
