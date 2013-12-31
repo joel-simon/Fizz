@@ -44,6 +44,8 @@ $('#group-button').on('click', function() {
 
 $('#saveGroup').on('click', function() {
 	$('#groupManager').addClass('hidden');
+	console.log('SENDING [updateGroup]', group);
+	socket.emit('updateGroup', group);
 });
 
 

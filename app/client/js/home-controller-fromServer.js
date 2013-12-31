@@ -5,7 +5,7 @@ var socket = io.connect(SERVER);
 
 socket.on('friendsList', function(data) {
 	console.log('FRIENDS LIST:', data);
-	friends = data;
+	friends = data.data;
 	loadGroup();
 });
 
