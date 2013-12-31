@@ -54,9 +54,9 @@ function drawAddedGuest(id, guest) {
 	});
 	if (me.id == guest) {
 		$('#button-'+id)
-		.removeClass('btn-primary')
-		.addClass('btn-danger')
-		.text('Leave');
+			.removeClass('btn-primary')
+			.addClass('btn-danger')
+			.text('Leave');
 	}
 }
 
@@ -83,9 +83,9 @@ function eraseRemovedGuest(id, guest) {
 	$('#g-'+id+'-'+guest).remove();
 	if (guest == me.id) {
 		$('#button-'+id)
-		.removeClass('btn-danger')
-		.addClass('btn-primary')
-		.text('Join');	
+			.removeClass('btn-danger')
+			.addClass('btn-primary')
+			.text('Join');	
 	}
 }
 

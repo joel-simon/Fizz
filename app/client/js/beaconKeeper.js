@@ -138,13 +138,13 @@ BeaconKeeper.prototype.removeBeacon = function(id) {
  */
 function validate (b) {
 	if (!b) return false;
-  if (!b.id   || typeof b.id   !== 'number' || b.id%1 !== 0) return false;
-  if (!b.host || typeof b.host !== 'number') return false;
-  if (!b.lat  || typeof b.lat  !== 'number') return false;
-  if (!b.lng  || typeof b.lng  !== 'number') return false;
-  if (typeof b.title !== 'string')  return false;
-  // if (!b.pub  || typeof b.pub  !== 'boolean')  return false;
-  if (!(b.attends && b.attends instanceof Array)) return false;
-  if (!(b.comments && b.comments instanceof Array)) return false;
-  return true;
+	if (!b.id   || typeof b.id   !== 'number' || b.id%1 !== 0) return false;
+	if (!b.host || typeof b.host !== 'number') return false;
+	if (!b.lat  || typeof b.lat  !== 'number') return false;
+	if (!b.lng  || typeof b.lng  !== 'number') return false;
+	if (typeof b.title !== 'string')  return false;
+	// if (!b.pub  || typeof b.pub  !== 'boolean')  return false;
+	if (!(b.attends && b.attends instanceof Array)) return false;
+	if (!(b.comments && b.comments instanceof Array)) return false;
+	return true;
 }

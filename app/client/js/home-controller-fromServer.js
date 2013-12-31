@@ -3,6 +3,24 @@ var SERVER = window.location.origin;
 var BKeeper = new BeaconKeeper();
 var socket = io.connect(SERVER);
 
+socket.on('friendsList', function(data) {
+	console.log('FRIENDS LIST:', data);
+	friends = data.data;
+	loadGroup();
+});
+
+socket.on('group', function(data) {
+	console.log('GROUP:', data);
+	group = data.data;
+});
+
+socket.on('userData', function(data) {
+	console.log('USER DATA:', data);
+	friends = data.friends;
+	group = data.group;
+	loadGroup();
+});
+
 socket.on('newBeacons', function(data) {
 	console.log('BEACON UPLOAD:', data);
 	data.forEach(function(B, i) {
@@ -53,21 +71,6 @@ socket.on('updateBeacon', function(data)  {
 	if (title) BKeeper.updateTitle(id, title);
 	if (loc)   BKeeper.updateLocation(id, loc.lat, loc.lng);
 });
-
-// socket.on('updateTitle', function(data) {
-//   console.log('UPDATING TITLE', data);
-//   var id = data.id;
-//   var title = data.title;
-//   BKeeper.updateTitle(id, title);
-// });
-
-// socket.on('updateLocation', function(data) {
-//   console.log('UPDATING LOCATION', data);
-//   var id = data.id;
-//   var lat = data.lat;
-//   var lng = data.lng;
-//   BKeeper.updateLocation(id, lat, lng);
-// });
 
 
 

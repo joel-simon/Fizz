@@ -7,7 +7,7 @@
 
 // Helper function for drawBeacon.
 function createHtmlString(beacon, callback) {
-	console.log(beacon.host, me.id);
+	// console.log(beacon.host, me.id);
 	var color, label;
 	if ( beacon.host == me.id ) {
 		color = 'btn-danger';
@@ -28,7 +28,7 @@ function createHtmlString(beacon, callback) {
 
 	// Gets and displays the host info.
 	getFbData(beacon.host, function(hostPic, hostName) {
-		htmlString += '<img class="host-pic" title="'+hostName+'" src="'+hostPic+'">'+
+		htmlString += '<img class="host-pic pic" title="'+hostName+'" src="'+hostPic+'">'+
 			'<div class="attending">';
 
 		getAttendsString(beacon, function(attendsString) {
@@ -56,7 +56,7 @@ function getAttendsString(beacon, callback) {
 		beacon.attends.forEach(function(guest, i) {
 			getFbData(guest, function(guestPic, guestName) {
 				guestId = 'g-'+beacon.id+'-'+guest;
-				string += '<img id="'+guestId+'" class="guest-pic" title="'+
+				string += '<img id="'+guestId+'" class="guest-pic pic" title="'+
 					guestName+'" src="'+guestPic+'">';
 				if (++counter == beacon.attends.length) {
 					string += '</div>';
@@ -81,7 +81,7 @@ function getCommentsString(beacon, callback) {
 		beacon.comments.forEach(function(com, i) {
 			comId = com.id || i;
 			getFbData(com.user, function(pic, name) {
-				imgString = '<img src="'+pic+'">';
+				imgString = '<img class="pic" title="'+name+'" src="'+pic+'">';
 				string += '<p id="c-'+beacon.id+'-'+comId+'">'+imgString+
 					' '+com.comment+'</p>';
 				if (++counter == beacon.comments.length) {

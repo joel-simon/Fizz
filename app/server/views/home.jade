@@ -29,6 +29,20 @@ html
 			input(type='text', name='title', placeholder='My Event!')
 			input.input-long(type='text', name='comment', placeholder='Write your Event description here.')
 			input.btn.btn-success(type='submit', value='Place Beacon')
+		div#group-container
+			button#group-button.btn.btn-primary(type='button') Group
+
+		div#groupManager.hidden
+			h3.float-left.groupHeaderLeft Group
+			h3.float-right.groupHeaderRight Friends
+
+			//- div.ui-widget.ui-helper-clearfix
+
+			ul#group.gallery.ui-helper-reset.ui-helper-clearfix
+
+			ul#friends.ui-widget-content.ui-state-default
+
+			button#saveGroup.btn.btn-primary(type='button') Save
 
 		ul#beacon-list
 
@@ -52,5 +66,6 @@ html
 		script(src='/js/home-controller-fromServer.js')
 		script(src='/js/home-view.js')
 		script(src='/js/home-html.js')
+		script(src='/js/home-group-controller.js')
 
 		script(src='/js/fb.js')

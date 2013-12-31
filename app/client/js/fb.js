@@ -1,10 +1,13 @@
 var me = {};
 var fbInfo = {};
+var friends = {};
 
 $(document).ready(function() {
 	me.id = $.cookie('userId');
 	me.name = $.cookie('userName');
 	me.pic = $.cookie('userPicture');
+	console.log('SENDING [getFriendsList]');
+	socket.emit('getFriendsList');
 
 	if (me.name && me.pic) {
 		fbInfo[me.id] = {'name':me.name, 'pic':me.pic};
