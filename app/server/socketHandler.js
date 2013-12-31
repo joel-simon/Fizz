@@ -257,6 +257,18 @@ module.exports.updateBeacon = function(data, socket) {
   }
 }
 
+module.exports.getFriendsList = function(socket) {
+   var user = getUser(socket);
+   var idArr = [];
+    fb.get(user.token, '/me/friends', function(err, friends) {
+      if (err) return logError('from facebook.get()', err); 
+      for (var i = 0; i < friends.length; i++) {
+        idArr.push(friends[i].id);
+      }
+      socket.emit('friendsList', idArr);
+    });
+}
+
 module.exports.disconnect = function(socket) {
   var self = this, user = getUser(socket);
   users.decConnections(user.id, function(err){
