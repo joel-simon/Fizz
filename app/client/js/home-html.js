@@ -7,6 +7,7 @@
 
 // Helper function for drawBeacon.
 function createHtmlString(beacon, callback) {
+	console.log(beacon.host, me.id);
 	var color, label;
 	if ( beacon.host == me.id ) {
 		color = 'btn-danger';

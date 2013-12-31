@@ -13,7 +13,11 @@ module.exports = function(app, passport) {
 	    res.redirect('/home');
   });
 
-	app.get('/', function(req, res) {
+	app.get('/', ensureAuthenticated, function(req, res) {
+		res.redirect('/home');
+	});
+
+	app.get('/index', function(req, res) {
 		res.render('index', {});
 	});
 
@@ -27,7 +31,7 @@ module.exports = function(app, passport) {
 
 	app.get('/logout', function(req, res){
 	  req.logout();
-	  res.redirect('/');
+	  res.redirect('/index');
 	});
 
 	app.get('*', function(req, res) { res.render('404', { title: 'Page Not Found'}); });
@@ -40,6 +44,7 @@ module.exports = function(app, passport) {
 //   the request will proceed.  Otherwise, the user will be redirected to the
 //   login page.
 function ensureAuthenticated(req, res, next) {
+	// console.log(req.cookies);
   if (req.isAuthenticated()) { return next(); }
-  res.redirect('/')
+  res.redirect('/index');
 }

@@ -9,7 +9,6 @@ var http    = require('http'),
     port    = process.env.PORT || 9001,
     server  = app.listen(port),
     io      = require('socket.io').listen(server),
-    db      = require('./app/server/database.js'),
     redis   = require('redis'),
     keeper  = require('./app/server/beaconKeeper.js'),
     config    = require('./config.json'),
@@ -31,9 +30,8 @@ sub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 store.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 
 var sessionStore = new redisStore({client: store}); // socket.io sessions
-var beacons = new keeper(store); // Object to manage beacons. 
 var users = null;//require('./app/server/users.js').set(store); 
-var handler = require('./app/server/socketHandler.js').set(io, beacons, users);
+var handler = require('./app/server/socketHandler.js').set(io);
 
 passport.serializeUser(function(user, done) { done(null, user); });
 passport.deserializeUser(function(obj, done) { done(null, obj); });
@@ -44,7 +42,7 @@ passport.use(new FacebookStrategy({
   },
   function(accessToken, refreshToken, profile, done) {
     process.nextTick(function () {
-      var sessionData = { 'id':profile.id, 'name':profile.displayName, 'token':accessToken };
+      var sessionData = { 'id':+profile.id, 'name':profile.displayName, 'token':accessToken };
       return done(null, sessionData);
     });
   }
@@ -95,6 +93,8 @@ io.sockets.on('connection', function(socket) {
   socket.on('moveBeacon',   function(data){ handler.moveBeacon  (data, socket) });
   socket.on('changeGroup',  function(data){ handler.changeGroup (data, socket) });
   socket.on('updateBeacon', function(data){ handler.updateBeacon(data, socket) });
+  socket.on('followBeacon', function(data){ handler.followBeacon(data, socket) });
+  socket.on('disconnect',   function(){ handler.disconnect(socket) });
 });
 
 // Route all routes. 
