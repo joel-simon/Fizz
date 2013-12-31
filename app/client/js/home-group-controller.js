@@ -1,9 +1,9 @@
 var group = [];
+var friendNames = [];
 
 function loadGroup() {
 
 	var htmlString;
-	console.log(friends);
 
 	friends.forEach(function(friend, i) {
 		getFbData(friend.id, function(pic, name) {
@@ -12,6 +12,7 @@ function loadGroup() {
 					'<img src="'+pic+'" title="'+name+'" class="pic">'+
 				'</li>';
 			$('#friends').append(htmlString);
+			friendNames.push(name);
 			$('li.drag').draggable({
 				appendTo: "#groupManager",
 				revert: "invalid",

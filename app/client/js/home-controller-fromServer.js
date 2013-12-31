@@ -9,6 +9,18 @@ socket.on('friendsList', function(data) {
 	loadGroup();
 });
 
+socket.on('group', function(data) {
+	console.log('GROUP:', data);
+	group = data.data;
+});
+
+socket.on('userData', function(data) {
+	console.log('USER DATA:', data);
+	friends = data.friends;
+	group = data.group;
+	loadGroup();
+});
+
 socket.on('newBeacons', function(data) {
 	console.log('BEACON UPLOAD:', data);
 	data.forEach(function(B, i) {
