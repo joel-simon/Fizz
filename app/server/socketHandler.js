@@ -30,38 +30,40 @@ module.exports.login = function(socket) {
     else log(conn)
   });
   users.getUser(user.id, function(err, userData) {
-    // console.log(userData);
     if (err) logError(err);
-    else if (!userData) newUser(user, socket);
-    else existingUser(user, socket);
+    else if (!userData || !userData.friends) newUser(user, socket);
+    else existingUser(user, userData, socket);
   });
 }
 
 function newUser(user, socket) {
   console.log('newUser', user.name);
   var idArr = [];
-  fb.get(user.token, '/me/friends', function(err, friends) {
+  var userData;
+  fb.get(user.token, '/me/friends', function(err, res) {
     if (err) return logError('from facebook.get', err);
-    for (var i = 0; i < friends.data.length; i++) {
-      idArr.push(friends.data[i].id)
-    };
-    users.addUser(user.id, {group: idArr}, function(err2, doc){
+    // for (var i = 0; i < friends.data.length; i++) {
+    //   idArr.push(friends.data[i].id)
+    // };
+    userData = { friends:res.data, 'group':[] };
+    users.addUser(user.id, userData, function(err2, doc) {
       if (err2) return logError(err2);
       existingUser(user, socket);
     });
    });
 }
-function existingUser(user, socket) {
+function existingUser(user, userData, socket) {
+  // console.log(userData)
   log(user.name, "has logged in.");
   socket.join(''+user.id);
-
+  socket.emit('userData', userData);
   // console.log('existing user', id, 'has', friends.length,'friends');
   users.getVisible(user.id, function(err, beaconIds) {
     if (err) return logError('getVisible Err:', err);
     console.log(beaconIds);
     async.map(beaconIds, beacons.get, function(err2, bArr) {
       if (err2) return logError(err2);
-      console.log('visible beacons:',bArr);
+      // console.log('visible beacons:',bArr);
       socket.emit('newBeacons', bArr);   
     });    
   });
@@ -212,20 +214,17 @@ module.exports.changeGroup = function(data, socket) {
     var self = this;
     var user = getUser(socket);
     var group = data.group;
-    var idArr = [];
     if (!group) return logError('invalid change group', data);
+    log(user.name, 'changed group to', group);
+    // fb.get(user.token, '/me/friends', function(err, res) {
+    //   if (err) return logError('from facebook.get()', err); 
 
-    fb.get(user.token, '/me/friends', function(err, friends) {
-      if (err) return logError('from facebook.get()', err); 
-      friends.data.forEach(function(elem, i) {
-        idArr.push(elem.id);
-      });
-      if (!utils.isSubSet(group, friends)) {
-        logError('adding a non fb friend');
-      } else {
+      // if (!utils.isSubSet(group, friends)) {
+      //   logError('adding a non fb friend');
+      // } else {
         user.setGroup(user.id, group);
-      }
-    });
+      // }
+    // });
   } catch (e) {
     logError('changeGroup', e);
   }

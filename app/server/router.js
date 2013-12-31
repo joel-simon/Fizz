@@ -13,6 +13,16 @@ module.exports = function(app, passport) {
 	    res.redirect('/home');
   });
 
+	app.get('/iosLogin', function(req, res) {
+		var url = require('url');
+		var url_parts = url.parse(req.url, true);
+		var query = url_parts.query;
+		console.log(query);
+		// console.log(req);	
+	});
+
+
+
 	app.get('/', ensureAuthenticated, function(req, res) {
 		res.redirect('/home');
 	});
