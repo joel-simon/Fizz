@@ -94,6 +94,7 @@ io.sockets.on('connection', function(socket) {
   socket.on('changeGroup',  function(data){ handler.changeGroup (data, socket) });
   socket.on('updateBeacon', function(data){ handler.updateBeacon(data, socket) });
   socket.on('followBeacon', function(data){ handler.followBeacon(data, socket) });
+  socket.on('getFriendsList',function(data){ handler.getFriendsList(socket) });
   socket.on('disconnect',   function(){ handler.disconnect(socket) });
 });
 
