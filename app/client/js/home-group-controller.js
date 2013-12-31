@@ -13,10 +13,12 @@ function loadGroup() {
 				'</li>';
 			$('#friends').append(htmlString);
 			$('li.drag').draggable({
+				appendTo: "#groupManager",
 				revert: "invalid",
 				containment: "#groupManager",
 				helper: "clone",
-				cursor: "move"
+				cursor: "move",
+				scroll: "false"
 			});
 		});
 	});
@@ -29,7 +31,7 @@ $('#group').droppable({
 		var friend = ui.draggable[0].id;
 		var fid = friend.replace('group-','');
 		group.push(fid);
-		console.log(group);
+		// console.log(group);
 	}
 });
 
@@ -43,13 +45,6 @@ $('#friends').droppable({
 		if (index > -1) {
 			group.splice(index, 1);
 		}
-		console.log(group);
+		// console.log(group);
 	}
-});
-
-$('li.drag').draggable({
-	revert: "invalid",
-	containment: "#groupManager",
-	helper: "clone",
-	cursor: "move"
 });

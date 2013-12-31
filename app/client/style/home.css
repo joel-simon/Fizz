@@ -141,6 +141,7 @@ input { padding: 0 4px; }
 	left: 10%;
 	top: 100px;
 	height: 360px;
+	list-style: none;
 }
 
 	.groupHeaderLeft {
@@ -165,13 +166,12 @@ input { padding: 0 4px; }
 	margin: 0;
 	border: 2px solid black;
 	overflow-y: auto;
-	overflow-x: none;
 }
 
 	li.drag {
 		margin: 5px;
 		border-radius: 50%;
-		z-index: 70;
+		z-index: 200;
 	}
 
 #friends {
@@ -185,7 +185,6 @@ input { padding: 0 4px; }
 	height: 250px;
 	border: 2px solid black;
 	overflow-y: auto;
-	overflow-x: none;
 }
 
 #saveGroup {
