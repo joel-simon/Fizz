@@ -54,21 +54,6 @@ socket.on('updateBeacon', function(data)  {
 	if (loc)   BKeeper.updateLocation(id, loc.lat, loc.lng);
 });
 
-// socket.on('updateTitle', function(data) {
-//   console.log('UPDATING TITLE', data);
-//   var id = data.id;
-//   var title = data.title;
-//   BKeeper.updateTitle(id, title);
-// });
-
-// socket.on('updateLocation', function(data) {
-//   console.log('UPDATING LOCATION', data);
-//   var id = data.id;
-//   var lat = data.lat;
-//   var lng = data.lng;
-//   BKeeper.updateLocation(id, lat, lng);
-// });
-
 
 
 
