@@ -48,7 +48,7 @@ function newUser(user, socket) {
     userData = { friends:res.data, 'group':[] };
     users.addUser(user.id, userData, function(err2, doc) {
       if (err2) return logError(err2);
-      existingUser(user, socket);
+      existingUser(user, userData, socket);
     });
    });
 }
@@ -209,11 +209,11 @@ module.exports.newComment = function(data, socket) {
   }
 }
 
-module.exports.changeGroup = function(data, socket) {
-  try {
+module.exports.updateGroup = function(data, socket) {
+  // try {
     var self = this;
     var user = getUser(socket);
-    var group = data.group;
+    var group = data;
     if (!group) return logError('invalid change group', data);
     log(user.name, 'changed group to', group);
     // fb.get(user.token, '/me/friends', function(err, res) {
@@ -222,12 +222,12 @@ module.exports.changeGroup = function(data, socket) {
       // if (!utils.isSubSet(group, friends)) {
       //   logError('adding a non fb friend');
       // } else {
-        user.setGroup(user.id, group);
+        users.setGroup(user.id, group);
       // }
     // });
-  } catch (e) {
-    logError('changeGroup', e);
-  }
+  // } catch (e) {
+  //   logError('changeGroup', e);
+  // }
 }
 
 module.exports.updateBeacon = function(data, socket) {

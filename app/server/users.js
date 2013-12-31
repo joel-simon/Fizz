@@ -41,7 +41,7 @@ module.exports.isBeaconer = function(id, callback) {
 *	New Player	
 */
 module.exports.addUser = function(id, data, callback) {
-	db.users.insert({'_id': id, 'data': data}, function(err, doc){
+	db.users.insert({'_id': +id, 'friends': data.friends, 'group':data.group}, function(err, doc){
 		if(err) callback(err)
 		else callback(null, doc);
 	});
@@ -51,10 +51,10 @@ module.exports.addUser = function(id, data, callback) {
 *	Get group	
 */
 module.exports.getUser = function(id, callback) {
-	db.users.findOne({'_id': id}, function(err, user) {
+	db.users.findOne({'_id': +id}, function(err, user) {
 		if (err) callback(err);
 		else if( !user ) callback (null, null);
-		else callback (err, user.data);
+		else callback (err, user);
 	});
 }
 
