@@ -52,7 +52,8 @@ passport.use(new FacebookStrategy({
 
 passport.use(new FacebookTokenStrategy({
     clientID: config.FB.FACEBOOK_APP_ID,
-    clientSecret: config.FB.FACEBOOK_APP_SECRET
+    clientSecret: config.FB.FACEBOOK_APP_SECRET,
+    callbackURL: config.HOST+"auth/facebook/callback"
   },
   function(accessToken, refreshToken, profile, done) {
     process.nextTick(function () {
@@ -62,9 +63,18 @@ passport.use(new FacebookTokenStrategy({
     });
   }
 ));
+//Middleware: Allows cross-domain requests (CORS)
+var allowCrossDomain = function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+
+    next();
+}
 
 // Configure express app.
-app.configure('development',function() {
+app.configure(function() {
+  app.use(allowCrossDomain);
   app.set('views', __dirname + '/app/server/views');
   app.set('view engine', 'jade');
   app.locals.pretty = true;

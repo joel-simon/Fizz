@@ -60,7 +60,6 @@ function existingUser(user, userData, socket) {
   // console.log('existing user', id, 'has', friends.length,'friends');
   users.getVisible(user.id, function(err, beaconIds) {
     if (err) return logError('getVisible Err:', err);
-    console.log(beaconIds);
     async.map(beaconIds, beacons.get, function(err2, bArr) {
       if (err2) return logError(err2);
       // console.log('visible beacons:',bArr);
@@ -215,7 +214,7 @@ module.exports.updateGroup = function(data, socket) {
     var user = getUser(socket);
     var group = data;
     if (!group) return logError('invalid change group', data);
-    log(user.name, 'changed group to', group);
+    log(user.name, 'changed their group.');
     // fb.get(user.token, '/me/friends', function(err, res) {
     //   if (err) return logError('from facebook.get()', err); 
 

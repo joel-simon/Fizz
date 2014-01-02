@@ -13,14 +13,13 @@ module.exports = function(app, passport) {
 	    res.redirect('/home');
   });
 
-	app.get('/iosLogin', function(req, res) {
-		var url = require('url');
-		var url_parts = url.parse(req.url, true);
-		var query = url_parts.query;
-		console.log(query);
-		// console.log(req);	
-	});
-
+	app.post('/iosLogin',
+		passport.authenticate('facebook-token', { display: 'page', scope: ['user_friends', 'user_groups', 'email'] }),
+		function(req, res) {
+			var user = req['user'];
+	  	res.cookie('userId', user.id, { maxAge: 2592000000 });
+	    res.redirect('/home');
+		});
 
 
 	app.get('/', ensureAuthenticated, function(req, res) {

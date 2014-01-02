@@ -64,7 +64,7 @@ module.exports.setGroup = function(id, group) {
     update: { $set: { group: group } },
     new: true
 	}, function(err, doc) {
-		console.log('set group', err, doc);
+		// console.log('set group', err, doc);
 	});
 }
 
