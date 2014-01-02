@@ -15,6 +15,7 @@ var http    = require('http'),
     colors  = require('colors'),
     passport = require('passport'),
     FacebookStrategy = require('passport-facebook').Strategy,
+    FacebookTokenStrategy = require('passport-facebook-token').Strategy,  
     passportSocketIo = require("passport.socketio"),
     redisStore = require('connect-redis')(express);
     // applePush  = require('./app/server/applePush.js');
@@ -35,6 +36,7 @@ var handler = require('./app/server/socketHandler.js').set(io);
 
 passport.serializeUser(function(user, done) { done(null, user); });
 passport.deserializeUser(function(obj, done) { done(null, obj); });
+
 passport.use(new FacebookStrategy({
     clientID: config.FB.FACEBOOK_APP_ID,
     clientSecret: config.FB.FACEBOOK_APP_SECRET,
@@ -42,6 +44,19 @@ passport.use(new FacebookStrategy({
   },
   function(accessToken, refreshToken, profile, done) {
     process.nextTick(function () {
+      var sessionData = { 'id':+profile.id, 'name':profile.displayName, 'token':accessToken };
+      return done(null, sessionData);
+    });
+  }
+));
+
+passport.use(new FacebookTokenStrategy({
+    clientID: config.FB.FACEBOOK_APP_ID,
+    clientSecret: config.FB.FACEBOOK_APP_SECRET
+  },
+  function(accessToken, refreshToken, profile, done) {
+    process.nextTick(function () {
+      console.log('verified!', profile);
       var sessionData = { 'id':+profile.id, 'name':profile.displayName, 'token':accessToken };
       return done(null, sessionData);
     });

@@ -4,8 +4,9 @@ if (!localStorage.fbInfo) localStorage.fbInfo = {};
 $(document).ready(function() {
 	myId = $.cookie('userId');
 	getFbData(myId, function(pic, name) {
-		me.pic = pic;
+		me.pic 	= pic;
 		me.name = name;
+		me.id 	= myId;
 		console.log(me);
 		drawUserInfo(pic, name);
 	});
