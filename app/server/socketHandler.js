@@ -54,7 +54,7 @@ function newUser(user, socket) {
 }
 function existingUser(user, userData, socket) {
   // console.log(userData)
-  log(user.name, "has logged in.");
+  log(user.name, "has connected.");
   socket.join(''+user.id);
   socket.emit('userData', userData);
   // console.log('existing user', id, 'has', friends.length,'friends');
@@ -272,6 +272,7 @@ module.exports.disconnect = function(socket) {
   var self = this, user = getUser(socket);
   users.decConnections(user.id, function(err){
     if(err) logError(err);
+    log(user.name, "has disconnected.");
   });
 }
 // module.exports.followBeacon = function(data, socket) {
