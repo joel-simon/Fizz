@@ -2,25 +2,29 @@
 * Beacon
 * beaconBeta.com
 */
-var http    = require('http'),
+var 
+    http    = require('http'),
     connect = require('connect'),
     express = require('express'),
     app     = express(),
     port    = process.env.PORT || 9001,
     server  = app.listen(port),
+
     io      = require('socket.io').listen(server),
+    handler = require('./app/server/socketHandler.js'),
+    
     redis   = require('redis'),
-    keeper  = require('./app/server/beaconKeeper.js'),
-    config    = require('./config.json'),
-    colors  = require('colors'),
-    passport = require('passport'),
+    redisStore = require('connect-redis')(express),
+
+    passport = require('passport'), 
     FacebookStrategy = require('passport-facebook').Strategy,
     FacebookTokenStrategy = require('passport-facebook-token').Strategy,  
     passportSocketIo = require("passport.socketio"),
-    redisStore = require('connect-redis')(express);
-    // applePush  = require('./app/server/applePush.js');
-
-
+    
+    config    = require('./config.json'),
+    colors  = require('colors');
+require.main.exports.io = io;
+// console.log(require.main.exports);
 // Create pub/sub channels for sockets using redis. 
 var rtg  = require("url").parse(config.DB.REDISTOGO_URL);
 var pub = redis.createClient(rtg.port, rtg.hostname);
@@ -31,44 +35,31 @@ sub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 store.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 
 var sessionStore = new redisStore({client: store}); // socket.io sessions
-var users = null;//require('./app/server/users.js').set(store); 
-var handler = require('./app/server/socketHandler.js').set(io);
+
 
 passport.serializeUser(function(user, done) { done(null, user); });
 passport.deserializeUser(function(obj, done) { done(null, obj); });
 
-passport.use(new FacebookStrategy({
-    clientID: config.FB.FACEBOOK_APP_ID,
-    clientSecret: config.FB.FACEBOOK_APP_SECRET,
-    callbackURL: config.HOST+"auth/facebook/callback"
-  },
-  function(accessToken, refreshToken, profile, done) {
-    process.nextTick(function () {
-      var sessionData = { 'id':+profile.id, 'name':profile.displayName, 'token':accessToken };
-      return done(null, sessionData);
-    });
-  }
-));
+var ppOptions = {
+  clientID: config.FB.FACEBOOK_APP_ID,
+  clientSecret: config.FB.FACEBOOK_APP_SECRET,
+  callbackURL: config.HOST+"auth/facebook/callback"
+}
+function passportSuccess(accessToken, refreshToken, profile, done) {
+  process.nextTick(function () {
+    // console.log(profile);
+    var sessionData = { 'id':+profile.id, 'name':profile.displayName, 'token':accessToken };
+    return done(null, sessionData);
+  });
+}
+passport.use(new FacebookStrategy(ppOptions, passportSuccess));
+passport.use(new FacebookTokenStrategy(ppOptions, passportSuccess));
 
-passport.use(new FacebookTokenStrategy({
-    clientID: config.FB.FACEBOOK_APP_ID,
-    clientSecret: config.FB.FACEBOOK_APP_SECRET,
-    callbackURL: config.HOST+"auth/facebook/callback"
-  },
-  function(accessToken, refreshToken, profile, done) {
-    process.nextTick(function () {
-      console.log('verified!', profile);
-      var sessionData = { 'id':+profile.id, 'name':profile.displayName, 'token':accessToken };
-      return done(null, sessionData);
-    });
-  }
-));
 //Middleware: Allows cross-domain requests (CORS)
 var allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
     res.header('Access-Control-Allow-Headers', 'Content-Type');
-
     next();
 }
 
@@ -122,7 +113,9 @@ io.sockets.on('connection', function(socket) {
   socket.on('getFriendsList',function(data){ handler.getFriendsList(socket) });
   socket.on('disconnect',   function(){ handler.disconnect(socket) });
 });
+// open to io scope for other modules to use;
 
+// exports.io = io;
 // Route all routes. 
 require('./app/server/router')(app, passport);
                   

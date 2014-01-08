@@ -1,12 +1,13 @@
 var async = require('async');
 var validate = require('./utilities').validate;
 var sanitize = require('validator').sanitize;
-
-var config  = require('./../../config.json');
-var redis   = require('redis');
-var rtg  = require("url").parse(config.DB.REDISTOGO_URL);   
-var store = redis.createClient(rtg.port, rtg.hostname);
-store.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
+var store = require('./redisStore.js');
+exports = module.exports;
+// var config  = require('./../../config.json');
+// var redis   = require('redis');
+// var rtg  = require("url").parse(config.DB.REDISTOGO_URL);   
+// var store = redis.createClient(rtg.port, rtg.hostname);
+// store.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 /**
  * BeaconKeeper is the class for managing all the beacons that the server hold.
  * As of now it is an abstraction wrapper for dealing with redis where current
@@ -22,7 +23,7 @@ store.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
  * 
  * @param {Object} B - the beacon to insert
  */
-module.exports.insert = function(B, callback) {
+exports.insert = function(B, callback) {
   var self = this;
   var key;
 
@@ -31,7 +32,7 @@ module.exports.insert = function(B, callback) {
     (B.pub) ? insertPublic(B) : insertPrivate(B);
     if (B.comments.length > 0) {
       var c = B.comments[0];
-      module.exports.addComment(B.id, c.user, c.comment);
+      exports.addComment(B.id, c.user, c.comment);
     }
   } else if (callback) {
     return callback("Invalid Beacon.");
@@ -51,11 +52,11 @@ module.exports.insert = function(B, callback) {
   }
 }
 
-module.exports.getNextId = function(callback) {
+exports.getNextId = function(callback) {
   store.incr('beaconCounter', callback);
 }
 
-module.exports.remove = function(id, host, pub, callback) {
+exports.remove = function(id, host, pub, callback) {
   store.hdel('privateBeacons', ''+id, function(){});
   store.hdel('publicBeacons', ''+id, function(){});
   store.del('comments'+id, function(){});
@@ -63,15 +64,15 @@ module.exports.remove = function(id, host, pub, callback) {
   store.srem('hostedBy'+host, id); 
 }
 
-module.exports.add_guest = function(id, guestId, callback) {
+exports.add_guest = function(id, guestId, callback) {
   store.sadd('a'+id, guestId, callback);
 }
 
-module.exports.del_guest = function(id, guestId, callback) {
+exports.del_guest = function(id, guestId, callback) {
   store.srem('a'+id, guestId, callback);
 }
 
-module.exports.addComment = function(id, guestId, comment, callback) {
+exports.addComment = function(id, guestId, comment, callback) {
   var c = sanitize(comment).xss();
   store.hincrby('addCommentIds', id, 1, function(err, i) {
     if (err) return callback(err);
@@ -82,7 +83,7 @@ module.exports.addComment = function(id, guestId, comment, callback) {
   }); 
 }
 
-module.exports.getComments = function(id, callback) {
+exports.getComments = function(id, callback) {
   store.lrange('comments'+id,0,-1, function(err, data) {
     if (err) callback (err);
     else { 
@@ -93,23 +94,30 @@ module.exports.getComments = function(id, callback) {
   });
 }
 
-module.exports.updateFields = function (data, callback) {
+exports.updateFields = function (data, callback) {
   var self = this;
-  module.exports.get(data.id, function(err, b) {
+  exports.get(data.id, function(err, b) {
     for (var e in data) {
       if (b.hasOwnProperty(e)) {
         b[e] = data[e];
       }
     } 
-    module.exports.insert(b, function(err) {
+    exports.insert(b, function(err) {
       if (err) callback(err);
       else callback(null);
     });
   });
 }
 
+exports.isValidId = function(bId, callback) {
+  store.hexists('privateBeacons', bId, function(err, is){
+    if(is) callback(null, true);
+    else callback(null, false);
+  });
+}
+
 // returns null on failure
-module.exports.get = function(id, callback) {
+exports.get = function(id, callback) {
   var self = this;
   store.hexists('publicBeacons', id, function(err, isIn) {
     if(err) return callback(err);
@@ -144,7 +152,7 @@ module.exports.get = function(id, callback) {
         });
       },
       comments: function(cb){
-        module.exports.getComments(id, cb);
+        exports.getComments(id, cb);
       } 
     },
     function(err, results) {
@@ -159,13 +167,13 @@ module.exports.get = function(id, callback) {
 
 
 // returns null on failure
-// module.exports.getVisible = function(friends, userId, callback) {
+// exports.getVisible = function(friends, userId, callback) {
 //   var beacons = [];
 //   var self = this;
 //   friends.push(userId);
 //   var responses = 0;
 //   for (var i = 0; i < friends.length; i++) (function(f) {
-//     module.exports.store.smembers('hostedBy'+f, function(err, data) {
+//     exports.store.smembers('hostedBy'+f, function(err, data) {
 //       if (data.length>0) {
 //         foo(data, function(err, bcns) {
 //           beacons = beacons.concat(bcns);
@@ -184,7 +192,7 @@ module.exports.get = function(id, callback) {
 //     var bcns = [];
 //     var c = 0;
 //     for (var i = 0; i < d.length; i++) {
-//       module.exports.get(d[i], function(err, b) {
+//       exports.get(d[i], function(err, b) {
 //         if (err) return callback(err);
 //         bcns.push(b);
 //         if ((++c) == d.length) {
@@ -197,15 +205,15 @@ module.exports.get = function(id, callback) {
 /*
   the admin calls this to get everything
 */
-module.exports.getAll = function(callback) {
+exports.getAll = function(callback) {
   var recieved = 0,
       total = 2,
       arr = [],
       self = this;
 
   if (!callback) return null;
-  module.exports.getAllPublic(cont);
-  module.exports.getAllPrivate(cont);
+  exports.getAllPublic(cont);
+  exports.getAllPrivate(cont);
 
   function cont(err, newArr) {
     if (err) return callback(err);
@@ -215,7 +223,7 @@ module.exports.getAll = function(callback) {
 
 }
 
-module.exports.getAllPrivate = function(callback) {
+exports.getAllPrivate = function(callback) {
   if (!callback) return null;
 
   store.hvals('privateBeacons', function(err, privates) {
@@ -237,7 +245,7 @@ module.exports.getAllPrivate = function(callback) {
     })(i);
   }
 }
-module.exports.getAllPublic = function(callback) {
+exports.getAllPublic = function(callback) {
   if (!callback) return null;
 
   store.hvals('publicBeacons', function(err, publics) {
@@ -260,6 +268,6 @@ module.exports.getAllPublic = function(callback) {
   }
 }
 
-module.exports.clearPublic = function() {
+exports.clearPublic = function() {
   store.del('publicBeacons', redis.print);
 }
