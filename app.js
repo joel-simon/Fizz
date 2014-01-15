@@ -3,26 +3,26 @@
 * beaconBeta.com
 */
 var 
-    http    = require('http'),
-    connect = require('connect'),
-    express = require('express'),
-    app     = express(),
-    port    = process.env.PORT || 9001,
-    server  = app.listen(port),
+  http    = require('http'),
+  connect = require('connect'),
+  express = require('express'),
+  app     = express(),
+  port    = process.env.PORT || 9001,
+  server  = app.listen(port),
 
-    io      = require('socket.io').listen(server),
-    handler = require('./app/server/socketHandler.js'),
-    
-    redis   = require('redis'),
-    redisStore = require('connect-redis')(express),
+  io      = require('socket.io').listen(server),
+  handler = require('./app/server/socketHandler.js'),
+  
+  redis   = require('redis'),
+  redisStore = require('connect-redis')(express),
 
-    passport = require('passport'), 
-    FacebookStrategy = require('passport-facebook').Strategy,
-    FacebookTokenStrategy = require('passport-facebook-token').Strategy,  
-    passportSocketIo = require("passport.socketio"),
-    
-    config    = require('./config.json'),
-    colors  = require('colors');
+  passport = require('passport'), 
+  FacebookStrategy = require('passport-facebook').Strategy,
+  FacebookTokenStrategy = require('passport-facebook-token').Strategy,  
+  passportSocketIo = require("passport.socketio"),
+  
+  config    = require('./config.json'),
+  colors  = require('colors');
 require.main.exports.io = io;
 // console.log(require.main.exports);
 // Create pub/sub channels for sockets using redis. 
