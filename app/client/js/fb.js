@@ -1,37 +1,30 @@
 var me = {};
-var fbInfo = {};
 var friends = {};
-
+if (!localStorage.fbInfo) localStorage.fbInfo = {};
 $(document).ready(function() {
-	me.id = $.cookie('userId');
-	me.name = $.cookie('userName');
-	me.pic = $.cookie('userPicture');
-	console.log('SENDING [getFriendsList]');
-	socket.emit('getFriendsList');
-
-	if (me.name && me.pic) {
-		fbInfo[me.id] = {'name':me.name, 'pic':me.pic};
-		console.log('Received FB info from cookies:', fbInfo);
-		drawUserInfo(me.pic, me.name);
-	} else {
-		console.log('Getting info from FB...');
-		getFbData(me.id, function(pic, name) {
-			drawUserInfo(pic, name);
-			$.cookie('userName', name, { expires: 7 });
-			$.cookie('userPicture', pic, { expires: 7 });
-		});
-	}
+	myId = $.cookie('userId');
+	getFbData(myId, function(pic, name) {
+		me.pic 	= pic;
+		me.name = name;
+		me.id 	= +myId;
+		drawUserInfo(pic, name);
+	});
 });
 
 function getFbData(id, callback) {
-	if (fbInfo[id]) callback(fbInfo[id].pic, fbInfo[id].name);
-	else {
+	id = ''+id; 
+	var store = localStorage;
+	var user = localStorage.getItem(id);
+	if (user) {
+		user = JSON.parse(user);
+		callback(user.pic, user.name);
+	} else {
 		$.ajax({
 			url: 'http://graph.facebook.com/'+id+'?fields=picture,name',
 			success: function( data ) {
 				var pic  = data.picture.data.url;
 				var name = data.name;
-				fbInfo[id] = {'name':name, 'pic':pic};
+				localStorage.setItem(id, JSON.stringify({'name':name, 'pic':pic}));
 				callback(pic, name);
 			}
 		});

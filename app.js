@@ -2,54 +2,64 @@
 * Beacon
 * beaconBeta.com
 */
-var http    = require('http'),
-    connect = require('connect'),
-    express = require('express'),
-    app     = express(),
-    port    = process.env.PORT || 9001,
-    server  = app.listen(port),
-    io      = require('socket.io').listen(server),
-    redis   = require('redis'),
-    keeper  = require('./app/server/beaconKeeper.js'),
-    config    = require('./config.json'),
-    colors  = require('colors'),
-    passport = require('passport'),
-    FacebookStrategy = require('passport-facebook').Strategy,
-    passportSocketIo = require("passport.socketio"),
-    redisStore = require('connect-redis')(express);
-    // applePush  = require('./app/server/applePush.js');
+require('newrelic');
+var
+  http    = require('http'),
+  connect = require('connect'),
+  express = require('express'),
+  app     = express(),
+  port    = process.env.PORT || 9001,
+  server  = app.listen(port),
+  io      = require('socket.io').listen(server),
+  handler = require('./app/server/socketHandler.js'),
+  redis   = require('redis'),
+  redisStore = require('connect-redis')(express),
+  passport = require('passport'), 
+  FacebookStrategy = require('passport-facebook').Strategy,
+  FacebookTokenStrategy = require('passport-facebook-token').Strategy,  
+  passportSocketIo = require("passport.socketio"),
+  config    = require('./config.json'),
+  colors  = require('colors'),
+  rtg  = require("url").parse(config.DB.REDISTOGO_URL),
+  pub = redis.createClient(rtg.port, rtg.hostname),
+  sub = redis.createClient(rtg.port, rtg.hostname),
+  store = redis.createClient(rtg.port, rtg.hostname);
 
-
-// Create pub/sub channels for sockets using redis. 
-var rtg  = require("url").parse(config.DB.REDISTOGO_URL);
-var pub = redis.createClient(rtg.port, rtg.hostname);
-var sub = redis.createClient(rtg.port, rtg.hostname);
-var store = redis.createClient(rtg.port, rtg.hostname);
 pub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 sub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 store.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 
 var sessionStore = new redisStore({client: store}); // socket.io sessions
-var users = null;//require('./app/server/users.js').set(store); 
-var handler = require('./app/server/socketHandler.js').set(io);
+require.main.exports.io = io;
 
 passport.serializeUser(function(user, done) { done(null, user); });
 passport.deserializeUser(function(obj, done) { done(null, obj); });
-passport.use(new FacebookStrategy({
-    clientID: config.FB.FACEBOOK_APP_ID,
-    clientSecret: config.FB.FACEBOOK_APP_SECRET,
-    callbackURL: config.HOST+"auth/facebook/callback"
-  },
-  function(accessToken, refreshToken, profile, done) {
-    process.nextTick(function () {
-      var sessionData = { 'id':+profile.id, 'name':profile.displayName, 'token':accessToken };
-      return done(null, sessionData);
-    });
-  }
-));
+var ppOptions = {
+  clientID: config.FB.FACEBOOK_APP_ID,
+  clientSecret: config.FB.FACEBOOK_APP_SECRET,
+  callbackURL: config.HOST+"auth/facebook/callback"
+}
+function passportSuccess(accessToken, refreshToken, profile, done) {
+  process.nextTick(function () {
+    // console.log(profile);
+    var sessionData = { 'id':+profile.id, 'name':profile.displayName, 'token':accessToken };
+    return done(null, sessionData);
+  });
+}
+passport.use(new FacebookStrategy(ppOptions, passportSuccess));
+passport.use(new FacebookTokenStrategy(ppOptions, passportSuccess));
+
+//Middleware: Allows cross-domain requests (CORS)
+var allowCrossDomain = function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+}
 
 // Configure express app.
-app.configure('development',function() {
+app.configure(function() {
+  app.use(allowCrossDomain);
   app.set('views', __dirname + '/app/server/views');
   app.set('view engine', 'jade');
   app.locals.pretty = true;
@@ -91,7 +101,7 @@ io.sockets.on('connection', function(socket) {
   socket.on('newBeacon',    function(data){ handler.newBeacon   (data, socket) });
   socket.on('newComment',   function(data){ handler.newComment  (data, socket) });
   socket.on('moveBeacon',   function(data){ handler.moveBeacon  (data, socket) });
-  socket.on('changeGroup',  function(data){ handler.changeGroup (data, socket) });
+  socket.on('updateGroup',  function(data){ handler.updateGroup (data, socket) });
   socket.on('updateBeacon', function(data){ handler.updateBeacon(data, socket) });
   socket.on('followBeacon', function(data){ handler.followBeacon(data, socket) });
   socket.on('getFriendsList',function(data){ handler.getFriendsList(socket) });

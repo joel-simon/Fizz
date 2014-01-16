@@ -33,7 +33,7 @@ var note = new apn.Notification();
 note.expiry = Math.floor(Date.now() / 1000) + 2*3600; // Expires 1 hour from now.
 note.badge = 3;
 note.sound = "ping.aiff";
-note.alert = "&#128562; &#x1f632 &#128562; &#x1f632 &#128562; &#x1f632 that emoticon lyfe";
+note.alert = "Beacon Data";
 note.payload = {'messageFrom': 'Joel'};
 
 apnConnection.pushNotification(note, myDevice);
