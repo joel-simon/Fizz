@@ -2,19 +2,18 @@
   Wrappers for push, sms and socket output
 */
 var 
-  utils   = require('./utilities.js'),
-  log     = utils.log,
-  config  = require('./../../config.json'),
-  exports = module.exports,
-  users   = require('./users.js'),
-  async   = require('async'),
-  apn     = require('apn');
+  utils    = require('./utilities.js'),
+  log      = utils.log,
+  logError = utils.logError,
+  config   = require('./../../config.json'),
+  exports  = module.exports,
+  users    = require('./users.js'),
+  async    = require('async'),
+  apn      = require('apn');
 
-// var fs = require('fs');
-// var certPem = fs.readFileSync(__dirname + '/cert.pem', encoding='ascii');
-// var keyPem = fs.readFileSync(__dirname + '/key.pem', encoding='ascii');
-// var caCert = fs.readFileSync(__dirname + '/apple-worldwide-certificate-authority.cer', encoding='ascii');
-// var token ='BC45506F3DD570B9C51363068DFBEF0FE178B7F7318D3CA7485F6040F980B74A';
+////////////////////////////////////////////////////////////////////////////////
+//        PUSH IOS
+////////////////////////////////////////////////////////////////////////////////
 
 var options = {
   key: __dirname + '/key.pem',
@@ -49,7 +48,9 @@ exports.pushIos = function(msg, token, hoursToExpiration) {
 
   apnConnection.pushNotification(note, myDevice);
 }
+
 ////////////////////////////////////////////////////////////////////////////////
+// TWILIO
 ////////////////////////////////////////////////////////////////////////////////
 
 var twilio = require('twilio');
@@ -75,41 +76,54 @@ exports.sendSms = function(to, msg) {
     }
   });
 }
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////
+// SOCK.IO
+////////////////////////////////////////////////////////////////////////////////
 /**
  * Emit from a certain person
  * @param {Number} userId
  * @param {String} eventName
  * @param {Object} Data
  */
- var io;
+var io;
 exports.emit = function(userId, eventName, data, message) {
+  // var userId     = options.userId,
+  //     eventName  = options.eventName,
+  //     data       = options.data,
+  //     message    = options.message    || null,
+  //     recipients = options.recipients || null;
+
   // deal with a circular dependency by delaying invocation.
   if(!io) io = require('../../app.js').io;
   io.sockets.in(userId).emit(eventName, data);
-  users.getUser(userId, function(err, userData) {
-    if (err) return logError(err);
-    if (!userData) return logError('no userData found');
-    async.each(userData.group, function(friend, callback) {
+  if (false){//recipients) {
+    toGroup(recipients);
+  } else {
+    users.getUser(userId, function(err, userData) {
+      if (err || !userData) return logError(err || 'no userData found '+userId);
+      toGroup(userData.group);
+    });
+  }
 
-      // users.isConnected(id, function(err, isCon) {
-      //   if (isCon) {
-        io.sockets.in(friend.id).emit(eventName, data);
-        if (friend.phoneNumber && message) {
-          exports.sendSms(friend.phoneNumber, message);
-         
-          
+  
+  function toGroup(group) {
+    console.log(group);
+    async.each(group, function(friend, callback) {
+      
+      users.isConnected(friend.id, function(err, isCon) {
+        if (isCon) {
+          io.sockets.in(friend.id).emit(eventName, data);
+        } else if (friend.phoneNumber && message) {
+            exports.sendSms(friend.phoneNumber, message);
         }
         // users.hasApp(id, function(err, hasApp){
         //   if (hasApp) pushIos(userId, eventName, data);
         //   else sendSms(userId, eventName, data)
 
         // })
-        // }
         
-      // });
+      });
     });
-  });
+  }
 }

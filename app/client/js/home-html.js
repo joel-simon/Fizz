@@ -9,7 +9,6 @@
 function createHtmlString(beacon, callback) {
 	// console.log(beacon.host, me.id);
 	var color, label;
-	console.log(beacon.host, me.id);
 	if ( beacon.host == me.id ) {
 		color = 'btn-danger';
 		label = 'Disband';

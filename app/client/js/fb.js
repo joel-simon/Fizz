@@ -6,8 +6,7 @@ $(document).ready(function() {
 	getFbData(myId, function(pic, name) {
 		me.pic 	= pic;
 		me.name = name;
-		me.id 	= myId;
-		console.log(me);
+		me.id 	= +myId;
 		drawUserInfo(pic, name);
 	});
 });

@@ -2,7 +2,7 @@ var colors  = require('colors');
 var fs = require('fs');
 var debug = true;
 var sanitize = require('validator').sanitize;
-
+var stackTrace = require('stack-trace');
 
 colors.setTheme({
   info: 'rainbow',
@@ -33,13 +33,17 @@ module.exports.debug = function() {
 }
 
 module.exports.logError = function(err, detail) {
-	var s = 'Error:';// @ '+(new Date()) + '\n';
-	console.log('\tError:'.error, err);
+	var s = '\tError: '.error;// @ '+(new Date()) + '\n';
+	// console.log('\tError:'.error, err);
 	
 	for (var i = 0; i < arguments.length; i++) {
 		e = arguments[i];
-		s += '\t'+((e instanceof Object) ? JSON.stringify(e) : e)+'\n';
+		s += ((e instanceof Object) ? JSON.stringify(e) : e);
 	}
+  // var f = ('\t'+arguments.callee)//.replace('\n', '\n\t');
+  // s += '\n'+ f;
+  // console.log
+  // console.trace();
 
 	// if (detail) {
 	// 	if (detail instanceof Object) detail = JSON.stringify(detail);		
@@ -55,6 +59,7 @@ module.exports.logError = function(err, detail) {
  //    }
 	// }); 
 }
+
 
 module.exports.posInt = posInt;
 function posInt(i) {

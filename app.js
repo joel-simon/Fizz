@@ -2,44 +2,38 @@
 * Beacon
 * beaconBeta.com
 */
-var 
+require('newrelic');
+var
   http    = require('http'),
   connect = require('connect'),
   express = require('express'),
   app     = express(),
   port    = process.env.PORT || 9001,
   server  = app.listen(port),
-
   io      = require('socket.io').listen(server),
   handler = require('./app/server/socketHandler.js'),
-  
   redis   = require('redis'),
   redisStore = require('connect-redis')(express),
-
   passport = require('passport'), 
   FacebookStrategy = require('passport-facebook').Strategy,
   FacebookTokenStrategy = require('passport-facebook-token').Strategy,  
   passportSocketIo = require("passport.socketio"),
-  
   config    = require('./config.json'),
-  colors  = require('colors');
-require.main.exports.io = io;
-// console.log(require.main.exports);
-// Create pub/sub channels for sockets using redis. 
-var rtg  = require("url").parse(config.DB.REDISTOGO_URL);
-var pub = redis.createClient(rtg.port, rtg.hostname);
-var sub = redis.createClient(rtg.port, rtg.hostname);
-var store = redis.createClient(rtg.port, rtg.hostname);
+  colors  = require('colors'),
+  rtg  = require("url").parse(config.DB.REDISTOGO_URL),
+  pub = redis.createClient(rtg.port, rtg.hostname),
+  sub = redis.createClient(rtg.port, rtg.hostname),
+  store = redis.createClient(rtg.port, rtg.hostname);
+
 pub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 sub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 store.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 
 var sessionStore = new redisStore({client: store}); // socket.io sessions
-
+require.main.exports.io = io;
 
 passport.serializeUser(function(user, done) { done(null, user); });
 passport.deserializeUser(function(obj, done) { done(null, obj); });
-
 var ppOptions = {
   clientID: config.FB.FACEBOOK_APP_ID,
   clientSecret: config.FB.FACEBOOK_APP_SECRET,
@@ -113,9 +107,7 @@ io.sockets.on('connection', function(socket) {
   socket.on('getFriendsList',function(data){ handler.getFriendsList(socket) });
   socket.on('disconnect',   function(){ handler.disconnect(socket) });
 });
-// open to io scope for other modules to use;
 
-// exports.io = io;
 // Route all routes. 
 require('./app/server/router')(app, passport);
                   

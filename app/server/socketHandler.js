@@ -1,15 +1,16 @@
-var io, 
-    beacons   = require('./beaconKeeper.js'),
-    utils     = require('./utilities.js'),
-    logError  = utils.logError,
-    log       = utils.log,
-    debug     = utils.debug,
-    fb        = require('./fb.js'),
-    users     = require('./users.js'),
-    async = require('async'),
-    output = require('./output.js'),
-    emit = output.emit;
-    module.exports = exports;
+var 
+  io, 
+  beacons   = require('./beaconKeeper.js'),
+  utils     = require('./utilities.js'),
+  logError  = utils.logError,
+  log       = utils.log,
+  debug     = utils.debug,
+  fb        = require('./fb.js'),
+  users     = require('./users.js'),
+  async = require('async'),
+  output = require('./output.js'),
+  emit = output.emit;
+  module.exports = exports;
 
 /**
  * Handle login socket
@@ -20,10 +21,6 @@ var io,
 exports.login = function(socket) {
   var user = getUser(socket);
   var friends = [];
-  users.incConnections(user.id, function(err, conn) {
-    if (err) logError(err);
-    else log(conn)
-  });
   users.getUser(user.id, function(err, userData) {
     if (err) logError(err);
     else if (!userData || !userData.friends) newUser(user, socket);
@@ -40,7 +37,7 @@ function newUser(user, socket) {
     // for (var i = 0; i < friends.data.length; i++) {
     //   idArr.push(friends.data[i].id)
     // };
-    userData = { friends:[], 'group':res.data };
+    userData = { friends:res.data, 'group':[] };
     users.addUser(user.id, userData, function(err2, doc) {
       if (err2) return logError(err2);
       existingUser(user, userData, socket);
@@ -48,6 +45,7 @@ function newUser(user, socket) {
    });
 }
 function existingUser(user, userData, socket) {
+  if(!io) io = require('../../app.js').io;
   log(user.name, "has connected.");
   socket.join(''+user.id);
   socket.emit('userData', userData);
@@ -71,7 +69,7 @@ exports.joinBeacon = function(data, socket) {
     var user = getUser(socket);
     var id = data.id;
     var host = data.host;
-
+    var options;
     beacons.add_guest( id, user.id, function(err) {
       if (err) return logError('join beacon', err);
       log(user.name, 'joined beacon', id);
@@ -163,15 +161,16 @@ exports.newBeacon = function (B, socket) {
 
 exports.newComment = function(data, socket) {
   try {
-    var BID = data.id,
-        host = data.host,
-        comment = data.comment.comment,
-        poster = data.comment.user;
+    var 
+      BID = data.id,
+      host = data.host,
+      comment = data.comment.comment,
+      poster = data.comment.user;
 
-      beacons.addComment(BID, poster, comment, function(err, commentWithId) { 
-        data.comment = commentWithId;
-        emit(data.host, 'newComment', data);
-        log('new comment', data); 
+    beacons.addComment(BID, poster, comment, function(err, commentWithId) { 
+      data.comment = commentWithId;
+      emit(data.host, 'newComment', data);
+      log('new comment', data); 
     });
   } catch (e) {
     logError('newComment', e);
@@ -239,17 +238,10 @@ exports.getFriendsList = function(socket) {
 }
 
 exports.disconnect = function(socket) {
-  var self = this, user = getUser(socket);
-  users.decConnections(user.id, function(err){
-    if(err) logError(err);
-    log(user.name, "has disconnected.");
-  });
+  var self = this, user = getUser(socket)
+  log(user.name, "has disconnected.")
 }
-// exports.followBeacon = function(data, socket) {
-//   var user = getUser(socket);
-//   var id = data.id;
-  
-// }
+
 
 
 function getUser(socket) {

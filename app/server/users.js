@@ -1,7 +1,8 @@
 // Abstraction for all database interactions.
 var mongojs = require('mongojs'),
 		config  = require('./../../config.json'),
-		redis   = require('redis');
+		redis   = require('redis'),
+		io;
 
 var rtg  = require("url").parse(config.DB.REDISTOGO_URL);		
 var store = redis.createClient(rtg.port, rtg.hostname);
@@ -22,19 +23,10 @@ exports.deleteVisible = function(userId, bId, callback) {
 }
 
 exports.isConnected = function(id, callback) {
-	store.hget('connections', id, function(err, connections) {
-		if (err) callback(err);
-		else callback(null, (connections > 0));
-	});
+	if(!io) io = require('../../app.js').io;
+	callback(null, io.sockets.clients(''+id).length > 0);
 }
 
-exports.incConnections = function(id, callback) {
-	store.hincrby('connections', id, 1, callback);
-}
-
-exports.decConnections = function(id, callback) {
-	store.hincrby('connections', id, -1, callback);
-}
 
 exports.isBeaconer = function(id, callback) {
 	store.sismember('beaconers', id, callback);
