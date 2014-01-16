@@ -194,6 +194,19 @@ input { padding: 0 4px; }
 	margin-left: -29px;
 }
 
+.search {
+	position: absolute;
+	top: 320px;
+}
+
+#groupSearch {
+	left: 160px;
+}
+
+#friendSearch {
+	right: 160px;
+}
+
 
 /*
 	Beacon List
