@@ -60,7 +60,8 @@ $('#friendSearch').on('input', function() {
 	auto.forEach(function(name, i) {
 		var idArray = nameToId[name];
 		for (var i = 0; i < idArray.length; i++) {
-			$('group-'+idArray[i]).removeClass('hidden');
+			console.log( $('#group-'+idArray[i]) );
+			$('#group-'+idArray[i]).removeClass('hidden');
 		}
 	});
 });
