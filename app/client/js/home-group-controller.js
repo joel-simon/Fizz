@@ -38,9 +38,13 @@ function loadGroup() {
 				// console.log('group-'+friend.id);
 				if ( $(this).parent()[0].id == 'friends' ) {
 					$('#group').append($(this));
+					group.push(friend.id);
 				} else {
 					$('#friends').append($(this));
+					var index = group.indexOf(friend.id);
+					if (index != -1) group.splice(index, 1);
 				}
+				console.log(group);
 			});
 			if (++friendCount == friends.length) {
 				setInterval(function() {
