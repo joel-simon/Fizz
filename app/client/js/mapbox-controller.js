@@ -76,7 +76,6 @@ function createMarker(bid, lat, lng, title, comment, hostPic) {
 
 	// Add features to the map
 	map.markerLayer.setGeoJSON(geoJson);
-	// $('.leaflet-marker-pane img').addClass('pic');
 }
 
 function removeMarker(bid) {

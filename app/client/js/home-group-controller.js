@@ -44,7 +44,7 @@ function loadGroup() {
 					var index = group.indexOf(friend.id);
 					if (index != -1) group.splice(index, 1);
 				}
-				console.log(group);
+				// console.log(group);
 			});
 			if (++friendCount == friends.length) {
 				setInterval(function() {
