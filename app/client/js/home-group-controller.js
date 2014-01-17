@@ -34,6 +34,14 @@ function loadGroup() {
 				cursor: "move",
 				scroll: "false"
 			});
+			$('#group-'+friend.id).on('click', function() {
+				// console.log('group-'+friend.id);
+				if ( $(this).parent()[0].id == 'friends' ) {
+					$('#group').append($(this));
+				} else {
+					$('#friends').append($(this));
+				}
+			});
 			if (++friendCount == friends.length) {
 				setInterval(function() {
 					var auto = $('.ui-autocomplete li a').map(function() { 
