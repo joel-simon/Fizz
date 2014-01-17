@@ -39,7 +39,7 @@ function loadGroup() {
 					var auto = $('.ui-autocomplete li a').map(function() { 
 						return $(this).text();
 					}).get();
-					console.log($('#friendSearch').val());
+					// console.log($('#friendSearch').val());
 					if ( $('#friendSearch').val() !== '' ) {
 						$('#friends li').addClass('hidden');
 					} else {

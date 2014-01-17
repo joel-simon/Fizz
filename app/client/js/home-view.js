@@ -62,7 +62,7 @@ function drawAddedGuest(id, guest) {
 
 function drawAddedComment(bid, cid, user, comment) {
 	getFbData(user, function(pic, name) {
-		var imgString = '<img src="'+pic+'">';
+		var imgString = '<img src="'+pic+'" class="pic" title="'+name+'">';
 		var string = '<p id="c-'+bid+'-'+cid+'">'+imgString+' '+
 		 	comment+'</p>';
 		$('#beacon-'+bid+' .commentList').append(string);
