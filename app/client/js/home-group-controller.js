@@ -35,7 +35,25 @@ function loadGroup() {
 				scroll: "false"
 			});
 			if (++friendCount == friends.length) {
-				setAutoComplete();
+				setInterval(function() {
+					var auto = $('.ui-autocomplete li a').map(function() { 
+						return $(this).text();
+					}).get();
+					console.log($('#friendSearch').val());
+					if ( $('#friendSearch').val() !== '' ) {
+						$('#friends li').addClass('hidden');
+					} else {
+						$('#friends li').removeClass('hidden');
+					}
+					auto.forEach(function(name, i) {
+						var idArray = nameToId[name];
+						for (var i = 0; i < idArray.length; i++) {
+							// console.log( $('#group-'+idArray[i]) );
+							$('#group-'+idArray[i]).removeClass('hidden');
+						}
+					});
+					setAutoComplete();
+				}, 250);
 			}
 		});
 	});
@@ -51,20 +69,10 @@ function setAutoComplete() {
 }
 
 
-$('#friendSearch').on('input', function() {
-	// console.log(this.value);
-	var auto = $('.ui-autocomplete li a').map(function() { 
-		return $(this).text() 
-	}).get();
-	$('#friends li').addClass('hidden');
-	auto.forEach(function(name, i) {
-		var idArray = nameToId[name];
-		for (var i = 0; i < idArray.length; i++) {
-			console.log( $('#group-'+idArray[i]) );
-			$('#group-'+idArray[i]).removeClass('hidden');
-		}
-	});
-});
+// $('#friendSearch').on('input', function() {
+// 	// console.log(this.value);
+	
+// });
 
 
 $('#group').droppable({
@@ -78,7 +86,6 @@ $('#group').droppable({
 		getFbData(fid, function(pic, name) {
 			friendNames.splice( friendNames.indexOf(name), 1 );
 			groupNames.push(name);
-			setAutoComplete();
 		});
 	}
 });
@@ -97,7 +104,6 @@ $('#friends').droppable({
 		getFbData(fid, function(pic, name) {
 			groupNames.splice( groupNames.indexOf(name), 1 );
 			friendNames.push(name);
-			setAutoComplete();
 		});
 	}
 });
