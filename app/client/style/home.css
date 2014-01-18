@@ -103,7 +103,7 @@ input { padding: 0 4px; }
 	height: 400px;	
 }
 
-.leaflet-marker-icon {
+.face-icon {
 	border-radius: 50%;
 	border: 2px solid orange;
 }
