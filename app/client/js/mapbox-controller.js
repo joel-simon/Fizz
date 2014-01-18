@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 var map = L.mapbox.map('map', 'examples.map-9ijuk24y');
-var geo = {};
+var geo = JSON.parse(localStorage.getItem('location')) || {};
 var geoJson = [];
 var bids = [];
 var markers = {};
@@ -14,7 +14,7 @@ $(document).ready(function() {
 	if (!navigator.geolocation) {
 		console.log('MAPBOX: geolocation is not available');
 	} else if (geo.lat && geo.lng) {
-		map.setView([lat, lng], 14);
+		map.setView([geo.lat, geo.lng], 14);
 	} else {
 		map.locate();
 	}
@@ -28,6 +28,7 @@ map.on('click', function(e) {
 map.on('locationfound', function(e) {
 	var lng = e.latlng.lng;
 	var lat = e.latlng.lat;
+	localStorage.setItem('location', JSON.stringify({'lat':lat, 'lng':lng}));
 	geo = {'lng' : lng, 'lat' : lat};
 	map.setView([lat, lng], 14);
 });
@@ -60,6 +61,7 @@ function findMarker(bid) {
 
 function createMarker(bid, lat, lng, title, comment, hostPic) {
 	console.log('Marker', L.marker([lng, lat]) );
+
 	geoJson.push({
 		'type': 'Feature',
 		'geometry': {
