@@ -13,19 +13,19 @@ $('#myBeacon').on('submit', function(e) {
 	var firstComment = { 'user':me.id , 'comment':comment };
 	// var lat, lng;
 
-	// if (tempMarker) {
-	// 	lat = tempMarker.position.lat();
-	// 	lng = tempMarker.position.lng();
-	// } else {
-	// 	lat = currentPosition.lat();
-	// 	lng = currentPosition.lng();
-	// }
+	invited = [];
+	group.forEach(function(uid, i) {
+		getFbData(uid, function(pic, name) {
+			invited.push({id:uid, name:name, pic:pic});
+		});
+	});
 	
 	var beacon = {
 		'host' : me.id, 
 		'lat' : geo.lat, 
 		'lng' : geo.lng,  
 		'attends' : [],
+		'invited' : invited,
 		'comments' : [firstComment],
 		'title': title
 	};

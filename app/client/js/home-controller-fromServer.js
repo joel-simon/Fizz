@@ -63,7 +63,7 @@ socket.on('newComment', function(data) {
 	BKeeper.addComment(bid, user, comment, cid);
 });
 
-socket.on('updateBeacon', function(data)  {
+socket.on('updateBeacon', function(data) {
 	console.log('UPDATING BEACON', data);
 	var id = data.id;
 	var loc = data.location;

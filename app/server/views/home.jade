@@ -26,8 +26,8 @@ html
 			//- input#searchTextField(type='text', size='50')
 
 		form#myBeacon
-			input(type='text', name='title', placeholder='My Event!')
-			input.input-long(type='text', name='comment', placeholder='Write your Event description here.')
+			input(type='text', name='title', placeholder='My Event!', autocomplete='off')
+			input.input-long(type='text', name='comment', autocomplete='off', placeholder='Write your Event description here.')
 			input.btn.btn-success(type='submit', value='Place Beacon')
 		div#group-container
 			button#group-button.btn.btn-primary(type='button') Group
@@ -41,6 +41,9 @@ html
 			ul#group.gallery.ui-helper-reset.ui-helper-clearfix
 
 			ul#friends.ui-widget-content.ui-state-default
+
+			input#groupSearch.search
+			input#friendSearch.search
 
 			button#saveGroup.btn.btn-primary(type='button') Save
 

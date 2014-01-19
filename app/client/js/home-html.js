@@ -37,7 +37,7 @@ function createHtmlString(beacon, callback) {
 				htmlString += commentsString;
 				htmlString += 
 						'<form id="newComment-'+beacon.id+'">'+
-							'<input type="text", name="comment", placeholder="Write a comment">'+
+							'<input type="text", autocomplete="off", name="comment", placeholder="Write a comment">'+
 						'</form>'+
 					'</li>';
 				callback(htmlString);

@@ -8,6 +8,7 @@ var map = L.mapbox.map('map', 'examples.map-9ijuk24y');
 var geo = {};
 var geoJson = [];
 var bids = [];
+var markers = {};
 
 $(document).ready(function() {
 	if (!navigator.geolocation) {
@@ -17,6 +18,10 @@ $(document).ready(function() {
 	} else {
 		map.locate();
 	}
+});
+
+map.on('click', function(e) {
+	console.log(e.latlng);
 });
 
 // Once we've got a position, zoom and center the map on it.
@@ -54,29 +59,31 @@ function findMarker(bid) {
 }
 
 function createMarker(bid, lat, lng, title, comment, hostPic) {
+	console.log('Marker', L.marker([lng, lat]) );
 	geoJson.push({
 		'type': 'Feature',
 		'geometry': {
 			'type': 'Point',
-			'coordinates': [lng, lat]
+			'coordinates': [lng, lat],
 		},
 		'properties': {
 			'title': title,
+			'draggable': true,
 			'description': comment,
 			'icon': {
 				'iconUrl': hostPic,
 				'iconSize': [50, 50],
 				'iconAnchor': [25, 25],
-				'popupAnchor': [0, -25]
-			}
-		}
+				'popupAnchor': [0, -25],
+				'className': 'face-icon',
+			},
+		},
 	});
 
 	bids.push(bid);
 
 	// Add features to the map
 	map.markerLayer.setGeoJSON(geoJson);
-	// $('.leaflet-marker-pane img').addClass('pic');
 }
 
 function removeMarker(bid) {
