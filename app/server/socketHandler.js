@@ -29,7 +29,7 @@ exports.login = function(socket) {
 }
 
 function newUser(user, socket) {
-  console.log('newUser', user.name);
+  log('newUser', user.name);
   var idArr = [];
   var userData;
   fb.get(user.token, '/me/friends', function(err, res) {
@@ -42,8 +42,9 @@ function newUser(user, socket) {
       if (err2) return logError(err2);
       existingUser(user, userData, socket);
     });
-   });
+  });
 }
+
 function existingUser(user, userData, socket) {
   if(!io) io = require('../../app.js').io;
   log(user.name, "has connected.");
@@ -54,7 +55,7 @@ function existingUser(user, userData, socket) {
     if (err) return logError('getVisible Err:', err);
     async.map(beaconIds, beacons.get, function(err2, bArr) {
       if (err2) return logError(err2);
-      // console.log('visible beacons:',bArr);
+      log('visible beacons:',beaconIds);
       socket.emit('newBeacons', bArr);   
     });    
   });
@@ -62,21 +63,28 @@ function existingUser(user, userData, socket) {
 /**
  * Handle joinBeacon socket
  * @param {Object} Data - contains .id and .admin
- * @param {Object} Beacons - object for managing all beacons
  */
 exports.joinBeacon = function(data, socket) {
-  try {
-    var user = getUser(socket);
-    var id = data.id;
-    var host = data.host;
-    var options;
-    beacons.add_guest( id, user.id, function(err) {
-      if (err) return logError('join beacon', err);
-      log(user.name, 'joined beacon', id);
-      emit(host, 'addGuest', {'id':id, 'guest':user.id });  
-    }); 
-  } catch (e) {
-    logError('joinBeacon', e);
+
+  var user = getUser(socket);
+  var id = data.id;
+  var host = data.host;
+
+  async.parallel({
+    add     : function(cb){ beacons.add_guest( id, user.id, cb) },
+    attends : function(cb){ beacons.getInvited(id, cb) }
+  }, done);
+
+  function done(err, results) {
+    if (err) return logError('join beacon', err);
+    log(user.name, 'joined beacon', id);
+    emit({
+      host      : host,
+      eventName : 'addGuest',
+      data      : {'id':id, 'guest':user.id },
+      message   : null, //send no sms/push
+      recipients: results.attends
+    });
   }
 }
 
@@ -87,25 +95,32 @@ exports.joinBeacon = function(data, socket) {
  * @param {Object} Beacons - object for managing all beacons
  */
 exports.deleteBeacon = function(data, socket) {
+    var
+        user = getUser(socket),
+        hostId = data.host,
+        bId = data.id;
+    if (!hostId || !bId) return logError("invalid delete call", data);
+    async.parallel({
+      delete  : function(cb){ beacons.remove( bId, hostId , cb) },
+      recipients : function(cb){ beacons.getInvited(bId, cb) },
+      delVis  : function(cb){ users.deleteVisible(hostId, bId, cb) }
+    }, done);
 
-    var host = data.host;
-    var id = data.id;
-    var pub = data.pub;
-    if (!host) return logError("invalid delete call", data);
-    if (!id)  return logError("invalid delete call", data);
-    beacons.remove( id, host, pub );
-    emit(host, 'deleteBeacon', {id:id, host:host});
-    users.getUser(host, function(err3, userData) {
-        if (err3) return logError(err3);
-        users.deleteVisible(host, id, function(){});
-        async.each(userData.group, function(friendId, callback) {
-          users.deleteVisible(friendId, id, callback);
-        });
-      });
-    log('Deleted beacon', host);
-  // } catch (e) {
-  //   logError('deleteBeacon', e);
-  // }
+  function done(err, results) {
+    if (err) return logError(err);
+    var recipients = results.recipients;
+    async.each(recipients, function(friend, callback) {
+        users.deleteVisible(friend.id, bId, callback);
+    });
+    emit({
+      host      : hostId,
+      eventName : 'deleteBeacon',
+      data      : {id:bId, host:hostId},
+      message   : null,
+      recipients: recipients
+    });
+    log(user.name,'deleted beacon', bId);
+  }
 }
 
 /**
@@ -119,11 +134,22 @@ exports.leaveBeacon = function(data, socket) {
   var id = data.id;
   var host = data.host;
 
-  beacons.del_guest( id, user.id, function(err) {
+  async.parallel({
+    delGuest: function(cb){ beacons.del_guest( id, user.id, cb) },
+    recipients: function(cb){ beacons.getInvited(id, cb) }
+  }, done);
+
+  function done(err, results) {
+    emit({
+      host: host,
+      eventName: 'removeGuest',
+      data: {'id':id, 'guest':user.id },
+      message: null,
+      recipients: results.recipients
+    });  
     if (err) return logError('leave beacon', err);
     log(user.name, 'left beacon', id);
-    emit(host, 'removeGuest', {'id':id, 'guest':user.id });  
-  }); 
+  } 
 }
 
 /**
@@ -135,46 +161,87 @@ exports.leaveBeacon = function(data, socket) {
 exports.newBeacon = function (B, socket) {
   var user = getUser(socket);
   var self = this;
+  B.pub = false;
+  B.host = +B.host;
   var message = user.name+':'+B.comments[0].comment+'\n'+"Reply 'y' if you can make it and 'n' otherwise.";
-  // console.log(B);
-  beacons.getNextId(function(err1, id) {
-    if (err1) return logError(err1, B);
-    B.id = id;
-    B.pub = false;
-    B.host = +B.host;
 
-    beacons.insert(B, function(err2) {
-      if (err2) return logError(err2, B);  
-      emit(B.host, 'newBeacon', {"beacon" : B}, message);
-      users.getUser(user.id, function(err3, userData) {
-        if (err3) return logError(err3);
-        users.addVisible(user.id, id, function(){});
-        async.each(userData.group, function(friend, callback) {
-          users.addVisible(friend.id, id, callback);
-        });
+  async.parallel({
+    bId: function(cb){ beacons.getNextId(cb)},
+    recipients: function(cb) {
+      if (B.invited) return cb(null, B.invited)
+      users.getUser(user.id, function(err, userData) {
+        cb(err, err ? null : userData.group);
       });
-      log('New beacon by', user.name);
-    });
-  }); 
+    }
+  },
+  function(err, data) {
+      if (err) return logError(err, B);
+      withIdAndRecipients(data.bId, data.recipients);
+  });
 
+  function withIdAndRecipients(bId, recipients) {
+    B.invited = recipients;
+    B.id = bId;
+
+    async.parallel({
+      insert  : function(cb) {
+        beacons.insert(B, cb)
+      },
+      addVisSelf: function(cb) { users.addVisible(user.id, bId, cb) },
+      addVisible: function(cb) {
+        function add(friend, cb2) {
+          users.addVisible(friend.id, bId, function(err){
+            if (err) cb2(err);
+            else cb2 (null);
+            
+          });
+        }
+        async.each(B.invited, add, cb);
+      }   
+    }, done);
+  }
+  function done (err, results) {
+    emit({
+      host: B.host,
+      eventName: 'newBeacon',
+      data: {"beacon" : B},
+      message: message,
+      recipients: B.invited
+    });
+    log('New beacon by', user.name);
+  }
 }
 
+// async.parallel({
+//   a: function(cb){ },
+//   b: function(cb) {}
+//   }
+// },
+// function(err, data) {
+// });
 exports.newComment = function(data, socket) {
-  try {
-    var 
-      BID = data.id,
-      host = data.host,
-      comment = data.comment.comment,
-      poster = data.comment.user;
 
-    beacons.addComment(BID, poster, comment, function(err, commentWithId) { 
-      data.comment = commentWithId;
-      emit(data.host, 'newComment', data);
-      log('new comment', data); 
+  var 
+    bId = data.id,
+    host = data.host,
+    comment = data.comment.comment,
+    poster = data.comment.user;
+
+  async.parallel({
+    add        : function(cb){ beacons.addComment(bId, poster, comment, cb) },
+    recipients : function(cb){ beacons.getInvited(bId, cb)                  }
+  },
+  function(err, results) {
+    data.comment = results.add;
+    emit({
+      host: host,
+      eventName: 'newComment',
+      data: data,
+      message: null,
+      recipients: results.recipients
     });
-  } catch (e) {
-    logError('newComment', e);
-  }
+    log('new comment', data); 
+  });
 }
 
 exports.updateGroup = function(data, socket) {
@@ -183,7 +250,7 @@ exports.updateGroup = function(data, socket) {
     var user = getUser(socket);
     var group = data;
     if (!group) return logError('invalid change group', data);
-    log(user.name, 'changed their group.');
+    log(user.name, 'changed their group.', group);
     // fb.get(user.token, '/me/friends', function(err, res) {
     //   if (err) return logError('from facebook.get()', err); 
 
@@ -201,27 +268,21 @@ exports.updateGroup = function(data, socket) {
 exports.updateBeacon = function(data, socket) {
   var user = getUser(socket);
   if (!verify()) return logError('invalid updateBeacon', data);
-  // try {
-    
-    beacons.updateFields(data, function(err){
-      if (err) logError('updateBeacon..', err);
-      else {
-        log(user.name, 'updated beacon', data.id);
-        emit(data.host, 'updateBeacon', data);
-      }
+  async.parallel({
+    update     : function(cb){ beacons.updateFields(data, cb) },
+    recipients : function(cb){ beacons.getInvited(bId, cb)    }
+  }, 
+  function(err, results) {
+    if (err) return logError(err);
+    log(user.name, 'updated beacon', data.id);
+    emit({
+      host : data.host,
+      eventName : 'updateBeacon',
+      data : data,
+      message : null,
+      recipients : results.recipients
     });
-  // } catch (e) {
-  //   logError('updateBeacon', e);
-  // }
-  function verify() {
-    if (!data.host || !data.id) return false;
-    if (data.location) {
-      if (!data.location.lng || typeof data.location.lng !== 'number') return false;
-      if (!data.location.lat || typeof data.location.lat !== 'number') return false;
-    }
-    if (data.title && typeof data.title !== 'string') return false;
-    return true;
-  }
+  });
 }
 
 exports.getFriendsList = function(socket) {
