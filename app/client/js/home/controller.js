@@ -23,14 +23,14 @@ $('#myBeacon').on('submit', function(e) {
 		marker           : null,
 		deletePastMarker : 0,
 	};
-	var event   = {
+	var eventData = {
 		creationTime : now,
 		inviteList   : [],
 		invitePnList : [],
 		message      : message,
 	};
-	console.log('SENDING [newEvent]: ', event);
-	socket.emit('newEvent', {event : event});
+	console.log('SENDING [newEvent]: ', eventData);
+	socket.emit('newEvent', eventData);
 	// clear form
 	form.message.value = '';
 	form.message.focus();
