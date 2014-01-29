@@ -26,34 +26,34 @@ var
  */
 exports.login = function(socket) {
   var user = getUserSession(socket);
-  console.log(user.name, 'has connected.');
+  log(user.name, 'has connected.');
   socket.join(''+user.uid);
   socket.emit('myInfo', user);
   events.isInvitedTo(user.uid, function(err, eventList) {
     if (err) return logError('getEvents:', err);
     log('eventList',eventList);
     check.is(eventList, '[event]');
-    
+    log('passed Check')
     socket.emit('eventList', {'eventList': eventList});
   });
   return;
-  setTimeout(function(){
-    var me = {
-      uid:1,
-      fbid:100007033064024,
-      pn:'',
-      name:"Joel Simon",
-      "hasApp":''
-    }
-    var event = {
-      eid : 1,
-      host : 1,
-      guestList : [1],
-      inviteList : [me],
-      message : null
-    }
-    exports.newEvent(event, socket);
-  }, 1000)
+  // setTimeout(function(){
+  //   var me = {
+  //     uid:1,
+  //     fbid:100007033064024,
+  //     pn:'',
+  //     name:"Joel Simon",
+  //     "hasApp":''
+  //   }
+  //   var event = {
+  //     eid : 1,
+  //     host : 1,
+  //     guestList : [1],
+  //     inviteList : [me],
+  //     message : null
+  //   }
+  //   exports.newEvent(event, socket);
+  // }, 1000)
 }
 
 // function existingUser(user, userData, socket) {
@@ -82,24 +82,28 @@ exports.login = function(socket) {
  */
 exports.newEvent = function (newEvent, socket) {
   // try {
+    log(newEvent);
     // New event is a event without an event id (eid)
     check.is(newEvent, 'newEvent');
     var self = this,
         user = getUserSession(socket);
     log('New beacon by', getUserSession(socket).name);
-    events.add(newEvent, function(err, event){
+    newEvent.host = user.uid;
+    newEvent.guestList = [user.uid];
+    newEvent.inviteList = [user];
+    events.add(newEvent, function(err, eid) {
       if (err) return logError(err);
+      newEvent.eid = eid;
       emit({
         eventName: 'newEvent',
-        data: {'event' : event},
+        data: {'event' : newEvent},
         // message: message,
-        recipients: event.inviteList
+        recipients: newEvent.inviteList
       });
       // event contains new eid.
     });
-
   // } catch(e) {
-  //   logError('newEvent:', e);
+  //   logError(e);
   // }
 }
 
@@ -108,30 +112,27 @@ exports.newEvent = function (newEvent, socket) {
  * @param {Object} Data - contains .id and .admin
  */
 exports.joinEvent = function(data, socket) {
-  try {
-    check.is(data, {
-      eid : 'posInt',
-      uid : 'posInt'
-    });
-    var user = getUserSession(socket);
 
-    async.parallel({
-      add     : function(cb){ events.addGuest( data.eid, user.id, cb) },
-      attends : function(cb){ events.getInvited(id, cb) }
-    }, 
-    function (err, results) {
-      if (err) return logError('join beacon', err);
-      log(user.name, 'joined beacon', id);
-      emit({
-        eventName : 'addGuest',
-        data      : {'id':id, 'guest':user.id },
-        message   : null, //send no sms/push
-        recipients: results.attends
-      });
+  check.is(data, {
+    eid : 'posInt',
+    uid : 'posInt'
+  });
+  var user = getUserSession(socket);
+
+  async.parallel({
+    add     : function(cb){ events.addGuest( data.eid, user.id, cb) },
+    attends : function(cb){ events.getInvited(id, cb) }
+  }, 
+  function (err, results) {
+    if (err) return logError('join beacon', err);
+    log(user.name, 'joined beacon', id);
+    emit({
+      eventName : 'addGuest',
+      data      : {'id':id, 'guest':user.id },
+      message   : null, //send no sms/push
+      recipients: results.attends
     });
-  } catch(e) {
-    logError('joinEvent', e);
-  }
+  });
 }
 /**
  * Handle leaveBeacon socket
@@ -164,58 +165,49 @@ exports.leaveBeacon = function(data, socket) {
 
 
 exports.newMessage = function(data, socket) {
-  try {
-    type.is(data.message, 'message');
-    var user = getUserSession(socket),
-        msg = data.message;
+  type.is(data.message, 'message');
+  var user = getUserSession(socket),
+      msg = data.message;
 
-    async.parallel({
-      add        : function(cb) { 
-        events.addMessage(msg, cb);
-      },
-      recipients : function(cb) {
-        events.getInvited(msg.eid, cb);
-      }
+  async.parallel({
+    add        : function(cb) { 
+      events.addMessage(msg, cb);
     },
-    function(err, results) {
-      // add will generate the messages ID. 
-      type.is(results, {add: 'posInt', recipients: '[user]'});
-      msg.mid = results.add;
-      emit({
-        eventName: 'newMessage',
-        data: data,
-        recipients: results.recipients
-      });
-      log('new comment', data); 
+    recipients : function(cb) {
+      events.getInvited(msg.eid, cb);
+    }
+  },
+  function(err, results) {
+    // add will generate the messages ID. 
+    type.is(results, {add: 'posInt', recipients: '[user]'});
+    msg.mid = results.add;
+    emit({
+      eventName: 'newMessage',
+      data: data,
+      recipients: results.recipients
     });
-  } catch(e){
-
-  }
+    log('new comment', data); 
+  });
 }
 exports.newUserLocation = function(data, socket) {
-  try {
-    type.is(data, {uid: 'posInt', latlng: 'latlng'});
-    var user = getUserSession(socket);
-    async.parallel({
-      a: function(cb){
-        users.updateLocation(data.uid, data.latlng, cb)
-      },
-      recipients : function(cb) {
-        events.getInvited(data.eid, cb);
-      }
+  type.is(data, {uid: 'posInt', latlng: 'latlng'});
+  var user = getUserSession(socket);
+  async.parallel({
+    a: function(cb){
+      users.updateLocation(data.uid, data.latlng, cb)
     },
-    function(err, results) {
-      type.is(results, {recipients: '[user]'});
-      emit({
-        eventName: 'newUserLocationList',
-        'data': [{uid: user.uid, latlng: data.latlng}],
-        recipients: results.recipients
-      });
+    recipients : function(cb) {
+      events.getInvited(data.eid, cb);
+    }
+  },
+  function(err, results) {
+    type.is(results, {recipients: '[user]'});
+    emit({
+      eventName: 'newUserLocationList',
+      'data': [{uid: user.uid, latlng: data.latlng}],
+      recipients: results.recipients
     });
-    
-  } catch(e) {
-    logError('newEvent', e);
-  }
+  });
 }
 
 function getEidAndRecipients (e, callback) {

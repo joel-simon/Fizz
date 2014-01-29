@@ -31,23 +31,22 @@ module.exports = {
   },
   newMessage: {
     eid: 'posInt',
-    uid: 'user',
+    uid: 'posInt',
     text: 'string',
     creationTime: 'posInt',
-    marker: 'marker'
+    // marker: 'marker'
   },
   newEvent : {
-    host:       'posInt',
-    guestList:  ['posInt'],
-    inviteList: ['user'],
-    messageList:['message']
+    creationTime: 'posInt',
+    inviteList: 'array',
+    message:'newMessage'
   },
   event : {
     eid:        'posInt',
-    host:       'posInt',
-    guestList:  ['posInt'],
-    inviteList: ['user'],
-    messageList:['message']
+    // host:       'posInt',
+    guestList:  '[posInt]',
+    inviteList: '[user]',
+    messageList:'[message]'
   },
   userLocation : {
     uid : 'posInt',

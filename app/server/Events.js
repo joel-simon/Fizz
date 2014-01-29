@@ -10,21 +10,21 @@ exports = module.exports;
  * 
  * @param {Object} Store - takes a redis conenction object
  */
-exports.add = function(event, cb) {
+exports.add = function(event, callback) {
   var self = this;
   var eid;
   store.hincrby('idCounter', 'event', 1 , function(err, next) {
-    if (err) return cb(err);
-    eid = next;
+    if (err) return callback(err);
+    event.eid = next;
     async.parallel({
       message: function(cb) {
         if (event.message) exports.addMessage(event.message, cb);
       },
       guestList: function(cb) {
-        exports.addGuest(eid, event.host, cb);
+        exports.addGuest(event.eid, event.host, cb);
       },
       inviteList: function(cb) {
-        store.sadd('inviteList:'+eid, event.inviteList.map(JSON.stringify),cb);
+        store.sadd('inviteList:'+event.eid, event.inviteList.map(JSON.stringify),cb);
       },
       makeVisisble: function(cb) {
         async.map(event.inviteList, function(user, cb2) {
@@ -51,7 +51,10 @@ exports.get = function(eid, callback) {
       store.lrange('messages:'+eid, 0, -1, cb);
     },
     guestList: function(cb) {
-      store.smembers('guestList:'+eid, cb);
+      store.smembers('guestList:'+eid, function(err, strings){
+        var nums = strings.map(parseInt);
+        cb(err, nums)
+      });
     },
     inviteList: function(cb) {
       store.smembers('inviteList:'+eid, cb);
@@ -60,10 +63,10 @@ exports.get = function(eid, callback) {
   function(err, results) {
     if(err) return callback(err);
     var event = {'eid' : eid};
-    event.messages = results.messages.map(JSON.parse);
+    event.messageList = results.messages.map(JSON.parse);
     event.inviteList = results.inviteList.map(JSON.parse);
     event.guestList = results.guestList;
-    console.log('in get:', event);
+
     callback(null, event);
   });
 }
