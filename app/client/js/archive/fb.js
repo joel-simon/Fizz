@@ -1,9 +1,10 @@
 var me = {};
-var friends = {};
+var friendList = {};
 if (!localStorage.fbInfo) localStorage.fbInfo = {};
 $(document).ready(function() {
 	myId = $.cookie('userId');
 	getFbData(myId, function(pic, name) {
+		console.log(pic);
 		me.pic 	= pic;
 		me.name = name;
 		me.id 	= +myId;

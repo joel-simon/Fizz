@@ -108,6 +108,12 @@ input { padding: 0 4px; }
 	border: 2px solid orange;
 }
 
+.shadow-face-icon {
+	border-radius: 50%;
+	border: 2px solid orange;
+	opacity: 0.7;
+}
+
 
 /*
 	Beacon Creator
@@ -118,12 +124,6 @@ input { padding: 0 4px; }
 }
 
 #myBeacon {
-	position: relative;
-	text-align: center;
-	padding: 5px;
-}
-
-#publicBeacon {
 	position: relative;
 	text-align: center;
 	padding: 5px;
@@ -214,10 +214,10 @@ input { padding: 0 4px; }
 
 
 /*
-	Beacon List
+	Event List
 */
 
-#beacon-list {
+#event-list {
 	text-align: center;
 	padding: 5px;
 	margin: 0 auto;
@@ -231,13 +231,3 @@ input { padding: 0 4px; }
 		background-color: #FF8C00;
 		float: left;
 	}
-
-
-
-
-
-
-
-
-
-
