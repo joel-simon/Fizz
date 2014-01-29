@@ -13,11 +13,16 @@ var OMM = new MarkerManager(map);
 
 function locateMe() {
 	if (!navigator.geolocation) console.log('MAPBOX: geolocation is not available');
-	else map.locate();
+	else {
+		map.locate();
+		if (MIM.latlng) map.setView(MIM.latlng, 14);
+	}
 }
 
 map.on('locationfound', function(e) {
+	console.log('MAPBOX: location found!', e.latlng);
 	MIM.setLatLng(e.latlng);
+	map.setView(e.latlng, 14);
 });
 
 map.on('locationerror', function() {
@@ -34,15 +39,8 @@ map.on('click', function(e) {
 	if (tempMarker) {
 		tempMarker.setLatLng(e.latlng);
 	} else {
-		var myIcon = L.icon({
-			iconUrl     : MIM.pic || '/img/userIcon.png',
-			iconSize    : [50,50],
-			iconAnchor  : [25, 25],
-			className   : 'shadow-face-icon',
-		});
-
 		tempMarker = L.marker(e.latlng, {
-			icon        : myIcon,
+			icon        : createIcon(MIM.pic),
 			draggable   : true,
 		});
 
