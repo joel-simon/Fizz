@@ -8,7 +8,7 @@ var MIM = new MyInfoManager();
 
 function MyInfoManager() {
 	// start off with facebook info
-	this.fbid = sessionStorage.fbid;
+	this.fbid = $.cookie('fbid'); //sessionStorage.fbid;
 	getFacebookInfo(this.fbid, function(name, pic) {
 		this.name = name;
 		this.pic  = pic;

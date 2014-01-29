@@ -78,7 +78,7 @@ function mapMessage(message) {
 			message.marker.latlng,
 			createIcon(null),
 			message.text,
-			null,
+			null
 		);
 	}
 	if (message.deletePastMarker) {
