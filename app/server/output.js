@@ -90,34 +90,28 @@ var io;
 // exports.emit = function(userId, eventName, data, message) {
 
 exports.emit = function(options) {
-  var userId     = options.host,
-      eventName  = options.eventName,
-      data       = options.data,
-      message    = options.message || null,
-      recipients = options.recipients;
+  var 
+    eventName  = options.eventName,
+    data       = options.data,
+    message    = options.message || null,
+    recipients = options.recipients;
 
   // Deal with a circular dependency by delaying invocation.
   if(!io) io = require('../../app.js').io;
   // Requires.
-  if(!userId) return logError ('Invalid userId in emit:', userId);
   if(!eventName) return logError ('Invalid eventName in emit:', eventName);
   if(!data) return logError ('Invalid data in emit:', data);
   if(!recipients) return logError ('Invalid recipients in emit:', recipients);
 
   // log(eventName, 'emitted to', recipients.length, data);
-  io.sockets.in(userId).emit(eventName, data);
   async.each(recipients, function(friend, callback) {
-    users.isConnected(friend.id, function(err, isCon) {
+    var fid = friend.uid || friend;
+    users.isConnected(fid, function(err, isCon) {
       if (isCon) {
-        io.sockets.in(friend.id).emit(eventName, data);
-      } else if (friend.phoneNumber && message) {
+        io.sockets.in(fid).emit(eventName, data);
+      } else if (friend.pn && message) {
           exports.sendSms(friend.phoneNumber, message);
       }
-      // users.hasApp(id, function(err, hasApp){
-      //   if (hasApp) pushIos(userId, eventName, data);
-      //   else sendSms(userId, eventName, data)
-
-      // })
     });
   });
 

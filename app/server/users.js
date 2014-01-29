@@ -1,81 +1,79 @@
 // Abstraction for all database interactions.
-var mongojs = require('mongojs'),
-		config  = require('./../../config.json'),
-		redis   = require('redis'),
-		io;
-
-var rtg  = require("url").parse(config.DB.REDISTOGO_URL);		
-var store = redis.createClient(rtg.port, rtg.hostname);
-store.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
-var db = mongojs(config.DB.MONGOHQ_UR, ['users', 'beacons']);
+var mongojs = require('mongojs');
+var config  = require('./../../config.json');
+var store = require('./redisStore.js');
+var io;
+var db = mongojs(config.DB.MONGOHQ_UR, ['users', 'events']);
 var exports = module.exports;
-exports.getVisible = function(userId, callback) {
-	store.smembers('viewableBy:'+userId, callback);
-}
-
-    
-exports.addVisible = function(userId, bId, callback) {
-	store.sadd('viewableBy:'+userId, bId, callback);
-}
-
-exports.deleteVisible = function(userId, bId, callback) {
-	store.srem('viewableBy:'+userId, bId, callback);
-}
 
 exports.isConnected = function(id, callback) {
 	if(!io) io = require('../../app.js').io;
 	callback(null, io.sockets.clients(''+id).length > 0);
 }
 
-
-exports.isBeaconer = function(id, callback) {
-	store.sismember('beaconers', id, callback);
+exports.get = function(fbid, callback) {
+	store.hget('users', fbid, function(err, json) {
+		if (err) callback(err);
+		else if(!json) callback('No user found'+fbid);
+		else callback(null, JSON.parse(json));
+	});
 }
+
 /*
 *	New Player	
 */
-exports.addUser = function(id, data, callback) {
-	var friends = data.friends || [],
-			group = data.group || grop,
-			hasApp = data.hasApp || false,
-
-			userData = {'_id': +id,
-								 'friends':friends,
-								 'group':group,
-									'hasApp':hasApp};
-
-
-	db.users.insert(userData, function(err, doc) {
-		if(err) callback(err)
-		else callback(null, doc);
+exports.add = function(user, callback) {
+	store.hincrby('idCounter', 'user', 1 , function(err, next) {
+		user.uid = next;
+		store.hset('users', user.fbid, JSON.stringify(user), function(err) {
+			callback(err, user);
+		});
 	});
 }
+exports.getOrAdd = function(profile, token, callback) {
+	var user = { 
+		uid: 0, // will be set in exports.add
+		fbid: +profile.id,
+		pn: '',
+	 	name: profile.displayName,
+	 	hasApp: '',
+	 	accessToken: token
+	};
 
-exports.getUser = function(id, callback) {
-	db.users.findOne({'_id': +id}, function(err, user) {
+	store.hget('users', profile.id, function(err, json) {
 		if (err) callback(err);
-		else if( !user ) callback (null, null);
-		else callback (err, user);
+		else if (json) callback (null, JSON.parse(json))
+		else {
+			exports.add(user, callback);
+		}
 	});
 }
-exports.getFromCell = function(cellNum, callback) {
+
+exports.setLocation = function(uid, latlng, callback) {
+	store.hset('locations', uid, JSON.stringify(latlng), callback);
+}
+exports.getLocation = function(uid, callback) {
+	store.hget('locations', uid, function(err, json){
+		if(err) callback(err);
+		else callback(JSON.stringify(json));
+	});
+}
+
+
+
+// exports.getFromCell = function(cellNum, callback) {
 	
-}
+// }
 
-exports.setGroup = function(id, group) {
-	db.users.findAndModify({
-    query: { _id: id },
-    update: { $set: { group: group } },
-    new: true
-	}, function(err, doc) {
-		// console.log('set group', err, doc);
-	});
-}
+// exports.setGroup = function(id, group) {
+// 	db.users.findAndModify({
+//     query: { _id: id },
+//     update: { $set: { group: group } },
+//     new: true
+// 	}, function(err, doc) {
+// 		// console.log('set group', err, doc);
+// 	});
+// }
 
-exports.newBeacon = function(B, callback) {
-	db.beacons.insert(B, function(err, a,b){
-		if (callback) callback(null);
-	});
 
-}
 

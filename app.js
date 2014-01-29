@@ -2,7 +2,7 @@
 * Beacon
 * beaconBeta.com
 */
-require('newrelic');
+// require('newrelic');
 var
   http    = require('http'),
   connect = require('connect'),
@@ -24,7 +24,7 @@ var
   pub = redis.createClient(rtg.port, rtg.hostname),
   sub = redis.createClient(rtg.port, rtg.hostname),
   store = redis.createClient(rtg.port, rtg.hostname);
-
+var users = require('./app/server/Users.js');
 pub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 sub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 store.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
@@ -40,10 +40,12 @@ var ppOptions = {
   callbackURL: config.HOST+"auth/facebook/callback"
 }
 function passportSuccess(accessToken, refreshToken, profile, done) {
+  var sessionData;
   process.nextTick(function () {
     // console.log(profile);
-    var sessionData = { 'id':+profile.id, 'name':profile.displayName, 'token':accessToken };
-    return done(null, sessionData);
+    users.getOrAdd(profile, accessToken, function(err, user) {     
+      return done(null, user);
+    });
   });
 }
 passport.use(new FacebookStrategy(ppOptions, passportSuccess));
@@ -93,19 +95,15 @@ io.set('authorization', passportSocketIo.authorize({
 }));
 
 // Bind socket handlers. 
-io.sockets.on('connection', function(socket) {
+io.sockets.on('connection',   function(socket) {
   handler.login(socket);
-  socket.on('joinBeacon',   function(data){ handler.joinBeacon  (data, socket) });
-  socket.on('deleteBeacon', function(data){ handler.deleteBeacon(data, socket) });
-  socket.on('leaveBeacon',  function(data){ handler.leaveBeacon (data, socket) });
-  socket.on('newBeacon',    function(data){ handler.newBeacon   (data, socket) });
-  socket.on('newComment',   function(data){ handler.newComment  (data, socket) });
-  socket.on('moveBeacon',   function(data){ handler.moveBeacon  (data, socket) });
-  socket.on('updateGroup',  function(data){ handler.updateGroup (data, socket) });
-  socket.on('updateBeacon', function(data){ handler.updateBeacon(data, socket) });
-  socket.on('followBeacon', function(data){ handler.followBeacon(data, socket) });
-  socket.on('getFriendsList',function(data){ handler.getFriendsList(socket) });
-  socket.on('disconnect',   function(){ handler.disconnect(socket) });
+  socket.on('joinEvent',      function(data){ handler.joinEvent  (data, socket) });
+  socket.on('leaveEvent',     function(data){ handler.leaveEvent (data, socket) });
+  socket.on('newEvent',       function(data){ handler.newEvent   (data, socket) });
+  socket.on('newMessage',     function(data){ handler.newMessage (data, socket) });
+  socket.on('getFriendsList', function(data){ handler.getFriendsList(socket) });
+  socket.on('newUserLocation',function(data){ handler.newUserLocation(data, socket)});
+  socket.on('disconnect',     function()    { handler.disconnect(socket) });
 });
 
 // Route all routes. 
