@@ -56,12 +56,18 @@ exports.getNextId = function(callback) {
   store.incr('beaconCounter', callback);
 }
 
-exports.remove = function(id, host, pub, callback) {
-  store.hdel('privateBeacons', ''+id, function(){});
-  store.hdel('publicBeacons', ''+id, function(){});
-  store.del('comments'+id, function(){});
-  store.del('a'+id, callback);
-  store.srem('hostedBy'+host, id); 
+exports.remove = function(id, host, callback) {
+  // store.hdel('privateBeacons', ''+id, function(){});
+  async.parallel({
+      beacon:    function(cb){ store.hdel('publicBeacons', ''+id, cb) },
+      comments:  function(cb){ store.del('comments'+id, cb) },
+      attending: function(cb){ store.del('a'+id, callback) },
+      hostedBy:  function(cb){ store.srem('hostedBy'+host, id) }
+    },
+    function(err, results) {
+      callback(err);
+    }
+  );
 }
 
 exports.add_guest = function(id, guestId, callback) {
@@ -116,92 +122,42 @@ exports.isValidId = function(bId, callback) {
   });
 }
 
+exports.getAttends = function(bId, cb) {
+  store.smembers('a'+bId, function(err, members) {
+    if (err) cb (err);
+    else     cb (null, members);
+  })
+}
+exports.getInvited = function(id, cb) {
+  store.hget('privateBeacons', id, function(err, bString) {
+    if (err)      return cb(err);
+    if (!bString) return cb('No Beacon Found.');
+    else cb(null, JSON.parse(bString).invited);
+  });
+}
 // returns null on failure
 exports.get = function(id, callback) {
   var self = this;
-  store.hexists('publicBeacons', id, function(err, isIn) {
-    if(err) return callback(err);
-    if (isIn == 1) {
-      g('publicBeacons');
-    } else {
-      store.hexists('privateBeacons', id, function(err, isIn) {
-        if (err) return callback(err);
-        if (isIn == 1) {
-          g('privateBeacons');
-        } else {
-          callback(null, null);
-        }
-      });
-    }
-  });
-
-  function g(hash) {
-    async.parallel({
-      data: function(cb){
-        store.hget(hash, id, function(err, bString) {
-          if (err)      return cb(err);
-          if (!bString) return cb(null, null);
-          else cb(null, JSON.parse(bString));
-        });
-      },
-      attends: function(cb){
-        store.smembers('a'+id, function(err, members) {
-          if (err) return cb (err);
-          else     return cb (null,members);
-          cb(err, b);
-        });
-      },
-      comments: function(cb){
-        exports.getComments(id, cb);
-      } 
+  async.parallel({
+    data: function(cb) {
+            store.hget('privateBeacons', id, function(err, bString) {
+              if (err)      return cb(err);
+              if (!bString) return cb(null, null);
+              else cb(null, JSON.parse(bString));
+            })
     },
-    function(err, results) {
-      if(err) return callback(err);
-      var B = results.data;
-      B.comments = results.comments;
-      B.attends = results.attends;
-      callback(null, B);
-    });
-  }
+    attends: function(cb){exports.getAttends(id, cb)},
+    comments: function(cb){exports.getComments(id, cb)} 
+  },
+  function(err, results) {
+    if(err) return callback(err);
+    var B = results.data;
+    B.comments = results.comments;
+    B.attends = results.attends;
+    callback(null, B);
+  });
 }
 
-
-// returns null on failure
-// exports.getVisible = function(friends, userId, callback) {
-//   var beacons = [];
-//   var self = this;
-//   friends.push(userId);
-//   var responses = 0;
-//   for (var i = 0; i < friends.length; i++) (function(f) {
-//     exports.store.smembers('hostedBy'+f, function(err, data) {
-//       if (data.length>0) {
-//         foo(data, function(err, bcns) {
-//           beacons = beacons.concat(bcns);
-//           // console.log(responses, friends.length);
-//           if ((++responses) == friends.length) {
-//             callback(null, beacons);              
-//           }
-//         });
-//       } else {
-//         responses++;
-//       }
-//     });
-//   })(friends[i]);
-
-//   function foo(d, cb) {
-//     var bcns = [];
-//     var c = 0;
-//     for (var i = 0; i < d.length; i++) {
-//       exports.get(d[i], function(err, b) {
-//         if (err) return callback(err);
-//         bcns.push(b);
-//         if ((++c) == d.length) {
-//           cb(null, bcns);              
-//         }
-//       });
-//     }
-//   }
-// }
 /*
   the admin calls this to get everything
 */

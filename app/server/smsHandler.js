@@ -1,5 +1,5 @@
 var  
-  beacons   = require('./beaconKeeper.js'),
+  beacons   = require('./Events.js'),
   output 		= require('./output.js'),
   utils     = require('./utilities.js'),
   logError  = utils.logError,

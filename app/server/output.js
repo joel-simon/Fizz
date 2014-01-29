@@ -87,43 +87,32 @@ exports.sendSms = function(to, msg) {
  * @param {Object} Data
  */
 var io;
-exports.emit = function(userId, eventName, data, message) {
-  // var userId     = options.userId,
-  //     eventName  = options.eventName,
-  //     data       = options.data,
-  //     message    = options.message    || null,
-  //     recipients = options.recipients || null;
+// exports.emit = function(userId, eventName, data, message) {
 
-  // deal with a circular dependency by delaying invocation.
+exports.emit = function(options) {
+  var 
+    eventName  = options.eventName,
+    data       = options.data,
+    message    = options.message || null,
+    recipients = options.recipients;
+
+  // Deal with a circular dependency by delaying invocation.
   if(!io) io = require('../../app.js').io;
-  io.sockets.in(userId).emit(eventName, data);
-  if (false){//recipients) {
-    toGroup(recipients);
-  } else {
-    users.getUser(userId, function(err, userData) {
-      if (err || !userData) return logError(err || 'no userData found '+userId);
-      toGroup(userData.group);
-    });
-  }
+  // Requires.
+  if(!eventName) return logError ('Invalid eventName in emit:', eventName);
+  if(!data) return logError ('Invalid data in emit:', data);
+  if(!recipients) return logError ('Invalid recipients in emit:', recipients);
 
-  
-  function toGroup(group) {
-    console.log(group);
-    async.each(group, function(friend, callback) {
-      
-      users.isConnected(friend.id, function(err, isCon) {
-        if (isCon) {
-          io.sockets.in(friend.id).emit(eventName, data);
-        } else if (friend.phoneNumber && message) {
-            exports.sendSms(friend.phoneNumber, message);
-        }
-        // users.hasApp(id, function(err, hasApp){
-        //   if (hasApp) pushIos(userId, eventName, data);
-        //   else sendSms(userId, eventName, data)
-
-        // })
-        
-      });
+  // log(eventName, 'emitted to', recipients.length, data);
+  async.each(recipients, function(friend, callback) {
+    var fid = friend.uid || friend;
+    users.isConnected(fid, function(err, isCon) {
+      if (isCon) {
+        io.sockets.in(fid).emit(eventName, data);
+      } else if (friend.pn && message) {
+          exports.sendSms(friend.phoneNumber, message);
+      }
     });
-  }
+  });
+
 }

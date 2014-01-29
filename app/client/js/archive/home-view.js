@@ -15,7 +15,7 @@ function drawUserInfo(pic, name) {
 function drawBeacon(beacon) {
 	getFbData(beacon.host, function(pic, name) {
 		createMarker(beacon.id, beacon.lat, beacon.lng, beacon.title, 
-			beacon.comments[0].comment, pic);
+			beacon.title, pic);
 	});
 
 	// Put the beacon info into the beacon-list.
