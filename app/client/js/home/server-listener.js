@@ -8,9 +8,8 @@
 var SERVER = window.location.origin;
 var socket = io.connect(SERVER);
 
-socket.on('myInfo', function(data) {
-	console.log('MY INFO:', data);
-	var me = data.me;
+socket.on('myInfo', function(me) {
+	console.log('MY INFO:', me);
 	MIM.updateUserInfo(me);
 });
 

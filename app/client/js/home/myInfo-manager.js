@@ -7,13 +7,6 @@
 var MIM = new MyInfoManager();
 
 function MyInfoManager() {
-	// start off with facebook info
-	this.fbid = $.cookie('fbid'); //sessionStorage.fbid;
-	getFacebookInfo(this.fbid, function(name, pic) {
-		this.name = name;
-		this.pic  = pic;
-		drawUser(this.name, this.pic);
-	});
 	// then do mapbox info
 	this.latlng = JSON.parse(localStorage.getItem('myLocation')) || {};
 }
@@ -22,6 +15,12 @@ MyInfoManager.prototype.updateUserInfo = function(user) {
 	this.uid    = user.uid;
 	this.pn     = user.pn;
 	this.hasApp = user.hasApp;
+	this.fbid   = user.fbid;
+	getFacebookInfo(this.fbid, function(name, pic) {
+		this.name = name;
+		this.pic  = pic;
+		drawUser(this.name, this.pic);
+	});
 }
 
 MyInfoManager.prototype.updateFriendList = function(friendList) {

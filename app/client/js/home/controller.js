@@ -29,8 +29,8 @@ $('#myBeacon').on('submit', function(e) {
 		invitePnList : [],
 		message      : message,
 	};
-	console.log('SENDING [newBeacon]: ', event);
-	socket.emit('newBeacon', {event : event});
+	console.log('SENDING [newEvent]: ', event);
+	socket.emit('newEvent', {event : event});
 	// clear form
 	form.message.value = '';
 	form.message.focus();
