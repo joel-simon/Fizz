@@ -2,24 +2,26 @@
 module.exports = function(app, passport) {
 	
 	app.get('/auth/facebook',
-  passport.authenticate('facebook', { display: 'page', scope: ['user_friends', 'user_groups', 'email'] }),
-  function(req, res){
-  });
+	passport.authenticate('facebook', { display: 'page', scope: ['user_friends', 'user_groups', 'email'] }),
+	function(req, res){
+	});
 
 	app.get('/auth/facebook/callback', 
-	  passport.authenticate('facebook', { failureRedirect: '/' }),
-	  function(req, res) {
-	  	var user = req['user'];
-	  	res.cookie('userId', user.id, { maxAge: 2592000000 });
-	    res.redirect('/home');
-  });
+		passport.authenticate('facebook', { failureRedirect: '/' }),
+		function(req, res) {
+			var user = req['user'];
+			sessionStorage.fbid = user.id;
+			// res.cookie('userId', user.id, { maxAge: 2592000000 });
+			res.redirect('/home');
+	});
 
 	app.post('/iosLogin',
 		passport.authenticate('facebook-token', { display: 'page', scope: ['user_friends', 'user_groups', 'email'] }),
 		function(req, res) {
 			var user = req['user'];
-	  	res.cookie('userId', user.id, { maxAge: 2592000000 });
-	    res.redirect('/home');
+			sessionStorage.fbid = user.id;
+			// res.cookie('userId', user.id, { maxAge: 2592000000 });
+			res.redirect('/home');
 		});
 
 
@@ -40,8 +42,8 @@ module.exports = function(app, passport) {
 	});
 
 	app.get('/logout', function(req, res){
-	  req.logout();
-	  res.redirect('/index');
+		req.logout();
+		res.redirect('/index');
 	});
 
 	var onSms = require('./smsHandler.js');
@@ -65,6 +67,6 @@ module.exports = function(app, passport) {
 //   login page.
 function ensureAuthenticated(req, res, next) {
 	// console.log(req.cookies);
-  if (req.isAuthenticated()) { return next(); }
-  res.redirect('/index');
+	if (req.isAuthenticated()) { return next(); }
+	res.redirect('/index');
 }

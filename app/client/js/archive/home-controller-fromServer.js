@@ -1,7 +1,62 @@
 var SERVER = window.location.origin;
+var socket = io.connect(SERVER);
 
 var BKeeper = new BeaconKeeper();
-var socket = io.connect(SERVER);
+
+////////////////////////////////////////////////////////////////////////////////
+
+socket.on('myInfo', function(data) {
+	console.log('MY INFO:', data);
+	var me = data.me;
+});
+
+socket.on('friendList', function(data) {
+	console.log('FRIEND LIST:', data);
+	var friendList = data.friendList;
+});
+
+socket.on('eventList', function(data) {
+	console.log('EVENT LIST:', data);
+	var eventList = data.eventList;
+});
+
+socket.on('newEvent', function(data) {
+	console.log('NEW EVENT:', data);
+	var event = data.event;
+});
+
+socket.on('updateEvent', function(data) {
+	console.log('UPDATING EVENT:', data);
+	var startTime = data.startTime;
+	var marker = data.marker;
+});
+
+socket.on('deleteEvent', function(data) {
+	console.log('DELETING EVENT:', data);
+	var eid = data.eid;
+});
+
+socket.on('addGuest', function(data) {
+	console.log('ADDING GUEST:', data);
+	var guest = data.guest;
+});
+
+socket.on('removeGuest', function(data) {
+	console.log('REMOVING GUEST:', data);
+	var guest = data.guest;
+});
+
+socket.on('newComment', function(data) {
+	console.log('NEW COMMENT:', data);
+	var comment = data.comment;
+});
+
+socket.on('newUserLocationList', function(data) {
+	console.log('USER LOCATIONS:', data);
+	var userLocationList = data.userLocationList;
+});
+
+////////////////////////////////////////////////////////////////////////////////
 
 socket.on('friendsList', function(data) {
 	console.log('FRIENDS LIST:', data);
