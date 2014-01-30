@@ -10,7 +10,6 @@ module.exports = function(app, passport) {
 		passport.authenticate('facebook', { failureRedirect: '/' }),
 		function(req, res) {
 			var user = req['user'];
-			// sessionStorage.fbid = user.id;
 			res.cookie('fbid', user.id, { maxAge: 2592000000 });
 			res.redirect('/home');
 	});
@@ -19,7 +18,6 @@ module.exports = function(app, passport) {
 		passport.authenticate('facebook-token', { display: 'page', scope: ['user_friends', 'user_groups', 'email'] }),
 		function(req, res) {
 			var user = req['user'];
-			// sessionStorage.fbid = user.id;
 			res.cookie('fbid', user.id, { maxAge: 2592000000 });
 			res.redirect('/home');
 		});

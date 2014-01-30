@@ -15,13 +15,15 @@ function locateMe() {
 	if (!navigator.geolocation) console.log('MAPBOX: geolocation is not available');
 	else {
 		map.locate();
-		if (MIM.latlng) map.setView(MIM.latlng, 14);
+		if (localStorage.myLocation) {
+			map.setView( JSON.parse(localStorage.myLocation), 14 );
+		}
 	}
 }
 
 map.on('locationfound', function(e) {
 	console.log('MAPBOX: location found!', e.latlng);
-	MIM.setLatLng(e.latlng);
+	localStorage.myLocation = JSON.stringify(e.latlng);
 	map.setView(e.latlng, 14);
 });
 
