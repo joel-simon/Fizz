@@ -8,9 +8,9 @@
 	/home/view.js
 */
 
-function writeEventHtml(event, callback) {
+function writeEventHTML(event, callback) {
 	var color, label;
-	if ( (beacon.host == MIM.uid) || event.hasGuest(MIM.uid) ) {
+	if ( (event.host == MIM.uid) || event.hasGuest(MIM.uid) ) {
 		color = 'btn-danger';
 		label = 'Leave';
 	} else {

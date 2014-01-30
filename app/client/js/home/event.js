@@ -5,7 +5,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 function Event(event) {
-	this = event;
+	for (var prop in event) {
+		this[prop] = event[prop];
+	}
 }
 
 function findUserIndex(uid, userList) {

@@ -4,16 +4,12 @@
 */
 ////////////////////////////////////////////////////////////////////////////////
 
-var MIM = new MyInfoManager();
+var MIM;
 
-function MyInfoManager() {
-	// then do mapbox info
-	this.latlng = JSON.parse(localStorage.getItem('myLocation')) || {};
-}
-
-MyInfoManager.prototype.updateUserInfo = function(user) {
+function MyInfoManager(user) {
+	// start off with facebook info
 	this.uid    = user.uid;
-	this.pn     = user.pn;
+	this.pn     = user.p
 	this.hasApp = user.hasApp;
 	this.fbid   = user.fbid;
 	getFacebookInfo(this.fbid, function(name, pic) {
@@ -35,9 +31,4 @@ MyInfoManager.prototype.toUserObject = function() {
 		name   : this.name,
 		hasApp : this.hasApp,
 	};
-}
-
-MyInfoManager.prototype.setLatLng = function(latlng) {
-	this.latlng = latlng;
-	localStorage.setItem( 'myLocation', JSON.stringify(latlng) );
 }

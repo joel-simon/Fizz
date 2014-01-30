@@ -19,7 +19,7 @@ module.exports.log = function() {
 		s += ((e instanceof Object) ? JSON.stringify(e) : e)+' ';
 	}
 	console.log(s.data);
-  console.log('\t'+'—————————————————————'.data);
+  console.log('\t'+'—————————————————————');
 }
 
 module.exports.debug = function() {
