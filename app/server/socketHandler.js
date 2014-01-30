@@ -33,7 +33,6 @@ exports.login = function(socket) {
     if (err) return logError('getEvents:', err);
     log('eventList',eventList);
     check.is(eventList, '[event]');
-    log('passed Check')
     socket.emit('eventList', {'eventList': eventList});
   });
   return;
