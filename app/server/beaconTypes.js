@@ -24,7 +24,7 @@ module.exports = {
   message: {
     mid: 'posInt',
     eid: 'posInt',
-    uid: 'user',
+    uid: 'posInt',
     text: 'string',
     creationTime: 'posInt',
     marker: 'marker'

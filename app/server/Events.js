@@ -16,6 +16,7 @@ exports.add = function(event, callback) {
   store.hincrby('idCounter', 'event', 1 , function(err, next) {
     if (err) return callback(err);
     event.eid = next;
+    event.message.eid = next;
     async.parallel({
       message: function(cb) {
         if (event.message) exports.addMessage(event.message, cb);
@@ -30,7 +31,10 @@ exports.add = function(event, callback) {
         async.map(event.inviteList, function(user, cb2) {
            store.sadd('viewableBy:'+user.uid, event.eid, cb2);
         }, cb);
-         
+      },
+      setHost: function(cb) {
+        var data = JSON.stringify({host:event.host});
+        store.hset('events', event.eid, data, cb)
       }
     },
     function(err, results) {
@@ -53,16 +57,21 @@ exports.get = function(eid, callback) {
     guestList: function(cb) {
       store.smembers('guestList:'+eid, function(err, strings){
         var nums = strings.map(function(s){return(+s)});
-        cb(err, nums)
+        cb(err, nums);
       });
     },
     inviteList: function(cb) {
       store.smembers('inviteList:'+eid, cb);
+    },
+    host: function(cb) {
+      store.hget('events', eid, cb);
     }
   },
   function(err, results) {
+    // console.log(results.messages);
     if(err) return callback(err);
     var event = {'eid' : eid};
+    event.host = JSON.parse(results.host).host;
     event.messageList = results.messages.map(JSON.parse);
     event.inviteList = results.inviteList.map(JSON.parse);
     event.guestList = results.guestList;
@@ -80,7 +89,7 @@ exports.removeGuest = function(eid, uid, callback) {
 }
 
 exports.addMessage = function(msg, callback) {
-  msg.text = sanitize(msg.text).xss();
+  // msg.text = sanitize(msg.text).xss();
   store.hincrby('idCounters', 'message', 1, function(err, i) {
     if (err) return callback(err);
     msg.mid = i;
