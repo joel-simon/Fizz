@@ -35,7 +35,7 @@ exports.add = function(event, callback) {
     },
     function(err, results) {
       if(err) return callback(err);
-      callback(null, eid);
+      callback(null, event.eid);
     });
 
   });
@@ -52,7 +52,7 @@ exports.get = function(eid, callback) {
     },
     guestList: function(cb) {
       store.smembers('guestList:'+eid, function(err, strings){
-        var nums = strings.map(parseInt);
+        var nums = strings.map(function(s){return(+s)});
         cb(err, nums)
       });
     },
