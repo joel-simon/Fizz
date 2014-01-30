@@ -19,6 +19,10 @@ function MyInfoManager(user) {
 	});
 }
 
+MyInfoManager.prototype.pic = function() {
+	return pic;
+}
+
 MyInfoManager.prototype.updateFriendList = function(friendList) {
 	this.friendList = friendList;
 }
