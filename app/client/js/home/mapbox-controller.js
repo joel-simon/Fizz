@@ -42,7 +42,7 @@ map.on('click', function(e) {
 		tempMarker.setLatLng(e.latlng);
 	} else {
 		tempMarker = L.marker(e.latlng, {
-			icon        : createIcon(MIM.pic),
+			icon        : createIcon(MIM.pic()),
 			draggable   : true,
 		});
 
