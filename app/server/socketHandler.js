@@ -15,8 +15,6 @@ var
   types = require('./beaconTypes.js'),
   check = require('easy-types').addTypes(types);
 
-
-
   
 /**
  * Handle login socket
@@ -26,14 +24,22 @@ var
  */
 exports.login = function(socket) {
   var user = getUserSession(socket);
-  log(user.name, 'has connected.');
+  
   socket.join(''+user.uid);
   socket.emit('myInfo', user);
   events.isInvitedTo(user.uid, function(err, eventList) {
     if (err) return logError('getEvents:', err);
-    log('eventList',eventList);
+
+    var str = user.name+' has connected. uid:'+user.uid+'\n\t\t';
+    str += eventList.length + ' visible events.'
+    log(str);
+
     check.is(eventList, '[event]');
-    socket.emit('eventList', {'eventList': eventList});
+    emit({
+      eventName: 'eventList',
+      data: {'eventList': eventList},
+      recipients: [user]
+    });
   });
   return;
   // setTimeout(function(){
@@ -80,30 +86,29 @@ exports.login = function(socket) {
  * @param {Object} events - object for managing all events
  */
 exports.newEvent = function (newEvent, socket) {
-  // try {
-    log(newEvent);
+    log('New beacon by', getUserSession(socket).name+'\n\t\t',newEvent.message.text);
+    // log(newEvent);
     // New event is a event without an event id (eid)
     check.is(newEvent, 'newEvent');
     var self = this,
         user = getUserSession(socket);
-    log('New beacon by', getUserSession(socket).name);
+    
     newEvent.host = user.uid;
     newEvent.guestList = [user.uid];
     newEvent.inviteList = [user];
+    newEvent.messageList = [newEvent.message];
+
     events.add(newEvent, function(err, eid) {
       if (err) return logError(err);
       newEvent.eid = eid;
+      check.is(newEvent, 'event');
       emit({
         eventName: 'newEvent',
         data: {'event' : newEvent},
         // message: message,
         recipients: newEvent.inviteList
       });
-      // event contains new eid.
     });
-  // } catch(e) {
-  //   logError(e);
-  // }
 }
 
 /**
@@ -113,58 +118,58 @@ exports.newEvent = function (newEvent, socket) {
 exports.joinEvent = function(data, socket) {
 
   check.is(data, {
-    eid : 'posInt',
-    uid : 'posInt'
+    eid : 'posInt'
   });
   var user = getUserSession(socket);
 
   async.parallel({
-    add     : function(cb){ events.addGuest( data.eid, user.id, cb) },
-    attends : function(cb){ events.getInvited(id, cb) }
+    add     : function(cb){ events.addGuest( data.eid, user.uid, cb) },
+    attends : function(cb){ events.getInvited(user.uid, cb) }
   }, 
   function (err, results) {
     if (err) return logError('join beacon', err);
-    log(user.name, 'joined beacon', id);
+    var data =     {'id':id,'guest':user.uid };
+    check.is(data, {'id':'posInt', 'guest':'posInt' } );
     emit({
       eventName : 'addGuest',
-      data      : {'id':id, 'guest':user.id },
+      data      : data,
       message   : null, //send no sms/push
       recipients: results.attends
     });
+    log(user.name, 'joined beacon', id);
   });
 }
+
 /**
  * Handle leaveBeacon socket
  * @param {Object} data - contains .host and .guest
  * @param {Object} Socket - contains user user socket
  * @param {Object} events - object for managing all events
  */
-exports.leaveBeacon = function(data, socket) {
-  try {
-    check.is(data, {eid: 'posInt'});
-    var user = getUserSession(socket);
+exports.leaveEvent = function(data, socket) {
 
-    async.parallel({
-      delGuest:   function(cb){ events.removeGuest( data.eid, user.uid, cb) },
-      recipients: function(cb){ events.getInvited(data.eid, cb) }
-    },
-    function (err, results) {
-      emit({
-        eventName: 'removeGuest',
-        data: {'uid':user.uid, 'eid':data.eid },
-        recipients: results.recipients
-      });  
-      if (err) return logError('leave beacon', err);
-      log(user.name, 'left beacon', id);
-    });
-  } catch (e) {
-    logError('leave beacon', e);
-  }
+  check.is(data, {eid: 'posInt'});
+  var user = getUserSession(socket);
+
+  async.parallel({
+    delGuest:   function(cb){ events.removeGuest( data.eid, user.uid, cb) },
+    recipients: function(cb){ events.getInvited(data.eid, cb) }
+  },
+  function (err, results) {
+    var data = {'uid':user.uid, 'eid':data.eid };
+    check.is(data, {'uid':'posInt', 'eid':'posInt' });
+    emit({
+      eventName: 'removeGuest',
+      data: data,
+      recipients: results.recipients
+    });  
+    if (err) return logError('leave beacon', err);
+    log(user.name, 'left beacon', id);
+  });
 }
 
-
 exports.newMessage = function(data, socket) {
-  type.is(data.message, 'message');
+  check.is(data, {message: 'newMessage'});
   var user = getUserSession(socket),
       msg = data.message;
 
@@ -177,33 +182,37 @@ exports.newMessage = function(data, socket) {
     }
   },
   function(err, results) {
-    // add will generate the messages ID. 
-    type.is(results, {add: 'posInt', recipients: '[user]'});
+    // add will generate the messages mid. 
+    check.is(results, {add: 'posInt', recipients: '[user]'});
     msg.mid = results.add;
+    check.is(data, {messages:'message'});
     emit({
       eventName: 'newMessage',
       data: data,
       recipients: results.recipients
     });
-    log('new comment', data); 
+    log('new message', data); 
   });
 }
-exports.newUserLocation = function(data, socket) {
-  type.is(data, {uid: 'posInt', latlng: 'latlng'});
+
+exports.newUserLocation = function(dataIn, socket) {
+  check.is(dataIn, {uid: 'posInt', latlng: 'latlng'});
   var user = getUserSession(socket);
+
   async.parallel({
     a: function(cb){
-      users.updateLocation(data.uid, data.latlng, cb)
+      users.updateLocation(dataIn.uid, dataIn.latlng, cb)
     },
-    recipients : function(cb) {
-      events.getInvited(data.eid, cb);
+    recipients: function(cb) {
+      events.getInvited(dataIn.eid, cb);
     }
   },
   function(err, results) {
-    type.is(results, {recipients: '[user]'});
+    check.is(results, {recipients: '[user]'});
+    var dataOut = [{uid: user.uid, latlng: data.latlng}];
     emit({
       eventName: 'newUserLocationList',
-      'data': [{uid: user.uid, latlng: data.latlng}],
+      data: dataOut,
       recipients: results.recipients
     });
   });
@@ -223,6 +232,7 @@ function getEidAndRecipients (e, callback) {
   },
   callback);
 }
+
 function shareEvent(e, callback) {
   async.parallel([
     function(cb) { users.addVisible(e.host, e, cb) },
@@ -268,7 +278,7 @@ exports.getFriendsList = function(socket) {
       if (err) {
         logError(err);
       } else {
-        socket.emit('friendsList', friendsList);
+        socket.emit('friendList', friendsList);
       }
     })
   });
@@ -279,6 +289,18 @@ exports.disconnect = function(socket) {
   log(user.name, "has disconnected.")
 }
 
+exports.benchMark = function(socket) {
+  // console.log('test');
+  var start = new Date().getTime();
+  var store = require('./redisStore.js');
+  store.incr('foo', 1, function(err, x){
+    store.get('foo', function(err2, y){
+      socket.emit('benchMark', {"creationTime":1392785614748,"inviteList":[{"uid":1,"fbid":1380180579,"pn":"","name":"Joel Simon","hasApp":"","accessToken":"CAAClyP2DrA0BAHuZAgZCpZBvZCSRoPn2nsZAA5CN8pyKsXqBenB59Od219yypJJ9HJoShoeTyNdPgbOjiFffpsEfZBCvuT3ZBbzhMsGvjI2WfmhOnMQllRD1ZBUoC8GQoILC4WelThIoidHotRrNOHRUJcjYZCF8VVBYATZAdXA2lQTiHiS63khbUb","logged_in":true}],"invitePnList":[],"message":{"mid":2,"eid":2,"uid":1,"text":"Description!","creationTime":1392785614748,"marker":null,"deletePastMarker":0},"host":1,"guestList":[1],"eid":2});
+      var end = (new Date().getTime()) - start; 
+    });
+  });
+  
+}
 
 function newUser(user, socket) {
   log('newUser', user.name);
@@ -294,47 +316,63 @@ function newUser(user, socket) {
   });
 }
 
-
-
 function getUserSession(socket) {
   var user = socket.handshake.user;
   check.is(user, 'user');
   return user;
 }
 
+
+
+// for (var func in exports) {
+//   console.log(func, typeof exports[func]);
+//   var newFun = function() {
+//     var old = exports[func];
+//     log('here')
+//     var start = new Date().getTime();
+//     // try{
+//     old.apply(null, arguments);
+//     // }catch(e){
+//     //   logError(e)
+//     // }
+//     var time = (new Date().getTime()) - start;
+//     log(func+' in ' + time);
+//   }
+//   exports[''+func] = newFun;
+// }
 /**
  * Handle deleteBeacon socket
  * @param {Object} Data - contains .host, .pub
  * @param {Object} Socket - contains user user socket
  * @param {Object} events - object for managing all events
  */
-exports.deleteEvent = function(data, socket) {
-  // try {
-  //   check.is(data, { eid : 'posInt' });
-  //   var user = getUserSession(socket);
+// exports.deleteEvent = function(data, socket) {
+//   // try {
+//   //   check.is(data, { eid : 'posInt' });
+//   //   var user = getUserSession(socket);
     
-  //   async.parallel({
-  //     delete  : function(cb){ events.remove( bId, hostId , cb) },
-  //     recipients : function(cb){ events.getInvited(bId, cb) },
-  //     delVis  : function(cb){ users.deleteVisible(hostId, bId, cb) }
-  //   }, done);
+//   //   async.parallel({
+//   //     delete  : function(cb){ events.remove( bId, hostId , cb) },
+//   //     recipients : function(cb){ events.getInvited(bId, cb) },
+//   //     delVis  : function(cb){ users.deleteVisible(hostId, bId, cb) }
+//   //   }, done);
 
-  //   function done(err, results) {
-  //     if (err) return logError(err);
-  //     var recipients = results.recipients;
-  //     async.each(recipients, function(friend, callback) {
-  //         users.deleteVisible(friend.id, bId, callback);
-  //     });
-  //     emit({
-  //       host      : hostId,
-  //       eventName : 'deleteBeacon',
-  //       data      : {id:bId, host:hostId},
-  //       message   : null,
-  //       recipients: recipients
-  //     });
-  //     log(user.name,'deleted beacon', bId);
-  //   }
-  // } catch(e) {
-  //   logError('deleteEvent', e);
-  // }
-}
+//   //   function done(err, results) {
+//   //     if (err) return logError(err);
+//   //     var recipients = results.recipients;
+//   //     async.each(recipients, function(friend, callback) {
+//   //         users.deleteVisible(friend.id, bId, callback);
+//   //     });
+//   //     emit({
+//   //       host      : hostId,
+//   //       eventName : 'deleteBeacon',
+//   //       data      : {id:bId, host:hostId},
+//   //       message   : null,
+//   //       recipients: recipients
+//   //     });
+//   //     log(user.name,'deleted beacon', bId);
+//   //   }
+//   // } catch(e) {
+//   //   logError('deleteEvent', e);
+//   // }
+// }

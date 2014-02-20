@@ -103,7 +103,7 @@ exports.emit = function(options) {
   if(!data) return logError ('Invalid data in emit:', data);
   if(!recipients) return logError ('Invalid recipients in emit:', recipients);
   
-  log(eventName, 'emitted to', recipients.length, data);
+  log(eventName, 'emitted to', recipients.length);
   async.each(recipients, function(friend, callback) {
     var fid = friend.uid || friend;
     users.isConnected(fid, function(err, isCon) {

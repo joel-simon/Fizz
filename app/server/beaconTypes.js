@@ -5,7 +5,9 @@ module.exports = {
     fbid:   'posInt',
     pn:     'string',
     name:   'string',
-    hasApp: 'string'
+    hasApp: function(str) {
+      return (str === 'iPhone' || str === '');
+    }
   },
   friendsList: {
     of: 'posInt',
@@ -33,8 +35,7 @@ module.exports = {
     eid: 'posInt',
     uid: 'posInt',
     text: 'string',
-    creationTime: 'posInt',
-    // marker: 'marker'
+    creationTime: 'posInt'
   },
   newEvent : {
     creationTime: 'posInt',

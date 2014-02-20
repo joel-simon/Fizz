@@ -3,6 +3,7 @@
 * beaconBeta.com
 */
 // require('newrelic');
+'use strict';
 var
   http    = require('http'),
   connect = require('connect'),
@@ -24,6 +25,11 @@ var
   pub = redis.createClient(rtg.port, rtg.hostname),
   sub = redis.createClient(rtg.port, rtg.hostname),
   store = redis.createClient(rtg.port, rtg.hostname);
+
+// process.argv.forEach(function (val, index, array) {
+//   console.log(index + ': ' + val);
+// });
+
 var users = require('./app/server/Users.js');
 pub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 sub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
@@ -53,10 +59,10 @@ passport.use(new FacebookTokenStrategy(ppOptions, passportSuccess));
 
 //Middleware: Allows cross-domain requests (CORS)
 var allowCrossDomain = function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
-    next();
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
 }
 
 // Configure express app.
@@ -104,6 +110,7 @@ io.sockets.on('connection',   function(socket) {
   socket.on('getFriendsList', function(data){ handler.getFriendsList(socket) });
   socket.on('newUserLocation',function(data){ handler.newUserLocation(data, socket)});
   socket.on('disconnect',     function()    { handler.disconnect(socket) });
+  socket.on('benchMark',      function()    { handler.benchMark(socket) });
 });
 
 // Route all routes. 
