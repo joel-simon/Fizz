@@ -129,19 +129,17 @@ input { padding: 0 4px; }
 	padding: 5px;
 }
 
-#group-container {
-	text-align: center;
-}
-
 
 /*
 	Group Manager
 */
 
-#groupManager {
+#inviteManager {
 	position: absolute;
 	text-align: center;
-	background-color: gray;
+	background-color: orange;
+	border-radius: 5px;
+	border: 1px solid black;
 	width: 80%;
 	left: 10%;
 	top: 100px;
@@ -149,21 +147,21 @@ input { padding: 0 4px; }
 	list-style: none;
 }
 
-	.groupHeaderLeft {
+	.leftHeader {
 		margin: 0;
 		margin-top: 12px;
 		margin-left: 20%;
 	}
 
-	.groupHeaderRight {
+	.rightHeader {
 		margin: 0;
 		margin-top: 12px;
 		margin-right: 20%;
 	}
 
-#group {
+#inviteList {
 	position: absolute;
-	/*background-color: blue;*/
+	background-color: white;
 	width: 40%;
 	left: 5%;
 	height: 250px;
@@ -173,15 +171,9 @@ input { padding: 0 4px; }
 	overflow-y: auto;
 }
 
-	li.drag {
-		margin: 5px;
-		border-radius: 50%;
-		z-index: 200;
-	}
-
-#friends {
+#friendList {
 	position: absolute;
-	/*background-color: green;*/
+	background-color: white;
 	width: 40%;
 	margin-left: 5%; 
 	margin-right: 5%;
@@ -192,7 +184,12 @@ input { padding: 0 4px; }
 	overflow-y: auto;
 }
 
-#saveGroup {
+li.friend {
+	margin: 5px;
+	border-radius: 50%;
+}
+
+#closeInviteManager {
 	position: absolute;
 	top: 315px;
 	left: 50%;
@@ -204,11 +201,11 @@ input { padding: 0 4px; }
 	top: 320px;
 }
 
-#groupSearch {
+#searchInviteList {
 	left: 160px;
 }
 
-#friendSearch {
+#searchFriendList {
 	right: 160px;
 }
 

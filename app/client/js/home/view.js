@@ -34,7 +34,7 @@ function drawEvent(event) {
 		// add a new message to the beacon
 		$('#newMessage-'+event.eid).on('submit', function(e) {
 			e.preventDefault();
-			addMessage(event, this.message.value, MIM.uid);
+			newMessage(event.eid, this.message.value, null);
 			this.message.value = '';
 		});
 	});

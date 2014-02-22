@@ -27,6 +27,10 @@ MyInfoManager.prototype.updateFriendList = function(friendList) {
 	this.friendList = friendList;
 }
 
+MyInfoManager.prototype.updateInviteList = function(inviteList) {
+	this.inviteList = inviteList;
+}
+
 MyInfoManager.prototype.toUserObject = function() {
 	return {
 		uid    : this.uid,

@@ -37,12 +37,23 @@ map.on('locationerror', function() {
 
 var tempMarker;
 
+function getTempMarker() {
+	if (tempMarker) {
+		var latlng = tempMarker._latlng;
+		var name = 'marker';
+		var time = Date.now();
+		return {latlng:latlng, name:name, time:time};
+	} else {
+		return null;
+	}
+}
+
 map.on('click', function(e) {
 	if (tempMarker) {
 		tempMarker.setLatLng(e.latlng);
 	} else {
 		tempMarker = L.marker(e.latlng, {
-			icon        : createIcon(MIM.pic()),
+			icon        : createIcon(MIM.pic(), true),
 			draggable   : true,
 		});
 
@@ -55,12 +66,13 @@ map.on('click', function(e) {
 	}
 });
 
-function createIcon(pic) {
+function createIcon(pic, temp) {
+	var className = temp ? 'shadow-face-icon' : 'face-icon';
 	return L.icon({
 		iconUrl     : pic || '/img/userIcon.png',
 		iconSize    : [50,50],
-		iconAnchor  : [25, 25],
-		className   : 'face-icon',
+		iconAnchor  : [25,25],
+		className   : className,
 	});
 }
 

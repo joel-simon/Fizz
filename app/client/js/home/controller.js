@@ -9,19 +9,33 @@ $('#logout').on('click', function() {
 	window.location.pathname = '/logout';
 });
 
+$('#invite').on('click', function(e) {
+	e.preventDefault();
+	$('#inviteManager').removeClass('hidden');
+});
+
+$('#searchFriendList').on('input', function() {
+    
+});
+
+$('#closeInviteManager').on('click', function(e) {
+	e.preventDefault();
+	$('#inviteManager').addClass('hidden');
+});
+
 $('#myBeacon').on('submit', function(e) {
 	e.preventDefault();
 	var form    = this;
 	var text    = (form.message.value) ? form.message.value : 'Description!';
 	var now     = Date.now();
+	var marker  = getTempMarker();
 	var message = {
-		mid              : 0,
-		eid              : 0,
-		uid              : MIM.uid,
-		text             : text,
-		creationTime     : now,
-		marker           : null,
-		deletePastMarker : 0,
+		mid          : 0,
+		eid          : 0,
+		uid          : MIM.uid,
+		text         : text,
+		creationTime : now,
+		marker       : marker,
 	};
 	var eventData = {
 		creationTime : now,
@@ -49,13 +63,12 @@ function leaveEvent(event) {
 
 function newMessage(eid, text, marker) {
 	var message = {
-		mid              : 0,
-		eid              : eid,
-		uid              : MIM.uid,
-		text             : text,
-		creationTime     : Date.now(),
-		marker           : null,
-		deletePastMarker : 0,
+		mid          : 0,
+		eid          : eid,
+		uid          : MIM.uid,
+		text         : text,
+		creationTime : Date.now(),
+		marker       : marker,
 	};
 	console.log('SENDING [newMessage]: ', message);
 	socket.emit('newMessage', {message : message});

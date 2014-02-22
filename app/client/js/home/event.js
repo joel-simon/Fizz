@@ -10,15 +10,15 @@ function Event(event) {
 	}
 }
 
-function findUserIndex(uid, userList) {
+Event.prototype.findUserIndex = function(uid, userList) {
 	for (var i = 0; i < userList.length; i++) {
 		if ( userList[i].uid === uid ) return i;
 	}
 	return -1;
 }
 
-function getUser(uid) {
-	return this.inviteList[ findUserIndex(uid, this.inviteList) ];
+Event.prototype.getUser = function(uid) {
+	return this.inviteList[ this.findUserIndex(uid, this.inviteList) ];
 }
 
 Event.prototype.addGuest = function(uid) {

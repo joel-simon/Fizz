@@ -25,20 +25,21 @@ html
 
 		form#myBeacon
 			input.input-long(type='text', name='message', autocomplete='off', placeholder='Write your Event description here.')
+			input#invite.btn.btn-primary(type='button', value='Invite')
 			input.btn.btn-success(type='submit', value='Place Beacon')
 
-		//- div#groupManager.hidden
-		//- 	h3.float-left.groupHeaderLeft Invited
-		//- 	h3.float-right.groupHeaderRight Friends
+		div#inviteManager.hidden
+			h3.float-left.leftHeader Invite List
+			h3.float-right.rightHeader Friends
 
-		//- 	ul#group.gallery.ui-helper-reset.ui-helper-clearfix
+			ul#inviteList
 
-		//- 	ul#friends.ui-widget-content.ui-state-default
+			ul#friendList
 
-		//- 	input#groupSearch.search
-		//- 	input#friendSearch.search
+			input#searchInviteList.search(type='text')
+			input#searchFriendList.search(type='text')
 
-		//- 	button#saveGroup.btn.btn-primary(type='button') Invite
+			button#closeInviteManager.btn.btn-primary(type='button') Close
 
 		ul#event-list
 
@@ -58,7 +59,7 @@ html
 		script(src='/js/home/myInfo-manager.js')
 		script(src='/js/home/marker-manager.js')
 		script(src='/js/home/mapbox-controller.js')
-		script(src='/js/home/html-generator.js')
+		script(src='/js/home/eventList-html.js')
 		script(src='/js/home/view.js')
 		script(src='/js/home/controller.js')
 		script(src='/js/home/server-listener.js')
