@@ -86,29 +86,29 @@ exports.login = function(socket) {
  * @param {Object} events - object for managing all events
  */
 exports.newEvent = function (newEvent, socket) {
-    log('New beacon by', getUserSession(socket).name+'\n\t\t',newEvent.message.text);
-    // log(newEvent);
-    // New event is a event without an event id (eid)
-    check.is(newEvent, 'newEvent');
-    var self = this,
-        user = getUserSession(socket);
-    
-    newEvent.host = user.uid;
-    newEvent.guestList = [user.uid];
-    newEvent.inviteList = [user];
-    newEvent.messageList = [newEvent.message];
+  log('New beacon by', getUserSession(socket).name+'\n\t\t',newEvent.message.text);
+  // log(newEvent);
+  // New event is a event without an event id (eid)
+  check.is(newEvent, 'newEvent');
+  var self = this,
+      user = getUserSession(socket);
+  
+  newEvent.host = user.uid;
+  newEvent.guestList = [user.uid];
+  newEvent.inviteList = [user];
+  newEvent.messageList = [newEvent.message];
 
-    events.add(newEvent, function(err, eid) {
-      if (err) return logError(err);
-      newEvent.eid = eid;
-      check.is(newEvent, 'event');
-      emit({
-        eventName: 'newEvent',
-        data: {'event' : newEvent},
-        // message: message,
-        recipients: newEvent.inviteList
-      });
+  events.add(newEvent, function(err, eid) {
+    if (err) return logError(err);
+    newEvent.eid = eid;
+    check.is(newEvent, 'event');
+    emit({
+      eventName: 'newEvent',
+      data: {'event' : newEvent},
+      // message: message,
+      recipients: newEvent.inviteList
     });
+  });
 }
 
 /**
@@ -124,7 +124,7 @@ exports.joinEvent = function(data, socket) {
 
   async.parallel({
     add     : function(cb){ events.addGuest( data.eid, user.uid, cb) },
-    attends : function(cb){ events.getInvited(user.uid, cb) }
+    attends : function(cb){ events.getInviteList(user.uid, cb) }
   }, 
   function (err, results) {
     if (err) return logError('join beacon', err);
@@ -153,7 +153,7 @@ exports.leaveEvent = function(data, socket) {
 
   async.parallel({
     delGuest:   function(cb){ events.removeGuest( data.eid, user.uid, cb) },
-    recipients: function(cb){ events.getInvited(data.eid, cb) }
+    recipients: function(cb){ events.getInviteList(data.eid, cb) }
   },
   function (err, results) {
     var data = {'uid':user.uid, 'eid':data.eid };
@@ -178,14 +178,15 @@ exports.newMessage = function(data, socket) {
       events.addMessage(msg, cb);
     },
     recipients : function(cb) {
-      events.getInvited(msg.eid, cb);
+      events.getInviteList(msg.eid, cb);
     }
   },
   function(err, results) {
+    log(results);
     // add will generate the messages mid. 
     check.is(results, {add: 'posInt', recipients: '[user]'});
     msg.mid = results.add;
-    check.is(data, {messages:'message'});
+    check.is(data, {message:'message'});
     emit({
       eventName: 'newMessage',
       data: data,
@@ -204,7 +205,7 @@ exports.newUserLocation = function(dataIn, socket) {
       users.updateLocation(dataIn.uid, dataIn.latlng, cb)
     },
     recipients: function(cb) {
-      events.getInvited(dataIn.eid, cb);
+      events.getInviteList(dataIn.eid, cb);
     }
   },
   function(err, results) {
@@ -353,7 +354,7 @@ function getUserSession(socket) {
     
 //   //   async.parallel({
 //   //     delete  : function(cb){ events.remove( bId, hostId , cb) },
-//   //     recipients : function(cb){ events.getInvited(bId, cb) },
+//   //     recipients : function(cb){ events.getInviteList(bId, cb) },
 //   //     delVis  : function(cb){ users.deleteVisible(hostId, bId, cb) }
 //   //   }, done);
 
