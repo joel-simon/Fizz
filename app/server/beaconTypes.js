@@ -1,4 +1,7 @@
-
+var latlng = {
+  lat: 'number',
+  lng: 'number'
+}
 module.exports = {
   user: {
     uid:    'posInt',
@@ -14,12 +17,9 @@ module.exports = {
     lastUpdated: 'posInt',
     list: ['user'] 
   },
-  latlng: {
-    lat: 'number',
-    lng: 'number'
-  },
+  latlng: latlng,
   marker: {
-    latlng: this.latlng,
+    latlng: latlng,
     name: 'string',
     time: 'posInt'
   },
