@@ -45,7 +45,8 @@ $('#myBeacon').on('submit', function(e) {
 	};
 	console.log('SENDING [newEvent]: ', eventData);
 	socket.emit('newEvent', eventData);
-	// clear form
+	// clear map and form
+	removeTempMarker();
 	form.message.value = '';
 	form.message.focus();
 	form.message.blur();

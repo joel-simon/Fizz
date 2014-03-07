@@ -11,6 +11,7 @@ var socket = io.connect(SERVER);
 socket.on('myInfo', function(me) {
 	console.log('MY INFO:', me);
 	MIM = new MyInfoManager(me);
+	// socket.emit('getFriendsList');
 });
 
 socket.on('friendList', function(data) {

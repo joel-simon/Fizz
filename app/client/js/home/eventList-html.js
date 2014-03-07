@@ -41,6 +41,7 @@ function writeGuestListHTML(event, callback) {
 	if (event.guestList.length) {
 		event.guestList.forEach(function(uid, i) {
 			var guest = event.getUser(uid);
+			console.log('GUEST LIST', guest);
 			getFacebookInfo(guest.fbid, function(name, pic) {
 				guestId = 'g-'+event.eid+'-'+guest.uid;
 				string += '<img id="'+guestId+'" class="guest-pic pic" title="'+name+'" src="'+pic+'">';

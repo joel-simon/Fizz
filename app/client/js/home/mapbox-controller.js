@@ -48,6 +48,11 @@ function getTempMarker() {
 	}
 }
 
+function removeTempMarker() {
+	map.removeLayer(tempMarker);
+	tempMarker = null;
+}
+
 map.on('click', function(e) {
 	if (tempMarker) {
 		tempMarker.setLatLng(e.latlng);
@@ -60,8 +65,7 @@ map.on('click', function(e) {
 		tempMarker.addTo(map);
 
 		tempMarker.on('click', function() {
-			map.removeLayer(tempMarker);
-			tempMarker = null;
+			removeTempMarker();
 		});
 	}
 });
