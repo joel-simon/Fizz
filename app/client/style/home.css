@@ -75,7 +75,7 @@ input { padding: 0 4px; }
 		margin-left: 15px;
 	}
 
-	#timeline {
+	#timelineButton {
 		margin-top: 13px;
 	}
 
@@ -102,8 +102,6 @@ input { padding: 0 4px; }
 /*
 	Map
 */
-
-
 
 #map {
 	width: 100%;
@@ -224,20 +222,32 @@ li.friend {
 
 
 /*
-	Event List
+	Timeline
 */
 
-#event-list {
-	text-align: center;
-	padding: 5px;
-	margin: 0 auto;
+#timeline {
+	position: absolute;
+	top: 60px;
+	bottom: 0;
+	left: 0;
+	right: 0;
+
+	z-index: 10000;
+
+	background-color: white;
 }
 
-	.event {
-		width: 250px;
-		margin: 5px;
+	#event-list {
+		text-align: center;
 		padding: 5px;
-		border-radius: 3px;
-		background-color: #FF8C00;
-		float: left;
+		margin: 0 auto;
 	}
+
+		.event {
+			width: 250px;
+			margin: 5px;
+			padding: 5px;
+			border-radius: 3px;
+			background-color: #FF8C00;
+			float: left;
+		}
