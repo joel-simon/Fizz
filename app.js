@@ -100,6 +100,66 @@ io.set('authorization', passportSocketIo.authorize({
   store:       sessionStore,        // we NEED to use a sessionstore. no memorystore please
 }));
 
+(function test(){
+  var users = require('./app/server/users.js');
+  var events = require('./app/server/Events.js');
+
+  var andrewProfile = {
+    id: 100000157939878,
+    displayName: 'Andrew Sweet'
+  }
+  var joelProfile = {
+    id: 1380180579,
+    displayName: 'Joel Simon'
+  }
+  var danielProfile = {
+    id: 798172051,
+    displayName: 'Daniel Belchamber'
+  }
+  function onErr(err){if (err) throw err;};
+  users.getOrAdd(andrewProfile, 'fake', function(err, a){
+    // console.log('created andrew',a);
+  users.getOrAdd(joelProfile, 'fake', function(err, j){
+    // console.log('created joel', j);
+  users.getOrAdd(danielProfile, 'fake', function(err, d){
+    // console.log('created daniel',d);
+
+    users.addFriend(a,j.uid, onErr);
+    users.addFriend(a,d.uid, onErr);
+
+    users.addFriend(d,a.uid, onErr);
+    users.addFriend(d,j.uid, onErr);
+
+    users.addFriend(j,a.uid, onErr);
+    users.addFriend(j,d.uid, onErr);
+
+    var andrewsEventA = {
+      eid: null,
+      host : a.uid,
+      guestList : [j.uid, d.uid],
+      inviteList : [j, d],
+      message:{
+        mid: null,
+        uid: a.uid,
+        text: 'Andrews First Event',
+        creationTime: Date.now(),
+        marker: {
+          name:'',
+          time: Date.now()+(1000*60*30),
+          latlng: {lat:40.774614,lng:-73.954459}
+        }
+      }
+    };
+    events.add(andrewsEventA, function(err, eid){
+      // console.log(andrewsEventA);
+    });
+
+  });
+  });
+  });
+
+})();
+
 // Bind socket handlers.
 io.sockets.on('connection',   function(socket) {
   handler.login(socket);
@@ -108,11 +168,12 @@ io.sockets.on('connection',   function(socket) {
   socket.on('newEvent',       function(data){ handler.newEvent   (data, socket) });
   socket.on('newMessage',     function(data){ handler.newMessage (data, socket) });
   socket.on('newFriend',      function(data){ handler.newFriend  (data, socket) });
-  
+
   socket.on('getFriendList',  function(data){ handler.getFriendList(socket) });
   socket.on('newUserLocation',function(data){ handler.newUserLocation(data, socket)});
   socket.on('disconnect',     function()    { handler.disconnect(socket) });
   socket.on('benchMark',      function()    { handler.benchMark(socket) });
+  socket.on('test',           function()    { handler.test(socket) });
 });
 
 // Route all routes.
