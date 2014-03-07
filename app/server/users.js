@@ -14,13 +14,25 @@ exports.isConnected = function(id, callback) {
 exports.get = function(fbid, callback) {
 	store.hget('users', fbid, function(err, json) {
 		if (err) callback(err);
-		else if(!json) callback('No user found'+fbid);
+		else if (!json) callback('No user found:'+fbid);
 		else callback(null, JSON.parse(json));
 	});
 }
 
+// add user to uids friends list
+exports.addFriend = function(user, friendUId, callback) {
+	store.sadd('friendList:'+user.uId, friendUId, callback);
+}
+
+exports.getFriendIdList = function(user, cb) {
+  store.smembers('friendList:'+user.uId, function(err, list) {
+    if (err) cb(err);
+    else cb(null, list);
+  });
+}
+
 /*
-*	New Player	
+*	New Player
 */
 exports.add = function(user, callback) {
 	store.hincrby('idCounter', 'user', 1 , function(err, next) {
@@ -30,8 +42,29 @@ exports.add = function(user, callback) {
 		});
 	});
 }
+
+// exports.getOrAddFromPn = function(pn, callback) {
+// 	// users.get
+// 	var user = {
+// 		fbid : 0,
+// 		pn : pn,
+// 		name : string 
+// 		hasApp : string [ “iPhone” or “” ]
+// 		accessToken : string 
+
+// 	}
+// 	store.hincrby('idCounter', 'user', 1 , function(err, next) {
+// 		user.uid = next;
+
+// 		store.hset('users', user.fbid, JSON.stringify(user), function(err) {
+// 			callback(err, user);
+// 		});
+// 	});
+	
+// }
+
 exports.getOrAdd = function(profile, token, callback) {
-	var user = { 
+	var user = {
 		uid: 0, // will be set in exports.add
 		fbid: +profile.id,
 		pn: '',
@@ -62,7 +95,7 @@ exports.getLocation = function(uid, callback) {
 
 
 // exports.getFromCell = function(cellNum, callback) {
-	
+
 // }
 
 // exports.setGroup = function(id, group) {
@@ -74,6 +107,3 @@ exports.getLocation = function(uid, callback) {
 // 		// console.log('set group', err, doc);
 // 	});
 // }
-
-
-

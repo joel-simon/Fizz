@@ -15,9 +15,9 @@ var
   handler = require('./app/server/socketHandler.js'),
   redis   = require('redis'),
   redisStore = require('connect-redis')(express),
-  passport = require('passport'), 
+  passport = require('passport'),
   FacebookStrategy = require('passport-facebook').Strategy,
-  FacebookTokenStrategy = require('passport-facebook-token').Strategy,  
+  FacebookTokenStrategy = require('passport-facebook-token').Strategy,
   passportSocketIo = require("passport.socketio"),
   config    = require('./config.json'),
   colors  = require('colors'),
@@ -49,7 +49,7 @@ function passportSuccess(accessToken, refreshToken, profile, done) {
   var sessionData;
   process.nextTick(function () {
     // console.log(profile);
-    users.getOrAdd(profile, accessToken, function(err, user) {     
+    users.getOrAdd(profile, accessToken, function(err, user) {
       return done(null, user);
     });
   });
@@ -76,7 +76,7 @@ app.configure(function() {
   app.use(express.methodOverride());
   app.use(express.session({ secret: config.SECRET.cookieParser, store: sessionStore }));
   app.use(passport.initialize());
-  app.use(passport.session());  
+  app.use(passport.session());
   app.use(require('stylus').middleware({ src: __dirname + '/app/client' }));
   app.use(express.static(__dirname + '/app/client'));
   app.use(express.errorHandler());
@@ -100,22 +100,24 @@ io.set('authorization', passportSocketIo.authorize({
   store:       sessionStore,        // we NEED to use a sessionstore. no memorystore please
 }));
 
-// Bind socket handlers. 
+// Bind socket handlers.
 io.sockets.on('connection',   function(socket) {
   handler.login(socket);
   socket.on('joinEvent',      function(data){ handler.joinEvent  (data, socket) });
   socket.on('leaveEvent',     function(data){ handler.leaveEvent (data, socket) });
   socket.on('newEvent',       function(data){ handler.newEvent   (data, socket) });
   socket.on('newMessage',     function(data){ handler.newMessage (data, socket) });
-  socket.on('getFriendsList', function(data){ handler.getFriendsList(socket) });
+  socket.on('newFriend',      function(data){ handler.newFriend  (data, socket) });
+  
+  socket.on('getFriendList',  function(data){ handler.getFriendList(socket) });
   socket.on('newUserLocation',function(data){ handler.newUserLocation(data, socket)});
   socket.on('disconnect',     function()    { handler.disconnect(socket) });
   socket.on('benchMark',      function()    { handler.benchMark(socket) });
 });
 
-// Route all routes. 
+// Route all routes.
 require('./app/server/router')(app, passport);
-                  
+
 var domo =  ''+
 "#####################################\n"+
 'DOMOS HOSTS THE BEACON INTO THE CLOUD \n'+
@@ -129,4 +131,3 @@ var domo =  ''+
 '#####################################';
 console.log(domo.rainbow);
 console.log('Port:', (''+port).bold);
-

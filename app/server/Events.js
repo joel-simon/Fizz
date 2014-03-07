@@ -6,14 +6,14 @@ exports = module.exports;
 /**
  * BeaconKeeper is the class for managing all the beacons that the server hold.
  * As of now it is an abstraction wrapper for dealing with redis where current
- * beacons live. 
- * 
+ * beacons live.
+ *
  * @param {Object} Store - takes a redis conenction object
  */
 exports.add = function(event, callback) {
   var self = this;
   var eid;
-  store.hincrby('idCounter', 'event', 1 , function(err, next) {
+  store.hincrby('idCounter', 'event', 1, function(err, next) {
     if (err) return callback(err);
     event.eid = next;
     event.message.eid = next;
@@ -95,7 +95,7 @@ exports.addMessage = function(msg, callback) {
     store.rpush('messages:'+msg.eid, JSON.stringify(msg), function(err) {
       callback(err, i);
     });
-  }); 
+  });
 }
 
 exports.getInviteList = function(eid, cb) {
@@ -121,7 +121,7 @@ exports.isInvitedTo = function(uid, callback) {
   });
 }
 
-    
+
 exports.addVisible = function(user, event, callback) {
   store.sadd('viewableBy:'+user.uid, event.eid, callback);
 }
@@ -137,7 +137,7 @@ exports.deleteVisible = function(userId, bId, callback) {
 //       if (b.hasOwnProperty(e)) {
 //         b[e] = data[e];
 //       }
-//     } 
+//     }
 //     exports.insert(b, function(err) {
 //       if (err) callback(err);
 //       else callback(null);
@@ -160,4 +160,3 @@ exports.deleteVisible = function(userId, bId, callback) {
 //     }
 //   );
 // }
-
