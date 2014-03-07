@@ -75,13 +75,12 @@ exports.get = function(eid, callback) {
     event.messageList = results.messages.map(JSON.parse);
     event.inviteList = results.inviteList.map(JSON.parse);
     event.guestList = results.guestList;
-
     callback(null, event);
   });
 }
 
 exports.addGuest = function(eid, uid, callback) {
-  store.sadd('guestList:'+uid, eid, callback);
+  store.sadd('guestList:'+eid, uid, callback);
 }
 
 exports.removeGuest = function(eid, uid, callback) {

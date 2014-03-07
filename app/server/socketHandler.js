@@ -7,7 +7,7 @@ var
   log       = utils.log,
   debug     = utils.debug,
   fb        = require('./fb.js'),
-  users     = require('./Users.js'),
+  users     = require('./users.js'),
   async     = require('async'),
   output    = require('./output.js'),
   emit      = output.emit,
@@ -29,11 +29,10 @@ exports.login = function(socket) {
   socket.emit('myInfo', user);
   events.isInvitedTo(user.uid, function(err, eventList) {
     if (err) return logError('getEvents:', err);
-
     var str = user.name+' has connected. uid:'+user.uid+'\n\t\t';
     str += eventList.length + ' visible events.'
-    log(str);
 
+    log(str);
     check.is(eventList, '[event]');
     emit({
       eventName: 'eventList',
