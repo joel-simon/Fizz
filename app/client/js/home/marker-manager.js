@@ -18,7 +18,7 @@ MarkerManager.prototype.newMarker = function(eid, mid, latlng, icon, name, data)
 	});
 	this.table[eid+'-'+mid] = marker;
 	this.count++;
-	marker.addTo(this.map);
+	marker.addTo(this.map).bindPopup(name);
 }
 
 MarkerManager.prototype.deleteMarker = function(eid, mid) {

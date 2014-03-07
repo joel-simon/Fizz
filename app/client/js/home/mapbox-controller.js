@@ -31,6 +31,10 @@ map.on('locationerror', function() {
 	console.log('MAPBOX: position could not be found');
 });
 
+function getMyLocation() {
+	return JSON.parse(localStorage.myLocation);
+}
+
 /*
 	Map Control
 */

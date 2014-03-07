@@ -1,10 +1,10 @@
 doctype 5
 html
 	head
-		title Beacon - The New Map-Based Social Media
+		title Fizz - The New Map-Based Social Media
 
-		meta(name='description', content='Place a Beacon on a map to let your friends know where and what you want to do. Planning spontaneous events has never been so easy!')
-		meta(name='keywords', content='map, social media, event, events, beacon, beacons, friends, google maps, organize, plan, beacon events')
+		meta(name='description', content='Place a Fizz on a map to let your friends know where and what you want to do. Planning spontaneous events has never been so easy!')
+		meta(name='keywords', content='map, social media, event, events, fizz, friends, google maps, organize, plan, beacon events')
 
 		link(rel='stylesheet', href='/style/bootstrap.css')
 		link(rel='stylesheet', href='/style/home.css')
@@ -13,20 +13,22 @@ html
 
 	body
 		div#header
-			h2.title Beacon
+			h2.title.float-left Fizz
+
+			button#timeline.btn.btn-primary Timeline
 
 			div#fb-container.float-right
 				img#host-pic.float-left(src='', alt='Profile Picture')
 				p#host-name Host Name
-
-			button#logout.btn.btn-xs.float-right Log out
+				button#logout.btn.btn-xs Log out
 
 		div#map
 
-		form#myBeacon
-			input.input-long(type='text', name='message', autocomplete='off', placeholder='Write your Event description here.')
-			input#invite.btn.btn-primary(type='button', value='Invite')
-			input.btn.btn-success(type='submit', value='Place Beacon')
+		div#footer
+			form#myBeacon
+				input.input-long(type='text', name='message', autocomplete='off', placeholder='Write your Event description here.')
+				input#invite.btn.btn-xs.btn-primary(type='button', value='Invite')
+				input.btn.btn-xs.btn-success(type='submit', value='Place Beacon')
 
 		div#inviteManager.hidden
 			h3.float-left.leftHeader Invite List
