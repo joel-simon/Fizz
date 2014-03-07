@@ -1,6 +1,6 @@
 'use strict';
-var 
-  io, 
+var
+  io,
   events   = require('./Events.js'),
   utils     = require('./utilities.js'),
   logError  = utils.logError,
@@ -15,7 +15,7 @@ var
   types = require('./beaconTypes.js'),
   check = require('easy-types').addTypes(types);
 
-  
+
 /**
  * Handle login socket
  * @param {Object} Data - contains .id and .admin
@@ -24,7 +24,7 @@ var
  */
 exports.login = function(socket) {
   var user = getUserSession(socket);
-  
+
   socket.join(''+user.uid);
   socket.emit('myInfo', user);
   events.isInvitedTo(user.uid, function(err, eventList) {
@@ -41,42 +41,7 @@ exports.login = function(socket) {
     });
   });
   return;
-  // setTimeout(function(){
-  //   var me = {
-  //     uid:1,
-  //     fbid:100007033064024,
-  //     pn:'',
-  //     name:"Joel Simon",
-  //     "hasApp":''
-  //   }
-  //   var event = {
-  //     eid : 1,
-  //     host : 1,
-  //     guestList : [1],
-  //     inviteList : [me],
-  //     message : null
-  //   }
-  //   exports.newEvent(event, socket);
-  // }, 1000)
 }
-
-// function existingUser(user, userData, socket) {
-//   if(!io) io = require('../../app.js').io;
-//   log(user.name, "has connected.");
-  
-  
-//   // console.log('existing user', id, 'has', friends.length,'friends');
-//   users.getVisible(user.id, function(err, beaconIds) {
-//     if (err) return logError('getVisible Err:', err);
-//     async.map(beaconIds, events.get, function(err2, bArr) {
-//       if (err2) return logError(err2);
-//       log('visible events:',beaconIds);
-//       socket.emit('newevents', bArr);   
-//     });    
-//   });
-// }
-
-
 
 /**
  * Handle newBeacon socket
@@ -91,7 +56,7 @@ exports.newEvent = function (newEvent, socket) {
   check.is(newEvent, 'newEvent');
   var self = this,
       user = getUserSession(socket);
-  
+
   newEvent.host = user.uid;
   newEvent.guestList = [user.uid];
   newEvent.inviteList = [user];
@@ -124,7 +89,7 @@ exports.joinEvent = function(data, socket) {
   async.parallel({
     add     : function(cb){ events.addGuest( data.eid, user.uid, cb) },
     attends : function(cb){ events.getInviteList(user.uid, cb) }
-  }, 
+  },
   function (err, results) {
     if (err) return logError('join beacon', err);
     var data =     {'id':id,'guest':user.uid };
@@ -161,7 +126,7 @@ exports.leaveEvent = function(data, socket) {
       eventName: 'removeGuest',
       data: data,
       recipients: results.recipients
-    });  
+    });
     if (err) return logError('leave beacon', err);
     log(user.name, 'left beacon', id);
   });
@@ -173,7 +138,7 @@ exports.newMessage = function(data, socket) {
       msg = data.message;
 
   async.parallel({
-    add        : function(cb) { 
+    add        : function(cb) {
       events.addMessage(msg, cb);
     },
     recipients : function(cb) {
@@ -182,7 +147,7 @@ exports.newMessage = function(data, socket) {
   },
   function(err, results) {
     log(results);
-    // add will generate the messages mid. 
+    // add will generate the messages mid.
     check.is(results, {add: 'posInt', recipients: '[user]'});
     msg.mid = results.add;
     check.is(data, {message:'message'});
@@ -191,7 +156,7 @@ exports.newMessage = function(data, socket) {
       data: data,
       recipients: results.recipients
     });
-    log('new message', data); 
+    log('new message', data);
   });
 }
 
@@ -220,7 +185,7 @@ exports.newUserLocation = function(dataIn, socket) {
 
 function getEidAndRecipients (e, callback) {
   async.parallel({
-    eid: function(cb){ 
+    eid: function(cb){
       events.getNextId(cb)
     },
     recipients: function(cb) {
@@ -236,12 +201,12 @@ function getEidAndRecipients (e, callback) {
 function shareEvent(e, callback) {
   async.parallel([
     function(cb) { users.addVisible(e.host, e, cb) },
-    function(cb) { 
+    function(cb) {
       async.each(e.inviteList, add, cb);
       function add(friend, cb2) {
         users.addVisible(friend, e, function(err) {
           if (err) cb2(err);
-          else cb2 (null);   
+          else cb2 (null);
         });
       }
     },
@@ -254,7 +219,7 @@ function shareEvent(e, callback) {
         recipients: B.invited
       });
       cb(null);
-    }   
+    }
   ],
   callback);
 }
@@ -268,13 +233,15 @@ function shareEvent(e, callback) {
 // function(err, data) {
 // });
 
-exports.getFriendsList = function(socket) {
+exports.getFBFriendList = function(socket) {
   var user = getUserSession(socket);
   var idArr = [];
-  fb.get(user.token, '/me/friends', function(err, friends) {
+  fb.get(user.accessToken, '/me/friends', function(err, friends) {
+    err = err || friends.error;
     if (err) return logError('from facebook.get:', err);
-    friends = friends.map(function(fbuser){return fbuser.id});
-    async.map(friends, Users.get, function(err, friendsList) {
+    if (!friends.data) return logError('no friends data')
+    friends = friends.data.map(function(fbuser){return fbuser.id});
+    async.map(friends, users.get, function(err, friendsList) {
       if (err) {
         logError(err);
       } else {
@@ -282,6 +249,36 @@ exports.getFriendsList = function(socket) {
       }
     })
   });
+}
+
+exports.getFriendList = function(socket) {
+  var user = getUserSession(socket);
+  users.getFriendIdList(user, function(err, friendIdList) {
+    if (err) return logError(err);
+    async.map(friendIdList, users.get, function(err, friendsList) {
+      if (err) {
+        logError(err);
+      } else {
+        // console.log(friendsList);
+        socket.emit('friendList', friendsList);
+      }
+    });
+  });
+}
+
+exports.newFriend = function(data, socket) {
+  var user = getUserSession(socket);
+  if (data.fbId) {
+    users.addFriend(user, data.fbId, function(err){if(err)logError(err)});
+  } else if(data.pn) {
+    console.log('Adding phone numbers coming soon!');
+    return;
+    users.getOrAddFromPn(data.pn, data.name || data.pn, function(friend) {
+      users.addFriend(user, friend.fbId, function(err){if(err)logError(err)});
+    });
+  } else {
+    logError('invalid newFriend data', data);
+  }
 }
 
 exports.disconnect = function(socket) {
@@ -296,10 +293,10 @@ exports.benchMark = function(socket) {
   store.incr('foo', 1, function(err, x){
     store.get('foo', function(err2, y){
       socket.emit('benchMark', {"creationTime":1392785614748,"inviteList":[{"uid":1,"fbid":1380180579,"pn":"","name":"Joel Simon","hasApp":"","accessToken":"CAAClyP2DrA0BAHuZAgZCpZBvZCSRoPn2nsZAA5CN8pyKsXqBenB59Od219yypJJ9HJoShoeTyNdPgbOjiFffpsEfZBCvuT3ZBbzhMsGvjI2WfmhOnMQllRD1ZBUoC8GQoILC4WelThIoidHotRrNOHRUJcjYZCF8VVBYATZAdXA2lQTiHiS63khbUb","logged_in":true}],"invitePnList":[],"message":{"mid":2,"eid":2,"uid":1,"text":"Description!","creationTime":1392785614748,"marker":null,"deletePastMarker":0},"host":1,"guestList":[1],"eid":2});
-      var end = (new Date().getTime()) - start; 
+      var end = (new Date().getTime()) - start;
     });
   });
-  
+
 }
 
 function newUser(user, socket) {
@@ -350,7 +347,7 @@ function getUserSession(socket) {
 //   // try {
 //   //   check.is(data, { eid : 'posInt' });
 //   //   var user = getUserSession(socket);
-    
+
 //   //   async.parallel({
 //   //     delete  : function(cb){ events.remove( bId, hostId , cb) },
 //   //     recipients : function(cb){ events.getInviteList(bId, cb) },

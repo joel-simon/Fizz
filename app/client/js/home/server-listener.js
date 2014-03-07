@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 /*
-	Server Listener - listens for any socket communication from the server and 
+	Server Listener - listens for any socket communication from the server and
 		responds appropriately
 */
 ////////////////////////////////////////////////////////////////////////////////
@@ -11,7 +11,7 @@ var socket = io.connect(SERVER);
 socket.on('myInfo', function(me) {
 	console.log('MY INFO:', me);
 	MIM = new MyInfoManager(me);
-	// socket.emit('getFriendList');
+	socket.emit('getFriendList');
 });
 
 socket.on('friendList', function(data) {
