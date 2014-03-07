@@ -299,6 +299,10 @@ exports.benchMark = function(socket) {
 
 }
 
+// exports.test = function(socket) {
+//   var user = getUserSession(socket);
+// }
+
 function newUser(user, socket) {
   log('newUser', user.name);
   var idArr = [];

@@ -21,11 +21,11 @@ exports.get = function(fbid, callback) {
 
 // add user to uids friends list
 exports.addFriend = function(user, friendUId, callback) {
-	store.sadd('friendList:'+user.uId, friendUId, callback);
+	store.sadd('friendList:'+user.uid, friendUId, callback);
 }
 
 exports.getFriendIdList = function(user, cb) {
-  store.smembers('friendList:'+user.uId, function(err, list) {
+  store.smembers('friendList:'+user.uid, function(err, list) {
     if (err) cb(err);
     else cb(null, list);
   });
