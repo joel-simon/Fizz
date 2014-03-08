@@ -68,7 +68,6 @@ exports.get = function(eid, callback) {
     }
   },
   function(err, results) {
-    // console.log(results.messages);
     if(err) return callback(err);
     var event = {'eid' : eid};
     event.host = JSON.parse(results.host).host;

@@ -26,9 +26,18 @@ var
   sub = redis.createClient(rtg.port, rtg.hostname),
   store = redis.createClient(rtg.port, rtg.hostname);
 
-// process.argv.forEach(function (val, index, array) {
-//   console.log(index + ': ' + val);
-// });
+process.argv.forEach(function (val, index) {
+  if (index > 1) {
+  switch(val) {
+    case 'test':
+      require('./utilities/serverTests.js')
+      break;
+    default:
+      console.log('Invalid command "%s" Run "node app test" to run in test mode',val)
+    }
+  }
+  // console.log(index + ': ' + val);
+});
 
 var users = require('./app/server/Users.js');
 pub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
@@ -100,65 +109,7 @@ io.set('authorization', passportSocketIo.authorize({
   store:       sessionStore,        // we NEED to use a sessionstore. no memorystore please
 }));
 
-(function test(){
-  var users = require('./app/server/users.js');
-  var events = require('./app/server/Events.js');
 
-  var andrewProfile = {
-    id: 100000157939878,
-    displayName: 'Andrew Sweet'
-  }
-  var joelProfile = {
-    id: 1380180579,
-    displayName: 'Joel Simon'
-  }
-  var danielProfile = {
-    id: 798172051,
-    displayName: 'Daniel Belchamber'
-  }
-  function onErr(err){if (err) throw err;};
-  users.getOrAdd(andrewProfile, 'fake', function(err, a){
-    // console.log('created andrew',a);
-  users.getOrAdd(joelProfile, 'fake', function(err, j){
-    // console.log('created joel', j);
-  users.getOrAdd(danielProfile, 'fake', function(err, d){
-    // console.log('created daniel',d);
-
-    users.addFriend(a,j.uid, onErr);
-    users.addFriend(a,d.uid, onErr);
-
-    users.addFriend(d,a.uid, onErr);
-    users.addFriend(d,j.uid, onErr);
-
-    users.addFriend(j,a.uid, onErr);
-    users.addFriend(j,d.uid, onErr);
-
-    var andrewsEventA = {
-      eid: null,
-      host : a.uid,
-      guestList : [j.uid, d.uid],
-      inviteList : [j, d],
-      message:{
-        mid: null,
-        uid: a.uid,
-        text: 'Andrews First Event',
-        creationTime: Date.now(),
-        marker: {
-          name:'',
-          time: Date.now()+(1000*60*30),
-          latlng: {lat:40.774614,lng:-73.954459}
-        }
-      }
-    };
-    events.add(andrewsEventA, function(err, eid){
-      // console.log(andrewsEventA);
-    });
-
-  });
-  });
-  });
-
-})();
 
 // Bind socket handlers.
 io.sockets.on('connection',   function(socket) {
