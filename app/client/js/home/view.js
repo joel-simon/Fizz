@@ -23,6 +23,9 @@ function drawEvent(event) {
 		} else {
 			$('#timeline-'+eidList[index]).after(eventHTML);
 		}
+		event.inviteList.forEach(function(user, i) {
+			console.log(user, i);
+		});
 	});
 }
 

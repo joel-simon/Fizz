@@ -64,7 +64,7 @@ input { padding: 0 4px; }
 */
 
 #header {
-	height: 80px;
+	height: 90px;
 	width: 100%;
 	text-align: center;
 }
@@ -110,7 +110,7 @@ input { padding: 0 4px; }
 #map {
 	width: 100%;
 	position:absolute; 
-	top: 80px; 
+	top: 90px; 
 	bottom: 34px;
 	text-align: center;
 }
@@ -232,7 +232,7 @@ li.friend {
 
 #timeline {
 	position: absolute;
-	top: 60px;
+	top: 90px;
 	bottom: 0;
 	left: 0;
 	right: 0;
@@ -251,19 +251,20 @@ li.friend {
 		margin: 0 auto;
 	}
 
-	.event {
-		margin: 0;
-		position: relative;
-		height: 300px;
-		text-align: center;
-	}
+		.event {
+			margin: 0;
+			position: relative;
+			height: 300px;
+			text-align: center;
+		}
 
-	.eventMessage {
-		position: relative;
-		top: 120px;
-		font-size: 40px;
-	}
+		.eventMessage {
+			position: relative;
+			top: 120px;
+			font-size: 40px;
+			margin: 0;
+		}
 
-	.invitePic {
-		position: absolute;
-	}
+		.invitePic {
+			position: absolute;
+		}

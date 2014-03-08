@@ -23,7 +23,9 @@ html
 				button#logout.btn.btn-xs Log out
 
 			br
-			input#foursquare.input-long(type='text', name='message', autocomplete='off')
+			form#foursquare
+				input.input-long(type='text', name='venue', autocomplete='off')
+				input.btn.btn-xs.btn-primary(type='submit', value='Search')
 
 		div#map
 
