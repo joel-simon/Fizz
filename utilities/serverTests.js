@@ -58,7 +58,7 @@ users.getOrAdd(danielProfile, 'fake', function(err, d){
       mid: null,
       uid: a.uid,
       text: 'Andrews Second Event',
-      creationTime: Date.now(),
+      creationTime: Date.now()+1,
       marker: {
         name:'Angelo\'s Pizzeria',
         time: Date.now()+(1000*60*30),
@@ -74,9 +74,9 @@ users.getOrAdd(danielProfile, 'fake', function(err, d){
     inviteList : [d, j, a],
     message:{
       mid: null,
-      uid: a.uid,
+      uid: d.uid,
       text: 'Daniels First Event',
-      creationTime: Date.now(),
+      creationTime: Date.now()+2,
       marker: {
         name:'Blue Bottle Coffee',
         time: Date.now()+(1000*60*30),
