@@ -85,12 +85,27 @@ users.getOrAdd(danielProfile, 'fake', function(err, d){
     }
   }
 
-  events.add(andrewsEventA, function(err, eid){
+  events.add(andrewsEventA, function(err, eid) {
+    events.addMessage({
+      mid: null,
+      eid: eid,
+      uid: a.uid,
+      text: 'Second Message',
+      creationTime: Date.now()+5,
+      marker: {
+        name:'Central Park',
+        time: Date.now()+(1000*60*30),
+        latlng: {lat:40.782865,lng:-73.965355}
+      }
+    }, onErr);
   });
   events.add(andrewsEventB, function(err, eid){
   });
   events.add(danielsEvent, function(err, eid){
   });
+
+
+
 
 });
 });
