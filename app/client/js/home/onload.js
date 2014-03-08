@@ -6,4 +6,5 @@
 
 $(document).ready(function() {
 	locateMe();
+	// $('.leaflet-control-container').append( $('#foursquare') );
 });

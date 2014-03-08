@@ -64,7 +64,7 @@ input { padding: 0 4px; }
 */
 
 #header {
-	height: 60px;
+	height: 80px;
 	width: 100%;
 	text-align: center;
 }
@@ -98,6 +98,10 @@ input { padding: 0 4px; }
 		/*margin-top: 20px;*/
 	}
 
+#foursquare {
+	clear: both;
+}
+
 
 /*
 	Map
@@ -106,8 +110,9 @@ input { padding: 0 4px; }
 #map {
 	width: 100%;
 	position:absolute; 
-	top: 60px; 
+	top: 80px; 
 	bottom: 34px;
+	text-align: center;
 }
 
 .face-icon {
@@ -232,6 +237,8 @@ li.friend {
 	left: 0;
 	right: 0;
 
+	overflow-y: auto;
+
 	z-index: 10000;
 	text-align: center;
 
@@ -242,4 +249,21 @@ li.friend {
 		text-align: center;
 		padding: 5px;
 		margin: 0 auto;
+	}
+
+	.event {
+		margin: 0;
+		position: relative;
+		height: 300px;
+		text-align: center;
+	}
+
+	.eventMessage {
+		position: relative;
+		top: 120px;
+		font-size: 40px;
+	}
+
+	.invitePic {
+		position: absolute;
 	}

@@ -69,19 +69,3 @@ socket.on('newUserLocationList', function(data) {
 	console.log('USER LOCATIONS:', data);
 	var userLocationList = data.userLocationList;
 });
-
-
-// Jole's shit ugly code
-
-var i = 0;
-socket.on('benchMark', function(data){
-	i++;
-	if (i%10 ==0) {
-		console.log(i);
-	}
-});
-function benchMark(z){
-	for (var j = 0; j < z; j++) {
-		socket.emit('benchMark', {});
-	}
-}
