@@ -34,8 +34,8 @@ users.getOrAdd(danielProfile, 'fake', function(err, d){
   var andrewsEventA = {
     eid: null,
     host : a.uid,
-    guestList : [j.uid, d.uid],
-    inviteList : [j, d],
+    guestList : [a.uid , j.uid, d.uid],
+    inviteList : [a, j, d],
     message:{
       mid: null,
       uid: a.uid,
@@ -52,8 +52,8 @@ users.getOrAdd(danielProfile, 'fake', function(err, d){
   var andrewsEventB = {
     eid: null,
     host : a.uid,
-    guestList : [],
-    inviteList : [j, d],
+    guestList : [a.uid],
+    inviteList : [a, j, d],
     message:{
       mid: null,
       uid: a.uid,
@@ -70,8 +70,8 @@ users.getOrAdd(danielProfile, 'fake', function(err, d){
   var danielsEvent = {
     eid: null,
     host : d.uid,
-    guestList : [],
-    inviteList : [j, a],
+    guestList : [d.uid],
+    inviteList : [d, j, a],
     message:{
       mid: null,
       uid: a.uid,
