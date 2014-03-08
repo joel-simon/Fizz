@@ -35,12 +35,12 @@ Event.prototype.removeGuest = function(uid) {
 }
 
 Event.prototype.hasGuest = function(uid) {
-	if ( findUserIndex(uid, this.guestList) !== -1 ) return true;
+	if ( this.findUserIndex(uid, this.guestList) !== -1 ) return true;
 	else return false;
 }
 
 Event.prototype.hasInvite = function(uid) {
-	if ( findUserIndex(uid, this.inviteList) !== -1 ) return true;
+	if ( this.findUserIndex(uid, this.inviteList) !== -1 ) return true;
 	else return false;
 }
 
