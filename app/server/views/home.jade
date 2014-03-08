@@ -15,7 +15,7 @@ html
 		div#header
 			h2.title.float-left Fizz
 
-			button#timeline.btn.btn-primary Timeline
+			button#timelineButton.btn.btn-primary Timeline
 
 			div#fb-container.float-right
 				img#host-pic.float-left(src='', alt='Profile Picture')
@@ -28,7 +28,7 @@ html
 			form#myBeacon
 				input.input-long(type='text', name='message', autocomplete='off', placeholder='Write your Event description here.')
 				input#invite.btn.btn-xs.btn-primary(type='button', value='Invite')
-				input.btn.btn-xs.btn-success(type='submit', value='Place Beacon')
+				input.btn.btn-xs.btn-success(type='submit', value='Place Marker')
 
 		div#inviteManager.hidden
 			h3.float-left.leftHeader Invite List
@@ -43,7 +43,8 @@ html
 
 			button#closeInviteManager.btn.btn-primary(type='button') Close
 
-		ul#event-list
+		div#timeline.hidden
+			ul#event-list
 
 
 		//- Magic Socket IO Code

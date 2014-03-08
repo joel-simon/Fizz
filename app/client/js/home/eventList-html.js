@@ -24,11 +24,12 @@ function writeEventHTML(event, callback) {
 		eventHTML += guestListHTML;
 		writeMessageListHTML(event, function(messageListHTML) {
 			eventHTML += messageListHTML;
-			eventHTML += 
-					'<form id="newMessage-'+event.eid+'">'+
-						'<input type="text", autocomplete="off", name="message", placeholder="Write a message!">'+
-					'</form>'+
-				'</li>';
+			// eventHTML += 
+			// 		'<form id="newMessage-'+event.eid+'">'+
+			// 			'<input type="text", autocomplete="off", name="message", placeholder="Write a message!">'+
+			// 		'</form>'+
+			// 	'</li>';
+			eventHTML += '</li>';
 			callback(eventHTML);
 		});
 	});
@@ -41,7 +42,6 @@ function writeGuestListHTML(event, callback) {
 	if (event.guestList.length) {
 		event.guestList.forEach(function(uid, i) {
 			var guest = event.getUser(uid);
-			console.log('GUEST LIST', guest);
 			getFacebookInfo(guest.fbid, function(name, pic) {
 				guestId = 'g-'+event.eid+'-'+guest.uid;
 				string += '<img id="'+guestId+'" class="guest-pic pic" title="'+name+'" src="'+pic+'">';

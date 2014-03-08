@@ -9,6 +9,17 @@ $('#logout').on('click', function() {
 	window.location.pathname = '/logout';
 });
 
+$('#timelineButton').on('click', function() {
+	if ( $('#timeline').hasClass('hidden') ) {
+		$('#timeline').removeClass('hidden');
+		$('#timelineButton').html('Map View');
+	}
+	else {
+		$('#timeline').addClass('hidden');
+		$('#timelineButton').html('Timeline');
+	}
+});
+
 $('#invite').on('click', function(e) {
 	e.preventDefault();
 	$('#inviteManager').removeClass('hidden');
