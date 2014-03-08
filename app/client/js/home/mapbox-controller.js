@@ -86,18 +86,21 @@ function createIcon(pic, temp) {
 
 function placeAllMarkers(event) {
 	event.messageList.forEach(function(message, i) {
-		mapMessage(message);
+		var user = event.getUser(message.uid);
+		getFacebookInfo(user.fbid, function(name, pic) {
+			mapMessage(message, pic);
+		});
 	});
 }
 
-function mapMessage(message) {
+function mapMessage(message, pic) {
 	if (message.marker) {
 		OMM.newMarker(
 			message.eid, 
 			message.mid, 
 			message.marker.latlng,
-			createIcon(null),
-			message.text,
+			createIcon(pic),
+			message.marker.name,
 			null
 		);
 	}

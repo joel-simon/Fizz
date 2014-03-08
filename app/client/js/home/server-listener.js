@@ -71,7 +71,7 @@ socket.on('newUserLocationList', function(data) {
 });
 
 
-
+// Jole's shit ugly code
 
 var i = 0;
 socket.on('benchMark', function(data){
