@@ -15,29 +15,38 @@ function drawEvent(event) {
 	// Mapbox interaction
 	placeAllMarkers(event);
 
-	// Put the beacon info into the beacon-list.
-	writeEventHTML(event, function(eventHTML) {
-		// put the beacon onto the html page
-		$('#event-list').prepend(eventHTML);
-		// join/leave/disband the beacon depending on the situation
-		$('#button-'+event.eid).on('click', function() {
-			if ( (event.host === MIM.uid) || event.hasGuest(MIM.uid) ) {
-				leaveEvent(event, MIM.uid);
-			} else {
-				joinEvent(event);
-			}
-		});
-		// when the beacon is clicked, pan map over to that beacon
-		$('#event-'+event.eid).on('click', function() {
-			console.log('EVENT CLICKED:', event);
-		});
-		// add a new message to the beacon
-		$('#newMessage-'+event.eid).on('submit', function(e) {
-			e.preventDefault();
-			newMessage(event.eid, this.message.value, null);
-			this.message.value = '';
-		});
+	// Put information into the Timeline's Event List
+	addEventToTimeline(event, function(eventHTML, index) {
+		if (!timelineList.length || index == -1) {
+			$('#event-list').append(eventHTML);
+		} else {
+			$('eventHTML').prependTo('.guest'+index);
+		}
 	});
+
+	// // Put the beacon info into the beacon-list.
+	// writeEventHTML(event, function(eventHTML) {
+	// 	// put the beacon onto the html page
+	// 	$('#event-list').prepend(eventHTML);
+	// 	// join/leave/disband the beacon depending on the situation
+	// 	$('#button-'+event.eid).on('click', function() {
+	// 		if ( (event.host === MIM.uid) || event.hasGuest(MIM.uid) ) {
+	// 			leaveEvent(event, MIM.uid);
+	// 		} else {
+	// 			joinEvent(event);
+	// 		}
+	// 	});
+	// 	// when the beacon is clicked, pan map over to that beacon
+	// 	$('#event-'+event.eid).on('click', function() {
+	// 		console.log('EVENT CLICKED:', event);
+	// 	});
+	// 	// add a new message to the beacon
+	// 	$('#newMessage-'+event.eid).on('submit', function(e) {
+	// 		e.preventDefault();
+	// 		newMessage(event.eid, this.message.value, null);
+	// 		this.message.value = '';
+	// 	});
+	// });
 }
 
 function drawGuest(eid, uid) {
