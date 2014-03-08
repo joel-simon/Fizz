@@ -84,6 +84,18 @@ function createIcon(pic, temp) {
 	});
 }
 
+
+/*
+	Search Markers
+*/
+
+// put functions here
+
+
+/*
+	Event Markers
+*/
+
 function placeAllMarkers(event) {
 	event.messageList.forEach(function(message, i) {
 		var user = event.getUser(message.uid);

@@ -24,7 +24,7 @@ function drawEvent(event) {
 			$('#timeline-'+eidList[index]).after(eventHTML);
 		}
 		event.inviteList.forEach(function(user, i) {
-			console.log(user, i);
+			// console.log(user, i);
 		});
 	});
 }
