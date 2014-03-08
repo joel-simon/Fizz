@@ -20,8 +20,8 @@ exports.get = function(fbid, callback) {
 }
 
 // add user to uids friends list
-exports.addFriend = function(user, friendUId, callback) {
-	store.sadd('friendList:'+user.uid, friendUId, callback);
+exports.addFriend = function(user, friendUid, callback) {
+	store.sadd('friendList:'+user.uid, friendUid, callback);
 }
 
 exports.getFriendIdList = function(user, cb) {

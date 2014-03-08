@@ -259,7 +259,6 @@ exports.getFriendList = function(socket) {
       if (err) {
         logError(err);
       } else {
-        // console.log(friendsList);
         socket.emit('friendList', friendsList);
       }
     });
