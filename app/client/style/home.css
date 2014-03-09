@@ -242,7 +242,7 @@ li.friend {
 	z-index: 10000;
 	text-align: center;
 
-	background-color: white;
+	background-color: rgba(255, 255, 255, 0.8);
 }
 
 	#event-list {
@@ -253,6 +253,7 @@ li.friend {
 
 		.event {
 			margin: 0;
+			/*border: 2px solid gray;*/
 			position: relative;
 			height: 300px;
 			text-align: center;
