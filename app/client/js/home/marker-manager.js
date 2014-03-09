@@ -9,6 +9,9 @@ function MarkerManager(map) {
 	this.table = {};
 	this.count = 0;
 	this.searchMarkerArray = [];
+
+	this.markers = new L.markerClusterGroup();
+	this.map.addLayer(this.markers);
 }
 
 /*
@@ -37,13 +40,15 @@ MarkerManager.prototype.deleteMarker = function(eid, mid) {
 	Search Markers
 */
 
+
 MarkerManager.prototype.clearSearchMarkerArray = function() {
 	var count = 0;
 	this.searchMarkerArray.forEach(function(marker, i) {
 		this.map.removeLayer(marker);
-		if (++count == this.searchMarkerArray.length)
-			this.searchMarkerArray = [];
+		// if (++count == this.searchMarkerArray.length)
+			
 	});
+	this.searchMarkerArray = [];
 }
 
 MarkerManager.prototype.newSearchMarker = function(latlng, name, data) {
@@ -52,6 +57,8 @@ MarkerManager.prototype.newSearchMarker = function(latlng, name, data) {
 		title : name,
 		data  : data,
 	});
-	this.searchMarkerArray.push(marker);
-	marker.addTo(this.map).bindPopup(name);
+	// this.searchMarkerArray.push(marker);
+	// marker.addTo(this.map).bindPopup(name);
+	marker.bindPopup(name);
+	this.markers.addLayer(marker);
 }

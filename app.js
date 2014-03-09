@@ -26,19 +26,6 @@ var
   sub = redis.createClient(rtg.port, rtg.hostname),
   store = redis.createClient(rtg.port, rtg.hostname);
 
-process.argv.forEach(function (val, index) {
-  if (index > 1) {
-  switch(val) {
-    case 'test':
-      require('./utilities/serverTests.js')
-      break;
-    default:
-      console.log('Invalid command "%s" Run "node app test" to run in test mode',val)
-    }
-  }
-  // console.log(index + ': ' + val);
-});
-
 var users = require('./app/server/Users.js');
 pub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 sub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
@@ -110,7 +97,6 @@ io.set('authorization', passportSocketIo.authorize({
 }));
 
 
-
 // Bind socket handlers.
 io.sockets.on('connection',   function(socket) {
   handler.login(socket);
@@ -124,7 +110,6 @@ io.sockets.on('connection',   function(socket) {
   socket.on('newUserLocation',function(data){ handler.newUserLocation(data, socket)});
   socket.on('disconnect',     function()    { handler.disconnect(socket) });
   socket.on('benchMark',      function()    { handler.benchMark(socket) });
-  socket.on('test',           function()    { handler.test(socket) });
 });
 
 // Route all routes.
@@ -143,3 +128,17 @@ var domo =  ''+
 '#########################################';
 console.log(domo.rainbow);
 console.log('Port:', (''+port).bold);
+
+process.argv.forEach(function (val, index) {
+  if (index > 1) {
+  switch(val) {
+    case 'test':
+      require('./utilities/serverTests.js')
+      break;
+    default:
+      console.log('Invalid command "%s" Run "node app test" to run in test mode',val)
+    }
+  }
+  // console.log(index + ': ' + val);
+});
+
