@@ -29,6 +29,12 @@ $('#searchFriendList').on('input', function() {
     
 });
 
+$('#foursquare').on('submit', function(e) {
+		e.preventDefault();
+    // console.log(this.venue.value);
+    queryFoursquare(this.venue.value);
+});
+
 $('#closeInviteManager').on('click', function(e) {
 	e.preventDefault();
 	$('#inviteManager').addClass('hidden');
