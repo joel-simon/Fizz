@@ -35,10 +35,11 @@ Event.prototype.removeGuest = function(uid) {
 }
 
 Event.prototype.hasGuest = function(uid) {
+	console.log(this.guestList, uid);
 	for (var i = 0; i < this.guestList.length; i++) {
-		if ( this.guestList[i] === uid ) return i;
+		if ( this.guestList[i] === uid ) return true;
 	}
-	return -1;
+	return false;
 }
 
 Event.prototype.hasInvite = function(uid) {
