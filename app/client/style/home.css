@@ -177,15 +177,15 @@ input { padding: 0 4px; }
 }
 
 	.leftHeader {
-		margin: 0;
-		margin-top: 12px;
-		margin-left: 20%;
+		position: absolute;
+		left: 25px;
+		top: -10px;
 	}
 
 	.rightHeader {
-		margin: 0;
-		margin-top: 12px;
-		margin-right: 20%;
+		position: absolute;
+		right: 25px;
+		top: -10px;
 	}
 
 #inviteList {
@@ -214,8 +214,18 @@ input { padding: 0 4px; }
 }
 
 li.friend {
+	clear: both;
+}
+
+li.friend p {
+	padding: 12px;
+	margin: 5px;
+}
+
+li.friend img {
 	margin: 5px;
 	border-radius: 50%;
+	float: left;
 }
 
 #closeInviteManager {
@@ -231,11 +241,11 @@ li.friend {
 }
 
 #searchInviteList {
-	left: 160px;
+	left: 25px;
 }
 
 #searchFriendList {
-	right: 160px;
+	right: 25px;
 }
 
 

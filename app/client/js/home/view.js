@@ -47,3 +47,32 @@ function drawEvent(event) {
 	});
 }
 
+var inviteList = [];
+
+function setUpInviteManager(friendList) {
+	var string;
+	friendList.forEach(function(friend, i) {
+		getFacebookInfo(friend.fbid, function(name, pic) {
+			string = 
+				'<li class="friend" id="friend-'+friend.uid+'">'+
+					'<img src="'+pic+'" class="pic" title="'+name+'">'+
+					'<p>'+name+'</p>'+
+				'</li>';
+			$('#friendList').append(string);
+			// console.log( $('#friend-'+friend.uid)[0] );
+			$('#friend-'+friend.uid).on('click', function() {
+				if ( $(this).parent()[0].id == 'friendList' ) {
+					$('#inviteList').append( $(this) );
+					inviteList.push(friend.uid);
+				} else {
+					$('#friendList').append( $(this) );
+					for (var i = inviteList.length - 1; i >= 0; i--) {
+						if (inviteList[i] === friend.uid) {
+							inviteList.splice(i, 1);
+						}
+					}
+				}
+			});
+		});
+	});
+}

@@ -79,7 +79,7 @@ $('#myBeacon').on('submit', function(e) {
 	};
 	var eventData = {
 		creationTime : now,
-		inviteList   : [],
+		inviteList   : inviteList,
 		invitePnList : [],
 		message      : message,
 	};

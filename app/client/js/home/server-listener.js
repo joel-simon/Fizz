@@ -14,10 +14,10 @@ socket.on('myInfo', function(me) {
 	socket.emit('getFriendList');
 });
 
-socket.on('friendList', function(data) {
-	console.log('FRIEND LIST:', data);
-	var friendList = data.friendList;
+socket.on('friendList', function(friendList) {
+	console.log('FRIEND LIST:', friendList);
 	MIM.updateFriendList(friendList);
+	setUpInviteManager(friendList);
 });
 
 socket.on('eventList', function(data) {
