@@ -23,14 +23,14 @@ Event.prototype.getUser = function(uid) {
 
 Event.prototype.addGuest = function(uid) {
 	this.guestList.push(uid);
-	drawGuest(eid, getUser(uid));
+	// drawGuest(eid, getUser(uid));
 }
 
 Event.prototype.removeGuest = function(uid) {
 	var index = findUserIndex(uid, this.guestList);
 	if ( index !== -1 ) {
 		this.guestList.splice(index, 1);
-		eraseGuest(eid, uid);
+		// eraseGuest(eid, uid);
 	}
 }
 
@@ -46,5 +46,5 @@ Event.prototype.hasInvite = function(uid) {
 
 Event.prototype.addMessage = function(message) {
 	this.messageList.push(message);
-	drawMessage(message);
+	// drawMessage(message);
 }

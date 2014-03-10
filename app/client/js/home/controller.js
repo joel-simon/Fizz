@@ -30,6 +30,28 @@ $('#searchFriendList').on('input', function() {
     
 });
 
+$('#join').on('click', function(e) {
+	e.preventDefault();
+	if ( $('#join').hasClass('btn-primary') ) {
+		$('#join').removeClass('btn-primary');
+		$('#join').addClass('btn-danger');
+		$('#join').html('Leave');
+
+		joinEvent(detail);
+	} else {
+		$('#join').removeClass('btn-danger');
+		$('#join').addClass('btn-primary');
+		$('#join').html('Join');
+
+		leaveEvent(detail);
+	}
+});
+
+$('#myMessage').on('submit', function(e) {
+	e.preventDefault();
+	newMessage(detail, this.message.value, null);
+});
+
 $('#foursquare').on('submit', function(e) {
 	e.preventDefault();
 	// console.log(this.venue.value);
@@ -70,14 +92,14 @@ $('#myBeacon').on('submit', function(e) {
 	form.message.blur();
 });
 
-function joinEvent(event) {
-	console.log('SENDING [joinEvent]: ', event.eid);
-	socket.emit('joinEvent', {eid : event.eid});
+function joinEvent(eid) {
+	console.log('SENDING [joinEvent]: ', eid);
+	socket.emit('joinEvent', {eid : eid});
 }
 
-function leaveEvent(event) {
-	console.log('SENDING [leaveEvent]: ', event.eid);
-	socket.emit('leaveEvent', {eid : event.eid});
+function leaveEvent(eid) {
+	console.log('SENDING [leaveEvent]: ', eid);
+	socket.emit('leaveEvent', {eid : eid});
 }
 
 function newMessage(eid, text, marker) {

@@ -11,6 +11,7 @@ function backToOverview() {
 }
 
 function createDetailView(event) {
+	console.log('DETAIL VIEW: '+event.eid, event);
 	if ( !$('#timeline').hasClass('hidden') ) $('#timeline').addClass('hidden');
 	$('#myBeacon').addClass('hidden');
 	$('#myMessage').removeClass('hidden');
