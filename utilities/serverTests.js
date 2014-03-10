@@ -100,8 +100,11 @@ users.getOrAdd(danielProfile, 'fake', function(err, d){
     }, onErr);
   });
   events.add(andrewsEventB, function(err, eid){
+
+    if (err) console.log(err);
   });
   events.add(danielsEvent, function(err, eid){
+    if (err) console.log(err);
   });
 
 

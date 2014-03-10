@@ -12,6 +12,7 @@ var
   port    = process.env.PORT || 9001,
   server  = app.listen(port),
   io      = require('socket.io').listen(server),
+  d       = require('domain').create(),
   handler = require('./app/server/socketHandler.js'),
   redis   = require('redis'),
   redisStore = require('connect-redis')(express),
@@ -98,19 +99,25 @@ io.set('authorization', passportSocketIo.authorize({
 
 
 // Bind socket handlers.
-io.sockets.on('connection',   function(socket) {
-  handler.login(socket);
-  socket.on('joinEvent',      function(data){ handler.joinEvent  (data, socket) });
-  socket.on('leaveEvent',     function(data){ handler.leaveEvent (data, socket) });
-  socket.on('newEvent',       function(data){ handler.newEvent   (data, socket) });
-  socket.on('newMessage',     function(data){ handler.newMessage (data, socket) });
-  socket.on('newFriend',      function(data){ handler.newFriend  (data, socket) });
+d.run(function(){
+  io.sockets.on('connection',   d.bind(function(socket) {
+    handler.login(socket);
+    socket.on('joinEvent',      d.bind(function(data){ handler.joinEvent  (data, socket) }));
+    socket.on('leaveEvent',     d.bind(function(data){ handler.leaveEvent (data, socket) }));
+    socket.on('newEvent',       d.bind(function(data){ handler.newEvent   (data, socket) }));
+    socket.on('newMessage',     d.bind(function(data){ handler.newMessage (data, socket) }));
+    socket.on('newFriend',      d.bind(function(data){ handler.newFriend  (data, socket) }));
 
-  socket.on('getFriendList',  function(data){ handler.getFriendList(socket) });
-  socket.on('newUserLocation',function(data){ handler.newUserLocation(data, socket)});
-  socket.on('disconnect',     function()    { handler.disconnect(socket) });
-  socket.on('benchMark',      function()    { handler.benchMark(socket) });
+    socket.on('getFriendList',  d.bind(function(data){ handler.getFriendList(socket) }));
+    socket.on('newUserLocation',d.bind(function(data){ handler.newUserLocation(data, socket)}));
+    socket.on('disconnect',     d.bind(function()    { handler.disconnect(socket) }));
+    socket.on('benchMark',      d.bind(function()    { handler.benchMark(socket) }));
+  }));
 });
+
+d.on('error', function(err){
+  console.log(err)
+})
 
 // Route all routes.
 require('./app/server/router')(app, passport);

@@ -32,7 +32,7 @@ module.exports = function(app, passport) {
 	});
 
 	app.get('/home', ensureAuthenticated, function(req, res) {
-			res.render('home', {});
+		res.render('home', {});
 	});
 
 	app.get('/admin', function(req, res){
@@ -65,6 +65,6 @@ module.exports = function(app, passport) {
 //   login page.
 function ensureAuthenticated(req, res, next) {
 	// console.log(req.cookies);
-	if (req.isAuthenticated()) { return next(); }
+	if (req.isAuthenticated()) return next();
 	res.redirect('/index');
 }
