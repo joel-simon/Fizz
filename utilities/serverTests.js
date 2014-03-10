@@ -1,6 +1,8 @@
 
 var users = require('../app/server/users.js');
 var events = require('../app/server/Events.js');
+var store = require('../app/server/redisStore.js');
+store.flushdb();
 
 var andrewProfile = {
   id: 100000157939878,

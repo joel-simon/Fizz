@@ -83,7 +83,7 @@ exports.addGuest = function(eid, uid, callback) {
 }
 
 exports.removeGuest = function(eid, uid, callback) {
-  store.srem('guestList:'+uid, eid, callback);
+  store.srem('guestList:'+eid, uid, callback);
 }
 
 exports.addMessage = function(msg, callback) {
