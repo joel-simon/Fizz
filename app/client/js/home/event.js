@@ -35,8 +35,10 @@ Event.prototype.removeGuest = function(uid) {
 }
 
 Event.prototype.hasGuest = function(uid) {
-	if ( this.findUserIndex(uid, this.guestList) !== -1 ) return true;
-	else return false;
+	for (var i = 0; i < this.guestList.length; i++) {
+		if ( this.guestList[i] === uid ) return i;
+	}
+	return -1;
 }
 
 Event.prototype.hasInvite = function(uid) {
