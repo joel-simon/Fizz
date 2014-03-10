@@ -4,11 +4,7 @@ var store = require('./redisStore.js');
 exports = module.exports;
 
 /**
- * BeaconKeeper is the class for managing all the beacons that the server hold.
- * As of now it is an abstraction wrapper for dealing with redis where current
- * beacons live.
  *
- * @param {Object} Store - takes a redis conenction object
  */
 exports.add = function(event, callback) {
   var self = this;
@@ -19,10 +15,14 @@ exports.add = function(event, callback) {
     event.message.eid = next;
     async.parallel({
       message: function(cb) {
+        // console.log(event.message);
         if (event.message) exports.addMessage(event.message, cb);
       },
       guestList: function(cb) {
-        exports.addGuest(event.eid, event.host, cb);
+        async.map(event.guestList, function(guest, cb2){
+          exports.addGuest(event.eid, guest, cb2);
+        },cb);
+        // exports.addGuest(event.eid, event.host, cb);
       },
       inviteList: function(cb) {
         store.sadd('inviteList:'+event.eid, event.inviteList.map(JSON.stringify),cb);
