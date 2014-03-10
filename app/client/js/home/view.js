@@ -24,7 +24,13 @@ function drawEvent(event) {
 			$('#timeline-'+eidList[index]).after(eventHTML);
 		}
 		event.inviteList.forEach(function(user, i) {
-			// console.log(user, i);
+			var width = Math.random()*( $(window).width() - 70 );
+			var height = Math.random()*( 300 - 50 );
+			// console.log( width, height );
+			$('#timeline-'+event.eid+' .user'+i).css({
+				top  : height+'px',
+				left : width+'px',
+			});
 		});
 	});
 }

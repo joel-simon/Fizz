@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 function queryFoursquare(query) {
-	OMM.clearSearchMarkerArray();
+	OMM.clearSearchMarkerCluster();
 	var latlng = getMyLocation();
 	var token = '1JB3POF44JPEC5FDIENCBZRSIUD3SM0YUS5CTV3E2245LNHW';
 	var url = 'https://api.foursquare.com/v2/venues/explore?'+
