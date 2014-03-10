@@ -63,11 +63,11 @@ function setUpInviteManager(friendList) {
 			$('#friend-'+friend.uid).on('click', function() {
 				if ( $(this).parent()[0].id == 'friendList' ) {
 					$('#inviteList').append( $(this) );
-					inviteList.push(friend.uid);
+					inviteList.push(friend);
 				} else {
 					$('#friendList').append( $(this) );
 					for (var i = inviteList.length - 1; i >= 0; i--) {
-						if (inviteList[i] === friend.uid) {
+						if (inviteList[i].uid === friend.uid) {
 							inviteList.splice(i, 1);
 						}
 					}
