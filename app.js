@@ -115,8 +115,10 @@ d.run(function(){
   }));
 });
 
+var utils     = require('./app/server/utilities.js'),
+logError  = utils.logError;
 d.on('error', function(err){
-  console.log(err)
+  logError(err)
 })
 
 // Route all routes.

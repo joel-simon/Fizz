@@ -33,33 +33,53 @@ module.exports.debug = function() {
 	console.log(s.debug);
 }
 
-module.exports.logError = function(err, detail) {
-	var s = '\tError: '.error;// @ '+(new Date()) + '\n';
-	// console.log('\tError:'.error, err);
+function convertToServerTimeZone(){
+  //EST
+  offset = -4.0
+  clientDate = new Date();
+  utc = clientDate.getTime() + (clientDate.getTimezoneOffset() * 60000);
+  serverDate = new Date(utc + (3600000*offset));
+  return (serverDate.toLocaleString());
+}
+
+// console.log(convertToServerTimeZone());
+
+module.exports.logError = function(e) {
+  if (!e) return;
+  
+  var date = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
+  date = date.substring(0,date.search("GMT")-1)
+
+  var s = '\t'
 	// s += __line + __function;
 
+  if (e instanceof EvalError) {
+    s+=('EvalError: '+e.name + ": " + e.message).bold.error;
+  } else if (e instanceof RangeError) {
+    s+=('EvalError: '+e.name + ": " + e.message).bold.error;
+  } else if (e instanceof ReferenceError) {
+    s+=('ReferenceError: '+e.name + ": " + e.message).bold.error;
+  } else if (e instanceof SyntaxError) {
+    s+=('SyntaxError: '+e.name + ": " + e.message).bold.error;
+  } else if (e instanceof TypeError) {
+    s+=('TypeError: '+e.name + ": " + e.message).bold.error;
+  } else if (e instanceof URIError) {
+    s+=('URIError: '+e.name + ": " + e.message).bold.error;
+  } else if (e instanceof Object) {
+    s+= ('Error: '+JSON.stringify(e)).bold.error;
+  } else {
+    s+= ('Error: '+e).bold.error;
+  }
 
-
-	for (var i = 0; i < arguments.length; i++) {
-		e = arguments[i];
-		s += ((e instanceof Object) ? JSON.stringify(e) : ''+e).bold.error;
-	}
+  s+='\n\t'+date.error;
   // var f = ('\t'+arguments.callee)//.replace('\n', '\n\t');
   // s += '\n'+ f;
   // console.log
   // console.trace();
 
-	// if (detail) {
-	// 	if (detail instanceof Object) detail = JSON.stringify(detail);		
-	// 	s += ('\t' + err + '\n\t' + detail + '\n\n');
-	// } else {
-	// 	s += ('\t' + err + '\n\n');
-	// }
-  var pattern = "/Users/joelsimon/Projects/Beacon/";
-  // re = new RegExp(pattern, "g");
+  var pattern = "/Users/joelsimon/Projects/Fizz/";
   var stackTrace = getStackTrace().replace(/    /g, '\t')
   stackTrace = stackTrace.replaceAll(pattern, '');
-  // stackTrace = stackTrace.replace(re, '');
   
 	s += ('\n\t'+stackTrace.error+'\n');
   console.log(s);
