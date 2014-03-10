@@ -27,10 +27,10 @@ Event.prototype.addGuest = function(uid) {
 }
 
 Event.prototype.removeGuest = function(uid) {
-	var index = findUserIndex(uid, this.guestList);
-	if ( index !== -1 ) {
-		this.guestList.splice(index, 1);
-		// eraseGuest(eid, uid);
+	for (var i = 0; i < this.guestList.length; i++) {
+		if ( this.guestList[i] === uid ) {
+			this.guestList.splice(i, 1);
+		}
 	}
 }
 
