@@ -6,25 +6,23 @@
 
 function queryFoursquare(query) {
 	OMM.clearSearchMarkerCluster();
-	var latlng = getMyLocation();
+
+	var bounds = map.getBounds();
+	var ne = bounds._northEast;
+	var sw = bounds._southWest;
 	var token = '1JB3POF44JPEC5FDIENCBZRSIUD3SM0YUS5CTV3E2245LNHW';
 	var url = 'https://api.foursquare.com/v2/venues/explore?'+
-						'll='+latlng.lat+','+latlng.lng+
+						'&sw='+sw.lat+','+sw.lng+
+						'&ne='+ne.lat+','+ne.lng+
 						'&query='+query+
 						'&oauth_token='+token+'&v=20120101'+
 						'&limit=999'+
 						'&intent=browse'+
-						'&radius=1000'+
 						'&callback=?';
 
 	loadMarkers(url);
 }
 function loadMarkers(url) {
-	// map.markerLayer.clearLayers();
-	var bounds = map.getBounds();
-	var centerPoint = map.getSize().divideBy(2), targetLatLng = map.containerPointToLatLng(centerPoint);
-	var latitude = targetLatLng.lat;
-	var longitude = targetLatLng.lng;
 	$.ajax({
 		cache: true,
 		url: url,
