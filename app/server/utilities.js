@@ -42,11 +42,21 @@ function convertToServerTimeZone(){
   return (serverDate.toLocaleString());
 }
 
-// console.log(convertToServerTimeZone());
+function foo() {
+  function getErrorObject(){
+      try { throw Error('') } catch(err) { return err; }
+    }
+    var err = getErrorObject();
+    var caller_line = err.stack.split("\n")[4];
+    var index = caller_line.indexOf("at ");
+    var clean = caller_line.slice(index+2, caller_line.length);
+    console.log(clean);
+}
+
+
 
 module.exports.logError = function(e) {
   if (!e) return;
-  
   var date = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
   date = date.substring(0,date.search("GMT")-1)
 
@@ -79,6 +89,7 @@ module.exports.logError = function(e) {
   
 	s += ('\n\t'+stackTrace.error+'\n');
   console.log(s);
+  
  //  fs.appendFile("./err.txt", s, function(err2) {
  //    if(err2) {
  //      console.log(err2);
