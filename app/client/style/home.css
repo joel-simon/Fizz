@@ -154,6 +154,10 @@ input { padding: 0 4px; }
 	padding: 5px;
 }
 
+#messageChain {
+	overflow: auto;
+}
+
 
 /*
 	Group Manager

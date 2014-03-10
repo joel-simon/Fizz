@@ -48,5 +48,8 @@ Event.prototype.hasInvite = function(uid) {
 
 Event.prototype.addMessage = function(message) {
 	this.messageList.push(message);
-	// drawMessage(message);
+	var user = this.getUser(message.uid);
+	getFacebookInfo(user.fbid, function(name, pic) {
+		drawMessage(message, name, pic);
+	});
 }

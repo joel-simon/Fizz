@@ -15,6 +15,7 @@ function createDetailView(event) {
 	if ( !$('#timeline').hasClass('hidden') ) $('#timeline').addClass('hidden');
 	$('#myBeacon').addClass('hidden');
 	$('#myMessage').removeClass('hidden');
+	$('#join').removeClass('hidden');
 
 	var windowHeight = $(window).height();
 	var headerHeight = $('#header').height();
