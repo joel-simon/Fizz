@@ -114,13 +114,15 @@ exports.leaveEvent = function(data, socket) {
 
   check.is(data, {eid: 'posInt'});
   var user = getUserSession(socket);
+  var eid = data.eid;
+  var uid = user.uid;
 
   async.parallel({
-    delGuest:   function(cb){ events.removeGuest( data.eid, user.uid, cb) },
-    recipients: function(cb){ events.getInviteList(data.eid, cb) }
+    delGuest:   function(cb){ events.removeGuest( eid, uid, cb) },
+    recipients: function(cb){ events.getInviteList(eid, cb) }
   },
   function (err, results) {
-    var data = {'uid':user.uid, 'eid':data.eid };
+    var data = {'uid':uid, 'eid':eid };
     check.is(data, {'uid':'posInt', 'eid':'posInt' });
     emit({
       eventName: 'removeGuest',
@@ -128,7 +130,7 @@ exports.leaveEvent = function(data, socket) {
       recipients: results.recipients
     });
     if (err) return logError('leave beacon', err);
-    log(user.name, 'left beacon', id);
+    log(user.name, 'left beacon', uid);
   });
 }
 
