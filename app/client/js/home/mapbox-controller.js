@@ -44,7 +44,7 @@ var tempMarker;
 function getTempMarker() {
 	if (tempMarker) {
 		var latlng = tempMarker._latlng;
-		var name = 'marker';
+		var name = '';
 		var time = Date.now();
 		return {latlng:latlng, name:name, time:time};
 	} else {
