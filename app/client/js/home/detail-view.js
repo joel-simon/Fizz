@@ -28,6 +28,11 @@ function createDetailView(event) {
 	OMM.fitMarkersToScreen();
 
 	drawEventDetails(event);
+	if ( event.hasGuest(MIM.uid) ) {
+		$('#join').removeClass('btn-primary');
+		$('#join').addClass('btn-danger');
+		$('#join').html('Leave');
+	}
 }
 
 function drawEventDetails(event) {
