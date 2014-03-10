@@ -79,27 +79,28 @@ exports.newEvent = function (newEvent, socket) {
  * @param {Object} Data - contains .id and .admin
  */
 exports.joinEvent = function(data, socket) {
-
   check.is(data, {
     eid : 'posInt'
   });
   var user = getUserSession(socket);
+  var eid = data.eid;
+  var uid = user.uid;
 
   async.parallel({
-    add     : function(cb){ events.addGuest( data.eid, user.uid, cb) },
-    attends : function(cb){ events.getInviteList(user.uid, cb) }
+    add     : function(cb){ events.addGuest( eid, uid, cb) },
+    attends : function(cb){ events.getInviteList(uid, cb) }
   },
   function (err, results) {
-    if (err) return logError('join beacon', err);
-    var data =     {'id':id,'guest':user.uid };
-    check.is(data, {'id':'posInt', 'guest':'posInt' } );
+    if (err) return logError(err);
+    var data =     {'eid':eid,'uid':uid };
+    check.is(data, {'eid':'posInt', 'uid':'posInt' } );
     emit({
       eventName : 'addGuest',
       data      : data,
       message   : null, //send no sms/push
       recipients: results.attends
     });
-    log(user.name, 'joined beacon', id);
+    log(user.name, 'joined event', uid);
   });
 }
 

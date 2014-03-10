@@ -92,7 +92,8 @@ exports.addMessage = function(msg, callback) {
     if (err) return callback(err);
     msg.mid = i;
     store.rpush('messages:'+msg.eid, JSON.stringify(msg), function(err) {
-      callback(err, i);
+      if (err) callback(err) 
+      else callback(null, i);
     });
   });
 }

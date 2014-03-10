@@ -72,10 +72,6 @@ module.exports.logError = function(e) {
   }
 
   s+='\n\t'+date.error;
-  // var f = ('\t'+arguments.callee)//.replace('\n', '\n\t');
-  // s += '\n'+ f;
-  // console.log
-  // console.trace();
 
   var pattern = "/Users/joelsimon/Projects/Fizz/";
   var stackTrace = getStackTrace().replace(/    /g, '\t')
