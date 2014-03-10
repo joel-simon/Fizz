@@ -15,7 +15,6 @@ var
   types = require('./beaconTypes.js'),
   check = require('easy-types').addTypes(types);
 
-
 /**
  * Handle login socket
  * @param {Object} Data - contains .id and .admin
@@ -24,7 +23,6 @@ var
  */
 exports.login = function(socket) {
   var user = getUserSession(socket);
-
   socket.join(''+user.uid);
   socket.emit('myInfo', user);
   events.isInvitedTo(user.uid, function(err, eventList) {
