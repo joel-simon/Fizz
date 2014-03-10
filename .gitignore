@@ -2,6 +2,7 @@
 pwds.json
 config.json
 err.txt
+*.rdb
 *.env
 *.log
 *.DS_Store
