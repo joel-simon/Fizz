@@ -29,16 +29,16 @@ function loadMarkers(url) {
 		cache: true,
 		url: url,
 		dataType: 'json',
-    success: function(data) {
-    	if (data.response.groups) {
-    		venues = data.response.groups[0].items;
+		success: function(data) {
+			if (data.response.groups) {
+				venues = data.response.groups[0].items;
 				console.log('Found %d venues.', venues.length);
 				for (var i = 0; i < venues.length; i++) {
-			   OMM.newSearchMarker (venues[i].venue.location, venues[i].venue.name);
-			  }
-    	} else {
-    		alert('No matches found nearby.')
-    	}
+					OMM.newSearchMarker(venues[i].venue.location, venues[i].venue.name);
+				}
+			} else {
+				alert('No matches found nearby.')
+			}
 			
 		},
 		complete: function(){

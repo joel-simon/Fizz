@@ -10,11 +10,12 @@ $('#logout').on('click', function() {
 });
 
 $('#timelineButton').on('click', function() {
-	if ( $('#timeline').hasClass('hidden') ) {
+	if ( $('#timelineButton').html() == 'Back' ) {
+		backToOverview();
+	} else if ( $('#timeline').hasClass('hidden') ) {
 		$('#timeline').removeClass('hidden');
 		$('#timelineButton').html('Map View');
-	}
-	else {
+	} else {
 		$('#timeline').addClass('hidden');
 		$('#timelineButton').html('Timeline');
 	}
@@ -30,9 +31,9 @@ $('#searchFriendList').on('input', function() {
 });
 
 $('#foursquare').on('submit', function(e) {
-		e.preventDefault();
-    // console.log(this.venue.value);
-    queryFoursquare(this.venue.value);
+	e.preventDefault();
+	// console.log(this.venue.value);
+	queryFoursquare(this.venue.value);
 });
 
 $('#closeInviteManager').on('click', function(e) {

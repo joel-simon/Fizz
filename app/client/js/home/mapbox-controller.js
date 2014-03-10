@@ -24,7 +24,7 @@ function locateMe() {
 map.on('locationfound', function(e) {
 	console.log('MAPBOX: location found!', e.latlng);
 	localStorage.myLocation = JSON.stringify(e.latlng);
-	map.setView(e.latlng, 14);
+	// map.setView(e.latlng, 14);
 });
 
 map.on('locationerror', function() {
@@ -113,7 +113,7 @@ function mapMessage(message, pic) {
 			message.marker.latlng,
 			createIcon(pic),
 			message.marker.name,
-			null
+			{ text : message.text }
 		);
 	}
 	if (message.deletePastMarker) {

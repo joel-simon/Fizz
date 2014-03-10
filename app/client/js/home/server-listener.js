@@ -26,6 +26,9 @@ socket.on('eventList', function(data) {
 	eventList.forEach(function(event, i) {
 		console.log('EVENT '+i+':', event);
 		ELM.newEvent(event);
+		if (i == eventList.length - 1) {
+			OMM.fitMarkersToScreen();
+		}
 	});
 });
 
