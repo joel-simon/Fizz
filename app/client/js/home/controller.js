@@ -49,7 +49,9 @@ $('#join').on('click', function(e) {
 
 $('#myMessage').on('submit', function(e) {
 	e.preventDefault();
-	newMessage(detail, this.message.value, null);
+	newMessage(detail, this.message.value, getTempMarker());
+	removeTempMarker();
+	this.message.value = '';
 });
 
 $('#foursquare').on('submit', function(e) {

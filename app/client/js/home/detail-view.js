@@ -53,5 +53,6 @@ function drawMessage(message, name, pic) {
 			'<p>'+message.text+'</p>'+
 		'</li>';
 	$('#messageChain').append(messageHTML);
+	mapMessage(message, pic);
 }
 

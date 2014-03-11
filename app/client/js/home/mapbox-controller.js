@@ -53,8 +53,10 @@ function getTempMarker() {
 }
 
 function removeTempMarker() {
-	map.removeLayer(tempMarker);
-	tempMarker = null;
+	if (tempMarker) {
+		map.removeLayer(tempMarker);
+		tempMarker = null;
+	}
 }
 
 map.on('click', function(e) {
@@ -67,9 +69,11 @@ map.on('click', function(e) {
 		});
 
 		tempMarker.addTo(map);
+		$('.marker-indicator').removeClass('hidden');
 
 		tempMarker.on('click', function() {
 			removeTempMarker();
+			$('.marker-indicator').addClass('hidden');
 		});
 	}
 });
@@ -115,9 +119,6 @@ function mapMessage(message, pic) {
 			message.marker.name,
 			{ text : message.text }
 		);
-	}
-	if (message.deletePastMarker) {
-		OMM.deleteMarker(message.eid, message.mid);
 	}
 }
 

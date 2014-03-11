@@ -248,6 +248,11 @@ li.friend img {
 	right: 25px;
 }
 
+.marker-indicator {
+	height: 22px;
+	width: 14px;
+}
+
 
 /*
 	Timeline

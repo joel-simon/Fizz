@@ -61,7 +61,7 @@ socket.on('removeGuest', function(data) {
 });
 
 socket.on('newMessage', function(data) {
-	console.log('NEW COMMENT:', data);
+	console.log('NEW MESSAGE:', data);
 	var message = data.message;
 	var eid = message.eid;
 	var event = ELM.getEvent(eid);
