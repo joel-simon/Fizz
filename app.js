@@ -43,7 +43,7 @@ var  rtg  = require("url").parse(config.DB.REDISTOGO_URL),
   sub = redis.createClient(rtg.port, rtg.hostname),
   store = redis.createClient(rtg.port, rtg.hostname);
 
-var users = require('./app/server/Users.js');
+var users = require('./app/server/users.js');
 pub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 sub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
 store.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
