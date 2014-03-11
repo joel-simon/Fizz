@@ -1,7 +1,7 @@
 // Abstraction for all database interactions.
 var mongojs = require('mongojs');
 var config  = require('./../../config.json');
-var store = require('./redisStore.js');
+var store = require('./redisStore.js').store;
 var io;
 var db = mongojs(config.DB.MONGOHQ_UR, ['users', 'events']);
 var exports = module.exports;

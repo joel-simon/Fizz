@@ -1,6 +1,6 @@
 var async = require('async');
 var sanitize = require('validator').sanitize;
-var store = require('./redisStore.js');
+var store = require('./redisStore.js').store;
 exports = module.exports;
 
 /**

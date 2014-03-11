@@ -1,6 +1,5 @@
 /*
-* Beacon
-* beaconBeta.com
+* Fizz
 */
 // require('newrelic');
 'use strict';

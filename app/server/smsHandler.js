@@ -7,7 +7,7 @@ var
   debug     = utils.debug,
   users     = require('./users.js'),
   async 		= require('async'),
-  store 		= require('./redisStore.js');
+  store 		= require('./redisStore.js').store;
 
 module.exports = function(from, sms) {
 	console.log(from, sms);
