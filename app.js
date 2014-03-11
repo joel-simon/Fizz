@@ -5,48 +5,31 @@
 // require('newrelic');
 'use strict';
 var
+  args    = require('./app/server/args.js'), //read in command line args.
   http    = require('http'),
   connect = require('connect'),
   express = require('express'),
   app     = express(),
-  port    = process.env.PORT || 9001,
+  port    = args.port || process.env.PORT || 9001,
   server  = app.listen(port),
   io      = require('socket.io').listen(server),
-  d       = require('domain').create(),
-  handler = require('./app/server/socketHandler.js'),
+  d       = require('domain').create(),  // create domain for error routing.
+  handler = require('./app/server/socketHandler.js'), //all socket.io requests go here.
   redis   = require('redis'),
   redisStore = require('connect-redis')(express),
+  redisConns = require('./app/server/redisStore.js'),
   passport = require('passport'),
   FacebookStrategy = require('passport-facebook').Strategy,
   FacebookTokenStrategy = require('passport-facebook-token').Strategy,
   passportSocketIo = require("passport.socketio"),
   colors  = require('colors');
 
-var testing = false, dev = false;
-process.argv.forEach(function (val, index) {
-  if (index > 1) {
-    switch(val) {
-      case 'test':
-        testing = true;
-        break;
-      case 'dev':
-        dev = true;
-        break
-      default:
-        console.log('Invalid command "%s" Run "node app test" to run in test mode',val)
-    }
-  }
-});
-var config = ((dev) ? require('./configDev.json') : require('./config.json'));
-var  rtg  = require("url").parse(config.DB.REDISTOGO_URL),
-  pub = redis.createClient(rtg.port, rtg.hostname),
-  sub = redis.createClient(rtg.port, rtg.hostname),
-  store = redis.createClient(rtg.port, rtg.hostname);
-
+var config = ((args.dev) ? require('./configDev.json') : require('./config.json'));
 var users = require('./app/server/users.js');
-pub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
-sub.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
-store.auth(rtg.auth.split(":")[1], function(err) {if (err) throw err});
+
+var store = redisConns.store,
+    pub = redisConns.pub,
+    sub = redisConns.sub;
 
 var sessionStore = new redisStore({client: store}); // socket.io sessions
 require.main.exports.io = io;
@@ -154,5 +137,5 @@ var domo =  ''+
 console.log(domo.rainbow);
 console.log('Port:', (''+port).bold);
 
-if (testing) require('./utilities/serverTests.js');
+if (args.testing) require('./utilities/serverTests.js');
 
