@@ -32,8 +32,8 @@ module.exports = function(from, sms) {
 			  data.comment = commentWithId;
 			  emit(data.host, 'newComment', data);
 			  log('new comment', data); 
-			})
+			});
 		}
-	})
+	});
 }
 

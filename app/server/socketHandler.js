@@ -298,10 +298,6 @@ exports.benchMark = function(socket) {
 
 }
 
-// exports.test = function(socket) {
-//   var user = getUserSession(socket);
-// }
-
 function newUser(user, socket) {
   log('newUser', user.name);
   var idArr = [];
@@ -321,58 +317,3 @@ function getUserSession(socket) {
   check.is(user, 'user');
   return user;
 }
-
-
-
-// for (var func in exports) {
-//   console.log(func, typeof exports[func]);
-//   var newFun = function() {
-//     var old = exports[func];
-//     log('here')
-//     var start = new Date().getTime();
-//     // try{
-//     old.apply(null, arguments);
-//     // }catch(e){
-//     //   logError(e)
-//     // }
-//     var time = (new Date().getTime()) - start;
-//     log(func+' in ' + time);
-//   }
-//   exports[''+func] = newFun;
-// }
-/**
- * Handle deleteBeacon socket
- * @param {Object} Data - contains .host, .pub
- * @param {Object} Socket - contains user user socket
- * @param {Object} events - object for managing all events
- */
-// exports.deleteEvent = function(data, socket) {
-//   // try {
-//   //   check.is(data, { eid : 'posInt' });
-//   //   var user = getUserSession(socket);
-
-//   //   async.parallel({
-//   //     delete  : function(cb){ events.remove( bId, hostId , cb) },
-//   //     recipients : function(cb){ events.getInviteList(bId, cb) },
-//   //     delVis  : function(cb){ users.deleteVisible(hostId, bId, cb) }
-//   //   }, done);
-
-//   //   function done(err, results) {
-//   //     if (err) return logError(err);
-//   //     var recipients = results.recipients;
-//   //     async.each(recipients, function(friend, callback) {
-//   //         users.deleteVisible(friend.id, bId, callback);
-//   //     });
-//   //     emit({
-//   //       host      : hostId,
-//   //       eventName : 'deleteBeacon',
-//   //       data      : {id:bId, host:hostId},
-//   //       message   : null,
-//   //       recipients: recipients
-//   //     });
-//   //     log(user.name,'deleted beacon', bId);
-//   //   }
-//   // } catch(e) {
-//   //   logError('deleteEvent', e);
-//   // }
-// }

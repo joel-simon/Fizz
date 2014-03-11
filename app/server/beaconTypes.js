@@ -39,7 +39,7 @@ module.exports = {
   },
   newEvent : {
     creationTime: 'posInt',
-    inviteList: 'array',
+    inviteList: '[user]',
     message:'newMessage'
   },
   event : {

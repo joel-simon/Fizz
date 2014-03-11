@@ -20,25 +20,9 @@ var
   FacebookStrategy = require('passport-facebook').Strategy,
   FacebookTokenStrategy = require('passport-facebook-token').Strategy,
   passportSocketIo = require("passport.socketio"),
-  colors  = require('colors');
-
-var testing = false, dev = false;
-process.argv.forEach(function (val, index) {
-  if (index > 1) {
-    switch(val) {
-      case 'test':
-        testing = true;
-        break;
-      case 'dev':
-        dev = true;
-        break
-      default:
-        console.log('Invalid command "%s" Run "node app test" to run in test mode',val)
-    }
-  }
-});
-var config = ((dev) ? require('./configDev.json') : require('./config.json'));
-var  rtg  = require("url").parse(config.DB.REDISTOGO_URL),
+  config    = require('./config.json'),
+  colors  = require('colors'),
+  rtg  = require("url").parse(config.DB.REDISTOGO_URL),
   pub = redis.createClient(rtg.port, rtg.hostname),
   sub = redis.createClient(rtg.port, rtg.hostname),
   store = redis.createClient(rtg.port, rtg.hostname);
@@ -154,5 +138,16 @@ var domo =  ''+
 console.log(domo.rainbow);
 console.log('Port:', (''+port).bold);
 
-if (testing) require('./utilities/serverTests.js');
+process.argv.forEach(function (val, index) {
+  if (index > 1) {
+  switch(val) {
+    case 'test':
+      require('./utilities/serverTests.js')
+      break;
+    default:
+      console.log('Invalid command "%s" Run "node app test" to run in test mode',val)
+    }
+  }
+  // console.log(index + ': ' + val);
+});
 
