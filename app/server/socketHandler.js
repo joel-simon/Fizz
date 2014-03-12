@@ -51,25 +51,42 @@ exports.newEvent = function (newEvent, socket) {
   // log(newEvent);
   // New event is a event without an event id (eid)
   check.is(newEvent, 'newEvent');
-  var self = this,
-      user = getUserSession(socket);
+  var user = getUserSession(socket);
 
   newEvent.host = user.uid;
   newEvent.guestList = [user.uid];
-  newEvent.inviteList = [user];
   newEvent.messageList = [newEvent.message];
 
-  events.add(newEvent, function(err, eid) {
-    if (err) return logError(err);
-    newEvent.eid = eid;
-    check.is(newEvent, 'event');
-    emit({
-      eventName: 'newEvent',
-      data: {'event' : newEvent},
-      // message: message,
-      recipients: newEvent.inviteList
+  async.series({
+    invited: function(callback) {
+      if (newEvent.inviteList.length === 0) {
+        users.getFriendUserList(user.uid, function(err, friendsList) {
+          if (err) return logError (err)
+          newEvent.inviteList = friendsList;
+          newEvent.inviteList.push(user);
+          callback();
+        })
+      } else {
+        newEvent.inviteList.push(user);
+      }
+    }
+  },
+  function(err, results) {
+    events.add(newEvent, function(err, eid) {
+      if (err) return logError(err);
+      newEvent.eid = eid;
+      check.is(newEvent, 'event');
+      emit({
+        eventName: 'newEvent',
+        data: {'event' : newEvent},
+        // message: message,
+        recipients: newEvent.inviteList
+      });
     });
   });
+  
+
+  
 }
 
 /**
@@ -253,15 +270,9 @@ exports.getFBFriendList = function(socket) {
 
 exports.getFriendList = function(socket) {
   var user = getUserSession(socket);
-  users.getFriendIdList(user, function(err, friendIdList) {
+  users.getFriendUserList(user.uid, function(err, userList){
     if (err) return logError(err);
-    async.map(friendIdList, users.get, function(err, friendsList) {
-      if (err) {
-        logError(err);
-      } else {
-        socket.emit('friendList', friendsList);
-      }
-    });
+    socket.emit('friendList', userList);
   });
 }
 

@@ -22,7 +22,6 @@
     "easy-types": "~0.0.1",
     "express": "~3.0.6",
     "jade": "~0.27.7",
-    "jsdoc": "~3.3.0-alpha3",
     "mongodb": "~1.3.19",
     "mongojs": "~0.9.6",
     "passport": "~0.1.17",
@@ -47,6 +46,7 @@
   "main": "app.js",
   "devDependencies": {},
   "scripts": {
+    "start": "node app.js dev",
     "test": "node app test"
   },
   "keywords": [

@@ -20,5 +20,5 @@
 	"SECRET" : {
 		"cookieParser": "supersleepysushisloth"
 		},
-	"HOST": "http://ec2-54-85-93-45.compute-1.amazonaws.com/"
+	"HOST": "http://extraFizzy.com/"
 }

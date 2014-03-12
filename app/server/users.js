@@ -5,6 +5,7 @@ var store = require('./redisStore.js').store;
 var io;
 var db = mongojs(config.DB.MONGOHQ_UR, ['users', 'events']);
 var exports = module.exports;
+var async    = require('async');
 
 exports.isConnected = function(id, callback) {
 	if(!io) io = require('../../app.js').io;
@@ -24,12 +25,26 @@ exports.addFriend = function(user, friendUid, callback) {
 	store.sadd('friendList:'+user.uid, friendUid, callback);
 }
 
-exports.getFriendIdList = function(user, cb) {
-  store.smembers('friendList:'+user.uid, function(err, list) {
+exports.getFriendIdList = function(uid, cb) {
+  store.smembers('friendList:'+uid, function(err, list) {
     if (err) cb(err);
     else cb(null, list);
   });
 }
+
+exports.getFriendUserList = function(uid, cb) {
+	exports.getFriendIdList(uid, function(err, friendIdList) {
+    if (err) return logError(err);
+    async.map(friendIdList, exports.get, function(err, friendsList) {
+      if (err) {
+        logError(err);
+      } else {
+        cb(null, friendsList);
+      }
+    });
+  });
+}
+  
 
 /*
 *	New Player

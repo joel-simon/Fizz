@@ -23,6 +23,7 @@ var
   passportSocketIo = require("passport.socketio"),
   colors  = require('colors');
 
+var LocalStrategy   = require('passport-local').Strategy;
 var config = ((args.dev) ? require('./configDev.json') : require('./config.json'));
 var users = require('./app/server/users.js');
 
@@ -43,7 +44,6 @@ var ppOptions = {
 function passportSuccess(accessToken, refreshToken, profile, done) {
   var sessionData;
   process.nextTick(function () {
-    // console.log(profile);
     users.getOrAdd(profile, accessToken, function(err, user) {
       return done(null, user);
     });
@@ -51,6 +51,16 @@ function passportSuccess(accessToken, refreshToken, profile, done) {
 }
 passport.use(new FacebookStrategy(ppOptions, passportSuccess));
 passport.use(new FacebookTokenStrategy(ppOptions, passportSuccess));
+
+// passport.use('local-signup', new LocalStrategy({
+//     // by default, local strategy uses username and password, we will override with email
+//     usernameField : 'email',
+//     passwordField : 'password',
+//     passReqToCallback : true // allows us to pass back the entire request to the callback
+// },
+// function(req, email, password, done) {
+//   console.log(arguments);
+// }));
 
 //Middleware: Allows cross-domain requests (CORS)
 var allowCrossDomain = function(req, res, next) {
