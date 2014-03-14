@@ -1,90 +1,35 @@
 doctype 5
 html
 	head
-		title Fizz - The New Map-Based Social Media
+		title Fizz
 
-		meta(name='description', content='Place a Fizz on a map to let your friends know where and what you want to do. Planning spontaneous events has never been so easy!')
-		meta(name='keywords', content='map, social media, event, events, fizz, friends, google maps, organize, plan, beacon events')
+		meta(name="viewport" content='width=device-width, initial-scale=1')
 
-		link(rel='stylesheet', href='/style/bootstrap.css')
 		link(rel='stylesheet', href='/style/home.css')
-		link(href='//api.tiles.mapbox.com/mapbox.js/v1.6.2/mapbox.css', rel='stylesheet')
-		link(href='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.css', rel='stylesheet')
-		link(href='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.Default.css', rel='stylesheet')
 
 	body
-		div#header
-			h2.title.float-left Fizz
-
-			button#timelineButton.btn.btn-primary Timeline
-
-			div#fb-container.float-right
-				img#host-pic.float-left(src='', alt='Profile Picture')
-				p#host-name Host Name
-				button#logout.btn.btn-xs Log out
-
-			br
-			form#foursquare
-				input.input-long(type='text', name='venue', autocomplete='off')
-				input.btn.btn-xs.btn-primary(type='submit', value='Search')
-
-		div#map
-
-		div#footer
-			form#myBeacon
-				img.marker-indicator.hidden(src='http://www.clker.com/cliparts/I/l/L/S/W/9/map-marker-hi.png')
-				input.input-long(type='text', name='message', autocomplete='off', placeholder='Write your Event description here.')
-				input#invite.btn.btn-xs.btn-primary(type='button', value='Invite')
-				input.btn.btn-xs.btn-success(type='submit', value='Place Marker')
-			
-			ul#messageChain
-
-			button#join.btn.btn-xs.btn-primary.hidden Join
-			form#myMessage.hidden
-				img.marker-indicator.hidden(src='http://www.clker.com/cliparts/I/l/L/S/W/9/map-marker-hi.png')
-				input.input-long(type='text', name='message', autocomplete='off', placeholder='Enter Message')
-				input.btn.btn-xs.btn-success(type='submit', value='Send')
-
-		div#inviteManager.hidden
-			h3.float-left.leftHeader Invite List
-			h3.float-right.rightHeader Friends
-
-			ul#inviteList
-
-			ul#friendList
-
-			input#searchInviteList.search(type='text')
-			input#searchFriendList.search(type='text')
-
-			button#closeInviteManager.btn.btn-primary(type='button') Close
-
-		div#timeline.hidden
-			ul#event-list
-
+		div#thread-list
 
 		//- Magic Socket IO Code
 		script(type='text/javascript', src='/socket.io/socket.io.js')
 		//- JQuery
-		script(type='text/javascript', src='/js/jQuery/jquery-1.10.2.min.js')
-		// script(src='http://code.jquery.com/ui/1.10.3/jquery-ui.js')
-		script(type='text/javascript', src='/js/jQuery/cookie.min.js')
-		//- Mapbox
-		script(src='//api.tiles.mapbox.com/mapbox.js/v1.5.2/mapbox.js')
+		script(type='text/javascript', src='/js/jQuery/jquery-1.11.0.min.js')
+		
 		//- My JS Files
-		script(src='/js/home/event.js')
-		script(src='/js/home/eventList-manager.js')
-		script(src='/js/home/facebook-controller.js')
-		script(src='/js/home/myInfo-manager.js')
-		script(src='/js/home/leafletClustering.js')
-		script(src='/js/home/marker-manager.js')
-		script(src='/js/home/mapbox-controller.js')
-		script(src='/js/home/foursquare-controller.js')
+		// script(src='/js/home/event.js')
+		// script(src='/js/home/eventList-manager.js')
+		// script(src='/js/home/facebook-controller.js')
+		// script(src='/js/home/myInfo-manager.js')
+		// script(src='/js/home/leafletClustering.js')
+		// script(src='/js/home/marker-manager.js')
+		// script(src='/js/home/mapbox-controller.js')
+		// script(src='/js/home/foursquare-controller.js')
 
 		// script(src='/js/home/eventList-html.js')
-		script(src='/js/home/timeline-html.js')
-		script(src='/js/home/view.js')
-		script(src='/js/home/detail-view.js')
-		script(src='/js/home/controller.js')
-		script(src='/js/home/server-listener.js')
-		script(src='/js/home/onload.js')
+		// script(src='/js/home/timeline-html.js')
+		// script(src='/js/home/view.js')
+		// script(src='/js/home/detail-view.js')
+		// script(src='/js/home/controller.js')
+		// script(src='/js/home/server-listener.js')
+		// script(src='/js/home/onload.js')
 
