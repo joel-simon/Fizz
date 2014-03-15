@@ -1,41 +1,47 @@
 
 module.exports = function(app, passport) {
 	
+
+	app.get('/c:pn', function(req, res) {
+		var pn = req.params.pn;
+		if (!pn) {
+			res.send('Must get here from a mobile sms link.');
+		} else {
+			console.log(pn);
+			req.session.pn = pn;
+			res.redirect('/auth/facebook');
+		}
+	});
+
+
 	app.get('/auth/facebook',
 	passport.authenticate('facebook', { display: 'page', scope: ['user_friends', 'user_groups', 'email'] }),
 	function(req, res){
 	});
 
-	app.get('/auth/facebook/callback', 
-		passport.authenticate('facebook', { failureRedirect: '/' }),
+	var users = require('./users.js');
+
+	app.get('/auth/facebook/callback',  passport.authenticate('facebook', { failureRedirect: '/' }),
 		function(req, res) {
+			console.log('in /callback, ', req.session);
 			var user = req['user'];
 			res.cookie('fbid', user.id, { maxAge: 2592000000 });
-			res.redirect('/home');
+			res.send('Logged in');
+			    // // var pn = '+'+((''+Math.random()).split('.'));
+    // users.addOrGetGuestUser(profile, accessToken, pn, function(err, user) {
+    //   return done(null, user);
+    // });
+			// res.redirect('/home');
 	});
 
 	app.post('/iosLogin',
 		passport.authenticate('facebook-token', { display: 'page', scope: ['user_friends', 'user_groups', 'email'] }),
 		function(req, res) {
-			var user = req['user'];
-			res.cookie('fbid', user.id, { maxAge: 2592000000 });
-			res.redirect('/home');
+			// var user = req['user'];
+			// res.cookie('fbid', user.id, { maxAge: 2592000000 });
+			// console.log('here I am ', req.session)
+			res.send(200, 'Logged In!');
 		});
-
-	// app.post('/mobile', passport.authenticate('local-signup', {
-	// 	successRedirect : '/profile', // redirect to the secure profile section
-	// 	failureRedirect : '/signup', // redirect back to the signup page if there is an error
-	// 	failureFlash : true // allow flash messages
-	// }));
-
-	// app.post('/mobile',
-	// 	passport.authenticate('local'),
-	// 	function(req, res) {
-	// 		var user = req['user'];
-	// 		res.cookie('fbid', user.id, { maxAge: 2592000000 });
-	// 		res.redirect('/home');
-	// 	});
-
 
 	app.get('/', ensureAuthenticated, function(req, res) {
 		res.redirect('/home');

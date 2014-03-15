@@ -12,7 +12,7 @@ var
   output    = require('./output.js'),
   emit      = output.emit,
   exports = module.exports,
-  types = require('./beaconTypes.js'),
+  types = require('./fizzTypes.js'),
   check = require('easy-types').addTypes(types);
 
 /**
@@ -22,6 +22,9 @@ var
  * @param {Object} events - object for managing all events
  */
 exports.login = function(socket) {
+  log(socket.handshake);
+  return
+
   var user = getUserSession(socket);
   socket.join(''+user.uid);
   socket.emit('myInfo', user);
@@ -46,47 +49,39 @@ exports.login = function(socket) {
  * @param {Object} Socket - contains user user socket
  * @param {Object} events - object for managing all events
  */
-exports.newEvent = function (newEvent, socket) {
-  log('New beacon by', getUserSession(socket).name+'\n\t\t',newEvent.message.text);
-  // log(newEvent);
-  // New event is a event without an event id (eid)
-  check.is(newEvent, 'newEvent');
-  var user = getUserSession(socket);
+exports.newEvent = function (e, socket) {
+  check.is(e, 'newEvent');
+  var user          = getUserSession(socket),
+      inviteOnly    = e.inviteOnly,
+      inviteList    = e.inviteList,
+      invitePnList  = e.invitePnList,
+      message       = e.message;
 
-  newEvent.host = user.uid;
-  newEvent.guestList = [user.uid];
-  newEvent.messageList = [newEvent.message];
+  var newE = {
+    eid: 0,
+    creator: user.uid,
+    guestList: [user.uid],
+    inviteList: inviteList.append(user),
+    seats: 2,
+    messageList: [e.message]
+  };
 
-  async.series({
-    invited: function(callback) {
-      if (newEvent.inviteList.length === 0) {
-        users.getFriendUserList(user.uid, function(err, friendsList) {
-          if (err) return logError (err)
-          newEvent.inviteList = friendsList;
-          newEvent.inviteList.push(user);
-          callback();
-        })
-      } else {
-        newEvent.inviteList.push(user);
-      }
-    }
-  },
-  function(err, results) {
-    events.add(newEvent, function(err, eid) {
-      if (err) return logError(err);
-      newEvent.eid = eid;
-      check.is(newEvent, 'event');
+  users.fromPnList(invitePnList, function(err, newUsers) {
+    if (err) return logError(err);
+    newE.inviteList = newE.inviteList.concat(newUsers);
+
+    events.add(newE, function(err, eid) { if(err)return logError(err);
+      check.is(newE, 'event');
       emit({
         eventName: 'newEvent',
-        data: {'event' : newEvent},
-        // message: message,
-        recipients: newEvent.inviteList
+        data: {'event' : newE},
+        recipients: newE.inviteList,
+        message: user.name+'has invited you to an event.\n'+message.text+
+        '\n More info @ '+'fakeUrl@extraFizzy.com'
       });
-    });
-  });
-  
-
-  
+      log('New beacon by', getUserSession(socket).name+'\n\t\t',newEvent.message.text);
+    }); 
+  }); 
 }
 
 /**
@@ -94,9 +89,7 @@ exports.newEvent = function (newEvent, socket) {
  * @param {Object} Data - contains .id and .admin
  */
 exports.joinEvent = function(data, socket) {
-  check.is(data, {
-    eid : 'posInt'
-  });
+  check.is(data, { eid : 'posInt' });
   var user = getUserSession(socket);
   var eid = data.eid;
   var uid = user.uid;
@@ -126,8 +119,8 @@ exports.joinEvent = function(data, socket) {
  * @param {Object} events - object for managing all events
  */
 exports.leaveEvent = function(data, socket) {
-
   check.is(data, {eid: 'posInt'});
+
   var user = getUserSession(socket);
   var eid = data.eid;
   var uid = user.uid;
@@ -147,6 +140,18 @@ exports.leaveEvent = function(data, socket) {
     if (err) return logError('leave beacon', err);
     log(user.name, 'left beacon', uid);
   });
+}
+
+exports.invite = function(data, socket) {
+  check.is(data, {
+    eid: 'posInt',
+    inviteList: '[user]',
+    invitePnList: '[string]'
+  });
+}
+
+exports.request = function(data, socket) {
+  check.is(data, {eid: 'posInt'});
 }
 
 exports.newMessage = function(data, socket) {
@@ -177,28 +182,59 @@ exports.newMessage = function(data, socket) {
   });
 }
 
-exports.newUserLocation = function(dataIn, socket) {
-  check.is(dataIn, {uid: 'posInt', latlng: 'latlng'});
+exports.getFriendList = function(socket) {
   var user = getUserSession(socket);
-
-  async.parallel({
-    a: function(cb){
-      users.updateLocation(dataIn.uid, dataIn.latlng, cb)
-    },
-    recipients: function(cb) {
-      events.getInviteList(dataIn.eid, cb);
-    }
-  },
-  function(err, results) {
-    check.is(results, {recipients: '[user]'});
-    var dataOut = [{uid: user.uid, latlng: data.latlng}];
-    emit({
-      eventName: 'newUserLocationList',
-      data: dataOut,
-      recipients: results.recipients
-    });
+  users.getFriendUserList(user.uid, function(err, userList){
+    if (err) return logError(err);
+    socket.emit('friendList', userList);
   });
 }
+
+exports.newFriend = function(data, socket) {
+  var user = getUserSession(socket);
+  check.is(data, { uid: 'posInt' });
+  users.addFriend(user, data.uid, function(err){if(err)logError(err)});
+}
+
+exports.removeFriendList = function(data, socket) {
+  var user = getUserSession(socket);
+  check.is(data, {'friendList': '[user]' });
+
+  log('removeFriendList');
+}
+
+
+exports.changeSeatCapacity = function(data, socket) {
+  var user = getUserSession(socket);
+  check.is(data, {eid: 'posInt', seats: 'posInt'});
+
+  log('changeSeatCapacity');
+}
+
+
+
+// exports.newUserLocation = function(dataIn, socket) {
+//   check.is(dataIn, {uid: 'posInt', latlng: 'latlng'});
+//   var user = getUserSession(socket);
+
+//   async.parallel({
+//     a: function(cb){
+//       users.updateLocation(dataIn.uid, dataIn.latlng, cb)
+//     },
+//     recipients: function(cb) {
+//       events.getInviteList(dataIn.eid, cb);
+//     }
+//   },
+//   function(err, results) {
+//     check.is(results, {recipients: '[user]'});
+//     var dataOut = [{uid: user.uid, latlng: data.latlng}];
+//     emit({
+//       eventName: 'newUserLocationList',
+//       data: dataOut,
+//       recipients: results.recipients
+//     });
+//   });
+// }
 
 function getEidAndRecipients (e, callback) {
   async.parallel({
@@ -253,7 +289,7 @@ function shareEvent(e, callback) {
 exports.getFBFriendList = function(socket) {
   var user = getUserSession(socket);
   var idArr = [];
-  fb.get(user.accessToken, '/me/friends', function(err, friends) {
+  fb.get(user.fbToken, '/me/friends', function(err, friends) {
     err = err || friends.error;
     if (err) return logError('from facebook.get:', err);
     if (!friends.data) return logError('no friends data')
@@ -268,59 +304,9 @@ exports.getFBFriendList = function(socket) {
   });
 }
 
-exports.getFriendList = function(socket) {
-  var user = getUserSession(socket);
-  users.getFriendUserList(user.uid, function(err, userList){
-    if (err) return logError(err);
-    socket.emit('friendList', userList);
-  });
-}
-
-exports.newFriend = function(data, socket) {
-  var user = getUserSession(socket);
-  if (data.fbId) {
-    users.addFriend(user, data.fbId, function(err){if(err)logError(err)});
-  } else if(data.pn) {
-    console.log('Adding phone numbers coming soon!');
-    return;
-    users.getOrAddFromPn(data.pn, data.name || data.pn, function(friend) {
-      users.addFriend(user, friend.fbId, function(err){if(err)logError(err)});
-    });
-  } else {
-    logError('invalid newFriend data', data);
-  }
-}
-
 exports.disconnect = function(socket) {
   var self = this, user = getUserSession(socket)
   log(user.name, "has disconnected.")
-}
-
-exports.benchMark = function(socket) {
-  // console.log('test');
-  var start = new Date().getTime();
-  var store = require('./redisStore.js');
-  store.incr('foo', 1, function(err, x){
-    store.get('foo', function(err2, y){
-      socket.emit('benchMark', {"creationTime":1392785614748,"inviteList":[{"uid":1,"fbid":1380180579,"pn":"","name":"Joel Simon","hasApp":"","accessToken":"CAAClyP2DrA0BAHuZAgZCpZBvZCSRoPn2nsZAA5CN8pyKsXqBenB59Od219yypJJ9HJoShoeTyNdPgbOjiFffpsEfZBCvuT3ZBbzhMsGvjI2WfmhOnMQllRD1ZBUoC8GQoILC4WelThIoidHotRrNOHRUJcjYZCF8VVBYATZAdXA2lQTiHiS63khbUb","logged_in":true}],"invitePnList":[],"message":{"mid":2,"eid":2,"uid":1,"text":"Description!","creationTime":1392785614748,"marker":null,"deletePastMarker":0},"host":1,"guestList":[1],"eid":2});
-      var end = (new Date().getTime()) - start;
-    });
-  });
-
-}
-
-function newUser(user, socket) {
-  log('newUser', user.name);
-  var idArr = [];
-  var userData;
-  fb.get(user.token, '/me/friends', function(err, res) {
-    if (err) return logError('from facebook.get', err);
-    userData = { friends:res.data, 'group':[] };
-    users.addUser(user.id, userData, function(err2, doc) {
-      if (err2) return logError(err2);
-      existingUser(user, userData, socket);
-    });
-  });
 }
 
 function getUserSession(socket) {
@@ -328,3 +314,18 @@ function getUserSession(socket) {
   check.is(user, 'user');
   return user;
 }
+
+// function newUser(user, socket) {
+//   log('newUser', user.name);
+//   var idArr = [];
+//   var userData;
+//   fb.get(user.token, '/me/friends', function(err, res) {
+//     if (err) return logError('from facebook.get', err);
+//     userData = { friends:res.data, 'group':[] };
+//     users.addUser(user.id, userData, function(err2, doc) {
+//       if (err2) return logError(err2);
+//       existingUser(user, userData, socket);
+//     });
+//   });
+// }
+

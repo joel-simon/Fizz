@@ -23,9 +23,7 @@ var
   passportSocketIo = require("passport.socketio"),
   colors  = require('colors');
 
-var LocalStrategy   = require('passport-local').Strategy;
 var config = ((args.dev) ? require('./configDev.json') : require('./config.json'));
-var users = require('./app/server/users.js');
 
 var store = redisConns.store,
     pub = redisConns.pub,
@@ -36,31 +34,27 @@ require.main.exports.io = io;
 
 passport.serializeUser(function(user, done) { done(null, user); });
 passport.deserializeUser(function(obj, done) { done(null, obj); });
-var ppOptions = {
-  clientID: config.FB.FACEBOOK_APP_ID,
-  clientSecret: config.FB.FACEBOOK_APP_SECRET,
-  callbackURL: config.HOST+"auth/facebook/callback"
-}
-function passportSuccess(accessToken, refreshToken, profile, done) {
-  var sessionData;
-  process.nextTick(function () {
-    users.getOrAdd(profile, accessToken, function(err, user) {
-      return done(null, user);
-    });
-  });
-}
-passport.use(new FacebookStrategy(ppOptions, passportSuccess));
-passport.use(new FacebookTokenStrategy(ppOptions, passportSuccess));
 
-// passport.use('local-signup', new LocalStrategy({
-//     // by default, local strategy uses username and password, we will override with email
-//     usernameField : 'email',
-//     passwordField : 'password',
-//     passReqToCallback : true // allows us to pass back the entire request to the callback
-// },
-// function(req, email, password, done) {
-//   console.log(arguments);
-// }));
+var users = require('./app/server/users.js');
+// passport.use(new FacebookStrategy(ppOptions, passportSuccess));
+
+passport.use(new FacebookTokenStrategy(
+  {
+    clientID: config.FB.FACEBOOK_APP_ID,
+    clientSecret: config.FB.FACEBOOK_APP_SECRET,
+    callbackURL: config.HOST+"auth/facebook/callback"
+  },
+  function(fbToken, refreshToken, profile, pn, iosToken, done) {
+    console.log('pn:',pn)
+    console.log('iosToken:',iosToken)
+    // pn = pn||'+1234567890';
+    process.nextTick(function () {
+      users.getOrAddMember(fbToken, refreshToken, profile, pn, iosToken, function(err, user) {
+        console.log(user);
+        done(null, user);  
+      });
+    });
+  }));
 
 //Middleware: Allows cross-domain requests (CORS)
 var allowCrossDomain = function(req, res, next) {
@@ -126,7 +120,7 @@ d.run(function(){
 var utils     = require('./app/server/utilities.js'),
 logError  = utils.logError;
 d.on('error', function(err){
-  logError(err)
+  logError(err);
 })
 
 // Route all routes.

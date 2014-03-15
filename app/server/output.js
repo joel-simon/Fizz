@@ -5,11 +5,14 @@ var
   utils    = require('./utilities.js'),
   log      = utils.log,
   logError = utils.logError,
+  logI     = utils.logImportant,
   config   = require('./../../config.json'),
   exports  = module.exports,
   users    = require('./users.js'),
   async    = require('async'),
-  apn      = require('apn');
+  apn      = require('apn'),
+  args     = require('./args.js');
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //        PUSH IOS
@@ -38,6 +41,11 @@ feedback.on("feedback", function(devices) {
 exports.pushIos = function(msg, token, hoursToExpiration) {
   if(!msg || !token) return;
 
+  if (!args.pushIos) {
+    logI("SENDING SMS\n\t\tTo:"+token+"\n\t\tMsg:"+msg);
+    return;
+  }
+
   var myDevice = new apn.Device(token);
   var note = new apn.Notification();
   note.expiry = Math.floor(Date.now() / 1000) + 3600*hoursToExpiration;
@@ -58,22 +66,18 @@ var client = new twilio.RestClient(config.TWILIO.SID, config.TWILIO.TOKEN);
 
 
 exports.sendSms = function(to, msg) {
+  if (!args.sendSms) {
+    logI("SENDING SMS\n\t\tTo:"+to+"\n\t\tMsg:"+msg);
+    return;
+  }
   client.sms.messages.create({
     to:'+'+to,
     from:'+13476255694',
     body:msg
   },
   function(error, message) {
-    if (!error) {
-      log('sent sms to',to);
-      // console.log('Success! The SID for this SMS message is:');
-      // console.log(message.sid);
-       
-      // console.log('Message sent on:');
-      // console.log(message.dateCreated);
-    } else {
-      console.log('Oops! There was an error.', error);
-    }
+    if (error) logError('Oops! There was an error.', error);
+    else log('sent sms to',to);
   });
 }
 
@@ -87,32 +91,48 @@ exports.sendSms = function(to, msg) {
  * @param {Object} Data
  */
 var io;
-// exports.emit = function(userId, eventName, data, message) {
-
 exports.emit = function(options) {
+  check.is(options, {
+    eventName: 'string',
+    data: 'object',
+    recipients: '[user]',
+    smsRecip: '[string]'
+  });
   var 
     eventName  = options.eventName,
     data       = options.data,
     message    = options.message || null,
-    recipients = options.recipients;
+    recipients = options.recipients,
+    smsRecip   = options.smsRecip;
 
   // Deal with a circular dependency by delaying invocation.
   if(!io) io = require('../../app.js').io;
-  // Requires.
-  if(!eventName) return logError ('Invalid eventName in emit:', eventName);
-  if(!data) return logError ('Invalid data in emit:', data);
-  if(!recipients) return logError ('Invalid recipients in emit:', recipients);
-  
   log(eventName, 'emitted to', recipients.length);
-  async.each(recipients, function(friend, callback) {
-    var fid = friend.uid || friend;
-    users.isConnected(fid, function(err, isCon) {
-      if (isCon) {
-        io.sockets.in(fid).emit(eventName, data);
-      } else if (friend.pn && message) {
-          exports.sendSms(friend.phoneNumber, message);
-      }
-    });
-  });
 
+  async.each(recipients, function(user, callback) {
+    switch(user.type) {
+
+      case 'Phone':
+        if (mesage && smsRecip[user.uid]) {
+          exports.sendSms(user.pn, message);
+        }
+        break;
+
+      case "Guest":
+        if (user.isConnected(user.uid)) {
+          io.sockets.in(uid).emit(eventName, data);
+        } else if (mesage && smsRecip[user.uid]) {
+          exports.sendSms(user.pn, message);
+        }
+        break;
+
+      case "Member":
+        if (user.isConnected(user.uid)) {
+          io.sockets.in(uid).emit(eventName, data);
+        } else {
+          exports.pushIos(msg, user.iosToken, 1);
+        }
+        break;
+    }
+  });
 }
