@@ -1,0 +1,149 @@
+/*
+	Standard CSS
+*/
+
+* {
+	font-family: Verdana;
+
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	position: absolute;
+
+	overflow: auto;
+
+	height: 100vh;
+	width: 100%;
+
+	margin: 0;
+	padding: 0;
+}
+
+ul {
+	list-style: none;
+	overflow-y: auto;
+}
+
+.hidden { 
+	display: none !important;
+	visibility: hidden !important;
+}
+
+/*
+	thread-list
+*/
+
+#thread-list {
+	background-color: lightgray;
+
+	height: 100%;
+	width: 100%;
+}
+
+.pagination {
+	font-weight: bold;
+	cursor: pointer;
+
+	position: fixed;
+
+	cursor: pointer;
+	display: inline-block;
+	width: 100%;
+}
+
+.thread-top {
+	top: 0;
+	padding-bottom: 15px;
+}
+
+.thread-bot {
+	bottom: 0;
+	padding-top: 15px;
+}
+
+.thread {
+	position: relative;
+	font-size: 1.2em;
+
+	text-align: center;
+
+	height: 90vh;
+	width: 100%;
+
+	padding-top: 5vh;
+	padding-bottom: 5vh;
+
+	display: flex;
+	flex-direction: column;
+}
+
+.thread-title {
+	font-weight: bold;
+	padding: 1em;
+
+	cursor: pointer;
+}
+
+.invite-list {
+	/*background-color: blue;*/
+	flex: 1 0 0;
+}
+
+.guest-list {
+	/*background-color: green;*/
+	flex: 1 0 0;
+}
+
+/*
+	message-chain
+*/
+
+.message-chain {
+	background-color: orange;
+	position: relative;
+
+	/*flex: 2 0 0;*/
+	height: 0;
+
+	display: flex;
+	flex-direction: column;
+}
+
+.message-list {
+	flex: 1 0 0;
+}
+
+.message {
+	padding: 0.5em;
+	min-height: 50px;
+}
+
+.message-pic {
+	float: left;
+	border-radius: 50%;
+}
+
+.message-time {
+	font-size: 0.4em;
+	float: right;
+	color: gray;
+}
+
+.message-name, .message-text {
+	font-size: 0.8em;
+	padding-left: 60px;
+}
+
+.message-name {
+	font-weight: bold;
+	padding-bottom: 0.2em;
+}
+
+.message-form {
+	margin-left: 60px;
+
+	padding: 0.5em;
+}
+
