@@ -1,5 +1,5 @@
 /*
-	Standard CSS
+	General CSS
 */
 
 * {
@@ -88,12 +88,10 @@ ul {
 }
 
 .invite-list {
-	/*background-color: blue;*/
 	flex: 1 0 0;
 }
 
 .guest-list {
-	/*background-color: green;*/
 	flex: 1 0 0;
 }
 
@@ -105,8 +103,9 @@ ul {
 	background-color: orange;
 	position: relative;
 
-	/*flex: 2 0 0;*/
 	height: 0;
+
+	text-align: left;
 
 	display: flex;
 	flex-direction: column;

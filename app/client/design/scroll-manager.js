@@ -111,7 +111,7 @@ function getMargin(thread) {
 function getBackgroundColor(thread) {
 	var scroll = $('#thread-list').scrollTop();
 	var height = $(window).height();
-	var low = 230;
+	var low = 220;
 	var high = 255;
 	var range = high - low;
 
@@ -155,18 +155,4 @@ $('#thread-list').on('scroll', function() {
 		SM.currentThread = thread;
 		SM.scrollToThread(thread);
 	}, 100);
-});
-
-$('.thread-top').on('click', function() {
-	hidePaginationButtons();
-	SM.scrollUp(function() {
-		showPaginationButtons();
-	});
-});
-
-$('.thread-bot').on('click', function() {
-	hidePaginationButtons();
-	SM.scrollDown(function() {
-		showPaginationButtons();
-	});
 });
