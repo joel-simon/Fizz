@@ -1,6 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 /*
-	TransitionManager - manages the transition from scroll-view to detail-view
+	TransitionManager - manages the transition between the scroll-view 
+		and the detail-view
 */
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -39,10 +40,12 @@ function transitionToDetail(thread) {
 	});
 	$('#thread-'+thread).prepend( $('#thread-'+thread+' .thread-title') );
 	$('#thread-'+thread+' .message-chain')
-		.css({'flex':'2 0 0'})
+		.css({'height':'50vh'})
 		.removeClass('hidden');
 	$('#thread-'+thread+' .message-form')
 		.removeClass('hidden');
+
+	$('#collapse').addClass('hidden');
 
 	detail = true;
 }
@@ -58,10 +61,12 @@ function transitionFromDetail(thread) {
 	});
 	$('#thread-'+thread).prepend( $('#thread-'+thread+' .invite-list') );
 	$('#thread-'+thread+' .message-chain')
-		.css({'flex':'0 1 auto'})
+		.css({'height':'0'})
 		.addClass('hidden');
 	$('#thread-'+thread+' .message-form')
 		.addClass('hidden');
+
+	$('#collapse').removeClass('hidden');
 
 	detail = false;
 }

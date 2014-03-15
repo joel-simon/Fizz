@@ -32,7 +32,7 @@ ScrollManager.prototype.getNearestThread = function() {
 	return thread;
 }
 
-ScrollManager.prototype.scrollToThread = function(thread, callback) {
+ScrollManager.prototype.scrollToThread = function(thread) {
 	// console.trace();
 	var height = $(window).height();
 	var scroll = thread*height;
