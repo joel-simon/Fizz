@@ -11,6 +11,9 @@ function ScrollManager() {
 	this.currentThread = 0;
 	this.threadCount = $('.thread').length;
 	this.countDown = null;
+
+	$('#thread-1 .thread-title').css('margin-top', '-100vh');
+	$('#thread-0').css('background-color', 'rgb(255,255,255)');
 }
 
 ScrollManager.prototype.isAnimated = function() {
@@ -30,72 +33,128 @@ ScrollManager.prototype.getNearestThread = function() {
 }
 
 ScrollManager.prototype.scrollToThread = function(thread, callback) {
-	$('#thread-list').stop();
+	// console.trace();
 	var height = $(window).height();
 	var scroll = thread*height;
-	$('#thread-list').animate({'scrollTop': scroll}, 500, function() {
+	$('#thread-list').animate({'scrollTop': scroll}, 100, function() {
 		this.currentThread = thread;
-		console.log(Date.now(), 'scrolled to '+thread);
-		if (callback) callback();
+		// console.log(Date.now(), 'scrolled to '+thread);
 	});
 }
 
-ScrollManager.prototype.scrollUp = function(callback) {
-	if (this.currentThread - 1 >= 0) {
-		callback( this.scrollToThread(this.currentThread - 1) );
+////////////////////////////////////////////////////////////////////////////////
+
+function getMargin(thread) {
+	var scroll = $('#thread-list').scrollTop();
+	var height = $(window).height();
+	var near = SM.getNearestThread();
+
+	if (thread - 2 >= near) {
+		return {
+			'margin-top'    : '-100vh',
+			'margin-bottom' : '0',
+		}
+	} else if (thread + 2 <= near) {
+		return {
+			'margin-top'    : '0',
+			'margin-bottom' : '-100vh',
+		}
+	} else if (thread > near) {
+		if (scroll <= near*height) {
+			return {
+				'margin-top'    : '-100vh',
+				'margin-bottom' : '0',
+			}
+		} else {
+			var x = scroll - (near*height);
+			var y = (x/height)*100;
+			var z = 100 - y;
+			return {
+				'margin-top'    : '-'+z+'vh',
+				'margin-bottom' : '0',
+			}
+		}
+	} else if (thread < near) {
+		if (scroll >= near*height) {
+			return {
+				'margin-top'    : '0',
+				'margin-bottom' : '-100vh',
+			}
+		} else {
+			var x = (near*height) - scroll;
+			var y = (x/height)*100;
+			var z = 100 - y;
+			return {
+				'margin-top'    : '0',
+				'margin-bottom' : '-'+z+'vh',
+			}
+		}
+	} else {
+		if (thread*height >= scroll) {
+			var x = (thread*height) - scroll;
+			var y = (x/height)*100;
+			return {
+				'margin-top'    : '-'+y+'vh',
+				'margin-bottom' : '0',
+			}
+		} else {
+			var x = scroll - (thread*height);
+			var y = (x/height)*100;
+			return {
+				'margin-top'    : '0',
+				'margin-bottom' : '-'+y+'vh',
+			}
+		}
 	}
 }
 
-ScrollManager.prototype.scrollDown = function(callback) {
-	if (this.currentThread + 1 < this.threadCount) {
-		callback( this.scrollToThread(this.currentThread + 1) );
+function getBackgroundColor(thread) {
+	var scroll = $('#thread-list').scrollTop();
+	var height = $(window).height();
+	var low = 230;
+	var high = 255;
+	var range = high - low;
+
+	var distUp = scroll - thread*height;
+	
+	if ( distUp > height || distUp < -height ) {
+		return 'rgb('+low+','+low+','+low+')';
+	} else if (distUp >= 0) {
+		var x = distUp/height;
+		var y = x*range;
+		var z = Math.floor(high - y);
+		return 'rgb('+z+','+z+','+z+')';
+	} else {
+		var distDown = Math.abs(distUp);
+		var x = distDown/height;
+		var y = x*range;
+		var z = Math.floor(high - y);
+		return 'rgb('+z+','+z+','+z+')';
+	}
+}
+
+function parallax() {
+	var threadList = $('.thread');
+	var margin, backColor;
+	for (var i = 0; i < threadList.length; i++) {
+		margin = getMargin(i);
+		$( threadList[i] ).children('.thread-title').css(margin);
+		backColor = getBackgroundColor(i);
+		$( threadList[i] ).css('background-color', backColor);
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-function hidePaginationButtons() {
-	var thread = SM.getCurrentThreadSelector();
-	var pagination = thread.children('.pagination');
-	var top = $( pagination[0] );
-	var bot = $( pagination[1] );
-	if ( !top.hasClass('hidden') ) {
-		top.addClass('hidden');
-	}
-	if ( !bot.hasClass('hidden') ) {
-		bot.addClass('hidden');
-	}
-}
-
-function showPaginationButtons() {
-	var thread = SM.getCurrentThreadSelector();
-	var pagination = thread.children('.pagination');
-	var top = $( pagination[0] );
-	var bot = $( pagination[1] );
-	if ( !top.hasClass('end') ) {
-		top.removeClass('hidden');
-	}
-	if ( !bot.hasClass('end') ) {
-		bot.removeClass('hidden');
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-// setInterval(function() {
-// 	console.log(SM.countDown);
-// }, 200);
 
 $('#thread-list').on('scroll', function() {
-	hidePaginationButtons();
+	// console.log( $('#thread-list').scrollTop() );
+	parallax();
 	clearTimeout(SM.countDown);
 	SM.countDown = setTimeout(function() {
 		var thread = SM.getNearestThread();
 		SM.currentThread = thread;
-		SM.scrollToThread(thread, function() {
-			showPaginationButtons();
-		});
-	}, 500);
+		SM.scrollToThread(thread);
+	}, 100);
 });
 
 $('.thread-top').on('click', function() {

@@ -36,8 +36,6 @@ ul {
 */
 
 #thread-list {
-	background-color: lightgray;
-
 	height: 100%;
 	width: 100%;
 }
@@ -77,6 +75,8 @@ ul {
 
 	display: flex;
 	flex-direction: column;
+
+	background-color: rgb(180,180,180);
 }
 
 .thread-title {
@@ -84,6 +84,7 @@ ul {
 	padding: 1em;
 
 	cursor: pointer;
+	z-index: 100;
 }
 
 .invite-list {
