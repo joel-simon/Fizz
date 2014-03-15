@@ -5,19 +5,19 @@ var store = require('../app/server/redisStore.js').store;
 store.flushdb();
 
 var andrewProfile = {
-  id: 100000157939878,
+  fbid: 100000157939878,
   type:'Member',
   pn: '+123',
   name: 'Andrew Sweet'
 }
 var joelProfile = {
-  id: 1380180579,
+  fbid: 1380180579,
   type:'Member',
   pn: '+789',
   name: 'Joel Simon'
 }
 var danielProfile = {
-  id: 798172051,
+  fbid: 798172051,
   type:'Member',
   pn: '+456',
   name: 'Daniel Belchamber'
@@ -50,7 +50,7 @@ users.getOrAddMember('danielToken', 3, '+34', null, function(err, d) {
     inviteOnly : true
   }
 
-  events.add(andrewsEventA, function(err, eid) {
+  events.add(andrewsEventA, a, function(err, eid) {
     if (err) console.log(err);
     // events.addMessage({
     //   mid: null,
@@ -65,14 +65,16 @@ users.getOrAddMember('danielToken', 3, '+34', null, function(err, d) {
     //   }
     // }, onErr);
   });
-  events.add(andrewsEventB, function(err, eid){
-
+  events.add(andrewsEventB, a, function(err, eid){
+    if (err) console.log(err);
+    console.log('test');
+    events.get(eid, function(err, event){
+      console.log(err, event);
+    })
+  });
+  events.add(danielsEvent, d, function(err, eid){
     if (err) console.log(err);
   });
-  events.add(danielsEvent, function(err, eid){
-    if (err) console.log(err);
-  });
-
 
 
 

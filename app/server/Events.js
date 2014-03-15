@@ -19,25 +19,26 @@ exports = module.exports;
 /**
  *
  */
-exports.add = function(e, callback) {
+exports.add = function(e, user, callback) {
   var self = this;
-  var eid;
   e.seats = 2;
   store.hincrby('idCounter', 'event', 1, function(err, next) {
     if (err) return callback(err);
     e.eid = next;
     async.parallel({
       message: function(cb) {
-        exports.addMessage(e.eid, e.creator, e.text, cb);
+        exports.addMessage(e.eid, user.uid, e.text, cb);
       },
-      // guestList: function(cb) {
-      //   async.map(e.guestList, function(guest, cb2){
-      //     exports.addGuest(e.eid, guest, cb2);
-      //   },cb);
-      // },
-      // inviteList: function(cb) {
-      //   store.sadd('inviteList:'+e.eid, e.inviteList.map(JSON.stringify),cb);
-      // },
+      guestList: function(cb) {
+        store.sadd('guestList:'+e.eid, user.uid, cb);
+        // exports.addGuest(e.eid, user.uid, cb);
+        // async.map(e.guestList, function(guest, cb2){
+        // exports.addGuest(e.eid, guest, cb2);
+        // },cb);
+      },
+      inviteList: function(cb) {
+        store.sadd('inviteList:'+e.eid, JSON.stringify(user), cb);
+      },
       // makeVisisble: function(cb) {
       //   async.each(e.inviteList, function(user, cb2) {
       //     exports.addVisible(user.uid, e.eid, cb2);
@@ -46,7 +47,7 @@ exports.add = function(e, callback) {
       set: function(cb) {
         store.hmset('event:'+e.eid,
           'seats', ''+e.seats, 
-          'inviteOnly', e.inviteOnly,
+          'inviteOnly', JSON.stringify(e.inviteOnly),
           cb);
       }
     },
@@ -76,14 +77,17 @@ exports.get = function(eid, callback) {
     inviteList: function(cb) {
       store.smembers('inviteList:'+eid, cb);
     },
-    seats: function(cb) {
-      store.hget('event:'+eid,'seats', cb);
+    event: function(cb) {
+      store.hmget('event:'+eid, 'seats','inviteOnly', cb);
     }
   },
   function(err, results) {
     if(err) return callback(err);
+
     var event = {'eid' : eid};
-    event.seats = +results.seats;
+    event.seats = +results.event[0];
+    event.inviteOnly = JSON.parse(results.event[1]);
+
     event.messageList = results.messages.map(JSON.parse);
     event.inviteList = results.inviteList.map(JSON.parse);
     event.guestList = results.guestList;
@@ -93,7 +97,7 @@ exports.get = function(eid, callback) {
 
 exports.addGuest = function(eid, uid, callback) {
   store.hget('event:'+eid, 'seats', function(err, seats){
-    if(err) callback(err);
+    if (err) callback(err);
     else if (seats>1) store.sadd('guestList:'+eid, uid, callback);
   });
 }

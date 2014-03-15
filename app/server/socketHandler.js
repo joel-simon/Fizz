@@ -61,7 +61,7 @@ exports.newEvent = function (e, socket) {
     messageList: [{uid:user.uid, text:text}]
   };
 
-  events.add(newE, function(err, eid) {
+  events.add(newE, user, function(err, eid) {
     if(err)return logError(err);
     check.is(newE, 'event');
     emit({
