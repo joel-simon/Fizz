@@ -14,15 +14,35 @@ html
 		ul#thread-list
 
 		//- Magic Socket IO Code
-		script(type='text/javascript', src='/socket.io/socket.io.js')
-		//- JQuery
-		script(type='text/javascript', src='/js/jQuery/jquery-1.11.0.min.js')
-		
-		//- View
-		script(type='text/javascript', src='/js/home/scroll-manager.js')
-		script(type='text/javascript', src='/js/home/detail-manager.js')
-		script(type='text/javascript', src='/js/home/collapse-manager.js')
+		script(src='/socket.io/socket.io.js')
 
+		//- JQuery
+		script(src='/js/jQuery/jquery-1.11.0.min.js')
+
+		//- Facebook
+		script(src='/js/home/facebook-controller.js')
+
+		//- View
+		script(src='/js/home/scroll-manager.js')
+		script(src='/js/home/detail-controller.js')
+		script(src='/js/home/collapse-controller.js')
+
+		//- User objects
+		script(src='/js/home/user.js')
+		script(src='/js/home/userList-manager.js')
+
+		//- My Info
+		script(src='/js/home/myInfo-manager.js')
+
+		//- Message objects
+
+		//- Event objects
+
+		//- DOM
+		// dom-controller
+		script(src='/js/home/dom-manager.js')
+
+		//- Server
 
 
 
@@ -43,4 +63,3 @@ html
 		// script(src='/js/home/controller.js')
 		// script(src='/js/home/server-listener.js')
 		// script(src='/js/home/onload.js')
-

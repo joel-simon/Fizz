@@ -9,7 +9,7 @@ var MIM;
 function MyInfoManager(user) {
 	// start off with facebook info
 	this.uid    = user.uid;
-	this.pn     = user.p
+	this.pn     = user.pn;
 	this.hasApp = user.hasApp;
 	this.fbid   = user.fbid;
 	getFacebookInfo(this.fbid, function(name, pic) {
