@@ -92,12 +92,12 @@ exports.sendSms = function(to, msg) {
  */
 var io;
 exports.emit = function(options) {
-  check.is(options, {
-    eventName: 'string',
-    data: 'object',
-    recipients: '[user]',
-    smsRecip: '[string]'
-  });
+  // check.is(options, {
+  //   eventName: 'string',
+  //   data: 'object',
+  //   recipients: '[user]',
+  //   smsRecip: '[string]'
+  // });
   var 
     eventName  = options.eventName,
     data       = options.data,
@@ -119,7 +119,7 @@ exports.emit = function(options) {
         break;
 
       case "Guest":
-        if (user.isConnected(user.uid)) {
+        if (users.isConnected(user.uid)) {
           io.sockets.in(uid).emit(eventName, data);
         } else if (mesage && smsRecip[user.uid]) {
           exports.sendSms(user.pn, message);
@@ -127,8 +127,8 @@ exports.emit = function(options) {
         break;
 
       case "Member":
-        if (user.isConnected(user.uid)) {
-          io.sockets.in(uid).emit(eventName, data);
+        if (users.isConnected(user.uid)) {
+          io.sockets.in(user.uid).emit(eventName, data);
         } else {
           exports.pushIos(msg, user.IOSToken, 1);
         }

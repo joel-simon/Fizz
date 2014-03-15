@@ -52,25 +52,17 @@ users.getOrAddMember('danielToken', 3, '+34', null, function(err, d) {
 
   events.add(andrewsEventA, a, function(err, eid) {
     if (err) console.log(err);
-    // events.addMessage({
-    //   mid: null,
-    //   eid: eid,
-    //   uid: a.uid,
-    //   text: 'Second Message',
-    //   creationTime: Date.now()+5,
-    //   marker: {
-    //     name:'Central Park',
-    //     time: Date.now()+(1000*60*30),
-    //     latlng: {lat:40.782865,lng:-73.965355}
-    //   }
-    // }, onErr);
+    events.addMessage(eid,a.uid,'Second Message', function(err) {
+      events.get(eid, function(err, event) {
+        console.log(err, event);
+      });
+    });
   });
   events.add(andrewsEventB, a, function(err, eid){
     if (err) console.log(err);
-    console.log('test');
-    events.get(eid, function(err, event){
-      console.log(err, event);
-    })
+    // events.get(eid, function(err, event){
+    //   console.log(err, event);
+    // })
   });
   events.add(danielsEvent, d, function(err, eid){
     if (err) console.log(err);

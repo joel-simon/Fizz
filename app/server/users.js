@@ -17,9 +17,9 @@ var blankUser = function(){
 	this.name 		= '';
 }
 
-exports.isConnected = function(id, callback) {
+exports.isConnected = function(uid, callback) {
 	if(!io) io = require('../../app.js').io;
-	callback(null, io.sockets.clients(''+id).length > 0);
+	return(io.sockets.clients(''+uid).length > 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -76,7 +76,7 @@ exports.getOrAddPhone = function(pn, cb) {
 }
 
 exports.getOrAddPhoneList =  function(pnList, cb) {
-	async.map(pnList, getOrAddPhoneUser,
+	async.map(pnList, getOrAddPhone,
 	function(err, userList) {
 		if (err) cb (err);
 		else cb (null, userList);
@@ -87,11 +87,12 @@ exports.getOrAddPhoneList =  function(pnList, cb) {
 	User has downloaded the app. 
 	Must already exist as a guest or phone user. 
 */
-exports.getOrAddMember = function(fbToken, fbid, pn, iosToken, cb) {
+exports.getOrAddMember = function(profile, fbToken, pn, iosToken, cb) {
 	exports.getOrAddPhone(pn, function(err, user) {
 		if (err) return logError(err);
 		user.type 		= 'Member'; // upgrade account to member. 
-		user.fbid 		= fbid;
+		user.fbid 		= +profile.id;
+		user.name     = profile.displayName;
 		user.fbToken 	= fbToken;
 		user.iosToken = iosToken; 
 		update(user, function(err2){
@@ -112,21 +113,23 @@ function update(user, cb) {
 	User has been invited via text and goes to the website. 
 	Must already exist as a phone user.
 */
-// exports.getOrAddOrGuestUser = function(profile, token, pn, cb) {
-// 	exports.getFromFbid(+profile.id, function(err, user) {
-// 		if (err)  return logError(err);
-// 		if (user) return (null, user);
-
-// 		else { // UPGRADE PHONE USER.
-// 			exports.getOrAddOrPhoneUser(pn, function(err, user) {
-// 				store.hset('fbid->uid', +profile.id, user.uid);
-// 				user.fbid = +profile.id;
-// 			 	user.name = profile.displayName;
-// 			 	user.type = 'Guest';
-// 			});
-// 		}
-// 	});
-// }
+exports.getOrAddGuest = function(profile, fbToken, cb) {
+	exports.getFromFbid(+profile.id, function(err, user) {
+		if (err)  return logError(err);
+		if (user) return (null, user);
+		else { // UPGRADE PHONE USER.
+			var pn = (''+Math.random()).split('.')[0]
+			exports.getOrAddOrPhone(pn, function(err, user) {
+				store.hset('fbid->uid', +profile.id, user.uid);
+				user.fbid = +profile.id;
+			 	user.name = profile.displayName;
+			 	user.type = 'Guest';
+			 	if (err) cb(err);
+			 	else cb(null, user);
+			});
+		}
+	});
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////

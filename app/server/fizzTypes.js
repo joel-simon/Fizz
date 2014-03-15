@@ -9,32 +9,33 @@ var pn = function(n) {
 module.exports = {
   user: function(u) {
     if (!u) return false
-    if ((typeof u.uid !== 'number')|| u.uid === 0) return false;
-    if ((typeof u.fbid !== 'number')) return false;
-    // if ((typeof u.pn !== 'string')) return false;
-    if ((typeof u.type !== 'string')) return false;
-    if ((typeof u.name !== 'string')) return false;
-    if ((typeof u.fbToken !== 'string')) return false;
-    // if ((typeof u.iosToken !== 'string')) return false;
+    if ((typeof u.uid !== 'number')|| u.uid === 0) throw('foo');
+    if ((typeof u.fbid !== 'number')) throw('foo');
+    // if ((typeof u.pn !== 'string')) throw('foo');
+    if ((typeof u.type !== 'string')) throw('foo');
+    if ((typeof u.name !== 'string')) throw('foo');
+    if ((typeof u.fbToken !== 'string')) throw('foo');
+    // if ((typeof u.iosToken !== 'string')) throw('foo');
 
     switch(u.type) {
       case "Member":
-        if (u.fbid === 0) return false;
-        // if (u.pn.length === 0) return false;
-        if (u.fbToken.length === 0) return false;
-        // if (u.iosToken.length === 0) return false;
+        if (u.fbid === 0) throw('foo');
+        // if (u.pn.length === 0) throw('foo');
+        if (u.fbToken.length === 0) throw('foo');
+        // if (u.iosToken.length === 0) throw('foo');
         break;
       case "Guest":
-        if (u.fbid === 0) return false;
-        // if (u.pn.length === 0) return false;
-        if (u.fbToken.length === 0) return false;
+        if (u.fbid === 0) throw('foo');
+        // if (u.pn.length === 0) throw('foo');
+        if (u.fbToken.length === 0) throw('foo');
         break;
       case "Phone":
-        // if (u.pn.length === 0) return false
+        // if (u.pn.length === 0) throw('foo')
         break;
       default:
         return false;
     }
+    return true;
   },
   friendsList: {
     of: 'posInt',

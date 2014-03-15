@@ -113,7 +113,7 @@ exports.addMessage = function(eid, uid, text, callback) {
 
     var msg = {
       text: text,
-      mid: 1,
+      mid: i,
       eid: eid,
       uid: uid,
       creationTime: Date.now()

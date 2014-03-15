@@ -17,21 +17,19 @@ module.exports = function(app, passport) {
 	app.get('/auth/facebook',
 	passport.authenticate('facebook', { display: 'page', scope: ['user_friends', 'user_groups', 'email'] }),
 	function(req, res){
+		// res.redirect('/home');
 	});
 
 	var users = require('./users.js');
 
+	app.get('/auth/facebook/iosCallback',  passport.authenticate('facebook', { failureRedirect: '/' }),
+		function(req, res) {
+			res.send('Logged in');
+	});
+
 	app.get('/auth/facebook/callback',  passport.authenticate('facebook', { failureRedirect: '/' }),
 		function(req, res) {
-			console.log('in /callback, ', req.session);
-			var user = req['user'];
-			res.cookie('fbid', user.id, { maxAge: 2592000000 });
-			res.send('Logged in');
-			    // // var pn = '+'+((''+Math.random()).split('.'));
-    // users.addOrGetGuestUser(profile, accessToken, pn, function(err, user) {
-    //   return done(null, user);
-    // });
-			// res.redirect('/home');
+			// res.send('Logged in');
 	});
 
 	app.post('/iosLogin',

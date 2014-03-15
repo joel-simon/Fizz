@@ -36,13 +36,31 @@ passport.serializeUser(function(user, done) { done(null, user); });
 passport.deserializeUser(function(obj, done) { done(null, obj); });
 
 var users = require('./app/server/users.js');
-// passport.use(new FacebookStrategy(ppOptions, passportSuccess));
 
-passport.use(new FacebookTokenStrategy(
+passport.use(new FacebookStrategy(
   {
     clientID: config.FB.FACEBOOK_APP_ID,
     clientSecret: config.FB.FACEBOOK_APP_SECRET,
     callbackURL: config.HOST+"auth/facebook/callback"
+  },
+  function(fbToken, refreshToken, profile, pn, iosToken, done) {
+    console.log('test');
+    process.nextTick(function () {
+      users.getOrAddGuest(profile,fbToken, function(err, user) {
+        log(user)
+        done(null, user);  
+      });
+    });
+  }));
+
+/*
+  IOS LOGIN FLOW
+*/
+passport.use(new FacebookTokenStrategy(
+  {
+    clientID: config.FB.FACEBOOK_APP_ID,
+    clientSecret: config.FB.FACEBOOK_APP_SECRET,
+    callbackURL: config.HOST+"auth/facebook/iosCallback"
   },
   function(fbToken, refreshToken, profile, pn, iosToken, done) {
     console.log('pn:', pn)
@@ -50,9 +68,9 @@ passport.use(new FacebookTokenStrategy(
 
     iosToken = iosToken || null;
     pn = pn || null;
-    // pn = pn||'+1234567890';
+
     process.nextTick(function () {
-      users.getOrAddMember(fbToken, +profile.id, pn, iosToken, function(err, user) {
+      users.getOrAddMember(profile, fbToken, pn, iosToken, function(err, user) {
         done(null, user);  
       });
     });
