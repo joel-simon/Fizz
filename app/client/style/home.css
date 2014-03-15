@@ -1,21 +1,29 @@
 /*
-	Generic CSS
+	General CSS
 */
 
 * {
+	font-family: Verdana;
+
 	margin: 0;
 	padding: 0;
 }
 
 body {
-	/*position: relative;*/
-	height: 100%;
+	position: absolute;
+
+	overflow: auto;
+
+	height: 100vh;
 	width: 100%;
 
 	margin: 0;
 	padding: 0;
+}
 
-	background-color: orange;
+ul {
+	list-style: none;
+	overflow-y: auto;
 }
 
 .hidden { 
@@ -23,277 +31,191 @@ body {
 	visibility: hidden !important;
 }
 
-h1, h2, h3, h4, h5, h6 {
-	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-	font-weight: 500;
-	line-height: 1.1;
-}
-
-p {
-	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-	font-size: 18px;
-	/*margin-bottom: 12px;*/
-}
-
-ul {
-	list-style: none;
-}
-
-input { padding: 0 4px; }
-.input-long { width: 250px; }
-
-.text-left    { text-align: left;    }
-.text-center  { text-align: center;  }
-.text-right   { text-align: right;   }
-.text-justify { text-align: justify; }
-
-.float-left   { float: left;  }
-.float-right  { float: right; }
-
-.clear-both   { clear: both;  }
-.clear-left   { clear: left;  }
-.clear-right  { clear: right; }
-
-.pic {
-	border-radius: 50%;
-}
-
-
 /*
-	Header
+	collapse button
 */
 
-#header {
-	height: 90px;
-	width: 100%;
-	text-align: center;
-}
+#collapse {
+	position: fixed;
+	top: 10px;
+	left: 10px;
 
-	#header .title {
-		font-size: 32px;
-		margin-top: 12px;
-		margin-left: 15px;
-	}
+	z-index: 200;
 
-	#timelineButton {
-		margin-top: 13px;
-	}
+	width: 50px;
+	height: 50px;
 
-#fb-container {
-	padding: 5px;
-	min-width: 200px;
-}
-	
-	#host-pic {
-		margin-right: 5px;
-	}
-
-	#host-name {
-		font-size: 12px;
-		margin-top: 4px;
-		margin-bottom: 2px;
-	}
-
-	#logout {
-		/*margin-top: 20px;*/
-	}
-
-#foursquare {
-	clear: both;
-}
-
-
-/*
-	Map
-*/
-
-#map {
-	width: 100%;
-	position:absolute; 
-	top: 90px; 
-	bottom: 34px;
-	text-align: center;
-}
-
-.face-icon {
-	border-radius: 50%;
-	/*border: 2px solid orange;*/
-}
-
-.shadow-face-icon {
-	border-radius: 50%;
-	/*border: 2px solid orange;*/
-	opacity: 0.7;
-}
-
-.leaflet-container p.no-margin, .leaflet-container h3.no-margin {
-	margin: 0;
+	cursor: pointer;
 }
 
 /*
-	Footer
+	collapse-list
 */
 
-#footer {
+#collapse-list {
+	background-color: lightgray;
 	position: absolute;
 	width: 100%;
+	height: 100vh;
 	text-align: center;
-	height: 34px;
+}
+
+#collapse-list li {
+	display: block;
+	padding: 20px;
+	border-bottom: 2px solid gray;
+	cursor: pointer;
+}
+
+/*
+	thread-list
+*/
+
+#thread-list {
+	height: 100%;
+	width: 100%;
+}
+
+.pagination {
+	font-weight: bold;
+	cursor: pointer;
+
+	position: fixed;
+
+	cursor: pointer;
+	display: inline-block;
+	width: 100%;
+}
+
+.thread-top {
+	top: 0;
+	padding-bottom: 15px;
+}
+
+.thread-bot {
 	bottom: 0;
+	padding-top: 15px;
 }
 
-#myBeacon {
+.thread {
 	position: relative;
+	font-size: 1.2em;
+
 	text-align: center;
-	padding: 5px;
+
+	height: 90vh;
+	width: 100%;
+
+	padding-top: 5vh;
+	padding-bottom: 5vh;
+
+	display: flex;
+	flex-direction: column;
+
+	background-color: rgb(180,180,180);
 }
 
-#myMessage {
-	position: relative;
-	text-align: center;
-	padding: 5px;
+.thread-title {
+	font-weight: bold;
+	padding: 1em;
+
+	cursor: pointer;
+	z-index: 100;
 }
 
-#messageChain {
-	overflow: auto;
+.invite-list {
+	flex: 1 0 0;
 }
 
+.guest-list {
+	flex: 1 0 0;
+}
 
 /*
-	Group Manager
+	message-chain
 */
 
-#inviteManager {
-	position: absolute;
-	text-align: center;
+.message-chain {
 	background-color: orange;
-	border-radius: 5px;
-	border: 1px solid black;
-	width: 80%;
-	left: 10%;
-	top: 100px;
-	height: 360px;
-	list-style: none;
+	position: relative;
+
+	height: 0;
+
+	text-align: left;
+
+	display: flex;
+	flex-direction: column;
 }
 
-	.leftHeader {
-		position: absolute;
-		left: 25px;
-		top: -10px;
-	}
-
-	.rightHeader {
-		position: absolute;
-		right: 25px;
-		top: -10px;
-	}
-
-#inviteList {
-	position: absolute;
-	background-color: white;
-	width: 40%;
-	left: 5%;
-	height: 250px;
-	top: 50px;
-	margin: 0;
-	border: 2px solid black;
-	overflow-y: auto;
+.message-list {
+	flex: 1 0 0;
 }
 
-#friendList {
-	position: absolute;
-	background-color: white;
-	width: 40%;
-	margin-left: 5%; 
-	margin-right: 5%;
-	top: 50px;
-	left: 50%;
-	height: 250px;
-	border: 2px solid black;
-	overflow-y: auto;
+.message {
+	padding: 0.5em;
+	min-height: 50px;
 }
 
-li.friend {
-	clear: both;
-}
-
-li.friend p {
-	padding: 12px;
-	margin: 5px;
-}
-
-li.friend img {
-	margin: 5px;
-	border-radius: 50%;
+.message-pic {
 	float: left;
+	border-radius: 50%;
 }
 
-#closeInviteManager {
-	position: absolute;
-	top: 315px;
-	left: 50%;
-	margin-left: -29px;
+.message-time {
+	font-size: 0.4em;
+	float: right;
+	color: gray;
 }
 
-.search {
-	position: absolute;
-	top: 320px;
+.message-name, .message-text {
+	font-size: 0.8em;
+	padding-left: 60px;
 }
 
-#searchInviteList {
-	left: 25px;
+.message-name {
+	font-weight: bold;
+	padding-bottom: 0.2em;
 }
 
-#searchFriendList {
-	right: 25px;
+.message-form {
+	margin-left: 60px;
+
+	padding: 0.5em;
 }
 
-.marker-indicator {
-	height: 22px;
-	width: 14px;
-}
+@media all and (min-width: 500px) and (max-width: 1199px) {
 
-
-/*
-	Timeline
-*/
-
-#timeline {
-	position: absolute;
-	top: 90px;
-	bottom: 0;
-	left: 0;
-	right: 0;
-
-	overflow-y: auto;
-
-	z-index: 10000;
-	text-align: center;
-
-	background-color: rgba(255, 255, 255, 0.8);
-}
-
-	#event-list {
-		text-align: center;
-		padding: 5px;
-		margin: 0 auto;
+	#collapse-list {
+		left: 0;
+		width: 35vw;
 	}
 
-		.event {
-			margin: 0;
-			/*border: 2px solid gray;*/
-			position: relative;
-			height: 300px;
-			text-align: center;
-		}
+	#collapse-list h2 {
+		font-size: 1.2em;
+	}
 
-		.eventMessage {
-			position: relative;
-			top: 120px;
-			font-size: 40px;
-			margin: 0;
-		}
+	#thread-list {
+		margin-left: 35vw;
+		width: 65vw;
+	}
 
-		.invitePic {
-			position: absolute;
-		}
+}
+
+@media all and (min-width: 1200px) {
+
+	#collapse-list {
+		left: 0;
+		width: 25vw;
+	}
+
+	#collapse-list h2 {
+		font-size: 1.2em;
+	}
+
+	#thread-list {
+		margin-left: 25vw;
+		width: 75vw;
+	}
+
+}
+

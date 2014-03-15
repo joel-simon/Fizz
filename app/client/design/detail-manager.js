@@ -11,7 +11,7 @@ $('.thread-title').on('click', function() {
 	var $this = $(this);
 	var threadID = $this.parent()[0].id;
 	var thread = threadID.substr(threadID.length-1);
-	if (thread == SM.currentThread && !detail) {
+	if (thread == SM.currentThread && !detail && !collapse) {
 		hideBorderTitles(thread);
 		transitionToDetail(thread);
 	} else if (detail) {
@@ -66,9 +66,7 @@ function transitionFromDetail(thread) {
 	$('#thread-'+thread+' .message-form')
 		.addClass('hidden');
 
-	if ( $(window).width() < 500 ) {
-		$('#collapse').removeClass('hidden');
-	}
+	$('#collapse').removeClass('hidden');
 
 	detail = false;
 }

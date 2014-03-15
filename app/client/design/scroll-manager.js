@@ -33,12 +33,10 @@ ScrollManager.prototype.getNearestThread = function() {
 }
 
 ScrollManager.prototype.scrollToThread = function(thread) {
-	// console.trace();
 	var height = $(window).height();
 	var scroll = thread*height;
 	$('#thread-list').animate({'scrollTop': scroll}, 100, function() {
 		this.currentThread = thread;
-		// console.log(Date.now(), 'scrolled to '+thread);
 	});
 }
 
@@ -147,12 +145,13 @@ function parallax() {
 ////////////////////////////////////////////////////////////////////////////////
 
 $('#thread-list').on('scroll', function() {
-	// console.log( $('#thread-list').scrollTop() );
-	parallax();
-	clearTimeout(SM.countDown);
-	SM.countDown = setTimeout(function() {
-		var thread = SM.getNearestThread();
-		SM.currentThread = thread;
-		SM.scrollToThread(thread);
-	}, 100);
+	if (!collapse) {
+		parallax();
+		clearTimeout(SM.countDown);
+		SM.countDown = setTimeout(function() {
+			var thread = SM.getNearestThread();
+			SM.currentThread = thread;
+			SM.scrollToThread(thread);
+		}, 100);
+	}
 });
