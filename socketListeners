@@ -29,7 +29,7 @@ newFriend
 removeFriendList
 	friendList : user array
 
-changeSeatCapacity
+setSeatCapacity
 	eid : int
 	seats : int [NUMBER OF SEATS, absolute]
 

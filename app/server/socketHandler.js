@@ -22,9 +22,6 @@ var
  * @param {Object} events - object for managing all events
  */
 exports.login = function(socket) {
-  log(socket.handshake);
-  return
-
   var user = getUserSession(socket);
   socket.join(''+user.uid);
   socket.emit('myInfo', user);
@@ -53,34 +50,28 @@ exports.newEvent = function (e, socket) {
   check.is(e, 'newEvent');
   var user          = getUserSession(socket),
       inviteOnly    = e.inviteOnly,
-      inviteList    = e.inviteList,
-      invitePnList  = e.invitePnList,
-      message       = e.message;
+      text       = e.text;
 
   var newE = {
     eid: 0,
     creator: user.uid,
     guestList: [user.uid],
-    inviteList: inviteList.append(user),
+    inviteList: [user],
     seats: 2,
-    messageList: [e.message]
+    messageList: [{uid:user.uid, text:text}]
   };
 
-  users.fromPnList(invitePnList, function(err, newUsers) {
-    if (err) return logError(err);
-    newE.inviteList = newE.inviteList.concat(newUsers);
-
-    events.add(newE, function(err, eid) { if(err)return logError(err);
-      check.is(newE, 'event');
-      emit({
-        eventName: 'newEvent',
-        data: {'event' : newE},
-        recipients: newE.inviteList,
-        message: user.name+'has invited you to an event.\n'+message.text+
-        '\n More info @ '+'fakeUrl@extraFizzy.com'
-      });
-      log('New beacon by', getUserSession(socket).name+'\n\t\t',newEvent.message.text);
-    }); 
+  events.add(newE, function(err, eid) {
+    if(err)return logError(err);
+    check.is(newE, 'event');
+    emit({
+      eventName: 'newEvent',
+      data: {'event' : newE},
+      recipients: newE.inviteList,
+      message: user.name+'has invited you to an event.\n'+message.text+
+      '\n More info @ '+'fakeUrl@extraFizzy.com'
+    });
+    log('New beacon by', getUserSession(socket).name+'\n\t\t',newEvent.message.text);
   }); 
 }
 
@@ -105,7 +96,6 @@ exports.joinEvent = function(data, socket) {
     emit({
       eventName : 'addGuest',
       data      : data,
-      message   : null, //send no sms/push
       recipients: results.attends
     });
     log(user.name, 'joined event', uid);
@@ -148,6 +138,23 @@ exports.invite = function(data, socket) {
     inviteList: '[user]',
     invitePnList: '[string]'
   });
+  var eid=data.eid,
+      inviteList=data.inviteList,
+      invitePnList=data.invitePnList;
+
+  users.getOrAddPhoneList(invitePnList, function(err, newUsers) {
+    if (err) return logError(err);
+    inviteList = inviteList.concat(newUsers)
+    events.addInvitees(eid, inviteList, function(err) {
+      emit({
+        eventName: 'newEvent',
+        data: {'event' : newE},
+        recipients: inviteList,
+        message: user.name+'has invited you to an event.\n'+message.text+
+        '\n More info @ '+'fakeUrl@extraFizzy.com'
+      });
+    });
+  });
 }
 
 exports.request = function(data, socket) {
@@ -155,13 +162,14 @@ exports.request = function(data, socket) {
 }
 
 exports.newMessage = function(data, socket) {
-  check.is(data, {message: 'newMessage'});
+  check.is(data, {eid: 'posInt', text:'string'});
   var user = getUserSession(socket),
-      msg = data.message;
+      eid  = data.eid,
+      text = data.text;
 
   async.parallel({
     add        : function(cb) {
-      events.addMessage(msg, cb);
+      events.addMessage(eid, user.uid, text, cb);
     },
     recipients : function(cb) {
       events.getInviteList(msg.eid, cb);
@@ -196,19 +204,24 @@ exports.newFriend = function(data, socket) {
   users.addFriend(user, data.uid, function(err){if(err)logError(err)});
 }
 
-exports.removeFriendList = function(data, socket) {
+exports.removeFriendList = function(data, socket)  {
   var user = getUserSession(socket);
   check.is(data, {'friendList': '[user]' });
-
-  log('removeFriendList');
+  async.each(data.friendList,
+  function(f, cb){
+    users.removeFriend(user, f.uid, cb);
+  },
+  function(err){
+    if(err)logError(err);
+  });
 }
 
-
-exports.changeSeatCapacity = function(data, socket) {
+exports.setSeatCapacity = function(data, socket) {
   var user = getUserSession(socket);
   check.is(data, {eid: 'posInt', seats: 'posInt'});
-
-  log('changeSeatCapacity');
+  events.setSeatCapacity(eid, seats, function(err) {
+    if(err)logError(err);
+  });
 }
 
 

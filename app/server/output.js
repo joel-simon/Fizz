@@ -130,7 +130,7 @@ exports.emit = function(options) {
         if (user.isConnected(user.uid)) {
           io.sockets.in(uid).emit(eventName, data);
         } else {
-          exports.pushIos(msg, user.iosToken, 1);
+          exports.pushIos(msg, user.IOSToken, 1);
         }
         break;
     }

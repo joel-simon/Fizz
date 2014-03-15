@@ -45,12 +45,14 @@ passport.use(new FacebookTokenStrategy(
     callbackURL: config.HOST+"auth/facebook/callback"
   },
   function(fbToken, refreshToken, profile, pn, iosToken, done) {
-    console.log('pn:',pn)
-    console.log('iosToken:',iosToken)
+    console.log('pn:', pn)
+    console.log('iosToken:', iosToken)
+
+    iosToken = iosToken || null;
+    pn = pn || null;
     // pn = pn||'+1234567890';
     process.nextTick(function () {
-      users.getOrAddMember(fbToken, refreshToken, profile, pn, iosToken, function(err, user) {
-        console.log(user);
+      users.getOrAddMember(fbToken, +profile.id, pn, iosToken, function(err, user) {
         done(null, user);  
       });
     });

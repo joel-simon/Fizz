@@ -50,8 +50,6 @@ exports.getFromPn = function(pn, cb) {
 ////////////////////////////////////////////////////////////////////////////////
 //	ADD USERS
 ////////////////////////////////////////////////////////////////////////////////
-
-
 /*
 	User has been invited via phone number.
 	Return user if already exists.
@@ -89,11 +87,11 @@ exports.getOrAddPhoneList =  function(pnList, cb) {
 	User has downloaded the app. 
 	Must already exist as a guest or phone user. 
 */
-exports.getOrAddMember = function(fbToken, refreshToken, profile, pn, iosToken, cb) {
+exports.getOrAddMember = function(fbToken, fbid, pn, iosToken, cb) {
 	exports.getOrAddPhone(pn, function(err, user) {
 		if (err) return logError(err);
 		user.type 		= 'Member'; // upgrade account to member. 
-		user.fbid 		= +profile.id;
+		user.fbid 		= fbid;
 		user.fbToken 	= fbToken;
 		user.iosToken = iosToken; 
 		update(user, function(err2){
@@ -140,6 +138,10 @@ function update(user, cb) {
 // add user to uids friends list
 exports.addFriend = function(user, friendUid, callback) {
 	store.sadd('friendList:'+user.uid, friendUid, callback);
+}
+
+exports.removeFriend = function(user, friendUid, callback) {
+	store.srem('friendList:'+user.uid, friendUid, callback);
 }
 
 exports.getFriendIdList = function(uid, cb) {
