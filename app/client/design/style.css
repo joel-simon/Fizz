@@ -183,3 +183,39 @@ ul {
 	padding: 0.5em;
 }
 
+@media all and (min-width: 500px) and (max-width: 1199px) {
+
+	#collapse-list {
+		left: 0;
+		width: 35vw;
+	}
+
+	#collapse-list h2 {
+		font-size: 1.2em;
+	}
+
+	#thread-list {
+		margin-left: 35vw;
+		width: 65vw;
+	}
+
+}
+
+@media all and (min-width: 1200px) {
+
+	#collapse-list {
+		left: 0;
+		width: 25vw;
+	}
+
+	#collapse-list h2 {
+		font-size: 1.2em;
+	}
+
+	#thread-list {
+		margin-left: 25vw;
+		width: 75vw;
+	}
+
+}
+
