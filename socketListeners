@@ -1,0 +1,35 @@
+newEvent
+	inviteOnly : boolean
+	inviteList : user array
+	invitePnList: string array 
+	message : message [ eid = 0 ]
+
+joinEvent
+	eid : int
+
+leaveEvent
+	eid : int
+
+invite
+	eid : int
+	inviteList : user array
+	invitePnList : string array
+
+request
+	eid : int
+
+newMessage
+	message : message [ mid = 0 ]
+
+getFriendList [ only Fizz Members ]
+
+newFriend
+	uid : int
+
+removeFriendList
+	friendList : user array
+
+setSeatCapacity
+	eid : int
+	seats : int [NUMBER OF SEATS, absolute]
+

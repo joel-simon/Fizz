@@ -5,10 +5,11 @@ var sanitize = require('validator').sanitize;
 var stackTrace = require('stack-trace');
 
 colors.setTheme({
-  info: 'rainbow',
+  info: 'green',
   debug: 'blue',
   error: 'red',
   data: 'grey'
+
 });
 
 module.exports.log = function() {
@@ -20,6 +21,17 @@ module.exports.log = function() {
 	}
 	console.log(s.data);
   console.log('\t'+'—————————————————————'.data);
+}
+
+module.exports.logImportant = function() {
+  var s = '\tInfo: ';
+  var e;
+  for (var i = 0; i < arguments.length; i++) {
+    e = arguments[i];
+    s += ((e instanceof Object) ? JSON.stringify(e) : e)+' ';
+  }
+  console.log(s.info);
+  console.log('\t'+'—————————————————————'.info);
 }
 
 module.exports.debug = function() {

@@ -14,8 +14,14 @@ process.argv.forEach(function (val, index) {
       case 'dev':
         exports.dev = true;
         break
+      case 'sms':
+        exports.sendSms = true;
+        break;
+      case 'push':
+        exports.pushIos = true;
+        break;
       default:
-        console.log('Invalid command "%s" Run "node app test" to run in test mode',val)
+        console.log('Valid commands : "test", "dev", "sms".');
     }
   }
 });

@@ -3,43 +3,57 @@ var sanitize = require('validator').sanitize;
 var store = require('./redisStore.js').store;
 exports = module.exports;
 
+/*
+  REDIS VARIABLES
+
+  idCounters      | event->int, message->int
+  viewableBy:uid  | set(eid)
+
+  inviteList:eid  | set(users) 
+  event:uid      | seats->int
+  messages:eid    | list(json message)
+  guestList:eid   | list(uid)
+*/
+
+
 /**
  *
  */
-exports.add = function(event, callback) {
+exports.add = function(e, user, callback) {
   var self = this;
-  var eid;
+  e.seats = 2;
   store.hincrby('idCounter', 'event', 1, function(err, next) {
     if (err) return callback(err);
-    event.eid = next;
-    event.message.eid = next;
+    e.eid = next;
     async.parallel({
       message: function(cb) {
-        // console.log(event.message);
-        if (event.message) exports.addMessage(event.message, cb);
+        exports.addMessage(e.eid, user.uid, e.text, cb);
       },
       guestList: function(cb) {
-        async.map(event.guestList, function(guest, cb2){
-          exports.addGuest(event.eid, guest, cb2);
-        },cb);
-        // exports.addGuest(event.eid, event.host, cb);
+        store.sadd('guestList:'+e.eid, user.uid, cb);
+        // exports.addGuest(e.eid, user.uid, cb);
+        // async.map(e.guestList, function(guest, cb2){
+        // exports.addGuest(e.eid, guest, cb2);
+        // },cb);
       },
       inviteList: function(cb) {
-        store.sadd('inviteList:'+event.eid, event.inviteList.map(JSON.stringify),cb);
+        store.sadd('inviteList:'+e.eid, JSON.stringify(user), cb);
       },
-      makeVisisble: function(cb) {
-        async.map(event.inviteList, function(user, cb2) {
-           store.sadd('viewableBy:'+user.uid, event.eid, cb2);
-        }, cb);
-      },
-      setHost: function(cb) {
-        var data = JSON.stringify({host:event.host});
-        store.hset('events', event.eid, data, cb)
+      // makeVisisble: function(cb) {
+      //   async.each(e.inviteList, function(user, cb2) {
+      //     exports.addVisible(user.uid, e.eid, cb2);
+      //   }, cb);
+      // },
+      set: function(cb) {
+        store.hmset('event:'+e.eid,
+          'seats', ''+e.seats, 
+          'inviteOnly', JSON.stringify(e.inviteOnly),
+          cb);
       }
     },
     function(err, results) {
       if(err) return callback(err);
-      callback(null, event.eid);
+      callback(null, e.eid);
     });
 
   });
@@ -63,14 +77,17 @@ exports.get = function(eid, callback) {
     inviteList: function(cb) {
       store.smembers('inviteList:'+eid, cb);
     },
-    host: function(cb) {
-      store.hget('events', eid, cb);
+    event: function(cb) {
+      store.hmget('event:'+eid, 'seats','inviteOnly', cb);
     }
   },
   function(err, results) {
     if(err) return callback(err);
+
     var event = {'eid' : eid};
-    event.host = JSON.parse(results.host).host;
+    event.seats = +results.event[0];
+    event.inviteOnly = JSON.parse(results.event[1]);
+
     event.messageList = results.messages.map(JSON.parse);
     event.inviteList = results.inviteList.map(JSON.parse);
     event.guestList = results.guestList;
@@ -79,19 +96,30 @@ exports.get = function(eid, callback) {
 }
 
 exports.addGuest = function(eid, uid, callback) {
-  store.sadd('guestList:'+eid, uid, callback);
+  store.hget('event:'+eid, 'seats', function(err, seats){
+    if (err) callback(err);
+    else if (seats>1) store.sadd('guestList:'+eid, uid, callback);
+  });
 }
 
-exports.removeGuest = function(eid, uid, callback) {
-  store.srem('guestList:'+eid, uid, callback);
+exports.removeGuest = function(eid, uid, cb) {
+  store.srem('guestList:'+eid, uid, cb);
 }
 
-exports.addMessage = function(msg, callback) {
-  // msg.text = sanitize(msg.text).xss();
+exports.addMessage = function(eid, uid, text, callback) {
+  // text = sanitize(msg.text).xss();
   store.hincrby('idCounters', 'message', 1, function(err, i) {
     if (err) return callback(err);
-    msg.mid = i;
-    store.rpush('messages:'+msg.eid, JSON.stringify(msg), function(err) {
+
+    var msg = {
+      text: text,
+      mid: i,
+      eid: eid,
+      uid: uid,
+      creationTime: Date.now()
+    }
+    // check.is(msg, 'message');
+    store.rpush('messages:'+eid, JSON.stringify(msg), function(err) {
       if (err) callback(err) 
       else callback(null, i);
     });
@@ -100,13 +128,10 @@ exports.addMessage = function(msg, callback) {
 
 exports.getInviteList = function(eid, cb) {
   store.smembers('inviteList:'+eid, function(err, list) {
-
     if (err) cb(err);
     else cb(null, list.map(JSON.parse));
   });
 }
-
-
 
 exports.isInvitedTo = function(uid, callback) {
   store.smembers('viewableBy:'+uid, function(err1, eidList) {
@@ -121,42 +146,24 @@ exports.isInvitedTo = function(uid, callback) {
   });
 }
 
-
-exports.addVisible = function(user, event, callback) {
-  store.sadd('viewableBy:'+user.uid, event.eid, callback);
+exports.addVisible = function(uid, eid, callback) {
+  store.sadd('viewableBy:'+uid, eid, callback);
 }
 
 exports.deleteVisible = function(userId, bId, callback) {
   store.srem('viewableBy:'+userId, bId, callback);
 }
 
-// exports.updateFields = function (data, callback) {
-//   var self = this;
-//   exports.get(data.id, function(err, b) {
-//     for (var e in data) {
-//       if (b.hasOwnProperty(e)) {
-//         b[e] = data[e];
-//       }
-//     }
-//     exports.insert(b, function(err) {
-//       if (err) callback(err);
-//       else callback(null);
-//     });
-//   });
-// }
 
+exports.addInvitees = function(eid, users, cb) {
+  store.sadd('inviteList:'+event.eid, event.inviteList.map(JSON.stringify),function(err){
+    async.each(users, function(user, cb2) {
+      exports.addVisible(user.uid, event.eid, cb2);
+    }, cb);
+  });
 
+}
 
-// exports.remove = function(id, host, callback) {
-//   // store.hdel('privateBeacons', ''+id, function(){});
-//   async.parallel({
-//       beacon:    function(cb){ store.hdel('publicBeacons', ''+id, cb) },
-//       comments:  function(cb){ store.del('comments'+id, cb) },
-//       attending: function(cb){ store.del('a'+id, callback) },
-//       hostedBy:  function(cb){ store.srem('hostedBy'+host, id) }
-//     },
-//     function(err, results) {
-//       callback(err);
-//     }
-//   );
-// }
+exports.setSeatCapacity = function(eid, seats, cb) {
+  store.hset('event:'+eid, 'seats', seats, cb);
+}
