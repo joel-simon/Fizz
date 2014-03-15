@@ -11,7 +11,7 @@
 
 body {
 	position: absolute;
-
+	background-color: black;
 	overflow: auto;
 
 	height: 100vh;
@@ -167,39 +167,33 @@ ul {
 	padding: 0.5em;
 }
 
-/*@media all and (min-width: 500px) and (max-width: 1199px) {
+/*
+@media all and (min-width: 600px) and (max-width: 1199px) {
 
-	#collapse-list {
-		left: 0;
-		width: 35vw;
-	}
-
-	#collapse-list h2 {
-		font-size: 1.2em;
+	#collapse {
+		display: none !important;
+		visibility: hidden !important;
 	}
 
 	#thread-list {
-		margin-left: 35vw;
-		width: 65vw;
+		margin-left: 40vw;
+		width: 60vw;
 	}
 
 }
 
 @media all and (min-width: 1200px) {
 
-	#collapse-list {
-		left: 0;
-		width: 25vw;
-	}
-
-	#collapse-list h2 {
-		font-size: 1.2em;
+	#collapse {
+		display: none !important;
+		visibility: hidden !important;
 	}
 
 	#thread-list {
-		margin-left: 25vw;
-		width: 75vw;
+		margin-left: 20vw;
+		width: 40vw;
 	}
 
-}*/
+}
+*/
 
