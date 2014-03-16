@@ -22,7 +22,6 @@ var
   FacebookTokenStrategy = require('passport-facebook-token').Strategy,
   passportSocketIo = require("passport.socketio"),
   colors  = require('colors');
-
 var config = ((args.dev) ? require('./configDev.json') : require('./config.json'));
 
 var store = redisConns.store,
@@ -43,11 +42,11 @@ passport.use(new FacebookStrategy(
     clientSecret: config.FB.FACEBOOK_APP_SECRET,
     callbackURL: config.HOST+"auth/facebook/callback"
   },
-  function(fbToken, refreshToken, profile, pn, iosToken, done) {
-    console.log('test');
+  function(fbToken, refreshToken, profile, done) {
+    console.log('fbToken', fbToken);
     process.nextTick(function () {
       users.getOrAddGuest(profile,fbToken, function(err, user) {
-        log(user)
+        console.log(user);
         done(null, user);  
       });
     });
@@ -101,7 +100,6 @@ app.configure(function() {
   app.use(express.errorHandler());
 });
 
-
 var ioRedisStore = require('socket.io/lib/stores/redis');
 // Configure socketio.
 io.configure( function(){
@@ -118,7 +116,6 @@ io.set('authorization', passportSocketIo.authorize({
   secret:      config.SECRET.cookieParser,    // the session_secret to parse the cookie
   store:       sessionStore,        // we NEED to use a sessionstore. no memorystore please
 }));
-
 
 // Bind socket handlers.
 d.run(function(){

@@ -7,6 +7,18 @@ var db = mongojs(config.DB.MONGOHQ_UR, ['users', 'events']);
 var exports = module.exports;
 var async    = require('async');
 
+
+/*
+  REDIS VARIABLES
+
+  users      			| uid -> json user
+  fbid->uid 			| fbid -> uid
+  pn->uid 				| pn -> uid
+	friendList:uid 	| set(uid) 
+
+*/
+
+
 var blankUser = function(){
 	this.uid 			= 0;
 	this.type 		= '';
@@ -34,14 +46,14 @@ exports.get = function(uid, callback) {
 }
 exports.getFromFbid = function(fbid, cb) {
 	store.hget('fbid->uid', fbid, function(err, uid) {
-		if(err)return cb(err);
+		if(err) return cb(err);
 		if(!uid) return cb(null, null);
 		exports.get(uid, cb);
 	});
 }
 exports.getFromPn = function(pn, cb) {
 	store.hget('pn->uid', pn, function(err, uid) {
-		if(err)return cb(err);
+		if(err)  return cb(err);
 		if(!uid) return cb(null, null);
 		exports.get(uid, cb);
 	});
@@ -115,19 +127,20 @@ function update(user, cb) {
 */
 exports.getOrAddGuest = function(profile, fbToken, cb) {
 	exports.getFromFbid(+profile.id, function(err, user) {
-		if (err)  return logError(err);
-		if (user) return (null, user);
-		else { // UPGRADE PHONE USER.
-			var pn = (''+Math.random()).split('.')[0]
-			exports.getOrAddOrPhone(pn, function(err, user) {
-				store.hset('fbid->uid', +profile.id, user.uid);
-				user.fbid = +profile.id;
-			 	user.name = profile.displayName;
-			 	user.type = 'Guest';
-			 	if (err) cb(err);
-			 	else cb(null, user);
-			});
-		}
+		if (err)  return cb(err);
+		if (user) return cb(null, user);
+		 // UPGRADE PHONE USER.
+		var pn = (''+Math.random()).split('.')[0]
+		exports.getOrAddPhone(pn, function(err, user) {
+			store.hset('fbid->uid', +profile.id, user.uid);
+			user.fbid = +profile.id;
+		 	user.name = profile.displayName;
+		 	user.type = 'Guest';
+		 	user.fbToken = fbToken;
+		 	if (err) cb(err);
+		 	else cb(null, user);
+		});
+		
 	});
 }
 

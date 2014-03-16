@@ -39,11 +39,18 @@ exports.add = function(e, user, callback) {
       inviteList: function(cb) {
         store.sadd('inviteList:'+e.eid, JSON.stringify(user), cb);
       },
-      // makeVisisble: function(cb) {
-      //   async.each(e.inviteList, function(user, cb2) {
-      //     exports.addVisible(user.uid, e.eid, cb2);
-      //   }, cb);
-      // },
+      makeVisisble: function(cb) {
+        if (e.inviteOnly) {
+          async.each(e.inviteList, function(u, cb2) {
+            exports.addVisible(u.uid, e.eid, cb2);
+          }, cb);
+        } else {
+          async.each(e.inviteList, function(u, cb2) {
+            exports.addVisible(u.uid, e.eid, cb2);
+          }, cb);
+        }
+        
+      },
       set: function(cb) {
         store.hmset('event:'+e.eid,
           'seats', ''+e.seats, 
@@ -133,7 +140,7 @@ exports.getInviteList = function(eid, cb) {
   });
 }
 
-exports.isInvitedTo = function(uid, callback) {
+exports.canSee = function(uid, callback) {
   store.smembers('viewableBy:'+uid, function(err1, eidList) {
     if (err1) return callback(err);
     if (eidList.length === 0) callback(null, []);
