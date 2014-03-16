@@ -120,7 +120,7 @@ exports.emit = function(options) {
 
       case "Guest":
         if (users.isConnected(user.uid)) {
-          io.sockets.in(uid).emit(eventName, data);
+          io.sockets.in(user.uid).emit(eventName, data);
         } else if (mesage && smsRecip[user.uid]) {
           exports.sendSms(user.pn, message);
         }
