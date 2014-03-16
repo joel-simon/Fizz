@@ -58,16 +58,13 @@ module.exports = {
   },
   event: {
     eid:        'posInt',
-    creator:    'posInt',
+    // creator:    'posInt',
     guestList:  '[posInt]',
     inviteList: '[user]',
     seats:      'posInt',
-    messageList:'[message]'
   },
   newEvent: {
     inviteOnly: 'bool',
-    // inviteList: '[user]',
-    // invitePnList: '[string]',
     text:'string'
   },
   // userLocation : {

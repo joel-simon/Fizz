@@ -29,12 +29,16 @@ module.exports = function(app, passport) {
 
 	app.get('/auth/facebook/callback',  passport.authenticate('facebook', { failureRedirect: '/' }),
 		function(req, res) {
+			var user = req['user'];
+			res.cookie('fbid', user.id, { maxAge: 2592000000 });
+			res.redirect('/home');
 			// res.send('Logged in');
 	});
 
 	app.post('/iosLogin',
 		passport.authenticate('facebook-token', { display: 'page', scope: ['user_friends', 'user_groups', 'email'] }),
 		function(req, res) {
+			// console.log(req.body);
 			// var user = req['user'];
 			// res.cookie('fbid', user.id, { maxAge: 2592000000 });
 			// console.log('here I am ', req.session)

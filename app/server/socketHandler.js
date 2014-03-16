@@ -24,20 +24,30 @@ var
 exports.login = function(socket) {
   var user = getUserSession(socket);
   socket.join(''+user.uid);
-  socket.emit('myInfo', user);
-  events.isInvitedTo(user.uid, function(err, eventList) {
-    if (err) return logError('getEvents:', err);
+
+  async.parallel({
+    eventList:function(cb) { events.canSee(user.uid, cb) },
+    friendList:function(cb){ users.getFriendUserList(user.uid, cb) }
+
+  },
+  function(err, results){
+    if (err) return logError(err);
     var str = user.name+' has connected. uid:'+user.uid+'\n\t\t';
-    str += eventList.length + ' visible events.'
+    str += results.eventList.length + ' visible events.'
     log(str);
-    check.is(eventList, '[event]');
+
+    check.is(results.eventList, '[event]');
     emit({
-      eventName: 'eventList',
-      data: {'eventList': eventList},
+      eventName: 'onLogin',
+      data: {
+        eventList: results.eventList,
+        me:   user,
+        friendList:results.friendList
+      },
       recipients: [user]
     });
+
   });
-  return;
 }
 
 /**
@@ -50,7 +60,8 @@ exports.newEvent = function (e, socket) {
   check.is(e, 'newEvent');
   var user          = getUserSession(socket),
       inviteOnly    = e.inviteOnly,
-      text       = e.text;
+      text       = e.text,
+      inviteOnly = e.inviteOnly;
 
   var newE = {
     eid: 0,
@@ -58,21 +69,28 @@ exports.newEvent = function (e, socket) {
     guestList: [user.uid],
     inviteList: [user],
     seats: 2,
+    inviteOnly: inviteOnly,
     messageList: [{uid:user.uid, text:text}]
   };
+  // if (inviteOnly) {
+     events.add(newE, user, function(err, eid) {
+      if(err)return logError(err);
+      check.is(newE, 'event');
+      emit({
+        eventName: 'newEvent',
+        data: {'event' : newE},
+        recipients: newE.inviteList,
+        message: user.name+'has invited you to an event.\n'+text+
+        '\n More info @ '+'fakeUrl@extraFizzy.com'
+      });
+      log('New fizzlevent by', user.name+'\n\t\t',text);
+    }); 
 
-  events.add(newE, user, function(err, eid) {
-    if(err)return logError(err);
-    check.is(newE, 'event');
-    emit({
-      eventName: 'newEvent',
-      data: {'event' : newE},
-      recipients: newE.inviteList,
-      message: user.name+'has invited you to an event.\n'+message.text+
-      '\n More info @ '+'fakeUrl@extraFizzy.com'
-    });
-    log('New beacon by', getUserSession(socket).name+'\n\t\t',newEvent.message.text);
-  }); 
+  // } else {
+  //   getFriendUserList(user.uid, function(err, fizzFriends){
+  //     newE.
+  //   });
+  // }
 }
 
 /**
@@ -198,7 +216,7 @@ exports.getFriendList = function(socket) {
   });
 }
 
-exports.newFriend = function(data, socket) {
+exports.addFriendList = function(data, socket) {
   var user = getUserSession(socket);
   check.is(data, { uid: 'posInt' });
   users.addFriend(user, data.uid, function(err){if(err)logError(err)});
