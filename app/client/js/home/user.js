@@ -30,6 +30,7 @@ User.prototype.updateInfo = function(callback) {
 	updateFacebookInfo(this.fbid, function(name, pic) {
 		this.name = name;
 		this.pic = pic;
+		this.updateUserData();
 		if (callback) callback(name, pic);
 	});
 }

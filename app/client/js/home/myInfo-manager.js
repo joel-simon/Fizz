@@ -6,12 +6,8 @@
 
 var MIM;
 
-function MyInfoManager(userData) {
+function MyInfoManager(userData, friendList) {
 	this.me = new User(userData);
 	this.me.getInfo();
-	this.friends = null;
-}
-
-MyInfoManager.prototype.setFriendList = function(friendList) {
-	this.friends = new UserListManager(friendList);
+	this.friendList = new UserListManager(friendList);
 }
