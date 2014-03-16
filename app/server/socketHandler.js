@@ -70,7 +70,8 @@ exports.newEvent = function (e, socket) {
     inviteList: [user],
     seats: 2,
     inviteOnly: inviteOnly,
-    messageList: [{uid:user.uid, text:text}]
+    messageList: [{uid:user.uid, text:text}],
+    text:text
   };
   // if (inviteOnly) {
      events.add(newE, user, function(err, eid) {

@@ -55,6 +55,7 @@ exports.add = function(e, user, callback) {
         store.hmset('event:'+e.eid,
           'seats', ''+e.seats, 
           'inviteOnly', JSON.stringify(e.inviteOnly),
+          'creator', e.creator,
           cb);
       }
     },
@@ -94,6 +95,7 @@ exports.get = function(eid, callback) {
     var event = {'eid' : eid};
     event.seats = +results.event[0];
     event.inviteOnly = JSON.parse(results.event[1]);
+    event.creator = results[2];
 
     event.messageList = results.messages.map(JSON.parse);
     event.inviteList = results.inviteList.map(JSON.parse);
