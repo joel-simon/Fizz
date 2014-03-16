@@ -19,9 +19,19 @@ exports = module.exports;
 /**
  *
  */
-exports.add = function(e, user, callback) {
+exports.add = function(text, user, inviteOnly, callback) {
   var self = this;
-  e.seats = 2;
+  var e = {
+    eid: 0,
+    creator: user.uid,
+    guestList: [user.uid],
+    inviteList: [user],
+    seats: 2,
+    inviteOnly: inviteOnly,
+    messageList: [{uid:user.uid, text:text}],
+    text:text,
+    seats:2
+  };
   store.hincrby('idCounter', 'event', 1, function(err, next) {
     if (err) return callback(err);
     e.eid = next;
@@ -86,7 +96,7 @@ exports.get = function(eid, callback) {
       store.smembers('inviteList:'+eid, cb);
     },
     event: function(cb) {
-      store.hmget('event:'+eid, 'seats','inviteOnly', cb);
+      store.hmget('event:'+eid, 'seats','inviteOnly', 'creator', cb);
     }
   },
   function(err, results) {
@@ -95,7 +105,7 @@ exports.get = function(eid, callback) {
     var event = {'eid' : eid};
     event.seats = +results.event[0];
     event.inviteOnly = JSON.parse(results.event[1]);
-    event.creator = results[2];
+    event.creator = results.event[2];
 
     event.messageList = results.messages.map(JSON.parse);
     event.inviteList = results.inviteList.map(JSON.parse);

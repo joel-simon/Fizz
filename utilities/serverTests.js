@@ -35,22 +35,7 @@ users.getOrAddMember('danielToken', 3, '+34', null, function(err, d) {
   users.addFriend(j,andrewProfile.id, onErr);
   users.addFriend(j,danielProfile.id, onErr);
 
-  var andrewsEventA = {
-    inviteOnly : true,
-    text: 'Andrews First Event'
-  }
-
-  var andrewsEventB = {
-    text: 'Andrews Second Event',
-    inviteOnly : true
-  }
-
-  var danielsEvent = {
-    text: 'Daniels First Event',
-    inviteOnly : true
-  }
-
-  events.add(andrewsEventA, a, function(err, eid) {
+  events.add('Andrews First Event', a, true, function(err, eid) {
     if (err) console.log(err);
     events.addMessage(eid,a.uid,'Second Message', function(err) {
       events.get(eid, function(err, event) {
@@ -58,13 +43,13 @@ users.getOrAddMember('danielToken', 3, '+34', null, function(err, d) {
       });
     });
   });
-  events.add(andrewsEventB, a, function(err, eid){
+  events.add('Andrews Second Event', a, true, function(err, eid){
     if (err) console.log(err);
     // events.get(eid, function(err, event){
     //   console.log(err, event);
     // })
   });
-  events.add(danielsEvent, d, function(err, eid){
+  events.add('Daniels First Event', d, true, function(err, eid){
     if (err) console.log(err);
   });
 
