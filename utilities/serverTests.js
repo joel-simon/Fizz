@@ -5,27 +5,27 @@ var store = require('../app/server/redisStore.js').store;
 store.flushdb();
 
 var andrewProfile = {
-  fbid: 100000157939878,
+  id: 100000157939878,
   type:'Member',
   pn: '+123',
-  name: 'Andrew Sweet'
+  displayName: 'Andrew Sweet'
 }
 var joelProfile = {
-  fbid: 1380180579,
+  id: 1380180579,
   type:'Member',
   pn: '+789',
-  name: 'Joel Simon'
+  displayName: 'Joel Simon'
 }
 var danielProfile = {
-  fbid: 798172051,
+  id: 798172051,
   type:'Member',
   pn: '+456',
-  name: 'Daniel Belchamber'
+  displayName: 'Daniel Belchamber'
 }
 function onErr(err){if (err) throw err;};
-users.getOrAddMember('andrewToken', 1, '+12', null, function(err, a) {
-users.getOrAddMember('joelToken'  , 2, '+23', null, function(err, j) {
-users.getOrAddMember('danielToken', 3, '+34', null, function(err, d) {
+users.getOrAddMember(andrewProfile, 'token', '+12', null, function(err, a) {
+users.getOrAddMember(joelProfile  , 'token', '+23', null, function(err, j) {
+users.getOrAddMember(danielProfile, 'token', '+34', null, function(err, d) {
   users.addFriend(a,joelProfile.id, onErr);
   users.addFriend(a,danielProfile.id, onErr);
 
@@ -43,7 +43,7 @@ users.getOrAddMember('danielToken', 3, '+34', null, function(err, d) {
       });
     });
   });
-  events.add('Andrews Second Event', a, true, function(err, eid){
+  events.add('Joels First', j, true, function(err, eid){
     if (err) console.log(err);
     // events.get(eid, function(err, event){
     //   console.log(err, event);

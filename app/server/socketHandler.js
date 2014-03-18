@@ -56,34 +56,32 @@ exports.login = function(socket) {
  * @param {Object} Socket - contains user user socket
  * @param {Object} events - object for managing all events
  */
-exports.newEvent = function (e, socket) {
-  check.is(e, 'newEvent');
-  var user          = getUserSession(socket),
-      text       = e.text,
-      inviteOnly = e.inviteOnly;
+exports.newEvent = function (data, socket) {
+  check.is(data, 'newEvent');
+  var user       = getUserSession(socket),
+      text       = data.text,
+      inviteOnly = data.inviteOnly;
 
+  async.parallel({
+    friendList: function(cb) { users.getFriendUserList(user.uid, cb) },
+    e: function(cb) { events.add(text, user, inviteOnly, cb) }
+  },
+  function(err, result) {
+    if (err) return logError(err);
+    check.is(result.e, 'event');
+    var canSee = (inviteOnly) ? [user] : result.friendList.concat(user);
 
-  // if (inviteOnly) {
-   events.add(text, user, inviteOnly, function(err, eid) {
-    if(err)return logError(err);
-    check.is(newE, 'event');
+    users.addVisibleList(canSee, result.e.eid, function(err) {
+      if (err) logError(err);
+    });
     emit({
-      eventName: 'newEvent',
-      data: {'event' : newE},
-      recipients: newE.inviteList,
-      message: user.name+'has invited you to an event.\n'+text+
-      '\n More info @ '+'fakeUrl@extraFizzy.com'
+      eventName:  'newEvent',
+      data:       {'event' : result.e},
+      recipients: [user]
     });
     log('New fizzlevent by', user.name+'\n\t\t',text);
-  }); 
-
-  // } else {
-  //   getFriendUserList(user.uid, function(err, fizzFriends){
-  //     newE.
-  //   });
-  // }
+  });
 }
-
 /**
  * Handle joinBeacon socket
  * @param {Object} Data - contains .id and .admin
@@ -96,7 +94,7 @@ exports.joinEvent = function(data, socket) {
 
   async.parallel({
     add     : function(cb){ events.addGuest( eid, uid, cb) },
-    attends : function(cb){ events.getInviteList(uid, cb) }
+    attends : function(cb){ events.getInviteList(uid, cb) },
   },
   function (err, results) {
     if (err) return logError(err);

@@ -8,6 +8,7 @@ var exports = module.exports;
 var async    = require('async');
 
 
+
 /*
   REDIS VARIABLES
 
@@ -100,14 +101,14 @@ exports.getOrAddPhoneList =  function(pnList, cb) {
 	Must already exist as a guest or phone user. 
 */
 exports.getOrAddMember = function(profile, fbToken, pn, iosToken, cb) {
-	exports.getOrAddPhone(pn, function(err, user) {
+	exports.getOrAddGuest(profile, fbToken, function(err, user) {
 		if (err) return logError(err);
 		user.type 		= 'Member'; // upgrade account to member. 
 		user.fbid 		= +profile.id;
 		user.name     = profile.displayName;
 		user.fbToken 	= fbToken;
 		user.iosToken = iosToken; 
-		update(user, function(err2){
+		update(user, function(err2) {
 			if (err2) logError(err2);
 			else 			cb(null, user);
 		});
@@ -172,14 +173,30 @@ exports.getFriendUserList = function(uid, cb) {
     if (err) return logError(err);
     async.map(friendIdList, exports.get, function(err, friendsList) {
       if (err) {
-        logError(err);
+        cb(err);
       } else {
         cb(null, friendsList);
       }
     });
   });
 }
+
+exports.addVisibleList = function(users, eid, cb) {
+	async.each(users, function(u, cb2) {
+       exports.addVisible(u.uid, eid, cb2);
+  }, cb);
+}
+
+exports.addVisible = function(uid, eid, callback) {
+  store.sadd('viewableBy:'+uid, eid, callback);
+}
+
+exports.deleteVisible = function(userId, eid, callback) {
+  store.srem('viewableBy:'+userId, eid, callback);
+}
+
   
+
 
 /*
 *	New Player
