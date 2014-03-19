@@ -179,15 +179,20 @@ exports.newMessage = function(data, socket) {
       events.addMessage(eid, user.uid, text, cb);
     },
     recipients : function(cb) {
-      events.getInviteList(msg.eid, cb);
+      events.getInviteList(eid, cb);
     }
   },
   function(err, results) {
     log(results);
     // add will generate the messages mid.
     check.is(results, {add: 'posInt', recipients: '[user]'});
-    msg.mid = results.add;
-    check.is(data, {message:'message'});
+    var msg = {
+      mid : results.add,
+      eid : eid,
+      text: text,
+      uid: user.uid
+    }
+    // check.is(data, {message:'message'});
     emit({
       eventName: 'newMessage',
       data: data,
