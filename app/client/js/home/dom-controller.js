@@ -5,6 +5,10 @@
 */
 ////////////////////////////////////////////////////////////////////////////////
 
-$('.message-form').on('submit', function() {
-	console.log( $(this).parent().parent() );
-});
+function setMessageFormListener(thread) {
+	$('#thread-'+thread+' .message-form').on('submit', function(e) {
+		e.preventDefault();
+		console.log('Thread '+thread+': '+this.message.value);
+		this.message.value = '';
+	});
+}

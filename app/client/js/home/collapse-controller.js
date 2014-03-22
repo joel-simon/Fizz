@@ -12,15 +12,15 @@ $('#collapse').on('click', function() {
 	collapseThreadList();
 });
 
-$('.thread').on('click', function() {
-	if (collapse) {
-		var threadID = $(this)[0].id;
-		var thread = threadID.substr(threadID.length-1);
-		openThreadList();
-		SM.scrollToThread(thread);
-		$('#collapse').removeClass('hidden');
-	}
-});
+function setCollapseListener(thread) {
+	$('#thread-'+thread).on('click', function() {
+		if (collapse) {
+			openThreadList();
+			SM.scrollToThread(thread);
+			$('#collapse').removeClass('hidden');
+		}
+	});
+}
 
 function collapseThreadList() {
 	$('.invite-list').css('flex','0 1 auto').addClass('hidden');

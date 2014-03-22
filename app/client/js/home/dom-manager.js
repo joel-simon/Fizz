@@ -46,6 +46,9 @@ DomManager.prototype.drawThread = function(event) {
 		});
 		html = this.writeThreadHtml(event, index);
 		$('#thread-list').append(html);
+		setCollapseListener(index);
+		setDetailListener(index);
+		setMessageFormListener(index);
 	} else {
 		this.shiftThreadsDown(index);
 		this.threadList[index] = {
@@ -54,6 +57,9 @@ DomManager.prototype.drawThread = function(event) {
 		};
 		html = this.writeThreadHtml(event, index);
 		$( '#thread-'+(index + 1) ).before(html);
+		setCollapseListener(index);
+		setDetailListener(index);
+		setMessageFormListener(index);
 	}
 }
 
@@ -83,12 +89,15 @@ DomManager.prototype.writeUserImgHtml = function(name, pic) {
 
 DomManager.prototype.writeInviteListHtml = function(event) {
 	var html = '<ul class="invite-list">';
-	for (var user in event.inviteList) {
-		user.getInfo(function(name, pic) {
-			if (!event.isGuest(user.uid)) {
-				html += this.writeUserImgHtml(name, pic);
-			}
-		});
+	var self = this;
+	var user;
+	for (var id in event.inviteList.table) {
+		user = event.getUser(id);
+		if (!event.isGuest(user.uid)) {
+			user.getInfo(function(name, pic) {
+				html += self.writeUserImgHtml(name, pic);
+			});
+		}
 	}
 	html += '</ul>';
 	return html;
@@ -96,10 +105,15 @@ DomManager.prototype.writeInviteListHtml = function(event) {
 
 DomManager.prototype.writeGuestListHtml = function(event) {
 	var html = '<ul class="guest-list">';
+	var self = this;
 	var user;
-	for (var uid in event.guestList) {
-		user = event.getUser(uid);
-		html += this.writeUserImgHtml(name, pic);
+	for (var id in event.inviteList.table) {
+		user = event.getUser(id);
+		if (event.isGuest(user.uid)) {
+			user.getInfo(function(name, pic) {
+				html += self.writeUserImgHtml(name, pic);
+			});
+		}
 	}
 	html += '</ul>';
 	return html;
@@ -119,8 +133,8 @@ DomManager.prototype.writeMessageHtml = function(sender, message) {
 DomManager.prototype.writeMessageChainHtml = function(event) {
 	var html = '<div class="message-chain"><ul class="message-list">';
 	var message, sender;
-	for (var i = 0; i < messageList.length; i++) {
-		message = messageList[i];
+	for (var i = 0; i < event.messageList.length; i++) {
+		message = event.messageList[i];
 		sender = event.getUser(message.uid);
 		html += this.writeMessageHtml(sender, message);
 	}

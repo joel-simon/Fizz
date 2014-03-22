@@ -7,18 +7,17 @@
 
 var detail = false;
 
-$('.thread-title').on('click', function() {
-	var $this = $(this);
-	var threadID = $this.parent()[0].id;
-	var thread = threadID.substr(threadID.length-1);
-	if (thread == SM.currentThread && !detail && !collapse) {
-		hideBorderTitles(thread);
-		transitionToDetail(thread);
-	} else if (detail) {
-		transitionFromDetail(thread);
-		showBorderTitles(thread);
-	}
-});
+function setDetailListener(thread) {
+	$('#thread-'+thread+' .thread-title').on('click', function() {
+		if (thread == SM.currentThread && !detail && !collapse) {
+			hideBorderTitles(thread);
+			transitionToDetail(thread);
+		} else if (detail) {
+			transitionFromDetail(thread);
+			showBorderTitles(thread);
+		}
+	});
+}
 
 function hideBorderTitles(thread) {
 	$('#thread-'+thread).prev().children('.thread-title').addClass('hidden');

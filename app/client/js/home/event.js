@@ -4,15 +4,15 @@
 */
 ////////////////////////////////////////////////////////////////////////////////
 
-function Event(event) {
-	this.eid = event.eid;
-	this.creator = event.creator;
-	this.guestList = event.guestList;
-	this.inviteList = new UserListManager(event.inviteList);
-	this.seats = event.seats;
-	this.messageList = event.messageList;
-	this.inviteOnly = event.inviteOnly;
-
+function Event(eventData) {
+	this.eid = eventData.eid;
+	this.creator = eventData.creator;
+	this.guestList = eventData.guestList;
+	this.inviteList = new UserListManager(eventData.inviteList);
+	this.seats = eventData.seats;
+	this.messageList = eventData.messageList;
+	this.inviteOnly = eventData.inviteOnly;
+	
 	this.mostRecent = this.getMostRecent();
 }
 

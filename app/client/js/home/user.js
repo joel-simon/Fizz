@@ -19,18 +19,20 @@ User.prototype.isEqual = function(user) {
 }
 
 User.prototype.getInfo = function(callback) {
+	var self = this;
 	getFacebookInfo(this.fbid, function(name, pic) {
-		this.name = name;
-		this.pic = pic;
+		self.name = name;
+		self.pic = pic;
 		if (callback) callback(name, pic);
 	});
 }
 
 User.prototype.updateInfo = function(callback) {
+	var self = this;
 	updateFacebookInfo(this.fbid, function(name, pic) {
-		this.name = name;
-		this.pic = pic;
-		this.updateUserData();
+		self.name = name;
+		self.pic = pic;
+		self.updateUserData();
 		if (callback) callback(name, pic);
 	});
 }
