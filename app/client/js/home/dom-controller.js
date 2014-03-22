@@ -8,7 +8,12 @@
 function setMessageFormListener(thread) {
 	$('#thread-'+thread+' .message-form').on('submit', function(e) {
 		e.preventDefault();
-		console.log('Thread '+thread+': '+this.message.value);
+		var messageData = {
+			eid : thread,
+			text : this.message.value,
+		};
+		console.log('SENDING [newMessage]:', messageData);
+		socket.emit('newMessage', messageData);
 		this.message.value = '';
 	});
 }
