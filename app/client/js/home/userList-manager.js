@@ -8,8 +8,9 @@ function UserListManager(userList) {
 	this.table = {};
 	this.count = 0;
 
+	var self = this;
 	userList.forEach(function(userData, i) {
-		this.addUser(userData);
+		self.addUser(userData);
 	});
 }
 

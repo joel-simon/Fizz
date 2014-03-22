@@ -16,6 +16,13 @@ function ScrollManager() {
 	$('#thread-0').css('background-color', 'rgb(255,255,255)');
 }
 
+ScrollManager.prototype.resetStyle = function() {
+	var thread = this.currentThread;
+	$('#thread-'+(thread-1)+' .thread-title').css('margin-bottom', '-100vh');
+	$('#thread-'+thread).css('background-color', 'rgb(255,255,255)');
+	$('#thread-'+(thread+1)+' .thread-title').css('margin-top', '-100vh');
+}
+
 ScrollManager.prototype.isAnimated = function() {
 	return $('#thread-list').is(':animated');
 }

@@ -11,11 +11,12 @@ function EventListManager() {
 	this.count = 0;
 }
 
-EventListManager.prototype.addEvent = function(event) {
-	var event = new Event(event);
+EventListManager.prototype.addEvent = function(eventData) {
+	var event = new Event(eventData);
 	this.table[event.eid] = event;
 	this.count++;
 	DM.drawThread(event);
+	SM.resetStyle();
 }
 
 EventListManager.prototype.getEvent = function(eid) {

@@ -109,10 +109,16 @@ ul {
 
 .invite-list {
 	flex: 1 0 0;
+	/*background-color: blue;*/
 }
 
 .guest-list {
 	flex: 1 0 0;
+	/*background-color: green;*/
+}
+
+.guest-list img, .invite-list img {
+	opacity: 0;
 }
 
 /*
