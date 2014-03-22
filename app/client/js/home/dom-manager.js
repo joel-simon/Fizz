@@ -17,9 +17,9 @@ DomManager.prototype.getThread = function(eid) {
 	return -1;
 }
 
-DomManager.prototype.getTimeIndex = function(time) {
+DomManager.prototype.getThreadIndex = function(time) {
 	for (var i = 0; i < this.threadList.length; i++) {
-		if (time < this.threadList[i].updateTime) return i;
+		if (time > this.threadList[i].updateTime) return i;
 	}
 	return this.threadList.length;
 }
@@ -37,7 +37,7 @@ DomManager.prototype.shiftThreadsDown = function(index) {
 
 DomManager.prototype.drawThread = function(event) {
 	var time = event.mostRecent;
-	var index = this.getTimeIndex(time);
+	var index = this.getThreadIndex(time);
 	var html;
 	if (index === this.threadList.length) {
 		this.threadList.push({
@@ -48,7 +48,7 @@ DomManager.prototype.drawThread = function(event) {
 		$('#thread-list').append(html);
 		setCollapseListener(index);
 		setDetailListener(index);
-		setMessageFormListener(index);
+		setMessageFormListener(index, event.eid);
 	} else {
 		this.shiftThreadsDown(index);
 		this.threadList[index] = {
@@ -59,7 +59,7 @@ DomManager.prototype.drawThread = function(event) {
 		$( '#thread-'+(index + 1) ).before(html);
 		setCollapseListener(index);
 		setDetailListener(index);
-		setMessageFormListener(index);
+		setMessageFormListener(index, event.eid);
 	}
 }
 

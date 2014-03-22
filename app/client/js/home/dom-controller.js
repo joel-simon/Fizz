@@ -5,11 +5,11 @@
 */
 ////////////////////////////////////////////////////////////////////////////////
 
-function setMessageFormListener(thread) {
+function setMessageFormListener(thread, eid) {
 	$('#thread-'+thread+' .message-form').on('submit', function(e) {
 		e.preventDefault();
 		var messageData = {
-			eid : thread,
+			eid : eid,
 			text : this.message.value,
 		};
 		console.log('SENDING [newMessage]:', messageData);
