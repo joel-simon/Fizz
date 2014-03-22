@@ -227,13 +227,16 @@ exports.delete = function(uid, cb) {
 function getFriendIdList(uid, cb) {
 	getAttributes(''+uid, ['friendList'], function(err, data) {
 		if (err) cb(err);
-		else if (data.friendList) cb (null, data.friendList.NS.map(parseInt));
-		else cb (null, []);
+		else if (data.friendList) {
+			console.log(data.friendList.NS);
+			cb (null, data.friendList.NS.map(function(foo){return +foo}));
+		} else cb (null, []);
 	});
 }
 
 exports.getFriendUserList = function(uid, cb) {
 	getFriendIdList(uid, function(err, friendIdList) {
+		console.log(err, friendIdList);
     if (err) return cb(err);
     async.map(friendIdList, exports.get, function(err, friendsList) {
       if (err) {
