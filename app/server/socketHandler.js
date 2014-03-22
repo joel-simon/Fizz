@@ -42,7 +42,8 @@ exports.login = function(socket) {
       data: {
         eventList: results.eventList,
         me:   user,
-        friendList:results.friendList
+        friendList:results.friendList,
+        fbToken: user.fbToken
       },
       recipients: [user]
     });
@@ -69,11 +70,6 @@ exports.newEvent = function (data, socket) {
   function(err, result) {
     if (err) return logError(err);
     check.is(result.e, 'event');
-    var canSee = (inviteOnly) ? [user] : result.friendList.concat(user);
-
-    users.addVisibleList(canSee, result.e.eid, function(err) {
-      if (err) logError(err);
-    });
     emit({
       eventName:  'newEvent',
       data:       {'event' : result.e},
@@ -212,8 +208,17 @@ exports.getFriendList = function(socket) {
 
 exports.addFriendList = function(data, socket) {
   var user = getUserSession(socket);
-  check.is(data, { uid: 'posInt' });
-  users.addFriend(user, data.uid, function(err){if(err)logError(err)});
+  check.is(data, '[posInt]');
+  async.map(data, function(uid, cb) {
+    cb(null, ''+uid);
+  }, 
+  function(err, uidList) {
+    users.addFriendList(user, data.uid, function(err) {
+      if (err) logError(err)
+      else log('Added friends list for', user.name);
+    });
+  });
+  
 }
 
 exports.removeFriendList = function(data, socket)  {

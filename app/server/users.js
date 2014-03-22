@@ -1,35 +1,20 @@
 // Abstraction for all database interactions.
 var mongojs = require('mongojs');
 var config  = require('./../../config.json');
-var store = require('./redisStore.js').store;
-var io;
-var db = mongojs(config.DB.MONGOHQ_UR, ['users', 'events']);
+var store   = require('./redisStore.js').store;
+var utils   = require('./utilities.js');
+var log     = utils.log;
+var db      = mongojs(config.DB.MONGOHQ_UR, ['users', 'events']);
 var exports = module.exports;
-var async    = require('async');
-
-
-
+var async   = require('async');
+var fb      = require('./fb.js');
+var db      = require('./dynamo.js');
+var io;
 /*
   REDIS VARIABLES
-
-  users      			| uid -> json user
   fbid->uid 			| fbid -> uid
   pn->uid 				| pn -> uid
-	friendList:uid 	| set(uid) 
-
 */
-
-
-var blankUser = function(){
-	this.uid 			= 0;
-	this.type 		= '';
-	this.fbid 		= 0;
-	this.pn 			= '';
-	this.iosToken = '';
-	this.fbToken 	= '';                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ;
-	this.name 		= '';
-}
-
 exports.isConnected = function(uid, callback) {
 	if(!io) io = require('../../app.js').io;
 	return(io.sockets.clients(''+uid).length > 0);
@@ -38,11 +23,30 @@ exports.isConnected = function(uid, callback) {
 ////////////////////////////////////////////////////////////////////////////////
 //	GET USER
 ////////////////////////////////////////////////////////////////////////////////
-exports.get = function(uid, callback) {
-	store.hget('users', uid, function(err, json) {
-		if (err) callback(err);
-		else if (!json) callback('No user found:'+uid);
-		else callback(null, JSON.parse(json));
+function getAttributes(uid, attributes, cb) {
+	db.getItem({
+		TableName : 'users',
+		Key : {'uid' : {'N' : uid} },
+		AttributesToGet : attributes
+	},
+	function(err, data){
+		if (err) cb (err);
+		else cb (null, data.Item);
+	});
+}
+exports.get = function(uid, cb) {
+	getAttributes(''+uid, ['type', 'fbid', 'pn', 'name'], function(err, data) {
+		if (err) cb(err);
+		else if (!data) cb(null, null);
+		else {
+			cb(null, {
+				uid  : uid,
+				name : data.name.S,
+				pn   : data.pn.S,
+				type : data.type.S,
+				fbid : +data.fbid.N
+			});
+		}
 	});
 }
 exports.getFromFbid = function(fbid, cb) {
@@ -60,11 +64,30 @@ exports.getFromPn = function(pn, cb) {
 	});
 }
 
-////////////////////////////////////////////////////////////////////////////////
-//	ADD USERS
-////////////////////////////////////////////////////////////////////////////////
 
-
+////////////////////////////////////////////////////////////////////////////////
+//	GETTING/CREATING/MODIFYING USERS
+////////////////////////////////////////////////////////////////////////////////
+function set(uid, user, cb) {
+	var item = {
+		uid  : {'N'  : ''+uid},
+		pn   : {'S'  : user.pn},
+		fbid : {'N'  : ''+user.fbid},
+		name : {'S'  : user.name},
+		type : {'S'  : user.type}
+		// friendList: {'NS' : []}
+	}
+	db.putItem({
+		'TableName': 'users',
+		'Item': item
+	}, function(err, data) {
+		if (err) {
+			cb (err);
+		} else {
+			cb (null, user);
+		}
+	});
+}
 exports.getOrAddPhoneList =  function(pnList, cb) {
 	async.map(pnList, getOrAddPhone,
 	function(err, userList) {
@@ -72,36 +95,47 @@ exports.getOrAddPhoneList =  function(pnList, cb) {
 		else cb (null, userList);
 	});
 }
-
 /*
 	User has downloaded the app. 
 	Must already exist as a guest or phone user. 
 */
 exports.getOrAddMember = function(profile, fbToken, pn, iosToken, cb) {
-	exports.getOrAddGuest(profile, fbToken, function(err, user) {
-		if (err) return cb(err);
-		if (user.type == 'Member') return cb(null, user);
-		else {
-			console.log('creating new member');
-			user.type 		= 'Member'; // upgrade account to member. 
-			user.fbid 		= +profile.id;
-			user.name     = profile.displayName;
-			user.fbToken 	= fbToken;
-			user.iosToken = iosToken; 
-			update(user, function(err2) {
-				if (err2) logError(err2);
-				else 			cb(null, user);
+	var fbid = +profile.id;
+	exports.getFromFbid(+profile.id, function(err, user) {
+		if (err) {
+			cb(err);
+		} else if (user && user.type === 'Member') {
+			cb(null, user);
+		} else if (user && user.type === 'Guest') {
+			user.type = 'Member';
+			user.iosToken = iosToken;
+			log('Upgrading', user.name, 'from Guest to Member.');
+			set(user.uid, user, cb);
+		} else { // see if a phone user exists. 
+			exports.getFromPn(pn, function(err, user) {
+				if (err) return cb(err);
+				if (user && user.type === 'Phone') {
+					user.type = 'Member';
+					user.iosToken = iosToken;
+					user.fbid = fbid;
+					user.name = profile.displayName;
+					log('Upgrading', user.name, 'from Phone to Member.');
+					set(user.uid, user, cb);
+				} else { // create a new user from scratch.
+					blankUser(pn, fbid, function(err, user) {
+						if (err) return cb(err);
+						user.pn = pn;
+						user.type = "Member";
+						user.name = profile.displayName;
+						user.fbid = fbid;
+						log('Creating', user.name, 'as Member.');
+						set(user.uid, user, cb);
+					});
+				}
 			});
 		}
 	});
 }
-function update(user, cb) {
-	store.hset('users', user.uid, JSON.stringify(user), function(err) {
-		if (err) logError(err)
-		else 		 cb(err, user);
-	});
-}
-
 /*
 	User has been invited via text and goes to the website. 
 	Must already exist as a phone user.
@@ -110,73 +144,97 @@ exports.getOrAddGuest = function(profile, fbToken, cb) {
 	exports.getFromFbid(+profile.id, function(err, user) {
 		if (err)  return cb(err);
 		if (user) return cb(null, user);
-		
-		var pn = (''+Math.random()).split('.')[1]
 		exports.getOrAddPhone(pn, function(err, user) {
+			if (err) return cb(err);
 			store.hset('fbid->uid', +profile.id, user.uid);
 			user.fbid = +profile.id;
 		 	user.name = profile.displayName;
 		 	user.type = 'Guest';
 		 	user.fbToken = fbToken;
-		 	update(user, function(err2) {
-				if (err2) return logError(err2);
+		 	d(user, function(err2) {
+				if (err2) return cb(err2);
 				cb(null, user);
 			});
 		});
 		
 	});
 }
-
 /*
 	User has been invited via phone number.
 	Return user if already exists.
 */
 exports.getOrAddPhone = function(pn, cb) {
-	exports.getFromPn(pn, function(err, user){
+	exports.getFromPn(pn, function(err, user) {
 		if 			(err)  cb(err);
 		else if (user) cb(null, user);
 		else {
-			var user = new blankUser();
-			user.pn = pn;
-			user.type = "Phone";
-			user.name = pn;
-			store.hincrby('idCounter', 'user', 1, function(err, next) {
-				user.uid = next;
-				store.hset('users', user.uid, JSON.stringify(user), function(err) {
-					if (err) return logError(err)
-					store.hset('pn->uid', user.pn, user.uid);
-					cb(err, user);
+			blankUser(pn, null, function(err, user) {
+				if (err) return cb(err);
+				user.pn = pn;
+				user.type = "Phone";
+				user.name = pn;
+				set(user.uid, user, function(err) {
+					if(err) cb(err);
+					else {
+						log('Created phone user',pn);
+						cb(null, user);
+					}
 				});
 			});
 		}
 	});
 }
 
-////////////////////////////////////////////////////////////////////////////////
-//	
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-// add user to uids friends list
-exports.addFriend = function(user, friendUid, callback) {
-	store.sadd('friendList:'+user.uid, friendUid, callback);
+function blankUser(pn, fbid, cb) {
+	var user = {
+		'uid'      : 0,
+		'type'     : '',
+		'fbid'     : 0,
+		'pn'       : '',
+		'iosToken' : '',
+		'fbToken'  : '',
+		'name'     : ''
+	};
+	store.hincrby('idCounter', 'user', 1, function(err, next) {
+		if (err) return cb(err);
+		user.uid = next;
+		if (pn) {
+			store.hset('pn->uid', pn, user.uid)
+		}
+		if (fbid) {
+			store.hset('fbid->uid', fbid, user.uid)
+		}
+		cb(null, user);
+	});
 }
 
-exports.removeFriend = function(user, friendUid, callback) {
-	store.srem('friendList:'+user.uid, friendUid, callback);
-}
-
-exports.getFriendIdList = function(uid, cb) {
-  store.smembers('friendList:'+uid, function(err, list) {
-    if (err) cb(err);
-    else cb(null, list);
+////////////////////////////////////////////////////////////////////////////////
+//	DELETING USERS
+////////////////////////////////////////////////////////////////////////////////
+exports.delete = function(uid, cb) {
+	db.deleteItem({
+    TableName : 'users',
+    Key : {'uid' : {'N' : ''+uid} },
+  },
+  function(err, data) {
+    cb (err || null);
   });
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// FRIENDLIST GETTERS
+////////////////////////////////////////////////////////////////////////////////
+function getFriendIdList(uid, cb) {
+	getAttributes(''+uid, ['friendList'], function(err, data) {
+		if (err) cb(err);
+		else if (data.friendList) cb (null, data.friendList.NS.map(parseInt));
+		else cb (null, []);
+	});
+}
+
 exports.getFriendUserList = function(uid, cb) {
-	exports.getFriendIdList(uid, function(err, friendIdList) {
-    if (err) return logError(err);
+	getFriendIdList(uid, function(err, friendIdList) {
+    if (err) return cb(err);
     async.map(friendIdList, exports.get, function(err, friendsList) {
       if (err) {
         cb(err);
@@ -187,48 +245,38 @@ exports.getFriendUserList = function(uid, cb) {
   });
 }
 
-exports.addVisibleList = function(users, eid, cb) {
-	async.each(users, function(u, cb2) {
-       exports.addVisible(u.uid, eid, cb2);
-  }, cb);
+////////////////////////////////////////////////////////////////////////////////
+// FRIENDLIST SETTERS
+////////////////////////////////////////////////////////////////////////////////
+exports.addFriendList = function(user, uidList, cb) {
+	var params = {
+		Key : {'uid' : {'N' : ''+user.uid}},
+		TableName: 'users',
+		AttributeUpdates: {
+			friendList: {
+				Action : 'ADD',
+				Value: {'NS':uidList}
+			}
+		}
+	}
+	db.updateItem(params, function(err, data){
+		if (err) cb (err);
+		else cb (null, data);
+	});
 }
 
-exports.addVisible = function(uid, eid, callback) {
-  store.sadd('viewableBy:'+uid, eid, callback);
+////////////////////////////////////////////////////////////////////////////////
+// FRIENDLIST REMOVERS
+////////////////////////////////////////////////////////////////////////////////
+
+exports.removeFriend = function(user, friendUid, callback) {
+	store.srem('friendList:'+user.uid, friendUid, callback);
 }
+
 
 exports.deleteVisible = function(userId, eid, callback) {
   store.srem('viewableBy:'+userId, eid, callback);
 }
-
-  
-
-
-/*
-*	New Player
-*/
-
-// exports.getOrAddFromPn = function(pn, callback) {
-// 	// users.get
-// 	var user = {
-// 		fbid : 0,
-// 		pn : pn,
-// 		name : string 
-// 		hasApp : string [ “iPhone” or “” ]
-// 		accessToken : string 
-
-// 	}
-// 	store.hincrby('idCounter', 'user', 1 , function(err, next) {
-// 		user.uid = next;
-
-// 		store.hset('users', user.fbid, JSON.stringify(user), function(err) {
-// 			callback(err, user);
-// 		});
-// 	});
-	
-// }
-
-
 
 // exports.setLocation = function(uid, latlng, callback) {
 // 	store.hset('locations', uid, JSON.stringify(latlng), callback);
