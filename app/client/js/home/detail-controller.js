@@ -7,8 +7,10 @@
 
 var detail = false;
 
-function setDetailListener(thread) {
-	$('#thread-'+thread+' .thread-title').on('click', function() {
+function setDetailListener(eid) {
+	$('#mf-'+eid).closest( $('.thread') ).children('.thread-title').on('click', function() {
+		var threadID = $(this).parent()[0].id;
+		var thread = threadID.substr(7);
 		if (thread == SM.currentThread && !detail && !collapse) {
 			hideBorderTitles(thread);
 			transitionToDetail(thread);

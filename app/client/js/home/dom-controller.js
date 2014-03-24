@@ -5,8 +5,8 @@
 */
 ////////////////////////////////////////////////////////////////////////////////
 
-function setMessageFormListener(thread, eid) {
-	$('#thread-'+thread+' .message-form').on('submit', function(e) {
+function setMessageFormListener(eid) {
+	$('#mf-'+eid).on('submit', function(e) {
 		e.preventDefault();
 		var messageData = {
 			eid : eid,

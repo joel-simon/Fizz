@@ -31,11 +31,16 @@ DomManager.prototype.shiftThreadsDown = function(index) {
 		} else {
 			this.threadList[i+1] = this.threadList[i];
 		}
-		$('#thread-'+i).attr( 'id','thread-'+(i + 1) );
+		$( '#thread-'+(i+1) ).append( $('#thread-'+i).children() );
 	}
 }
 
 DomManager.prototype.drawThread = function(event) {
+	var next = this.threadList.length;
+	var newThread = '<li id="thread-'+next+'" class="thread"></li>';
+	$('#thread-list').append(newThread);
+	setCollapseListener(next);
+
 	var time = event.mostRecent;
 	var index = this.getThreadIndex(time);
 	var html;
@@ -45,10 +50,9 @@ DomManager.prototype.drawThread = function(event) {
 			updateTime : time,
 		});
 		html = this.writeThreadHtml(event, index);
-		$('#thread-list').append(html);
-		setCollapseListener(index);
-		setDetailListener(index);
-		setMessageFormListener(index, event.eid);
+		$('#thread-'+index).append(html);
+		setDetailListener(event.eid);
+		setMessageFormListener(event.eid);
 	} else {
 		this.shiftThreadsDown(index);
 		this.threadList[index] = {
@@ -56,10 +60,9 @@ DomManager.prototype.drawThread = function(event) {
 			updateTime : time,
 		};
 		html = this.writeThreadHtml(event, index);
-		$( '#thread-'+(index + 1) ).before(html);
-		setCollapseListener(index);
-		setDetailListener(index);
-		setMessageFormListener(index, event.eid);
+		$('#thread-'+index).append(html);
+		setDetailListener(event.eid);
+		setMessageFormListener(event.eid);
 	}
 }
 
@@ -74,12 +77,10 @@ DomManager.prototype.drawMessage = function(message) {
 ////////////////////////////////////////////////////////////////////////////////
 
 DomManager.prototype.writeThreadHtml = function(event, index) {
-	var html = '<li id="thread-'+index+'" class="thread">';
-	html += this.writeInviteListHtml(event);
+	var html = this.writeInviteListHtml(event);
 	html += '<h2 class="thread-title">'+event.messageList[0].text+'</h2>';
 	html += this.writeGuestListHtml(event);
 	html += this.writeMessageChainHtml(event);
-	html += '</li>';
 	return html;
 }
 
@@ -139,7 +140,7 @@ DomManager.prototype.writeMessageChainHtml = function(event) {
 		html += this.writeMessageHtml(sender, message);
 	}
 	html += '</ul>'+
-		'<form class="message-form hidden">'+
+		'<form id="mf-'+event.eid+'" class="message-form hidden">'+
 			'<input type="text" name="message" autocomplete="off" placeholder="Enter a message.">'+
 			'<input type="submit" value="Send">'+
 		'</form></div>';
