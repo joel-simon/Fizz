@@ -50,7 +50,7 @@ function tests1(){
       console.log(err);
     } else {
       a = result.a;
-      j = returnsult.j;
+      j = result.j;
       d = result.d;
       addFriends();
     }
