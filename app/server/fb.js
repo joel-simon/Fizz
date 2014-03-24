@@ -49,6 +49,14 @@ exports.get = function(accessToken, apiPath, callback) {
 	request.end();
 }
 
+exports.getFriendUidList = function(fbToken, cb) {
+	console.log('test');
+	exports.get(fbToken, '/me/friends',function(err, foo) {
+		if (err) cb(err);
+		else cb(null, foo.data.map(function(obj){return obj.id}));
+	});
+}
+
 exports.extendToken = function(accessToken, callback) {
 	var buffer = [];
 	var options = {
@@ -68,7 +76,7 @@ exports.extendToken = function(accessToken, callback) {
 			buffer += chunk;
 		});
 		result.on('end', function(){
-			callback(null, buffer.split('&')[0]);
+			callback(null, (buffer.split('&')[0]).split('=')[1]);
 		});
 	});
 }

@@ -15,6 +15,18 @@ exports = module.exports;
   guestList:eid   | list(uid)
 */
 
+  // users.addVisibleList([user], result.e.eid, function(err) {
+  //     if (err) logError(err);
+  //   });
+
+exports.addVisibleList = function(users, eid, cb) {
+  async.each(users, function(u, cb2) {
+    exports.addVisible(u.uid, eid, cb2);
+  }, cb);
+}
+exports.addVisible = function(uid, eid, callback) {
+  store.sadd('viewableBy:'+uid, eid, callback);
+}
 
 /**
  *
@@ -35,28 +47,27 @@ exports.add = function(text, user, inviteOnly, callback) {
   store.hincrby('idCounter', 'event', 1, function(err, next) {
     if (err) return callback(err);
     e.eid = next;
-    async.parallel({
-      message: function(cb) {
+    async.parallel([
+      function(cb) {
         exports.addMessage(e.eid, user.uid, e.text, cb);
       },
-      guestList: function(cb) {
+      function(cb) {
         store.sadd('guestList:'+e.eid, user.uid, cb);
-        // exports.addGuest(e.eid, user.uid, cb);
-        // async.map(e.guestList, function(guest, cb2){
-        // exports.addGuest(e.eid, guest, cb2);
-        // },cb);
       },
-      inviteList: function(cb) {
+      function(cb){
+        exports.addVisible(user.uid, e.eid, cb);
+      },
+      function(cb) {
         store.sadd('inviteList:'+e.eid, JSON.stringify(user), cb);
       },
-      set: function(cb) {
+      function(cb) {
         store.hmset('event:'+e.eid,
           'seats', ''+e.seats, 
           'inviteOnly', JSON.stringify(e.inviteOnly),
           'creator', e.creator,
           cb);
       }
-    },
+    ],
     function(err, results) {
       if(err) return callback(err);
       callback(null, e);
@@ -159,7 +170,6 @@ exports.addInvitees = function(eid, users, cb) {
       exports.addVisible(user.uid, event.eid, cb2);
     }, cb);
   });
-
 }
 
 exports.setSeatCapacity = function(eid, seats, cb) {

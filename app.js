@@ -37,6 +37,8 @@ passport.deserializeUser(function(obj, done) { done(null, obj); });
 var users = require('./app/server/users.js');
 
 var fb        = require('./app/server/fb.js');
+
+
 passport.use(new FacebookStrategy(
   {
     clientID: config.FB.FACEBOOK_APP_ID,
@@ -63,15 +65,17 @@ passport.use(new FacebookTokenStrategy(
     callbackURL: config.HOST+"auth/facebook/iosCallback"
   },
   function(fbToken, refreshToken, profile, pn, iosToken, done) {
+    
     console.log('pn:', pn)
     console.log('iosToken:', iosToken)
 
     iosToken = iosToken || null;
     pn = pn || null;
-    fb.extendToken(fbToken, function(err, token) {
-      process.nextTick(function () {
+    process.nextTick(function () {
+      fb.extendToken(fbToken, function(err, token) {  
         users.getOrAddMember(profile, token, pn, iosToken, function(err, user) {
-          done(null, user);  
+          if(err) console.log(err);
+          else done(null, user);  
         });
       });
     });
