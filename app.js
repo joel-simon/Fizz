@@ -37,21 +37,23 @@ passport.deserializeUser(function(obj, done) { done(null, obj); });
 var users = require('./app/server/users.js');
 
 var fb        = require('./app/server/fb.js');
-// passport.use(new FacebookStrategy(
-//   {
-//     clientID: config.FB.FACEBOOK_APP_ID,
-//     clientSecret: config.FB.FACEBOOK_APP_SECRET,
-//     callbackURL: config.HOST+"auth/facebook/callback"
-//   },
-//   function(fbToken, refreshToken, profile, done) {
-//     console.log('fbToken', fbToken);
-//     process.nextTick(function () {
-//       users.getOrAddGuest(profile,fbToken, function(err, user) {
-//         console.log(user);
-//         done(null, user);  
-//       });
-//     });
-//   }));
+
+
+passport.use(new FacebookStrategy(
+  {
+    clientID: config.FB.FACEBOOK_APP_ID,
+    clientSecret: config.FB.FACEBOOK_APP_SECRET,
+    callbackURL: config.HOST+"auth/facebook/callback"
+  },
+  function(fbToken, refreshToken, profile, done) {
+    console.log('fbToken', fbToken);
+    process.nextTick(function () {
+      users.getOrAddGuest(profile,fbToken, function(err, user) {
+        console.log(user);
+        done(null, user);  
+      });
+    });
+  }));
 
 /*
   IOS LOGIN FLOW
@@ -63,6 +65,7 @@ passport.use(new FacebookTokenStrategy(
     callbackURL: config.HOST+"auth/facebook/iosCallback"
   },
   function(fbToken, refreshToken, profile, pn, iosToken, done) {
+    
     console.log('pn:', pn)
     console.log('iosToken:', iosToken)
 

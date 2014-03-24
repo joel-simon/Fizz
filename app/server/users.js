@@ -151,10 +151,7 @@ exports.getOrAddGuest = function(profile, fbToken, cb) {
 		 	user.name = profile.displayName;
 		 	user.type = 'Guest';
 		 	user.fbToken = fbToken;
-		 	d(user, function(err2) {
-				if (err2) return cb(err2);
-				cb(null, user);
-			});
+		 	set(user.uid, user, cb);
 		});
 		
 	});
@@ -228,7 +225,7 @@ function getFriendIdList(uid, cb) {
 	getAttributes(''+uid, ['friendList'], function(err, data) {
 		if (err) cb(err);
 		else if (data.friendList) {
-			console.log(data.friendList.NS);
+			// console.log(data.friendList.NS);
 			cb (null, data.friendList.NS.map(function(foo){return +foo}));
 		} else cb (null, []);
 	});
@@ -236,7 +233,7 @@ function getFriendIdList(uid, cb) {
 
 exports.getFriendUserList = function(uid, cb) {
 	getFriendIdList(uid, function(err, friendIdList) {
-		console.log(err, friendIdList);
+		// console.log(err, friendIdList);
     if (err) return cb(err);
     async.map(friendIdList, exports.get, function(err, friendsList) {
       if (err) {

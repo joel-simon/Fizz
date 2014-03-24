@@ -32,8 +32,10 @@ exports.login = function(socket) {
   },
   function(err, results){
     if (err) return logError(err);
+
     var str = user.name+' has connected. uid:'+user.uid+'\n\t\t';
     str += results.eventList.length + ' visible events.'
+    str += results.eventList.map(function(e){return e.messageList[0].text})
     log(str);
 
     check.is(results.eventList, '[event]');

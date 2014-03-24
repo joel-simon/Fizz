@@ -17,8 +17,9 @@ module.exports.log = function() {
 	var e;
 	for (var i = 0; i < arguments.length; i++) {
 		e = arguments[i];
-		s += ((e instanceof Object) ? JSON.stringify(e) : e)+' ';
+		s += ((e instanceof Object) ? JSON.stringify(e, null, '\t') : e)+' ';
 	}
+  // JSON.stringify({"foo":"lorem","bar":"ipsum"}, null, '\t');
 	console.log(s.data);
   console.log('\t'+'—————————————————————'.data);
 }
