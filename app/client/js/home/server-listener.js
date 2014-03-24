@@ -18,7 +18,7 @@ socket.on('onLogin', function(data) {
 		console.log('EVENT '+i+':', event);
 		ELM.addEvent(event);
 	});
-	testEvents();
+	createEvents();
 });
 
 socket.on('newFriend', function(data) {
