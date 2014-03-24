@@ -174,7 +174,7 @@ exports.newMessage = function(data, socket) {
       text = data.text;
 
   async.parallel({
-    add        : function(cb) {
+    newMsg        : function(cb) {
       events.addMessage(eid, user.uid, text, cb);
     },
     recipients : function(cb) {
@@ -184,20 +184,13 @@ exports.newMessage = function(data, socket) {
   function(err, results) {
     log(results);
     // add will generate the messages mid.
-    check.is(results, {add: 'posInt', recipients: '[user]'});
-    var msg = {
-      mid : results.add,
-      eid : eid,
-      text: text,
-      uid: user.uid
-    }
+    check.is(results, {recipients: '[user]'});
     // check.is(data, {message:'message'});
     emit({
       eventName: 'newMessage',
-      data: data,
+      data: {message: results.newMsg},
       recipients: results.recipients
     });
-    log('new message', data);
   });
 }
 

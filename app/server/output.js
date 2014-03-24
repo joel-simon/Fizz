@@ -128,9 +128,9 @@ exports.emit = function(options) {
 
       case "Member":
         if (users.isConnected(user.uid)) {
-          io.sockets.in(user.uid).emit(eventName, data);
+          io.sockets.in(''+user.uid).emit(eventName, data);
         } else {
-          exports.pushIos(msg, user.IOSToken, 1);
+          exports.pushIos(message, user.IOSToken, 1);
         }
         break;
     }

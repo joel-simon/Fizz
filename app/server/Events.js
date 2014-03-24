@@ -139,7 +139,7 @@ exports.addMessage = function(eid, uid, text, callback) {
     // check.is(msg, 'message');
     store.rpush('messages:'+eid, JSON.stringify(msg), function(err) {
       if (err) callback(err) 
-      else callback(null, i);
+      else callback(null, msg);
     });
   });
 }
