@@ -53,8 +53,8 @@ function tests1(){
       a = result.a;
       j = result.j;
       d = result.d;
-      // createEvents();
-      addFriends();
+      createEvents();
+      // addFriends();
     }
   });
 }
