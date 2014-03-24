@@ -71,7 +71,7 @@ exports.newEvent = function (data, socket) {
   },
   function(err, result) {
     if (err) return logError(err);
-    console.log(result.e);
+    // console.log(result.e);
     check.is(result.e, 'event');
     emit({
       eventName:  'newEvent',

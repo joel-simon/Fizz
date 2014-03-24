@@ -165,9 +165,9 @@ exports.canSee = function(uid, callback) {
 }
 
 exports.addInvitees = function(eid, users, cb) {
-  store.sadd('inviteList:'+event.eid, event.inviteList.map(JSON.stringify),function(err){
+  store.sadd('inviteList:'+eid, users.map(JSON.stringify),function(err){
     async.each(users, function(user, cb2) {
-      exports.addVisible(user.uid, event.eid, cb2);
+      exports.addVisible(user.uid, eid, cb2);
     }, cb);
   });
 }

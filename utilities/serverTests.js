@@ -76,6 +76,19 @@ function createEvents(){
       if (err) return console.log(err);
       events.add('Daniels first event', d, false, function(err, de){
       if (err) return console.log(err);
+        inviteOneAnother(ae, je, de);
+      });
+    });
+  });
+}
+
+function inviteOneAnother(ae, je, de) {
+  events.addInvitees(ae.eid, [j,d], function(err){
+    if (err) return console.log(err);
+    events.addInvitees(je.eid, [a, d], function(err){
+      if (err) return console.log(err);
+      events.addInvitees(de.eid, [a,j], function(err){
+      if (err) return console.log(err);
         addMessages(ae, je, de);
       });
     });
