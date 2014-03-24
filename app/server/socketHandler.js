@@ -71,6 +71,7 @@ exports.newEvent = function (data, socket) {
   },
   function(err, result) {
     if (err) return logError(err);
+    console.log(result.e);
     check.is(result.e, 'event');
     emit({
       eventName:  'newEvent',
@@ -238,8 +239,9 @@ exports.removeFriendList = function(data, socket)  {
 exports.setSeatCapacity = function(data, socket) {
   var user = getUserSession(socket);
   check.is(data, {eid: 'posInt', seats: 'posInt'});
-  events.setSeatCapacity(eid, seats, function(err) {
+  events.setSeatCapacity(data.eid, data.seats, function(err) {
     if(err)logError(err);
+    else log(user.name, 'set seat capacity to:',data.seats);
   });
 }
 
@@ -343,6 +345,7 @@ exports.disconnect = function(socket) {
 
 function getUserSession(socket) {
   var user = socket.handshake.user;
+  // console.log(user);
   check.is(user, 'user');
   return user;
 }

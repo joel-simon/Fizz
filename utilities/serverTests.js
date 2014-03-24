@@ -49,10 +49,11 @@ function tests1(){
     if (err) {
       console.log(err);
     } else {
-      console.log(result);
+      // console.log(result);
       a = result.a;
       j = result.j;
       d = result.d;
+      // createEvents();
       addFriends();
     }
   });

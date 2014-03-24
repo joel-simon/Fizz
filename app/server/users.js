@@ -40,7 +40,7 @@ exports.get = function(uid, cb) {
 		else if (!data) cb(null, null);
 		else {
 			cb(null, {
-				uid  : uid,
+				uid  : +uid,
 				name : data.name.S,
 				pn   : data.pn.S,
 				type : data.type.S,

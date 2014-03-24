@@ -29,8 +29,8 @@ module.exports = function(app, passport) {
 
 	app.get('/auth/facebook/callback',  passport.authenticate('facebook', { failureRedirect: '/' }),
 		function(req, res) {
-			var user = req['user'];
-			res.cookie('fbid', user.id, { maxAge: 2592000000 });
+			// var user = req['user'];
+			// res.cookie('fbid', user.id, { maxAge: 2592000000 });
 			res.redirect('/home');
 			// res.send('Logged in');
 	});

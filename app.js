@@ -65,7 +65,7 @@ passport.use(new FacebookTokenStrategy(
     callbackURL: config.HOST+"auth/facebook/iosCallback"
   },
   function(fbToken, refreshToken, profile, pn, iosToken, done) {
-    
+
     console.log('pn:', pn)
     console.log('iosToken:', iosToken)
 
@@ -127,16 +127,22 @@ io.set('authorization', passportSocketIo.authorize({
 d.run(function(){
   io.sockets.on('connection',   (function(socket) {
     handler.login(socket);
+    socket.on('newEvent',       (function(data){ handler.newEvent   (data, socket) }));
     socket.on('joinEvent',      (function(data){ handler.joinEvent  (data, socket) }));
     socket.on('leaveEvent',     (function(data){ handler.leaveEvent (data, socket) }));
-    socket.on('newEvent',       (function(data){ handler.newEvent   (data, socket) }));
+    socket.on('invite',         (function(data){ handler.leaveEvent (data, socket) }));
+    socket.on('request',        (function(data){ handler.leaveEvent (data, socket) }));
+
     socket.on('newMessage',     (function(data){ handler.newMessage (data, socket) }));
-    socket.on('newFriend',      (function(data){ handler.newFriend  (data, socket) }));
 
     socket.on('getFriendList',  (function(data){ handler.getFriendList(socket) }));
-    socket.on('newUserLocation',(function(data){ handler.newUserLocation(data, socket)}));
+
+    socket.on('newFriend',      (function(data){ handler.newFriend  (data, socket) }));
+    socket.on('removeFriendList', (function(data){ handler.getFriendList(socket) }));
+    socket.on('setSeatCapacity',  (function(data){ handler.setSeatCapacity(data, socket) }));
+    // socket.on('newUserLocation',(function(data){ handler.newUserLocation(data, socket)}));
     socket.on('disconnect',     (function()    { handler.disconnect(socket) }));
-    socket.on('benchMark',      (function()    { handler.benchMark(socket) }));
+    // socket.on('benchMark',      (function()    { handler.benchMark(socket) }));
   }));
 });
 

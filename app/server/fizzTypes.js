@@ -61,7 +61,7 @@ module.exports = {
     eid:        'posInt',
     // creator:    'posInt',
     guestList:  '[posInt]',
-    inviteList: '[user]',
+    // inviteList: '[user]',
     seats:      'posInt',
   },
   newEvent: {
