@@ -42,7 +42,7 @@ function tests1(){
     displayName: 'Daniel Belchamber'
   }
   async.parallel({
-    a: function(cb){ users.getOrAddMember(andrewFBProfile, 'fBToken', '+3107102956', 'iosToken', cb) },
+    a: function(cb){ users.getOrAddMember(andrewFBProfile, 'fBToken', '+13107102956', 'iosToken', cb) },
     d: function(cb){ users.getOrAddMember(danielFBProfile, 'fBToken', '+13016420019', 'iosToken', cb) },
     j: function(cb){ users.getOrAddMember(joelFBProfile, 'fBToken', '+13475346100', 'iosToken', cb) }
   }, function(err, result) {
@@ -50,7 +50,7 @@ function tests1(){
       console.log(err);
     } else {
       a = result.a;
-      j = result.j;
+      j = returnsult.j;
       d = result.d;
       addFriends();
     }
