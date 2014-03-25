@@ -124,7 +124,8 @@ io.set('authorization', passportSocketIo.authorize({
 }));
 
 // Bind socket handlers.
-d.run(function(){
+//d.run
+(function(){
   io.sockets.on('connection',   (function(socket) {
     handler.login(socket);
     socket.on('newEvent',       (function(data){ handler.newEvent   (data, socket) }));
@@ -144,12 +145,12 @@ d.run(function(){
     socket.on('disconnect',     (function()    { handler.disconnect(socket) }));
     // socket.on('benchMark',      (function()    { handler.benchMark(socket) }));
   }));
-});
+})();
 
 var utils     = require('./app/server/utilities.js'),
 logError  = utils.logError;
 d.on('error', function(err){
-  logError(err);
+  logError('d caught error',err);
 })
 
 // Route all routes.

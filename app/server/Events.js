@@ -10,7 +10,10 @@ exports = module.exports;
   viewableBy:uid  | set(eid)
 
   inviteList:eid  | set(users) 
-  event:uid      | seats->int
+  event:uid       | seats->int
+                    inviteOnly -> boolean
+                    creator -> uid
+                    requests-> uid list
   messages:eid    | list(json message)
   guestList:eid   | list(uid)
 */
@@ -31,45 +34,57 @@ exports.addVisible = function(uid, eid, callback) {
 /**
  *
  */
-exports.add = function(text, user, inviteOnly, callback) {
+exports.add = function(text, user, FUL, inviteOnly, callback) {
   var self = this;
+  // console.log(FUL);
   var e = {
     eid: 0,
     creator: user.uid,
     guestList: [user.uid],
-    inviteList: [user],
+    inviteList: inviteOnly ? [user] : FUL.concat(user),
     seats: 2,
     inviteOnly: inviteOnly,
-    messageList: [{uid:user.uid, text:text}],
-    text:text,
-    seats:2
+    messageList: null,
+    seats:2,
+    requests: []
   };
   store.hincrby('idCounter', 'event', 1, function(err, next) {
     if (err) return callback(err);
     e.eid = next;
     async.parallel([
-      function(cb) {
-        exports.addMessage(e.eid, user.uid, e.text, cb);
+      function(cb) { // add first message.
+        exports.addMessage(e.eid, user.uid, text, cb);
       },
-      function(cb) {
+      function(cb) { //add creator to guestlist
         store.sadd('guestList:'+e.eid, user.uid, cb);
       },
-      function(cb){
+      function(cb){ // show event to creator
         exports.addVisible(user.uid, e.eid, cb);
       },
-      function(cb) {
+      function(cb) { // add creator to invite list
         store.sadd('inviteList:'+e.eid, JSON.stringify(user), cb);
       },
       function(cb) {
-        store.hmset('event:'+e.eid,
-          'seats', ''+e.seats, 
-          'inviteOnly', JSON.stringify(e.inviteOnly),
-          'creator', e.creator,
-          cb);
+        if (inviteOnly) {
+          cb(null);
+        } else {
+          async.each(FUL, function(u, cb2){
+            exports.addVisible(u.uid, e.eid, cb2);
+          }, cb);
+        }
+      },
+      function(cb) {
+        store.set('event:'+e.eid,JSON.stringify({
+          'eid' : e.eid,
+          'seats': e.seats, 
+          'inviteOnly': e.inviteOnly,
+          'creator': e.creator,
+          }), cb);
       }
     ],
     function(err, results) {
       if(err) return callback(err);
+      e.messageList = [results[0]];
       callback(null, e);
     });
 
@@ -95,16 +110,16 @@ exports.get = function(eid, callback) {
       store.smembers('inviteList:'+eid, cb);
     },
     event: function(cb) {
-      store.hmget('event:'+eid, 'seats','inviteOnly', 'creator', cb);
+      store.get('event:'+eid, cb);
     }
   },
   function(err, results) {
     if(err) return callback(err);
 
-    var event = {'eid' : eid};
-    event.seats = +results.event[0];
-    event.inviteOnly = JSON.parse(results.event[1]);
-    event.creator = results.event[2];
+    var event = JSON.parse(results.event);//{'eid' : eid};
+    // event.seats = +results.event[0];
+    // event.inviteOnly = JSON.parse(results.event[1]);
+    // event.creator = results.event[2];
 
     event.messageList = results.messages.map(JSON.parse);
     event.inviteList = results.inviteList.map(JSON.parse);

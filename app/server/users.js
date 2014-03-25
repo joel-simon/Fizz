@@ -75,7 +75,10 @@ function set(uid, user, cb) {
 		fbid : {'N'  : ''+user.fbid},
 		name : {'S'  : user.name},
 		type : {'S'  : user.type}
-		// friendList: {'NS' : []}
+		// friendList: 
+	}
+	if (user.friendList && user.friendList.length > 0) {
+		item.friendList = {'NS' : user.friendList.map(String)}
 	}
 	db.putItem({
 		'TableName': 'users',
@@ -88,6 +91,25 @@ function set(uid, user, cb) {
 		}
 	});
 }
+
+function findFizzFriends(fbToken,  cb) {
+	fb.get(fbToken, '/me/friends/', function(err, friends) {
+		if (err) return cb(err);
+		if (!friends.data) return cb(null, []);
+		async.map(friends.data, function(friend, cb2) {
+			// console.log(friend);
+			store.hget('fbid->uid', friend.id, function(err, uid) {
+				if(err) return cb2(err);
+				if(!uid) return cb2(null, null);
+				cb2(null, +uid);
+			});
+		},
+		function(err, fizzFriends) {
+			cb(null, fizzFriends.filter(function(u){return !!u}));
+		});
+	});
+}
+
 exports.getOrAddPhoneList =  function(pnList, cb) {
 	async.map(pnList, getOrAddPhone,
 	function(err, userList) {
@@ -114,24 +136,31 @@ exports.getOrAddMember = function(profile, fbToken, pn, iosToken, cb) {
 		} else { // see if a phone user exists. 
 			exports.getFromPn(pn, function(err, user) {
 				if (err) return cb(err);
-				if (user && user.type === 'Phone') {
-					user.type = 'Member';
-					user.iosToken = iosToken;
-					user.fbid = fbid;
-					user.name = profile.displayName;
-					log('Upgrading', user.name, 'from Phone to Member.');
-					set(user.uid, user, cb);
-				} else { // create a new user from scratch.
-					blankUser(pn, fbid, function(err, user) {
-						if (err) return cb(err);
-						user.pn = pn;
-						user.type = "Member";
-						user.name = profile.displayName;
+				findFizzFriends(fbToken, function(err, fizzFriends) {
+					// console.log('fizzFriends:', fizzFriends);
+					if (err) return cb(err);
+					if (user && user.type === 'Phone') {
+						user.type = 'Member';
+						user.iosToken = iosToken;
 						user.fbid = fbid;
-						log('Creating', user.name, 'as Member.');
+						user.name = profile.displayName;
+						user.friendList = fizzFriends;
+						store.hset('fbid->uid', fbid, user.uid);
+						log('Upgraded', user.name, 'from Phone to Member. \n\thas friends:', fizzFriends);
 						set(user.uid, user, cb);
-					});
-				}
+					} else { // create a new user from scratch.
+						blankUser(pn, fbid, function(err, user) {
+							if (err) return cb(err);
+							user.pn = pn;
+							user.type = "Member";
+							user.name = profile.displayName;
+							user.fbid = fbid;
+							user.friendList = fizzFriends;
+							log('Created', user.name, 'as Member.\n\thas friends:', fizzFriends);
+							set(user.uid, user, cb);
+						});
+					}
+				});
 			});
 		}
 	});

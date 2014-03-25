@@ -65,18 +65,17 @@ exports.newEvent = function (data, socket) {
       text       = data.text,
       inviteOnly = data.inviteOnly;
 
-  async.parallel({
-    friendList: function(cb) { users.getFriendUserList(user.uid, cb) },
-    e: function(cb) { events.add(text, user, inviteOnly, cb) }
-  },
-  function(err, result) {
+  async.waterfall([
+    function(cb) { users.getFriendUserList(user.uid, cb) },
+    function(FUL, cb) { events.add(text, user, FUL, inviteOnly, cb) }
+  ],
+  function(err, e) {
     if (err) return logError(err);
-    // console.log(result.e);
-    check.is(result.e, 'event');
+    check.is(e, 'event');
     emit({
       eventName:  'newEvent',
-      data:       {'event' : result.e},
-      recipients: [user]
+      data:       {'event' : e},
+      recipients: e.inviteList
     });
     log('New fizzlevent by', user.name+'\n\t\t',text);
   });

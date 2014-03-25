@@ -15,12 +15,14 @@ function beforeTests() {
     function(cb){users.delete(1, cb)},
     function(cb){users.delete(2, cb)},
     function(cb){users.delete(3, cb)},
-    
+    function(cb){users.delete(4, cb)},
+    function(cb){users.delete(5, cb)},
   ], function(err){
     if (err) {
       console.log(err);
     } else {
-      users.getOrAddPhone('+3107102956', function(err){
+      // users.getOrAddPhone('+13107102956', function(err){
+      users.getOrAddPhone('+13475346100', function(err){
         if (err) return console.log(err);
         tests1();  
       });
@@ -41,10 +43,16 @@ function tests1(){
     id: '798172051',
     displayName: 'Daniel Belchamber'
   }
-  async.parallel({
-    a: function(cb){ users.getOrAddMember(andrewFBProfile, 'fBToken', '+13107102956', 'iosToken', cb) },
+
+  var joelToken = 'CAAClyP2DrA0BAAAKbjBbA1ZAn4LRberdT90lJ81uZC3CotkOMnaezvDrc4HDQhI7ZBo1eSCwIurGruLpN4x70p9FHFRRT2405Jgoa8bbp1gbUa1WL8KPAUtRFx0PjdCEIVoCmzChtyKgEE5pDhMLpAzn1kGD1Ec5NwLgI6OjPgabiGCMKf2';
+  var andrewToken= 'CAAGa4EJzl7kBAES8QjmOnURcDjMoZCO9B8o3sHGEwcEIcXri0rnQJR1XLcHhfbZAz33fxYjFzPeJrNochdeoxw45MjGIxghC0XgUHcQ6m0ZAXtxnXkLnSTy3M9Ams07ZAYkGbSa1pH2DZAzG0rp5Gk32USiSBMF2rQBNusV8lME0OKmXFbvH0rBDagzJuqUJrqP773AwO7sKCzGIAGTPn'
+
+  async.series({
     d: function(cb){ users.getOrAddMember(danielFBProfile, 'fBToken', '+13016420019', 'iosToken', cb) },
-    j: function(cb){ users.getOrAddMember(joelFBProfile, 'fBToken', '+13475346100', 'iosToken', cb) }
+    j: function(cb){ users.getOrAddMember(joelFBProfile, joelToken, '+13475346100', 'iosToken', cb) },
+    a: function(cb){ users.getOrAddMember(andrewFBProfile, andrewToken, '+13107102956', 'iosToken', cb) }
+    
+    
   }, function(err, result) {
     if (err) {
       console.log(err);
@@ -52,7 +60,9 @@ function tests1(){
       a = result.a;
       j = result.j;
       d = result.d;
-      addFriends();
+      // afterTests();
+      createEvents();
+      // addFriends();
     }
   });
 }
@@ -69,20 +79,23 @@ function addFriends() {
     });
   });
 }
-function createEvents(){
-  events.add('Andrew First Event', a, false, function(err, ae){
+function createEvents() {
+  console.log('Creating events.');
+  events.add('Andrew First Event', a, [j, d], true, function(err, ae){
     if (err) return console.log(err);
-    events.add('Joels first event', j, false, function(err, je){
+    events.add('Joels first event', j, [a,d], true, function(err, je){
       if (err) return console.log(err);
-      events.add('Daniels first event', d, false, function(err, de){
+      events.add('Daniels first event', d, [a,j], true, function(err, de){
       if (err) return console.log(err);
-        inviteOneAnother(ae, je, de);
+        afterTests()
+        // inviteOneAnother(ae, je, de);
       });
     });
   });
 }
 
 function inviteOneAnother(ae, je, de) {
+  console.log('Inviting one another.');
   events.addInvitees(ae.eid, [j,d], function(err){
     if (err) return console.log(err);
     events.addInvitees(je.eid, [a, d], function(err){
@@ -96,6 +109,7 @@ function inviteOneAnother(ae, je, de) {
 }
 
 function addMessages(ae, je, de) {
+  console.log('Leaving messages.');
   //joel leaves a comment on andrews event.
   events.addMessage(ae.eid, j.uid, 'Joels comment on andrews event.', function(err){
     if (err) return console.log(err);
