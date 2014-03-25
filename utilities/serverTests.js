@@ -45,10 +45,10 @@ function tests1(){
   }
 
   var joelToken = 'CAAClyP2DrA0BAAAKbjBbA1ZAn4LRberdT90lJ81uZC3CotkOMnaezvDrc4HDQhI7ZBo1eSCwIurGruLpN4x70p9FHFRRT2405Jgoa8bbp1gbUa1WL8KPAUtRFx0PjdCEIVoCmzChtyKgEE5pDhMLpAzn1kGD1Ec5NwLgI6OjPgabiGCMKf2';
-  var andrewToken= 'CAAGa4EJzl7kBAES8QjmOnURcDjMoZCO9B8o3sHGEwcEIcXri0rnQJR1XLcHhfbZAz33fxYjFzPeJrNochdeoxw45MjGIxghC0XgUHcQ6m0ZAXtxnXkLnSTy3M9Ams07ZAYkGbSa1pH2DZAzG0rp5Gk32USiSBMF2rQBNusV8lME0OKmXFbvH0rBDagzJuqUJrqP773AwO7sKCzGIAGTPn'
-
+  var andrewToken= 'CAAGa4EJzl7kBAES8QjmOnURcDjMoZCO9B8o3sHGEwcEIcXri0rnQJR1XLcHhfbZAz33fxYjFzPeJrNochdeoxw45MjGIxghC0XgUHcQ6m0ZAXtxnXkLnSTy3M9Ams07ZAYkGbSa1pH2DZAzG0rp5Gk32USiSBMF2rQBNusV8lME0OKmXFbvH0rBDagzJuqUJrqP773AwO7sKCzGIAGTPn';
+  var danielToken = 'CAAClyP2DrA0BAMPgkgfrXeZCJbEgbIehqZARtEDEmD2CtQqj6pqOW1XKY4p90FJLnxZBSZBTgZCYeNFikr3G8ByRtkCpCEYO8owEqEYJqjptXJvXIULQYHA6TQUgxCFtfuxfQEt0lSaK1pKshcOaizfbH68019WE4j3a3gDZAiZBaUI5oWLPT8ePFQgDe8upsAZD';
   async.series({
-    d: function(cb){ users.getOrAddMember(danielFBProfile, 'fBToken', '+13016420019', 'iosToken', cb) },
+    d: function(cb){ users.getOrAddMember(danielFBProfile, danielToken, '+13016420019', 'iosToken', cb) },
     j: function(cb){ users.getOrAddMember(joelFBProfile, joelToken, '+13475346100', 'iosToken', cb) },
     a: function(cb){ users.getOrAddMember(andrewFBProfile, andrewToken, '+13107102956', 'iosToken', cb) }
     
@@ -81,11 +81,11 @@ function addFriends() {
 }
 function createEvents() {
   console.log('Creating events.');
-  events.add('Andrew First Event', a, [j, d], true, function(err, ae){
+  events.add('Andrew First Event', a, [j, d], false, function(err, ae){
     if (err) return console.log(err);
-    events.add('Joels first event', j, [a,d], true, function(err, je){
+    events.add('Joels first event', j, [d], false, function(err, je){
       if (err) return console.log(err);
-      events.add('Daniels first event', d, [a,j], true, function(err, de){
+      events.add('Daniels first event', d, [], false, function(err, de){
       if (err) return console.log(err);
         afterTests()
         // inviteOneAnother(ae, je, de);

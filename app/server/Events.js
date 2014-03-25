@@ -58,20 +58,13 @@ exports.add = function(text, user, FUL, inviteOnly, callback) {
       function(cb) { //add creator to guestlist
         store.sadd('guestList:'+e.eid, user.uid, cb);
       },
-      function(cb){ // show event to creator
-        exports.addVisible(user.uid, e.eid, cb);
-      },
-      function(cb) { // add creator to invite list
-        store.sadd('inviteList:'+e.eid, JSON.stringify(user), cb);
-      },
       function(cb) {
-        if (inviteOnly) {
-          cb(null);
-        } else {
-          async.each(FUL, function(u, cb2){
-            exports.addVisible(u.uid, e.eid, cb2);
-          }, cb);
-        }
+        async.each(e.inviteList, function(u, cb2) {
+          store.sadd('inviteList:'+e.eid, JSON.stringify(u), function(err){
+            if (err) cb2 (err)
+            else exports.addVisible(u.uid, e.eid, cb2);
+          });
+        }, cb);
       },
       function(cb) {
         store.set('event:'+e.eid,JSON.stringify({
