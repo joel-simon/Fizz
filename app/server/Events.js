@@ -187,5 +187,6 @@ exports.addInvitees = function(eid, users, cb) {
 }
 
 exports.setSeatCapacity = function(eid, seats, cb) {
-  store.hset('event:'+eid, 'seats', seats, cb);
+  store.set('seats:'+eid, seats, cb);
+  // store.hset('event:'+eid, 'seats', seats, cb);
 }
