@@ -61,15 +61,18 @@ exports.add = function(text, user, FUL, inviteOnly, callback) {
       function(cb) {
         async.each(e.inviteList, function(u, cb2) {
           store.sadd('inviteList:'+e.eid, JSON.stringify(u), function(err){
-            if (err) cb2 (err)
+            if (err) cb2 (err); 
             else exports.addVisible(u.uid, e.eid, cb2);
           });
         }, cb);
       },
       function(cb) {
+        store.set('seats:'+e.eid, e.seats, cb);
+      },
+      function(cb) {
         store.set('event:'+e.eid,JSON.stringify({
           'eid' : e.eid,
-          'seats': e.seats, 
+          // 'seats': e.seats, 
           'inviteOnly': e.inviteOnly,
           'creator': e.creator,
           }), cb);
@@ -104,13 +107,16 @@ exports.get = function(eid, callback) {
     },
     event: function(cb) {
       store.get('event:'+eid, cb);
+    },
+    seats: function(cb) {
+      store.get('seats:'+eid, cb);
     }
   },
   function(err, results) {
     if(err) return callback(err);
 
     var event = JSON.parse(results.event);//{'eid' : eid};
-    // event.seats = +results.event[0];
+    event.seats = +results.seats;
     // event.inviteOnly = JSON.parse(results.event[1]);
     // event.creator = results.event[2];
 

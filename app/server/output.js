@@ -41,10 +41,10 @@ feedback.on("feedback", function(devices) {
 exports.pushIos = function(msg, token, hoursToExpiration) {
   if(!msg || !token) return;
 
-  if (!args.pushIos) {
-    logI("SENDING SMS\n\t\tTo:"+token+"\n\t\tMsg:"+msg);
-    return;
-  }
+  // if (!args.pushIos) {
+  //   logI("PUSH ios\n\t\tTo:"+token+"\n\t\tMsg:"+msg);
+  //   return;
+  // }
 
   var myDevice = new apn.Device(token);
   var note = new apn.Notification();
@@ -66,10 +66,10 @@ var client = new twilio.RestClient(config.TWILIO.SID, config.TWILIO.TOKEN);
 
 
 exports.sendSms = function(to, msg) {
-  if (!args.sendSms) {
-    logI("SENDING SMS\n\t\tTo:"+to+"\n\t\tMsg:"+msg);
-    return;
-  }
+  // if (!args.sendSms) {
+  //+"\n\t\tMsg:"+msg);
+  //   return;
+  // }
   client.sms.messages.create({
     to:'+'+to,
     from:'+13476255694',
@@ -101,36 +101,53 @@ exports.emit = function(options) {
   var 
     eventName  = options.eventName,
     data       = options.data,
-    message    = options.message || null,
     recipients = options.recipients,
-    smsRecip   = options.smsRecip;
+    iosPush    = options.iosPush || null,
+    sms        = options.sms || null;
 
   // Deal with a circular dependency by delaying invocation.
   if(!io) io = require('../../app.js').io;
-  log('Emitting '+ eventName + ' to ', JSON.stringify(recipients.map(function(u){return u.name})), data);
+
+  log('Emitting '+eventName+
+      '\n\t\tto:'+JSON.stringify(recipients.map(function(u){return u.name+':'+u.type}))+
+      '\n\t\tdata:' + JSON.stringify(data)
+      );
 
   async.each(recipients, function(user, callback) {
     switch(user.type) {
-
       case 'Phone':
-        if (mesage && smsRecip[user.uid]) {
-          exports.sendSms(user.pn, message);
+        if (sms && args.sendSms) {
+          exports.sendSms(user.pn, sms);
+          log("SENT SMS To "+user.name);
+        } else if(sms){
+          log("SMS NOT SENT TO '"+user.name+"' ENABLE SMS WITH 'node app sendSms'");
         }
         break;
 
       case "Guest":
         if (users.isConnected(user.uid)) {
           io.sockets.in(user.uid).emit(eventName, data);
-        } else if (mesage && smsRecip[user.uid]) {
-          exports.sendSms(user.pn, message);
+        } else if (sms) {
+          if (args.sendSms){
+            exports.sendSms(user.pn, message);
+            log("SENT SMS To "+user.name);
+          } else {
+            log("SMS NOT SENT TO '"+user.name+"' ENABLE SMS WITH 'node app sendSms'");
+          }
         }
         break;
 
       case "Member":
         if (users.isConnected(user.uid)) {
           io.sockets.in(''+user.uid).emit(eventName, data);
-        } else {
-          exports.pushIos(message, user.IOSToken, 1);
+        } else if(iosPush){
+          if(args.pushIos) {
+            exports.pushIos(message, user.IOSToken, 1);
+            log("Send push to "+user.name)
+          } else {
+            log("PUSH NOT SENT TO "+user.name+" Enable PUSH WITH 'node app pushIos'")
+          }
+          
         }
         break;
     }

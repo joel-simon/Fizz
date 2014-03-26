@@ -49,7 +49,7 @@ function tests1(){
   var danielToken = 'CAAClyP2DrA0BAMPgkgfrXeZCJbEgbIehqZARtEDEmD2CtQqj6pqOW1XKY4p90FJLnxZBSZBTgZCYeNFikr3G8ByRtkCpCEYO8owEqEYJqjptXJvXIULQYHA6TQUgxCFtfuxfQEt0lSaK1pKshcOaizfbH68019WE4j3a3gDZAiZBaUI5oWLPT8ePFQgDe8upsAZD';
   async.series({
     d: function(cb){ users.getOrAddMember(danielFBProfile, danielToken, '+13016420019', 'iosToken', cb) },
-    j: function(cb){ users.getOrAddMember(joelFBProfile, joelToken, '+13475346100', 'iosToken', cb) },
+    // j: function(cb){ users.getOrAddMember(joelFBProfile, joelToken, '+13475346100', 'iosToken', cb) },
     a: function(cb){ users.getOrAddMember(andrewFBProfile, andrewToken, '+13107102956', 'iosToken', cb) }
     
     
@@ -58,10 +58,10 @@ function tests1(){
       console.log(err);
     } else {
       a = result.a;
-      j = result.j;
+      // j = result.j;
       d = result.d;
-      // afterTests();
-      createEvents();
+      afterTests();
+      // createEvents();
       // addFriends();
     }
   });
@@ -83,9 +83,9 @@ function createEvents() {
   console.log('Creating events.');
   events.add('Andrew First Event', a, [j, d], false, function(err, ae){
     if (err) return console.log(err);
-    events.add('Joels first event', j, [d], false, function(err, je){
+    events.add('Joels first event', j, [d, j], false, function(err, je){
       if (err) return console.log(err);
-      events.add('Daniels first event', d, [], false, function(err, de){
+      events.add('Daniels first event', d, [a, j], false, function(err, de){
       if (err) return console.log(err);
         afterTests()
         // inviteOneAnother(ae, je, de);

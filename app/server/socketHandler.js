@@ -21,7 +21,7 @@ var
  * @param {Object} Socket - contains user user socket
  * @param {Object} events - object for managing all events
  */
-exports.login = function(socket) {
+exports.connect = function(socket) {
   var user = getUserSession(socket);
   socket.join(''+user.uid);
 
@@ -30,11 +30,11 @@ exports.login = function(socket) {
     friendList:function(cb){ users.getFriendUserList(user.uid, cb) }
 
   },
-  function(err, results){
+  function(err, results) {
     if (err) return logError(err);
 
     var str = user.name+' has connected. uid:'+user.uid+'\n\t\t';
-    str += results.eventList.length + ' visible events.'
+    str += results.eventList.length + ' visible events:'
     str += JSON.stringify(results.eventList.map(function(e){return e.messageList[0].text}));
     log(str);
 
@@ -53,6 +53,37 @@ exports.login = function(socket) {
   });
 }
 
+exports.onAuth = function(profile, pn, fbToken, iosToken, cb) {
+  fb.extendToken(fbToken, function(err, longToken) {
+    if (err) return cb(err);
+    users.getOrAddMember(profile, longToken, pn, iosToken, function(err, user) {
+      if(err) cb(err);
+      else cb(null, user);
+
+      // for each of the users new friends, reciprocate the friendship and emit.
+      users.getFriendUserList(user.uid, function(err, friendUserList) {
+        async.each(friendUserList, function(friend, cb2) {
+          users.addFriendList(friend, [''+user.uid], function(err) {
+            if(err) cb2(err)
+            else {
+              emit({
+                eventName:  'newFriend',
+                data:       null,
+                recipients: [friend],
+                iosPush: user.name+' '+'has added you as friend!',
+                sms: null,
+              });
+            }
+          });
+        },
+        function(err) {
+          if(err) logError(err);
+        });
+      });
+
+    });
+  });
+}
 /**
  * Handle newBeacon socket
  * @param {Object} B - the beacon object
@@ -61,25 +92,48 @@ exports.login = function(socket) {
  */
 exports.newEvent = function (data, socket) {
   check.is(data, 'newEvent');
+  log(data)
   var user       = getUserSession(socket),
       text       = data.text,
       inviteOnly = data.inviteOnly;
 
+  var ful;
   async.waterfall([
     function(cb) { users.getFriendUserList(user.uid, cb) },
-    function(FUL, cb) { events.add(text, user, FUL, inviteOnly, cb) }
+    function(FUL, cb) { ful = FUL; events.add(text, user, FUL, inviteOnly, cb) }
   ],
   function(err, e) {
     if (err) return logError(err);
     check.is(e, 'event');
-    emit({
-      eventName:  'newEvent',
-      data:       {'event' : e},
-      recipients: e.inviteList
-    });
-    log('New fizzlevent by', user.name+'\n\t\t',text);
+
+    if (inviteOnly) {
+      emit({
+        eventName:  'newEvent',
+        data:       {'event' : e},
+        recipients: e.inviteList,
+        iosPush: user.name+':'+e.messageList[0].text,
+        sms: user.name+':'+e.messageList[0].text,
+      });
+      log('New fizzlevent by', user.name+'\n\t\t',text);
+    } else {
+      users.getFizzFriendsUidsOf(ful, function(err, fof) {
+        if(err) return logError(err);
+        events.addVisibleList(Object.keys(fof), e.eid, function(err){
+          if(err) return logError(err);
+          emit({
+            eventName:  'newEvent',
+            data:       {'event' : e},
+            recipients: e.inviteList,
+            iosPush: user.name+':'+e.messageList[0].text,
+            sms: false,
+          });
+          log('New fizzlevent by', user.name+'\n\t\t',text);
+        });
+      });
+    }
   });
 }
+
 /**
  * Handle joinBeacon socket
  * @param {Object} Data - contains .id and .admin
@@ -188,7 +242,9 @@ exports.newMessage = function(data, socket) {
     emit({
       eventName: 'newMessage',
       data: {message: results.newMsg},
-      recipients: results.recipients
+      recipients: results.recipients,
+      iosPush: user.name+':'+text,
+      sms: user.name+':'+text,
     });
   });
 }

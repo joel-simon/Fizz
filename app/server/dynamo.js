@@ -3,7 +3,7 @@ var AWS = require('aws-sdk');
 
 AWS.config.update(config.AWS);
 
-console.log(config.AWS);
+// console.log(config.AWS);
 
 var db = new AWS.DynamoDB();
 module.exports = exports = db;

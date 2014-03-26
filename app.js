@@ -35,10 +35,12 @@ passport.serializeUser(function(user, done) { done(null, user); });
 passport.deserializeUser(function(obj, done) { done(null, obj); });
 
 var users = require('./app/server/users.js');
-
 var fb        = require('./app/server/fb.js');
 
 
+/*
+  Web Login Flow.
+*/
 passport.use(new FacebookStrategy(
   {
     clientID: config.FB.FACEBOOK_APP_ID,
@@ -56,7 +58,7 @@ passport.use(new FacebookStrategy(
   }));
 
 /*
-  IOS LOGIN FLOW
+  ios Login Flow.
 */
 passport.use(new FacebookTokenStrategy(
   {
@@ -69,14 +71,17 @@ passport.use(new FacebookTokenStrategy(
     console.log('pn:', pn)
     console.log('iosToken:', iosToken)
 
+    if (pn && pn.length == 11) {
+      pn = '+1'+pn.substring(1);
+    } else {
+      pn = null;
+    }
     iosToken = iosToken || null;
-    pn = pn || null;
+    console.log(pn);
     process.nextTick(function () {
-      fb.extendToken(fbToken, function(err, token) {  
-        users.getOrAddMember(profile, token, pn, iosToken, function(err, user) {
-          if(err) console.log(err);
-          else done(null, user);  
-        });
+      handler.onAuth(profile, pn, fbToken, iosToken, function(err, user) {
+         if(err) console.log(err);
+        else done(null, user);  
       });
     });
   }));
@@ -127,7 +132,7 @@ io.set('authorization', passportSocketIo.authorize({
 //d.run
 (function(){
   io.sockets.on('connection',   (function(socket) {
-    handler.login(socket);
+    handler.connect(socket);
     socket.on('newEvent',       (function(data){ handler.newEvent   (data, socket) }));
     socket.on('joinEvent',      (function(data){ handler.joinEvent  (data, socket) }));
     socket.on('leaveEvent',     (function(data){ handler.leaveEvent (data, socket) }));
@@ -165,10 +170,13 @@ var domo =  ''+
 '╰━┫△△△△┣━╯╰━┫△△△△┣━╯╰━┫△△△△┣━╯╰━┫△△△△┣━╯\n'+
 '╲╲┃┈┈┈┈┃╲╲╲╲┃┈┈┈┈┃╲╲╲╲┃┈┈┈┈┃╲╲╲╲┃┈┈┈┈┃╲╲\n'+
 '╲╲┃┈┏┓┈┃╲╲╲╲┃┈┏┓┈┃╲╲╲╲┃┈┏┓┈┃╲╲╲╲┃┈┏┓┈┃╲╲\n'+
-'▔▔╰━╯╰━╯▔▔▔▔╰━╯╰━╯▔▔▔▔╰━╯╰━╯▔▔▔▔╰━╯╰━╯▔▔\n'+
-'#########################################';
+'▔▔╰━╯╰━╯▔▔▔▔╰━╯╰━╯▔▔▔▔╰━╯╰━╯▔▔▔▔╰━╯╰━╯▔▔';
 console.log(domo.rainbow);
 console.log('Port:', (''+port).bold);
+console.log('Send sms:', (''+args.sendSms).bold);
+console.log('Push ios:', (''+args.pushIos).bold);
+console.log('#########################################'.rainbow);
+
 
 if (args.testing) require('./utilities/serverTests.js');
 
