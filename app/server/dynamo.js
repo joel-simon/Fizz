@@ -1,4 +1,5 @@
-var config  = require('./../../config.json');
+var args = require('./args.js');
+var config = ((args.dev) ? require('./../../configDev.json') : require('./../../config.json'));
 var AWS = require('aws-sdk'); 
 
 AWS.config.update(config.AWS);

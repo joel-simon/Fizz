@@ -1,6 +1,7 @@
 // Abstraction for all database interactions.
 var mongojs = require('mongojs');
-var config  = require('./../../config.json');
+var args = require('./args.js');
+var config = ((args.dev) ? require('./../../configDev.json') : require('./../../config.json'));
 var store   = require('./redisStore.js').store;
 var utils   = require('./utilities.js');
 var log     = utils.log;
