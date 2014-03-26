@@ -5,8 +5,8 @@
 		"REDISTOGO_URL"         : "redis://redistogo:7771d0cc39827f1664b16523d1b92768@crestfish.redistogo.com:10325/"
 		},
 	"AWS" : {
-		"accessKeyId"			: "AKIAJGU5REV2PX2LUDZQ", 
-		"secretAccessKey"	: "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",
+		"accessKeyId"			: "AKIAJS6FDLVZSQCKEZ2Q", 
+		"secretAccessKey"	: "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",
 		"region"					: "us-east-1"
 		},
 	"FB" : {
