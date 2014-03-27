@@ -12,7 +12,8 @@ module.exports = function(app, passport) {
 		// 	console.log(pn);
 		// 	req.session.pn = pn;
 		// res.send('Logged in');
-			res.redirect('/home');
+			res.render('home', {});
+			// res.redirect('/home');
 		// }
 	});
 

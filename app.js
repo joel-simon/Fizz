@@ -55,7 +55,6 @@ passport.use(new smsStrategy(
         console.log('User found', user);
         done(null, user);
       }
-      
     });
   }
 ));
