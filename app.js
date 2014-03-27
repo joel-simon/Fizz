@@ -45,10 +45,17 @@ passport.use(new smsStrategy(
   function(key, done) {
     console.log(key);
     users.getFromKey(key, function(err, user){
-      if (err) { return done(err); }
-      if (!user) { return done(null, false); }
-      console.log(user);
-      return done(null, user);
+      if (err) {
+        console.log('Err on auth', err);
+        done(err);
+      } else if (!user) {
+        console.log('No user found');
+        done(null, false);
+      } else {
+        console.log('User found', user);
+        done(null, user);
+      }
+      
     });
   }
 ));
