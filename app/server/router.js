@@ -2,15 +2,18 @@
 module.exports = function(app, passport) {
 	
 
-	app.get('/c:pn', function(req, res) {
-		var pn = req.params.pn;
-		if (!pn) {
-			res.send('Must get here from a mobile sms link.');
-		} else {
-			console.log(pn);
-			req.session.pn = pn;
-			res.redirect('/auth/facebook');
-		}
+	app.get('/c',
+		passport.authenticate('sms', { failureRedirect: '/' }),
+		function(req, res) {
+		// var pn = req.params.pn;
+		// if (!pn) {
+		// 	res.send('Must get here from a mobile sms link.');
+		// } else {
+		// 	console.log(pn);
+		// 	req.session.pn = pn;
+		// res.send('Logged in');
+			res.redirect('/home');
+		// }
 	});
 
 

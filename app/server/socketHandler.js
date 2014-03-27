@@ -200,24 +200,45 @@ exports.invite = function(data, socket) {
   var eid=data.eid,
       inviteList=data.inviteList,
       invitePnList=data.invitePnList;
+  var user = getUserSession(socket);
 
-  users.getOrAddPhoneList(invitePnList, function(err, newUsers) {
+  async.parallel({
+    pnUsers : function(cb){ users.getOrAddPhoneList(invitePnList, cb) },
+    e : function(cb){ events.get(eid, cb) }
+  },
+  function(err, results){
     if (err) return logError(err);
-    inviteList = inviteList.concat(newUsers)
-    events.addInvitees(eid, inviteList, function(err) {
-      emit({
-        eventName: 'newEvent',
-        data: {'event' : newE},
-        recipients: inviteList,
-        message: user.name+'has invited you to an event.\n'+message.text+
-        '\n More info @ '+'fakeUrl@extraFizzy.com'
-      });
+    events.addInvitees(eid, inviteList.concat(results.pnUsers), function(err) {
+      if (err) return logError(err);
+      var message0 = results.e.messageList[0].text;
+      var msgOut = user.name+':'+message0;
+
+      if (inviteList.length) {
+        emit({ //emit to non sms users
+          eventName: 'newEvent',
+          data: {'event' : results.e},
+          recipients: inviteList,
+          iosPush: user.name+':'+message0
+        });
+      }
+
+      async.each(results.pnUsers,
+        function(pnUser, cb) {
+          var link = '\nextraFizzy.com/c?k='+pnUser.key;
+          output.sendSms(pnUser, msgOut+link)
+          cb();
+        },
+        function(err) {
+          if(err) logError(err);
+        }
+      );
     });
   });
 }
 
 exports.request = function(data, socket) {
   check.is(data, {eid: 'posInt'});
+  exports.newMessage({eid:data.eid,text:' is interested in this event!!'},socket);
 }
 
 exports.newMessage = function(data, socket) {
@@ -238,11 +259,10 @@ exports.newMessage = function(data, socket) {
     log(results);
     // add will generate the messages mid.
     check.is(results, {recipients: '[user]'});
-    // check.is(data, {message:'message'});
     emit({
       eventName: 'newMessage',
-      data: {message: results.newMsg},
       recipients: results.recipients,
+      data: {message: results.newMsg},
       iosPush: user.name+':'+text,
       sms: user.name+':'+text,
     });

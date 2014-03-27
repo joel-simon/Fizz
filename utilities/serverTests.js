@@ -4,6 +4,7 @@ var events = require('../app/server/Events.js');
 var store = require('../app/server/redisStore.js').store;
 var db = require('../app/server/dynamo.js');
 var async    = require('async');
+var handler = require('../app/server/socketHandler.js');
 store.flushdb();
 var a, d, j;
 function onErr(err){if (err) throw err;};
@@ -48,7 +49,7 @@ function tests1(){
   var andrewToken= 'CAAGa4EJzl7kBAES8QjmOnURcDjMoZCO9B8o3sHGEwcEIcXri0rnQJR1XLcHhfbZAz33fxYjFzPeJrNochdeoxw45MjGIxghC0XgUHcQ6m0ZAXtxnXkLnSTy3M9Ams07ZAYkGbSa1pH2DZAzG0rp5Gk32USiSBMF2rQBNusV8lME0OKmXFbvH0rBDagzJuqUJrqP773AwO7sKCzGIAGTPn';
   var danielToken = 'CAAClyP2DrA0BAMPgkgfrXeZCJbEgbIehqZARtEDEmD2CtQqj6pqOW1XKY4p90FJLnxZBSZBTgZCYeNFikr3G8ByRtkCpCEYO8owEqEYJqjptXJvXIULQYHA6TQUgxCFtfuxfQEt0lSaK1pKshcOaizfbH68019WE4j3a3gDZAiZBaUI5oWLPT8ePFQgDe8upsAZD';
   async.series({
-    d: function(cb){ users.getOrAddMember(danielFBProfile, danielToken, '+13016420019', 'iosToken', cb) },
+    // d: function(cb){ users.getOrAddMember(danielFBProfile, danielToken, '+13016420019', 'iosToken', cb) },
     // j: function(cb){ users.getOrAddMember(joelFBProfile, joelToken, '+13475346100', 'iosToken', cb) },
     a: function(cb){ users.getOrAddMember(andrewFBProfile, andrewToken, '+13107102956', 'iosToken', cb) }
     
@@ -59,9 +60,9 @@ function tests1(){
     } else {
       a = result.a;
       // j = result.j;
-      d = result.d;
-      afterTests();
-      // createEvents();
+      // d = result.d;
+      // afterTests();
+      createEvents();
       // addFriends();
     }
   });
@@ -80,36 +81,52 @@ function addFriends() {
   });
 }
 function createEvents() {
-  console.log('Creating events.');
-  events.add('Andrew First Event', a, [j, d], false, function(err, ae){
-    if (err) return console.log(err);
-    events.add('Joels first event', j, [d, j], false, function(err, je){
-      if (err) return console.log(err);
-      events.add('Daniels first event', d, [a, j], false, function(err, de){
-      if (err) return console.log(err);
-        afterTests()
+  // console.log('Creating events.');
+  
+  handler.newEvent({
+    text: 'Andrew First Event',
+    inviteOnly: true
+  }, {handshake:{user:a}});
+
+  setTimeout(function(){
+    inviteOneAnother();
+  },500)
+  // events.add(, a, [j, d], true, function(err, ae){
+  //   if (err) return console.log(err);
+    // events.add('Joels first event', j, [d, j], false, function(err, je){
+    //   if (err) return console.log(err);
+    //   events.add('Daniels first event', d, [a, j], false, function(err, de){
+    //   if (err) return console.log(err);
+        // afterTests()
         // inviteOneAnother(ae, je, de);
-      });
-    });
-  });
+      // });
+  //   });
+  // });
 }
 
-function inviteOneAnother(ae, je, de) {
-  console.log('Inviting one another.');
-  events.addInvitees(ae.eid, [j,d], function(err){
-    if (err) return console.log(err);
-    events.addInvitees(je.eid, [a, d], function(err){
-      if (err) return console.log(err);
-      events.addInvitees(de.eid, [a,j], function(err){
-      if (err) return console.log(err);
-        addMessages(ae, je, de);
-      });
-    });
-  });
+function inviteOneAnother() {
+
+  handler.invite({
+    eid: 1,
+    inviteList: [],
+    invitePnList: ['+13475346100']
+  },{handshake:{user:a}});
+
+  // console.log('Inviting one another.');
+  // events.addInvitees(ae.eid, [j,d], function(err){
+  //   if (err) return console.log(err);
+  //   events.addInvitees(je.eid, [a, d], function(err){
+  //     if (err) return console.log(err);
+  //     events.addInvitees(de.eid, [a,j], function(err){
+  //     if (err) return console.log(err);
+  //       addMessages(ae, je, de);
+  //     });
+  //   });
+  // });
 }
 
 function addMessages(ae, je, de) {
-  console.log('Leaving messages.');
+  // console.log('Leaving messages.');
   //joel leaves a comment on andrews event.
   events.addMessage(ae.eid, j.uid, 'Joels comment on andrews event.', function(err){
     if (err) return console.log(err);
@@ -124,5 +141,5 @@ function addMessages(ae, je, de) {
 }
 
 function afterTests() {
-  console.log('Completed tests.');
+  // console.log('Completed tests.');
 }

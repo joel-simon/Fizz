@@ -14,14 +14,18 @@ var
   io      = require('socket.io').listen(server),
   d       = require('domain').create(),  // create domain for error routing.
   handler = require('./app/server/socketHandler.js'), //all socket.io requests go here.
+  colors  = require('colors'),
+
   redis   = require('redis'),
   redisStore = require('connect-redis')(express),
   redisConns = require('./app/server/redisStore.js'),
+
   passport = require('passport'),
   FacebookStrategy = require('passport-facebook').Strategy,
   FacebookTokenStrategy = require('passport-facebook-token').Strategy,
-  passportSocketIo = require("passport.socketio"),
-  colors  = require('colors');
+  smsStrategy = require('passport-sms').Strategy,
+  passportSocketIo = require("passport.socketio");
+
 var config = ((args.dev) ? require('./configDev.json') : require('./config.json'));
 
 var store = redisConns.store,
@@ -37,6 +41,17 @@ passport.deserializeUser(function(obj, done) { done(null, obj); });
 var users = require('./app/server/users.js');
 var fb        = require('./app/server/fb.js');
 
+passport.use(new smsStrategy(
+  function(key, done) {
+    console.log(key);
+    users.getFromKey(key, function(err, user){
+      if (err) { return done(err); }
+      if (!user) { return done(null, false); }
+      console.log(user);
+      return done(null, user);
+    });
+  }
+));
 
 /*
   Web Login Flow.
