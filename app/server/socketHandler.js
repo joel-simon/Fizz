@@ -222,7 +222,7 @@ exports.invite = function(data, socket) {
 
       async.each(results.pnUsers,
         function(pnUser, cb) {
-          var link = '\nextraFizzy.com/c?k='+pnUser.key;
+          var link = '\n http://extraFizzy.com/c?k='+pnUser.key;
           output.sendSms(pnUser, msgOut+link)
           cb();
         },
