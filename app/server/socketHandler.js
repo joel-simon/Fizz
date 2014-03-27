@@ -92,11 +92,10 @@ exports.onAuth = function(profile, pn, fbToken, iosToken, cb) {
  */
 exports.newEvent = function (data, socket) {
   check.is(data, 'newEvent');
-  log(data)
   var user       = getUserSession(socket),
       text       = data.text,
       inviteOnly = data.inviteOnly;
-
+  log('New fizzlevent by', user.name+'\n\t\t',text);
   var ful;
   async.waterfall([
     function(cb) { users.getFriendUserList(user.uid, cb) },
@@ -114,7 +113,7 @@ exports.newEvent = function (data, socket) {
         iosPush: user.name+':'+e.messageList[0].text,
         sms: user.name+':'+e.messageList[0].text,
       });
-      log('New fizzlevent by', user.name+'\n\t\t',text);
+     
     } else {
       users.getFizzFriendsUidsOf(ful, function(err, fof) {
         if(err) return logError(err);
@@ -127,7 +126,6 @@ exports.newEvent = function (data, socket) {
             iosPush: user.name+':'+e.messageList[0].text,
             sms: false,
           });
-          log('New fizzlevent by', user.name+'\n\t\t',text);
         });
       });
     }

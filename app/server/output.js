@@ -124,7 +124,9 @@ exports.emit = function(options) {
   async.each(recipients, function(user, callback) {
     switch(user.type) {
       case 'Phone':
-        if (sms && args.sendSms) {
+        if (users.isConnected(user.uid)) {
+          io.sockets.in(user.uid).emit(eventName, data);
+        } else if (sms && args.sendSms) {
           sendSms(user, sms);
           log("SENT SMS To "+user.name);
         } else if(sms){
