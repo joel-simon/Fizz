@@ -44,7 +44,7 @@ var fb        = require('./app/server/fb.js');
 passport.use(new smsStrategy(
   function(key, done) {
     console.log(key);
-    users.getFromKey(key, function(err, user){
+    users.getFromKey(key, function(err, user) {
       if (err) {
         console.log('Err on auth', err);
         done(err);
