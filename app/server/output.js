@@ -127,7 +127,7 @@ exports.emit = function(options) {
         if (users.isConnected(user.uid)) {
           io.sockets.in(user.uid).emit(eventName, data);
         } else if (sms && args.sendSms) {
-          sendSms(user, sms);
+          exports.sendSms(user, sms);
           log("SENT SMS To "+user.name);
         } else if(sms){
           log("SMS NOT SENT TO '"+user.name+"' ENABLE SMS WITH 'node app sendSms'");
@@ -138,7 +138,7 @@ exports.emit = function(options) {
         if (users.isConnected(user.uid)) {
           io.sockets.in(user.uid).emit(eventName, data);
         } else if (sms) {
-          sendSms(user, message);
+          exports.sendSms(user, message);
         }
         break;
 
