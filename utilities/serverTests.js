@@ -23,10 +23,10 @@ function beforeTests() {
       console.log(err);
     } else {
       // users.getOrAddPhone('+13107102956', function(err){
-      users.getOrAddPhone('+13475346100', function(err){
-        if (err) return console.log(err);
+      // users.getOrAddPhone('+13475346100', function(err){
+      //   if (err) return console.log(err);
         tests1();  
-      });
+      // });
     }
   });
 }
@@ -50,16 +50,16 @@ function tests1(){
   var danielToken = 'CAAClyP2DrA0BAMPgkgfrXeZCJbEgbIehqZARtEDEmD2CtQqj6pqOW1XKY4p90FJLnxZBSZBTgZCYeNFikr3G8ByRtkCpCEYO8owEqEYJqjptXJvXIULQYHA6TQUgxCFtfuxfQEt0lSaK1pKshcOaizfbH68019WE4j3a3gDZAiZBaUI5oWLPT8ePFQgDe8upsAZD';
   async.series({
     // d: function(cb){ users.getOrAddMember(danielFBProfile, danielToken, '+13016420019', 'iosToken', cb) },
-    // j: function(cb){ users.getOrAddMember(joelFBProfile, joelToken, '+13475346100', 'iosToken', cb) },
-    a: function(cb){ users.getOrAddMember(andrewFBProfile, andrewToken, '+13107102956', 'iosToken', cb) }
+    j: function(cb){ users.getOrAddMember(joelFBProfile, joelToken, '+13475346100', 'iosToken', cb) },
+    // a: function(cb){ users.getOrAddMember(andrewFBProfile, andrewToken, '+13107102956', 'iosToken', cb) }
     
     
   }, function(err, result) {
     if (err) {
       console.log(err);
     } else {
-      a = result.a;
-      // j = result.j;
+      // a = result.a;
+      j = result.j;
       // d = result.d;
       // afterTests();
       createEvents();
@@ -84,9 +84,9 @@ function createEvents() {
   // console.log('Creating events.');
   
   handler.newEvent({
-    text: 'Andrew First Event',
+    text: 'Anyone want to fizzz???',
     inviteOnly: true
-  }, {handshake:{user:a}});
+  }, {handshake:{user:j}});
 
   setTimeout(function(){
     inviteOneAnother();
@@ -109,8 +109,8 @@ function inviteOneAnother() {
   handler.invite({
     eid: 1,
     inviteList: [],
-    invitePnList: ['+13475346100']
-  },{handshake:{user:a}});
+    invitePnList: ['+13107102956', '+3475346100']
+  },{handshake:{user:j}});
 
   // console.log('Inviting one another.');
   // events.addInvitees(ae.eid, [j,d], function(err){
