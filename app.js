@@ -135,8 +135,8 @@ app.configure(function() {
 var ioRedisStore = require('socket.io/lib/stores/redis');
 // Configure socketio.
 io.configure( function(){
-  io.set('transports', ['xhr-polling']); 
-  io.set('polling duration', 10);
+  // io.set('transports', ['xhr-polling']); 
+  // io.set('polling duration', 10);
 
   // io.enable('browser client minification');  // send minified client
   // io.enable('browser client etag');          // apply etag caching logic based on version number
@@ -156,16 +156,18 @@ io.set('authorization', passportSocketIo.authorize({
 
 function onAuthorizeSuccess(data, accept){
   console.log('successful connection to socket.io');
+  console.log(data);
   // The accept-callback still allows us to decide whether to
   // accept the connection or not.
   accept(null, true);
 }
 
 function onAuthorizeFail(data, message, error, accept){
-  log(data);
+
   if(error)
     throw new Error(message);
   console.log('failed connection to socket.io:', message);
+  console.log(data);
   // We use this callback to log all of our failed connections.
   accept(null, false);
 }
