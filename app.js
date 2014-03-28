@@ -137,11 +137,11 @@ var ioRedisStore = require('socket.io/lib/stores/redis');
 io.configure( function(){
   io.set('transports', ['xhr-polling']); 
   io.set('polling duration', 10);
-   
+
   // io.enable('browser client minification');  // send minified client
   // io.enable('browser client etag');          // apply etag caching logic based on version number
   // io.enable('browser client gzip');          // gzip the file
-  io.set('log level', 1);                    // reduce logging
+  io.set('log level', 3);                    // reduce logging
   io.set('store', new ioRedisStore({redis: redis, redisPub:pub, redisSub:sub, redisClient:store}));
 });
 
@@ -150,7 +150,26 @@ io.set('authorization', passportSocketIo.authorize({
   key:         'connect.sid',       // the name of the cookie where express/connect stores its session_id
   secret:      config.SECRET.cookieParser,    // the session_secret to parse the cookie
   store:       sessionStore,        // we NEED to use a sessionstore. no memorystore please
+  success:     onAuthorizeSuccess,  // *optional* callback on success - read more below
+  fail:        onAuthorizeFail     // *optional* callback on fail/error - read more below
 }));
+
+function onAuthorizeSuccess(data, accept){
+  console.log('successful connection to socket.io');
+  // The accept-callback still allows us to decide whether to
+  // accept the connection or not.
+  accept(null, true);
+}
+
+function onAuthorizeFail(data, message, error, accept){
+  log(data);
+  if(error)
+    throw new Error(message);
+  console.log('failed connection to socket.io:', message);
+  // We use this callback to log all of our failed connections.
+  accept(null, false);
+}
+
 
 // Bind socket handlers.
 //d.run
