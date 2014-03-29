@@ -22,11 +22,7 @@ function beforeTests() {
     if (err) {
       console.log(err);
     } else {
-      // users.getOrAddPhone('+13107102956', function(err){
-      // users.getOrAddPhone('+13475346100', function(err){
-      //   if (err) return console.log(err);
-        tests1();  
-      // });
+      tests1();  
     }
   });
 }
@@ -58,12 +54,8 @@ function tests1(){
     if (err) {
       console.log(err);
     } else {
-      // a = result.a;
-      // j = result.j;
-      d = result.d;
-      // afterTests();
+      d = result.j; // BIND THE NEW USERS TO VARIABLES
       createEvents();
-      // addFriends();
     }
   });
 }
@@ -80,67 +72,43 @@ function addFriends() {
     });
   });
 }
-
-function createEvents() {
-  // console.log('Creating events.');
-  
+function createEvents() {  
   handler.newEvent({
-    text: 'Anyone want to fizzz???',
+    text: 'Go to settings-> safari and turn on cookies to see this page!!',
     inviteOnly: true
-  }, {handshake:{user:d}});
+  }, {handshake:{user:d}}); // MAKE THIS USER THE CREATO, a, j or d
 
   setTimeout(function(){
     inviteOneAnother();
   },500)
-  // events.add(, a, [j, d], true, function(err, ae){
-  //   if (err) return console.log(err);
-    // events.add('Joels first event', j, [d, j], false, function(err, je){
-    //   if (err) return console.log(err);
-    //   events.add('Daniels first event', d, [a, j], false, function(err, de){
-    //   if (err) return console.log(err);
-        // afterTests()
-        // inviteOneAnother(ae, je, de);
-      // });
-  //   });
-  // });
 }
 
 function inviteOneAnother() {
-
   handler.invite({
     eid: 1,
     inviteList: [],
-    invitePnList: ['+13107102956', '+13475346100']
-  },{handshake:{user:d}});
-
-  // console.log('Inviting one another.');
-  // events.addInvitees(ae.eid, [j,d], function(err){
-  //   if (err) return console.log(err);
-  //   events.addInvitees(je.eid, [a, d], function(err){
-  //     if (err) return console.log(err);
-  //     events.addInvitees(de.eid, [a,j], function(err){
-  //     if (err) return console.log(err);
-  //       addMessages(ae, je, de);
-  //     });
-  //   });
-  // });
+    invitePnList: ['19494647070', '+13107102956'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)
+  },{handshake:{user:d}}); // MAKE THIS USER THE CREATO, a, j or d
 }
 
-function addMessages(ae, je, de) {
-  // console.log('Leaving messages.');
-  //joel leaves a comment on andrews event.
-  events.addMessage(ae.eid, j.uid, 'Joels comment on andrews event.', function(err){
-    if (err) return console.log(err);
-    events.addMessage(de.eid, a.uid, 'Andrews comment on daniels event.', function(err){
-      if (err) return console.log(err);
-      events.addMessage(je.eid, d.uid, 'Daniels comment on joels event.', function(err){
-        if (err) return console.log(err);
-        afterTests();
-      });
-    });
-  });
-}
+
 
 function afterTests() {
   // console.log('Completed tests.');
 }
+
+
+// function addMessages(ae, je, de) {
+//   // console.log('Leaving messages.');
+//   //joel leaves a comment on andrews event.
+//   events.addMessage(ae.eid, j.uid, 'Joels comment on andrews event.', function(err){
+//     if (err) return console.log(err);
+//     events.addMessage(de.eid, a.uid, 'Andrews comment on daniels event.', function(err){
+//       if (err) return console.log(err);
+//       events.addMessage(je.eid, d.uid, 'Daniels comment on joels event.', function(err){
+//         if (err) return console.log(err);
+//         afterTests();
+//       });
+//     });
+//   });
+// }
