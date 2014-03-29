@@ -17,9 +17,39 @@ DomManager.prototype.getThread = function(eid) {
 	return -1;
 }
 
-DomManager.prototype.getThreadIndex = function(time) {
+DomManager.prototype.getRanking = function(event) {
+	if (event.creator === MIM.me) {
+		return 5;
+	} else if (event.isGuest(MIM.me)) {
+		return 4;
+	} else if (event.inviteOnly) {
+		return 3;
+	} else if (MIM.friendList.hasUser(event.creator)) {
+		return 2;
+	} else { // FoF event
+		return 1;
+	}
+}
+
+DomManager.prototype.higherRanking = function(contender, existing) {
+	var contenderRanking = DM.getRanking(contender);
+	var existingRanking = DM.getRanking(existing);
+	if (contenderRanking > existingRanking) {
+		return true;
+	} else if (contenderRanking < existingRanking) {
+		return false;
+	} else if (contender.updateTime > existing.updateTime) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+DomManager.prototype.getThreadIndex = function(event) {
+	var tempEvent;
 	for (var i = 0; i < this.threadList.length; i++) {
-		if (time > this.threadList[i].updateTime) return i;
+		tempEvent = this.threadList[i];
+		if ( DM.higherRanking(event, tempEvent) ) return i;
 	}
 	return this.threadList.length;
 }
@@ -41,8 +71,7 @@ DomManager.prototype.drawThread = function(event) {
 	$('#thread-list').append(newThread);
 	setCollapseListener(next);
 
-	var time = event.mostRecent;
-	var index = this.getThreadIndex(time);
+	var index = this.getThreadIndex(event);
 	var html;
 	if (index === this.threadList.length) {
 		this.threadList.push({
