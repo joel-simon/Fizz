@@ -6,7 +6,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 var SERVER = window.location.origin;
-var socket = io.connect(SERVER);
+var socket = io.connect();
 
 socket.on('onLogin', function(data) {
 	console.log('LOGIN:', data);
@@ -18,7 +18,7 @@ socket.on('onLogin', function(data) {
 		console.log('EVENT '+i+':', event);
 		ELM.addEvent(event);
 	});
-	createEvent();
+	// createEvent();
 });
 
 socket.on('newFriend', function(data) {

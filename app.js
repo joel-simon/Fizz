@@ -14,14 +14,18 @@ var
   io      = require('socket.io').listen(server),
   d       = require('domain').create(),  // create domain for error routing.
   handler = require('./app/server/socketHandler.js'), //all socket.io requests go here.
+  colors  = require('colors'),
+
   redis   = require('redis'),
   redisStore = require('connect-redis')(express),
   redisConns = require('./app/server/redisStore.js'),
+
   passport = require('passport'),
   FacebookStrategy = require('passport-facebook').Strategy,
   FacebookTokenStrategy = require('passport-facebook-token').Strategy,
-  passportSocketIo = require("passport.socketio"),
-  colors  = require('colors');
+  smsStrategy = require('passport-sms').Strategy,
+  passportSocketIo = require("passport.socketio");
+
 var config = ((args.dev) ? require('./configDev.json') : require('./config.json'));
 
 var store = redisConns.store,
@@ -35,10 +39,29 @@ passport.serializeUser(function(user, done) { done(null, user); });
 passport.deserializeUser(function(obj, done) { done(null, obj); });
 
 var users = require('./app/server/users.js');
-
 var fb        = require('./app/server/fb.js');
 
+passport.use(new smsStrategy(
+  function(key, done) {
+    console.log(key);
+    users.getFromKey(key, function(err, user) {
+      if (err) {
+        console.log('Err on auth', err);
+        done(err);
+      } else if (!user) {
+        console.log('No user found');
+        done(null, false);
+      } else {
+        console.log('User found', user);
+        done(null, user);
+      }
+    });
+  }
+));
 
+/*
+  Web Login Flow.
+*/
 passport.use(new FacebookStrategy(
   {
     clientID: config.FB.FACEBOOK_APP_ID,
@@ -56,7 +79,7 @@ passport.use(new FacebookStrategy(
   }));
 
 /*
-  IOS LOGIN FLOW
+  ios Login Flow.
 */
 passport.use(new FacebookTokenStrategy(
   {
@@ -69,14 +92,17 @@ passport.use(new FacebookTokenStrategy(
     console.log('pn:', pn)
     console.log('iosToken:', iosToken)
 
+    if (pn && pn.length == 11) {
+      pn = '+1'+pn.substring(1);
+    } else {
+      pn = null;
+    }
     iosToken = iosToken || null;
-    pn = pn || null;
+    console.log(pn);
     process.nextTick(function () {
-      fb.extendToken(fbToken, function(err, token) {  
-        users.getOrAddMember(profile, token, pn, iosToken, function(err, user) {
-          if(err) console.log(err);
-          else done(null, user);  
-        });
+      handler.onAuth(profile, pn, fbToken, iosToken, function(err, user) {
+         if(err) console.log(err);
+        else done(null, user);  
       });
     });
   }));
@@ -109,10 +135,13 @@ app.configure(function() {
 var ioRedisStore = require('socket.io/lib/stores/redis');
 // Configure socketio.
 io.configure( function(){
-  io.enable('browser client minification');  // send minified client
-  io.enable('browser client etag');          // apply etag caching logic based on version number
-  io.enable('browser client gzip');          // gzip the file
-  io.set('log level', 1);                    // reduce logging
+  // io.set('transports', ['xhr-polling']); 
+  // io.set('polling duration', 10);
+
+  // io.enable('browser client minification');  // send minified client
+  // io.enable('browser client etag');          // apply etag caching logic based on version number
+  // io.enable('browser client gzip');          // gzip the file
+  io.set('log level', 3);                    // reduce logging
   io.set('store', new ioRedisStore({redis: redis, redisPub:pub, redisSub:sub, redisClient:store}));
 });
 
@@ -121,12 +150,34 @@ io.set('authorization', passportSocketIo.authorize({
   key:         'connect.sid',       // the name of the cookie where express/connect stores its session_id
   secret:      config.SECRET.cookieParser,    // the session_secret to parse the cookie
   store:       sessionStore,        // we NEED to use a sessionstore. no memorystore please
+  success:     onAuthorizeSuccess,  // *optional* callback on success - read more below
+  fail:        onAuthorizeFail     // *optional* callback on fail/error - read more below
 }));
 
+function onAuthorizeSuccess(data, accept){
+  console.log('successful connection to socket.io');
+  console.log(data);
+  // The accept-callback still allows us to decide whether to
+  // accept the connection or not.
+  accept(null, true);
+}
+
+function onAuthorizeFail(data, message, error, accept){
+
+  if(error)
+    throw new Error(message);
+  console.log('failed connection to socket.io:', message);
+  console.log(data);
+  // We use this callback to log all of our failed connections.
+  accept(null, false);
+}
+
+
 // Bind socket handlers.
-d.run(function(){
+//d.run
+(function(){
   io.sockets.on('connection',   (function(socket) {
-    handler.login(socket);
+    handler.connect(socket);
     socket.on('newEvent',       (function(data){ handler.newEvent   (data, socket) }));
     socket.on('joinEvent',      (function(data){ handler.joinEvent  (data, socket) }));
     socket.on('leaveEvent',     (function(data){ handler.leaveEvent (data, socket) }));
@@ -144,12 +195,12 @@ d.run(function(){
     socket.on('disconnect',     (function()    { handler.disconnect(socket) }));
     // socket.on('benchMark',      (function()    { handler.benchMark(socket) }));
   }));
-});
+})();
 
 var utils     = require('./app/server/utilities.js'),
 logError  = utils.logError;
 d.on('error', function(err){
-  logError(err);
+  logError('d caught error',err);
 })
 
 // Route all routes.
@@ -164,10 +215,13 @@ var domo =  ''+
 '╰━┫△△△△┣━╯╰━┫△△△△┣━╯╰━┫△△△△┣━╯╰━┫△△△△┣━╯\n'+
 '╲╲┃┈┈┈┈┃╲╲╲╲┃┈┈┈┈┃╲╲╲╲┃┈┈┈┈┃╲╲╲╲┃┈┈┈┈┃╲╲\n'+
 '╲╲┃┈┏┓┈┃╲╲╲╲┃┈┏┓┈┃╲╲╲╲┃┈┏┓┈┃╲╲╲╲┃┈┏┓┈┃╲╲\n'+
-'▔▔╰━╯╰━╯▔▔▔▔╰━╯╰━╯▔▔▔▔╰━╯╰━╯▔▔▔▔╰━╯╰━╯▔▔\n'+
-'#########################################';
+'▔▔╰━╯╰━╯▔▔▔▔╰━╯╰━╯▔▔▔▔╰━╯╰━╯▔▔▔▔╰━╯╰━╯▔▔';
 console.log(domo.rainbow);
 console.log('Port:', (''+port).bold);
+console.log('Send sms:', (''+args.sendSms).bold);
+console.log('Push ios:', (''+args.pushIos).bold);
+console.log('#########################################'.rainbow);
+
 
 if (args.testing) require('./utilities/serverTests.js');
 

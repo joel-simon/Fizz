@@ -1,4 +1,8 @@
 module.exports = exports;
+exports.sendSms = false;
+exports.pushIos = false;
+exports.dev= false;
+exports.test = false;
 process.argv.forEach(function (val, index) {
   if (index > 1) {
     switch(val.split('=')[0]) {
@@ -14,14 +18,14 @@ process.argv.forEach(function (val, index) {
       case 'dev':
         exports.dev = true;
         break
-      case 'sms':
+      case 'sendSms':
         exports.sendSms = true;
         break;
-      case 'push':
+      case 'pushIos':
         exports.pushIos = true;
         break;
       default:
-        console.log('Valid commands : "test", "dev", "sms".');
+        console.log('Valid commands : "test", "pushIos", "sendSms".');
     }
   }
 });

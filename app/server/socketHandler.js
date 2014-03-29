@@ -21,7 +21,7 @@ var
  * @param {Object} Socket - contains user user socket
  * @param {Object} events - object for managing all events
  */
-exports.login = function(socket) {
+exports.connect = function(socket) {
   var user = getUserSession(socket);
   socket.join(''+user.uid);
 
@@ -30,12 +30,12 @@ exports.login = function(socket) {
     friendList:function(cb){ users.getFriendUserList(user.uid, cb) }
 
   },
-  function(err, results){
+  function(err, results) {
     if (err) return logError(err);
 
     var str = user.name+' has connected. uid:'+user.uid+'\n\t\t';
-    str += results.eventList.length + ' visible events.'
-    str += results.eventList.map(function(e){return e.messageList[0].text})
+    str += results.eventList.length + ' visible events:'
+    str += JSON.stringify(results.eventList.map(function(e){return e.messageList[0].text}));
     log(str);
 
     check.is(results.eventList, '[event]');
@@ -53,6 +53,37 @@ exports.login = function(socket) {
   });
 }
 
+exports.onAuth = function(profile, pn, fbToken, iosToken, cb) {
+  fb.extendToken(fbToken, function(err, longToken) {
+    if (err) return cb(err);
+    users.getOrAddMember(profile, longToken, pn, iosToken, function(err, user) {
+      if(err) cb(err);
+      else cb(null, user);
+
+      // for each of the users new friends, reciprocate the friendship and emit.
+      users.getFriendUserList(user.uid, function(err, friendUserList) {
+        async.each(friendUserList, function(friend, cb2) {
+          users.addFriendList(friend, [''+user.uid], function(err) {
+            if(err) cb2(err)
+            else {
+              emit({
+                eventName:  'newFriend',
+                data:       null,
+                recipients: [friend],
+                iosPush: user.name+' '+'has added you as friend!',
+                sms: null,
+              });
+            }
+          });
+        },
+        function(err) {
+          if(err) logError(err);
+        });
+      });
+
+    });
+  });
+}
 /**
  * Handle newBeacon socket
  * @param {Object} B - the beacon object
@@ -64,23 +95,43 @@ exports.newEvent = function (data, socket) {
   var user       = getUserSession(socket),
       text       = data.text,
       inviteOnly = data.inviteOnly;
-
-  async.parallel({
-    friendList: function(cb) { users.getFriendUserList(user.uid, cb) },
-    e: function(cb) { events.add(text, user, inviteOnly, cb) }
-  },
-  function(err, result) {
+  log('New fizzlevent by', user.name+'\n\t\t',text);
+  var ful;
+  async.waterfall([
+    function(cb) { users.getFriendUserList(user.uid, cb) },
+    function(FUL, cb) { ful = FUL; events.add(text, user, FUL, inviteOnly, cb) }
+  ],
+  function(err, e) {
     if (err) return logError(err);
-    // console.log(result.e);
-    check.is(result.e, 'event');
-    emit({
-      eventName:  'newEvent',
-      data:       {'event' : result.e},
-      recipients: [user]
-    });
-    log('New fizzlevent by', user.name+'\n\t\t',text);
+    check.is(e, 'event');
+
+    if (inviteOnly) {
+      emit({
+        eventName:  'newEvent',
+        data:       {'event' : e},
+        recipients: e.inviteList,
+        iosPush: user.name+':'+e.messageList[0].text,
+        sms: user.name+':'+e.messageList[0].text,
+      });
+     
+    } else {
+      users.getFizzFriendsUidsOf(ful, function(err, fof) {
+        if(err) return logError(err);
+        events.addVisibleList(Object.keys(fof), e.eid, function(err){
+          if(err) return logError(err);
+          emit({
+            eventName:  'newEvent',
+            data:       {'event' : e},
+            recipients: e.inviteList,
+            iosPush: user.name+':'+e.messageList[0].text,
+            sms: false,
+          });
+        });
+      });
+    }
   });
 }
+
 /**
  * Handle joinBeacon socket
  * @param {Object} Data - contains .id and .admin
@@ -147,24 +198,45 @@ exports.invite = function(data, socket) {
   var eid=data.eid,
       inviteList=data.inviteList,
       invitePnList=data.invitePnList;
+  var user = getUserSession(socket);
 
-  users.getOrAddPhoneList(invitePnList, function(err, newUsers) {
+  async.parallel({
+    pnUsers : function(cb){ users.getOrAddPhoneList(invitePnList, cb) },
+    e : function(cb){ events.get(eid, cb) }
+  },
+  function(err, results){
     if (err) return logError(err);
-    inviteList = inviteList.concat(newUsers)
-    events.addInvitees(eid, inviteList, function(err) {
-      emit({
-        eventName: 'newEvent',
-        data: {'event' : newE},
-        recipients: inviteList,
-        message: user.name+'has invited you to an event.\n'+message.text+
-        '\n More info @ '+'fakeUrl@extraFizzy.com'
-      });
+    events.addInvitees(eid, inviteList.concat(results.pnUsers), function(err) {
+      if (err) return logError(err);
+      var message0 = results.e.messageList[0].text;
+      var msgOut = user.name+':'+message0;
+
+      if (inviteList.length) {
+        emit({ //emit to non sms users
+          eventName: 'newEvent',
+          data: {'event' : results.e},
+          recipients: inviteList,
+          iosPush: user.name+':'+message0
+        });
+      }
+
+      async.each(results.pnUsers,
+        function(pnUser, cb) {
+          var link = '\n http://extraFizzy.com/c?k='+pnUser.key;
+          output.sendSms(pnUser, msgOut+link)
+          cb();
+        },
+        function(err) {
+          if(err) logError(err);
+        }
+      );
     });
   });
 }
 
 exports.request = function(data, socket) {
   check.is(data, {eid: 'posInt'});
+  exports.newMessage({eid:data.eid,text:' is interested in this event!!'},socket);
 }
 
 exports.newMessage = function(data, socket) {
@@ -174,7 +246,7 @@ exports.newMessage = function(data, socket) {
       text = data.text;
 
   async.parallel({
-    add        : function(cb) {
+    newMsg        : function(cb) {
       events.addMessage(eid, user.uid, text, cb);
     },
     recipients : function(cb) {
@@ -184,20 +256,14 @@ exports.newMessage = function(data, socket) {
   function(err, results) {
     log(results);
     // add will generate the messages mid.
-    check.is(results, {add: 'posInt', recipients: '[user]'});
-    var msg = {
-      mid : results.add,
-      eid : eid,
-      text: text,
-      uid: user.uid
-    }
-    // check.is(data, {message:'message'});
+    check.is(results, {recipients: '[user]'});
     emit({
       eventName: 'newMessage',
-      data: data,
-      recipients: results.recipients
+      recipients: results.recipients,
+      data: {message: results.newMsg},
+      iosPush: user.name+':'+text,
+      sms: user.name+':'+text,
     });
-    log('new message', data);
   });
 }
 

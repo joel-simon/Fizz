@@ -1,6 +1,7 @@
 // Abstraction for all database interactions.
 var mongojs = require('mongojs');
-var config  = require('./../../config.json');
+var args = require('./args.js');
+var config = ((args.dev) ? require('./../../configDev.json') : require('./../../config.json'));
 var store   = require('./redisStore.js').store;
 var utils   = require('./utilities.js');
 var log     = utils.log;
@@ -14,12 +15,13 @@ var io;
   REDIS VARIABLES
   fbid->uid 			| fbid -> uid
   pn->uid 				| pn -> uid
+  user:{uid} 			| eid -> pn // what pn user uses for this event
+  									count -> int //number of events ever invited to
 */
 exports.isConnected = function(uid, callback) {
 	if(!io) io = require('../../app.js').io;
 	return(io.sockets.clients(''+uid).length > 0);
 }
-
 ////////////////////////////////////////////////////////////////////////////////
 //	GET USER
 ////////////////////////////////////////////////////////////////////////////////
@@ -35,7 +37,7 @@ function getAttributes(uid, attributes, cb) {
 	});
 }
 exports.get = function(uid, cb) {
-	getAttributes(''+uid, ['type', 'fbid', 'pn', 'name'], function(err, data) {
+	getAttributes(''+uid, ['type', 'fbid', 'pn', 'name', 'key'], function(err, data) {
 		if (err) cb(err);
 		else if (!data) cb(null, null);
 		else {
@@ -44,7 +46,8 @@ exports.get = function(uid, cb) {
 				name : data.name.S,
 				pn   : data.pn.S,
 				type : data.type.S,
-				fbid : +data.fbid.N
+				fbid : +data.fbid.N,
+				key : data.key.S
 			});
 		}
 	});
@@ -63,7 +66,13 @@ exports.getFromPn = function(pn, cb) {
 		exports.get(uid, cb);
 	});
 }
-
+exports.getFromKey = function(key, cb) {
+	store.hget('key->uid', key, function(err, uid) {
+		if(err)  return cb(err);
+		if(!uid) return cb(null, null);
+		exports.get(uid, cb);
+	});
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //	GETTING/CREATING/MODIFYING USERS
@@ -75,8 +84,13 @@ function set(uid, user, cb) {
 		fbid : {'N'  : ''+user.fbid},
 		name : {'S'  : user.name},
 		type : {'S'  : user.type}
-		// friendList: {'NS' : []}
+		// friendList: 
 	}
+	if (user.friendList && user.friendList.length > 0) {
+		item.friendList = {'NS' : user.friendList.map(String)}
+	}
+	if (user.key) item.key = {'S' : user.key};
+
 	db.putItem({
 		'TableName': 'users',
 		'Item': item
@@ -88,8 +102,27 @@ function set(uid, user, cb) {
 		}
 	});
 }
+
+function findFizzFriends(fbToken,  cb) {
+	fb.get(fbToken, '/me/friends/', function(err, friends) {
+		if (err) return cb(err);
+		if (!friends.data) return cb(null, []);
+		async.map(friends.data, function(friend, cb2) {
+			// console.log(friend);
+			store.hget('fbid->uid', friend.id, function(err, uid) {
+				if(err) return cb2(err);
+				if(!uid) return cb2(null, null);
+				cb2(null, +uid);
+			});
+		},
+		function(err, fizzFriends) {
+			cb(null, fizzFriends.filter(function(u){return !!u}));
+		});
+	});
+}
+
 exports.getOrAddPhoneList =  function(pnList, cb) {
-	async.map(pnList, getOrAddPhone,
+	async.map(pnList, exports.getOrAddPhone,
 	function(err, userList) {
 		if (err) cb (err);
 		else cb (null, userList);
@@ -114,24 +147,31 @@ exports.getOrAddMember = function(profile, fbToken, pn, iosToken, cb) {
 		} else { // see if a phone user exists. 
 			exports.getFromPn(pn, function(err, user) {
 				if (err) return cb(err);
-				if (user && user.type === 'Phone') {
-					user.type = 'Member';
-					user.iosToken = iosToken;
-					user.fbid = fbid;
-					user.name = profile.displayName;
-					log('Upgrading', user.name, 'from Phone to Member.');
-					set(user.uid, user, cb);
-				} else { // create a new user from scratch.
-					blankUser(pn, fbid, function(err, user) {
-						if (err) return cb(err);
-						user.pn = pn;
-						user.type = "Member";
-						user.name = profile.displayName;
+				findFizzFriends(fbToken, function(err, fizzFriends) {
+					// console.log('fizzFriends:', fizzFriends);
+					if (err) return cb(err);
+					if (user && user.type === 'Phone') {
+						user.type = 'Member';
+						user.iosToken = iosToken;
 						user.fbid = fbid;
-						log('Creating', user.name, 'as Member.');
+						user.name = profile.displayName;
+						user.friendList = fizzFriends;
+						store.hset('fbid->uid', fbid, user.uid);
+						log('Upgraded', user.name, 'from Phone to Member. \n\thas friends:', fizzFriends);
 						set(user.uid, user, cb);
-					});
-				}
+					} else { // create a new user from scratch.
+						blankUser(pn, fbid, function(err, user) {
+							if (err) return cb(err);
+							user.pn = pn;
+							user.type = "Member";
+							user.name = profile.displayName;
+							user.fbid = fbid;
+							user.friendList = fizzFriends;
+							log('Created', user.name, 'as Member.\n\thas friends:', fizzFriends);
+							set(user.uid, user, cb);
+						});
+					}
+				});
 			});
 		}
 	});
@@ -167,13 +207,20 @@ exports.getOrAddPhone = function(pn, cb) {
 		else {
 			blankUser(pn, null, function(err, user) {
 				if (err) return cb(err);
+				store.hset('users:'+user.uid, 'count', 0);
+				
+				var key = newKey()
+				store.hset('key->uid', key, user.uid);
+				user.key = key;
+
 				user.pn = pn;
 				user.type = "Phone";
 				user.name = pn;
+
 				set(user.uid, user, function(err) {
 					if(err) cb(err);
 					else {
-						log('Created phone user',pn);
+						log('Created phone user'+pn+'. Has key:'+key);
 						cb(null, user);
 					}
 				});
@@ -192,11 +239,12 @@ function blankUser(pn, fbid, cb) {
 		'fbToken'  : '',
 		'name'     : ''
 	};
-	store.hincrby('idCounter', 'user', 1, function(err, next) {
-		if (err) return cb(err);
-		user.uid = next;
+
+	store.hincrby('idCounter', 'user', 1, function(err, uid) {
+		if (err) return cb(err);	
+		user.uid = uid;
 		if (pn) {
-			store.hset('pn->uid', pn, user.uid)
+			store.hset('pn->uid', pn, user.uid);
 		}
 		if (fbid) {
 			store.hset('fbid->uid', fbid, user.uid)
@@ -204,7 +252,13 @@ function blankUser(pn, fbid, cb) {
 		cb(null, user);
 	});
 }
-
+function newKey() {
+		var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    var result = '';
+    for (var i = 5; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
+    return result;
+}
+// var rString = randomString(32, );
 ////////////////////////////////////////////////////////////////////////////////
 //	DELETING USERS
 ////////////////////////////////////////////////////////////////////////////////
@@ -243,6 +297,24 @@ exports.getFriendUserList = function(uid, cb) {
       }
     });
   });
+}
+
+exports.getFizzFriendsUidsOf = function(friends, cb) {
+	var fof = {};
+	async.each(friends, function(user, hollaback) {
+		getFriendIdList(user.uid, function(err, friendUids) {
+			if (err) hollaback(err);
+			else if (!friendUids.length) cb(null, []);
+			else {
+				console.log('284',friendUids);
+				friendUids.forEach(function(f){ fof[f]=true });
+				hollaback(null);
+			}
+		});
+	}, function(err){
+		if(err) cb(err);
+		else cb(null, fof)
+	});
 }
 
 ////////////////////////////////////////////////////////////////////////////////
