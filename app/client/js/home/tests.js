@@ -5,8 +5,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 function createEvent() {
-	socket.emit('newEvent', {
-		text : 'Event 1',
-		inviteOnly : true,
-	});
+	// socket.emit('newEvent', {
+	// 	text : 'Event 1',
+	// 	inviteOnly : true,
+	// });
 }
