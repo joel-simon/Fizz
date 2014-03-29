@@ -76,7 +76,7 @@ function createEvents() {
   handler.newEvent({
     text: 'Go to settings-> safari and turn on cookies to see this page!!',
     inviteOnly: true
-  }, {handshake:{user:j}}); // MAKE THIS USER THE CREATO, a, j or d
+  }, {handshake:{user:d}}); // MAKE THIS USER THE CREATO, a, j or d
 
   setTimeout(function(){
     inviteOneAnother();
@@ -87,8 +87,8 @@ function inviteOneAnother() {
   handler.invite({
     eid: 1,
     inviteList: [],
-    invitePnList: ['19494647070', '+13107102956', '+13016420019'] // PUT THE PEOPEL TO INVITE
-  },{handshake:{user:j}}); // MAKE THIS USER THE CREATO, a, j or d
+    invitePnList: ['19494647070', '+13107102956'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)
+  },{handshake:{user:d}}); // MAKE THIS USER THE CREATO, a, j or d
 }
 
 
