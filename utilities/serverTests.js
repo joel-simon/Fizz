@@ -22,11 +22,7 @@ function beforeTests() {
     if (err) {
       console.log(err);
     } else {
-      // users.getOrAddPhone('+13107102956', function(err){
-      // users.getOrAddPhone('+13475346100', function(err){
-      //   if (err) return console.log(err);
-        tests1();  
-      // });
+      tests1();  
     }
   });
 }
@@ -49,8 +45,8 @@ function tests1(){
   var andrewToken= 'CAAGa4EJzl7kBAES8QjmOnURcDjMoZCO9B8o3sHGEwcEIcXri0rnQJR1XLcHhfbZAz33fxYjFzPeJrNochdeoxw45MjGIxghC0XgUHcQ6m0ZAXtxnXkLnSTy3M9Ams07ZAYkGbSa1pH2DZAzG0rp5Gk32USiSBMF2rQBNusV8lME0OKmXFbvH0rBDagzJuqUJrqP773AwO7sKCzGIAGTPn';
   var danielToken = 'CAAClyP2DrA0BAMPgkgfrXeZCJbEgbIehqZARtEDEmD2CtQqj6pqOW1XKY4p90FJLnxZBSZBTgZCYeNFikr3G8ByRtkCpCEYO8owEqEYJqjptXJvXIULQYHA6TQUgxCFtfuxfQEt0lSaK1pKshcOaizfbH68019WE4j3a3gDZAiZBaUI5oWLPT8ePFQgDe8upsAZD';
   async.series({
-    // d: function(cb){ users.getOrAddMember(danielFBProfile, danielToken, '+13016420019', 'iosToken', cb) },
-    j: function(cb){ users.getOrAddMember(joelFBProfile, joelToken, '+13475346100', 'iosToken', cb) },
+    d: function(cb){ users.getOrAddMember(danielFBProfile, danielToken, '+13016420019', 'iosToken', cb) },
+    // j: function(cb){ users.getOrAddMember(joelFBProfile, joelToken, '+13475346100', 'iosToken', cb) },
     // a: function(cb){ users.getOrAddMember(andrewFBProfile, andrewToken, '+13107102956', 'iosToken', cb) }
     
     
@@ -58,12 +54,8 @@ function tests1(){
     if (err) {
       console.log(err);
     } else {
-      // a = result.a;
-      j = result.j;
-      // d = result.d;
-      // afterTests();
+      d = result.j; // BIND THE NEW USERS TO VARIABLES
       createEvents();
-      // addFriends();
     }
   });
 }
@@ -80,66 +72,43 @@ function addFriends() {
     });
   });
 }
-function createEvents() {
-  // console.log('Creating events.');
-  
+function createEvents() {  
   handler.newEvent({
     text: 'Go to settings-> safari and turn on cookies to see this page!!',
     inviteOnly: true
-  }, {handshake:{user:j}});
+  }, {handshake:{user:j}}); // MAKE THIS USER THE CREATO, a, j or d
 
   setTimeout(function(){
     inviteOneAnother();
   },500)
-  // events.add(, a, [j, d], true, function(err, ae){
-  //   if (err) return console.log(err);
-    // events.add('Joels first event', j, [d, j], false, function(err, je){
-    //   if (err) return console.log(err);
-    //   events.add('Daniels first event', d, [a, j], false, function(err, de){
-    //   if (err) return console.log(err);
-        // afterTests()
-        // inviteOneAnother(ae, je, de);
-      // });
-  //   });
-  // });
 }
 
 function inviteOneAnother() {
-
   handler.invite({
     eid: 1,
     inviteList: [],
-    invitePnList: ['19494647070', '+13107102956', '+13016420019'] //'+13107102956', '+13475346100', 
-  },{handshake:{user:j}});
-
-  // console.log('Inviting one another.');
-  // events.addInvitees(ae.eid, [j,d], function(err){
-  //   if (err) return console.log(err);
-  //   events.addInvitees(je.eid, [a, d], function(err){
-  //     if (err) return console.log(err);
-  //     events.addInvitees(de.eid, [a,j], function(err){
-  //     if (err) return console.log(err);
-  //       addMessages(ae, je, de);
-  //     });
-  //   });
-  // });
+    invitePnList: ['19494647070', '+13107102956', '+13016420019'] // PUT THE PEOPEL TO INVITE
+  },{handshake:{user:j}}); // MAKE THIS USER THE CREATO, a, j or d
 }
 
-function addMessages(ae, je, de) {
-  // console.log('Leaving messages.');
-  //joel leaves a comment on andrews event.
-  events.addMessage(ae.eid, j.uid, 'Joels comment on andrews event.', function(err){
-    if (err) return console.log(err);
-    events.addMessage(de.eid, a.uid, 'Andrews comment on daniels event.', function(err){
-      if (err) return console.log(err);
-      events.addMessage(je.eid, d.uid, 'Daniels comment on joels event.', function(err){
-        if (err) return console.log(err);
-        afterTests();
-      });
-    });
-  });
-}
+
 
 function afterTests() {
   // console.log('Completed tests.');
 }
+
+
+// function addMessages(ae, je, de) {
+//   // console.log('Leaving messages.');
+//   //joel leaves a comment on andrews event.
+//   events.addMessage(ae.eid, j.uid, 'Joels comment on andrews event.', function(err){
+//     if (err) return console.log(err);
+//     events.addMessage(de.eid, a.uid, 'Andrews comment on daniels event.', function(err){
+//       if (err) return console.log(err);
+//       events.addMessage(je.eid, d.uid, 'Daniels comment on joels event.', function(err){
+//         if (err) return console.log(err);
+//         afterTests();
+//       });
+//     });
+//   });
+// }

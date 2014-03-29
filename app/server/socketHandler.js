@@ -124,7 +124,7 @@ exports.newEvent = function (data, socket) {
             data:       {'event' : e},
             recipients: e.inviteList,
             iosPush: user.name+':'+e.messageList[0].text,
-            sms: false,
+            sms: false
           });
         });
       });
@@ -222,7 +222,7 @@ exports.invite = function(data, socket) {
 
       async.each(results.pnUsers,
         function(pnUser, cb) {
-          var link = '\n http://extraFizzy.com/c?k='+pnUser.key;
+          var link = '\n extraFizzy.com/c?k='+pnUser.key;
           output.sendSms(pnUser, msgOut+link)
           cb();
         },
