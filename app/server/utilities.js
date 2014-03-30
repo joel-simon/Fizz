@@ -9,10 +9,11 @@ colors.setTheme({
   debug: 'blue',
   error: 'red',
   data: 'grey'
-
 });
 
-module.exports.log = function() {
+exports = exports;
+
+exports.log = function() {
 	var s = '\tInfo: ';
 	var e;
 	for (var i = 0; i < arguments.length; i++) {
@@ -24,7 +25,7 @@ module.exports.log = function() {
   console.log('\t'+'———————————————————————————————————————————————————————————————'.data);
 }
 
-module.exports.logImportant = function() {
+exports.logImportant = function() {
   var s = '\tInfo: ';
   var e;
   for (var i = 0; i < arguments.length; i++) {
@@ -35,7 +36,7 @@ module.exports.logImportant = function() {
   console.log('\t'+'———————————————————————————————————————————————————————————————'.info);
 }
 
-module.exports.debug = function() {
+exports.debug = function() {
 	if(!debug) return;
 	var s = '\tInfo: ';
 	var e;
@@ -44,6 +45,17 @@ module.exports.debug = function() {
 		s += ((e instanceof Object) ? JSON.stringify(e) : e)+' ';
 	}
 	console.log(s.debug);
+}
+
+exports.nameShorten = function(s) {
+  var split = s.split(' ');
+  if (!split.length) {
+    return s
+  } else {
+    var first = split[0];
+    var last = split[split.length-1][0];
+    return first+' '+last +'.'  
+  }
 }
 
 function convertToServerTimeZone(){
@@ -68,7 +80,7 @@ function foo() {
 
 
 
-module.exports.logError = function(e) {
+exports.logError = function(e) {
   if (!e) return;
   var date = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
   date = date.substring(0,date.search("GMT")-1)
@@ -117,7 +129,7 @@ function getStackTrace() {
 
 
 
-module.exports.isSubset = function(a, b) {
+exports.isSubset = function(a, b) {
 	if (a.length > b.length) return false;
 	a.sort();
 	b.sort();
