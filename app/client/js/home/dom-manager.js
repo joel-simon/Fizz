@@ -20,7 +20,7 @@ DomManager.prototype.getThread = function(eid) {
 DomManager.prototype.getRanking = function(event) {
 	if (event.creator === MIM.me) {
 		return 5;
-	} else if (event.isGuest(MIM.me)) {
+	} else if (event.isGuest(MIM.me.uid)) {
 		return 4;
 	} else if (event.inviteOnly) {
 		return 3;
@@ -38,7 +38,7 @@ DomManager.prototype.higherRanking = function(contender, existing) {
 		return true;
 	} else if (contenderRanking < existingRanking) {
 		return false;
-	} else if (contender.updateTime > existing.updateTime) {
+	} else if (contender.mostRecent > existing.mostRecent) {
 		return true;
 	} else {
 		return false;
@@ -48,7 +48,7 @@ DomManager.prototype.higherRanking = function(contender, existing) {
 DomManager.prototype.getThreadIndex = function(event) {
 	var tempEvent;
 	for (var i = 0; i < this.threadList.length; i++) {
-		tempEvent = this.threadList[i];
+		tempEvent = ELM.getEvent(this.threadList[i]);
 		if ( DM.higherRanking(event, tempEvent) ) return i;
 	}
 	return this.threadList.length;
@@ -74,20 +74,14 @@ DomManager.prototype.drawThread = function(event) {
 	var index = this.getThreadIndex(event);
 	var html;
 	if (index === this.threadList.length) {
-		this.threadList.push({
-			eid : event.eid,
-			updateTime : event.updateTime,
-		});
+		this.threadList.push(event.eid);
 		html = this.writeThreadHtml(event, index);
 		$('#thread-'+index).append(html);
 		setDetailListener(event.eid);
 		setMessageFormListener(event.eid);
 	} else {
 		this.shiftThreadsDown(index);
-		this.threadList[index] = {
-			eid : event.eid,
-			updateTime : time,
-		};
+		this.threadList[index] = event.eid;
 		html = this.writeThreadHtml(event, index);
 		$('#thread-'+index).append(html);
 		setDetailListener(event.eid);
@@ -168,8 +162,13 @@ DomManager.prototype.writeMessageChainHtml = function(event) {
 		sender = event.getUser(message.uid);
 		html += this.writeMessageHtml(sender, message);
 	}
+	var button = ''; 
+	if (!event.isGuest(MIM.me.uid)) {
+		button = '<input class="join" type="button" value="Join">';
+	}
 	html += '</ul>'+
 		'<form id="mf-'+event.eid+'" class="message-form hidden">'+
+			button+
 			'<input type="text" name="message" autocomplete="off" placeholder="Enter a message.">'+
 			'<input type="submit" value="Send">'+
 		'</form></div>';
@@ -179,5 +178,13 @@ DomManager.prototype.writeMessageChainHtml = function(event) {
 ////////////////////////////////////////////////////////////////////////////////
 
 function parseDateTime(dateTime) {
-	
+	var date = new Date(dateTime);
+	var month = date.getMonth() + 1;
+	var day = date.getDate();
+	var hours = (date.getHours() % 12) || 12;
+	var minutes = date.getMinutes();
+	var period = (date.getHours() >= 12) ? 'pm' : 'am';
+
+	var dateString = month+'/'+day+', '+hours+':'+minutes+period;
+	return dateString;
 }

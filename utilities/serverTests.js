@@ -47,7 +47,7 @@ function tests1(){
   async.series({
     d: function(cb){ users.getOrAddMember(danielFBProfile, danielToken, '+13016420019', 'iosToken', cb) },
     j: function(cb){ users.getOrAddMember(joelFBProfile, joelToken, '+13475346100', 'iosToken', cb) },
-    // a: function(cb){ users.getOrAddMember(andrewFBProfile, andrewToken, '+13107102956', 'iosToken', cb) },
+    a: function(cb){ users.getOrAddMember(andrewFBProfile, andrewToken, '+13107102956', 'iosToken', cb) },
   }, function(err, results) {
     if (err) {
       console.log(err);
@@ -66,51 +66,48 @@ function createEvents() {
     inviteOnly: true
   }, {handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
 
-  // handler.newEvent({
-  //   text: "Andrew's First Event",
-  //   inviteOnly: true
-  // }, {handshake:{user:a}}); // MAKE THIS USER THE CREATOR, a, j or d
+  handler.newEvent({
+    text: "Andrew's First Event",
+    inviteOnly: true
+  }, {handshake:{user:a}}); // MAKE THIS USER THE CREATOR, a, j or d
 
-  // handler.newEvent({
-  //   text: "Joel's First Event",
-  //   inviteOnly: true
-  // }, {handshake:{user:j}}); // MAKE THIS USER THE CREATOR, a, j or d
+  handler.newEvent({
+    text: "Joel's First Event",
+    inviteOnly: true
+  }, {handshake:{user:j}}); // MAKE THIS USER THE CREATOR, a, j or d
 
   setTimeout(function(){
     inviteOneAnother();
   },500)
-
-  // setTimeout(function(){
-  //   addMessages(2, 3, 1);
-  // },500)
 }
 
 function inviteOneAnother() {
+
+  sendRequests();
+
   // handler.invite({
   //   eid: 1,
   //   inviteList: [],
-  //   invitePnList: ['+13475346100'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)  '+13107102956'
+  //   invitePnList: ['+13016420019', '+13107102956', '+13475346100', '+13013358587'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)
   // },{handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
- 
-  sendRequests();
-  // handler.invite({
-  //   eid: 2,
-  //   inviteList: [],
-  //   invitePnList: ['19494647070', '+13107102956'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)
-  // },{handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
+  
+  // setTimeout(function() {
+  //   handler.invite({
+  //     eid: 2,
+  //     inviteList: [],
+  //     invitePnList: ['+13016420019', '+13107102956', '+13475346100', '+13013358587'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)
+  //   },{handshake:{user:a}}); // MAKE THIS USER THE CREATOR, a, j or d
 
-  // handler.invite({
-  //   eid: 3,
-  //   inviteList: [],
-  //   invitePnList: ['19494647070', '+13107102956'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)
-  // },{handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
+  //   handler.invite({
+  //     eid: 3,
+  //     inviteList: [],
+  //     invitePnList: ['+13016420019', '+13107102956', '+13475346100', '+13013358587'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)
+  //   },{handshake:{user:j}}); // MAKE THIS USER THE CREATOR, a, j or d
+
+  // }, 2000);
 }
 
 function sendRequests() {
   handler.request({eid: 1}, {handshake:{user:j}});
-  // console.log('Completed tests.');
 }
 
-function addMessages(ae, je, de) {
-
-}

@@ -12,15 +12,7 @@ function ScrollManager() {
 	this.threadCount = $('.thread').length;
 	this.countDown = null;
 
-	$('#thread-1 .thread-title').css('margin-top', '-100vh');
-	$('#thread-0').css('background-color', 'rgb(255,255,255)');
-}
-
-ScrollManager.prototype.resetStyle = function() {
-	var thread = this.currentThread;
-	$('#thread-'+(thread-1)+' .thread-title').css('margin-bottom', '-100vh');
-	$('#thread-'+thread).css('background-color', 'rgb(255,255,255)');
-	$('#thread-'+(thread+1)+' .thread-title').css('margin-top', '-100vh');
+	resetStyle();
 }
 
 ScrollManager.prototype.isAnimated = function() {
@@ -49,6 +41,26 @@ ScrollManager.prototype.scrollToThread = function(thread) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+function centerTitles() {
+	var titleSelector = $('.thread-title');
+	var width = $(window).width();
+	var title, titleWidth;
+	for (var i = 0; i < titleSelector.length; i++) {
+		title = titleSelector[i];
+		titleWidth = $(title).width();
+		$(title).css( 'margin-left', ((width - titleWidth)/2 - 28.8)+'px' );
+	}
+}
+
+function resetStyle() {
+	var thread = this.currentThread;
+	$('#thread-'+(thread-1)+' .thread-title').css('margin-top', '45vh');
+	$('#thread-'+thread).css('background-color', 'rgb(255,255,255)');
+	$('#thread-'+thread+' .thread-title').css('margin-top', '-5vh');
+	$('#thread-'+(thread+1)+' .thread-title').css('margin-top', '-55vh');
+	centerTitles();
+}
+
 function getMargin(thread) {
 	var scroll = $('#thread-list').scrollTop();
 	var height = $(window).height();
@@ -56,58 +68,50 @@ function getMargin(thread) {
 
 	if (thread - 2 >= near) {
 		return {
-			'margin-top'    : '-100vh',
-			'margin-bottom' : '0',
+			'margin-top'    : '-55vh',
 		}
 	} else if (thread + 2 <= near) {
 		return {
-			'margin-top'    : '0',
-			'margin-bottom' : '-100vh',
+			'margin-top'    : '45vh',
 		}
 	} else if (thread > near) {
 		if (scroll <= near*height) {
 			return {
-				'margin-top'    : '-100vh',
-				'margin-bottom' : '0',
+				'margin-top'    : '-55vh',
 			}
 		} else {
 			var x = scroll - (near*height);
-			var y = (x/height)*100;
-			var z = 100 - y;
+			var y = (x/height)*50;
+			var z = 55 - y;
 			return {
 				'margin-top'    : '-'+z+'vh',
-				'margin-bottom' : '0',
 			}
 		}
 	} else if (thread < near) {
 		if (scroll >= near*height) {
 			return {
-				'margin-top'    : '0',
-				'margin-bottom' : '-100vh',
+				'margin-top'    : '45vh',
 			}
 		} else {
 			var x = (near*height) - scroll;
-			var y = (x/height)*100;
-			var z = 100 - y;
+			var y = (x/height)*50;
+			var z = 45 - y;
 			return {
-				'margin-top'    : '0',
-				'margin-bottom' : '-'+z+'vh',
+				'margin-top'    : z+'vh',
 			}
 		}
 	} else {
 		if (thread*height >= scroll) {
 			var x = (thread*height) - scroll;
-			var y = (x/height)*100;
+			var y = (x/height)*(-50) - 5;
 			return {
-				'margin-top'    : '-'+y+'vh',
-				'margin-bottom' : '0',
+				'margin-top'    : y+'vh',
 			}
 		} else {
 			var x = scroll - (thread*height);
-			var y = (x/height)*100;
+			var y = (x/height)*50 - 5;
 			return {
-				'margin-top'    : '0',
-				'margin-bottom' : '-'+y+'vh',
+				'margin-top'    : y+'vh',
 			}
 		}
 	}

@@ -60,17 +60,6 @@ ul {
 	background-color: darkgrey;
 }
 
-.pagination {
-	font-weight: bold;
-	cursor: pointer;
-
-	position: fixed;
-
-	cursor: pointer;
-	display: inline-block;
-	width: 100%;
-}
-
 .thread-top {
 	top: 0;
 	padding-bottom: 15px;
@@ -96,29 +85,35 @@ ul {
 	display: flex;
 	flex-direction: column;
 
-	background-color: rgb(180,180,180);
+	background-color: rgb(255,255,255);
 }
 
 .thread-title {
+	position: absolute;
 	font-weight: bold;
 	padding: 1em;
+
+	margin-top: -5vh;
 
 	cursor: pointer;
 	z-index: 100;
 }
 
 .invite-list {
-	flex: 1 0 0;
-	/*background-color: blue;*/
+	/*flex: 1 0 0;*/
+	height: 45vh;
+	background-color: rgba(50,50,180,0.7);
 }
 
 .guest-list {
-	flex: 1 0 0;
-	/*background-color: green;*/
+	/*flex: 1 0 0;*/
+	height: 45vh;
+	background-color: rgba(50,180,50,0.7);
 }
 
 .guest-list img, .invite-list img {
-	opacity: 0;
+	height: 50px;
+	width: 50px;
 }
 
 /*
