@@ -220,7 +220,8 @@ exports.invite = function(data, socket) {
       if (err) return logError(err);
       var message0 = results.e.messageList[0].text;
       var msgOut = user.name+':'+message0;
-
+      // var server = 'http://128.237.195.119:9001/c/'; //joel local machine
+      var server = 'http://54.85.14.197:9001/c/'; //server
       if (inviteList.length) {
         emit({ //emit to non sms users
           eventName: 'newEvent',
@@ -234,7 +235,7 @@ exports.invite = function(data, socket) {
           emit({ //emit to non sms users
             eventName: 'newEvent',
             recipients: [pnUser],
-            sms: msgOut+'\nRespond to join the event.\nfzz.bz/'+pnUser.key,
+            sms: msgOut+'\nRespond to join the event.\n'+server+pnUser.key,
             iosPush: user.name+':'+message0
           });
           cb();
