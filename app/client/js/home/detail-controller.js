@@ -40,11 +40,15 @@ function transitionToDetail(thread) {
 		'height':'100vh',
 	});
 	$('#thread-'+thread).prepend( $('#thread-'+thread+' .thread-title') );
+	$('#thread-'+thread+' .thread-title').css({'margin-top':'0vh'});
 	$('#thread-'+thread+' .message-chain')
 		.css({'height':'50vh'})
 		.removeClass('hidden');
 	$('#thread-'+thread+' .message-form')
 		.removeClass('hidden');
+
+	$('#thread-'+thread+' .invite-list').css('height', '25vh');
+	$('#thread-'+thread+' .guest-list').css('height', '25vh');
 
 	$('#collapse').addClass('hidden');
 
@@ -61,11 +65,15 @@ function transitionFromDetail(thread) {
 		'height':'90vh',
 	});
 	$('#thread-'+thread).prepend( $('#thread-'+thread+' .invite-list') );
+	$('#thread-'+thread+' .thread-title').css({'margin-top':'-5vh'});
 	$('#thread-'+thread+' .message-chain')
 		.css({'height':'0'})
 		.addClass('hidden');
 	$('#thread-'+thread+' .message-form')
 		.addClass('hidden');
+
+	$('#thread-'+thread+' .invite-list').css('height', '45vh');
+	$('#thread-'+thread+' .guest-list').css('height', '45vh');
 
 	$('#collapse').removeClass('hidden');
 

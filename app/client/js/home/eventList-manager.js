@@ -16,7 +16,7 @@ EventListManager.prototype.addEvent = function(eventData) {
 	this.table[event.eid] = event;
 	this.count++;
 	DM.drawThread(event);
-	SM.resetStyle();
+	resetStyle();
 }
 
 EventListManager.prototype.getEvent = function(eid) {

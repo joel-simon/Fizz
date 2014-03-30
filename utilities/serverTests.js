@@ -89,20 +89,20 @@ function inviteOneAnother() {
   handler.invite({
     eid: 1,
     inviteList: [],
-    invitePnList: ['+13107102956', '+13475346100', '+13013358587'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)
+    invitePnList: ['+13016420019', '+13107102956', '+13475346100', '+13013358587'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)
   },{handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
   
   setTimeout(function() {
     handler.invite({
       eid: 2,
       inviteList: [],
-      invitePnList: ['+13475346100', '+13016420019', '+13013358587'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)
+      invitePnList: ['+13016420019', '+13107102956', '+13475346100', '+13013358587'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)
     },{handshake:{user:a}}); // MAKE THIS USER THE CREATOR, a, j or d
 
     handler.invite({
       eid: 3,
       inviteList: [],
-      invitePnList: ['+13107102956', '+13016420019', '+13013358587'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)
+      invitePnList: ['+13016420019', '+13107102956', '+13475346100', '+13013358587'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)
     },{handshake:{user:j}}); // MAKE THIS USER THE CREATOR, a, j or d
 
     addMessages(2,3,1);

@@ -20,7 +20,7 @@ DomManager.prototype.getThread = function(eid) {
 DomManager.prototype.getRanking = function(event) {
 	if (event.creator === MIM.me) {
 		return 5;
-	} else if (event.isGuest(MIM.me)) {
+	} else if (event.isGuest(MIM.me.uid)) {
 		return 4;
 	} else if (event.inviteOnly) {
 		return 3;
@@ -162,8 +162,13 @@ DomManager.prototype.writeMessageChainHtml = function(event) {
 		sender = event.getUser(message.uid);
 		html += this.writeMessageHtml(sender, message);
 	}
+	var button = ''; 
+	if (!event.isGuest(MIM.me.uid)) {
+		button = '<input class="join" type="button" value="Join">';
+	}
 	html += '</ul>'+
 		'<form id="mf-'+event.eid+'" class="message-form hidden">'+
+			button+
 			'<input type="text" name="message" autocomplete="off" placeholder="Enter a message.">'+
 			'<input type="submit" value="Send">'+
 		'</form></div>';

@@ -23,10 +23,13 @@ function setCollapseListener(thread) {
 }
 
 function collapseThreadList() {
-	$('.invite-list').css('flex','0 1 auto').addClass('hidden');
-	$('.guest-list').css('flex','0 1 auto').addClass('hidden');
+	$('.invite-list').addClass('hidden');
+	$('.guest-list').addClass('hidden');
 
-	$('.thread-title').css('margin','0');
+	$('.thread-title').css({
+		'margin': '0',
+		'position': 'static',
+	});
 	$('.thread').css({
 		'height' : 'auto',
 		'padding' : '0',
@@ -38,8 +41,8 @@ function collapseThreadList() {
 }
 
 function openThreadList() {
-	$('.invite-list').css('flex','1 0 0').removeClass('hidden');
-	$('.guest-list').css('flex','1 0 0').removeClass('hidden');
+	$('.invite-list').removeClass('hidden');
+	$('.guest-list').removeClass('hidden');
 
 	$('.thread').css({
 		'height' : '90vh',
@@ -49,7 +52,19 @@ function openThreadList() {
 		'background-color' : 'white',
 	});
 
-	$( $('.thread-title')[1] ).css('margin-top','-100vh');
+	$( $('.thread-title')[0] ).css({
+		'margin-top': '-5vh',
+	});
+
+	$( $('.thread-title')[1] ).css({
+		'margin-top': '-55vh',
+	});
+
+	$('.thread-title').css({
+		'position': 'absolute',
+	});
+
+	resetStyle();
 
 	collapse = false;
 }
