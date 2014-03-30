@@ -353,31 +353,31 @@ function getEidAndRecipients (e, callback) {
   callback);
 }
 
-function shareEvent(e, callback) {
-  async.parallel([
-    function(cb) { users.addVisible(e.host, e, cb) },
-    function(cb) {
-      async.each(e.inviteList, add, cb);
-      function add(friend, cb2) {
-        users.addVisible(friend, e, function(err) {
-          if (err) cb2(err);
-          else cb2 (null);
-        });
-      }
-    },
-    function(cb) {
-      emit({
-        host: B.host,
-        eventName: 'newBeacon',
-        data: {"beacon" : B},
-        message: message,
-        recipients: B.invited
-      });
-      cb(null);
-    }
-  ],
-  callback);
-}
+// function shareEvent(e, callback) {
+//   async.parallel([
+//     function(cb) { users.addVisible(e.host, e, cb) },
+//     function(cb) {
+//       async.each(e.inviteList, add, cb);
+//       function add(friend, cb2) {
+//         users.addVisible(friend, e, function(err) {
+//           if (err) cb2(err);
+//           else cb2 (null);
+//         });
+//       }
+//     },
+//     function(cb) {
+//       emit({
+//         host: B.host,
+//         eventName: 'newBeacon',
+//         data: {"beacon" : B},
+//         message: message,
+//         recipients: B.invited
+//       });
+//       cb(null);
+//     }
+//   ],
+//   callback);
+// }
 
 exports.getFBFriendList = function(socket) {
   var user = getUserSession(socket);

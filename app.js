@@ -181,11 +181,9 @@ function onAuthorizeFail(data, message, error, accept){
     socket.on('newEvent',       (function(data){ handler.newEvent   (data, socket) }));
     socket.on('joinEvent',      (function(data){ handler.joinEvent  (data, socket) }));
     socket.on('leaveEvent',     (function(data){ handler.leaveEvent (data, socket) }));
-    socket.on('invite',         (function(data){ handler.leaveEvent (data, socket) }));
-    socket.on('request',        (function(data){ handler.leaveEvent (data, socket) }));
-
+    socket.on('invite',         (function(data){ handler.invite     (data, socket) }));
+    socket.on('request',        (function(data){ handler.request    (data, socket) }));
     socket.on('newMessage',     (function(data){ handler.newMessage (data, socket) }));
-
     socket.on('getFriendList',  (function(data){ handler.getFriendList(socket) }));
 
     socket.on('newFriend',      (function(data){ handler.newFriend  (data, socket) }));
