@@ -224,7 +224,7 @@ exports.invite = function(data, socket) {
           emit({ //emit to non sms users
             eventName: 'newEvent',
             recipients: [pnUser],
-            sms: msgOut+'\n extraFizzy.com/c?k='+pnUser.key,
+            sms: msgOut+'\nRespond to join the event.\nfzz.bz/'+pnUser.key,
             iosPush: user.name+':'+message0
           });
           cb();
