@@ -38,7 +38,7 @@ DomManager.prototype.higherRanking = function(contender, existing) {
 		return true;
 	} else if (contenderRanking < existingRanking) {
 		return false;
-	} else if (contender.updateTime > existing.updateTime) {
+	} else if (contender.mostRecent > existing.mostRecent) {
 		return true;
 	} else {
 		return false;
@@ -48,7 +48,7 @@ DomManager.prototype.higherRanking = function(contender, existing) {
 DomManager.prototype.getThreadIndex = function(event) {
 	var tempEvent;
 	for (var i = 0; i < this.threadList.length; i++) {
-		tempEvent = this.threadList[i];
+		tempEvent = ELM.getEvent(this.threadList[i]);
 		if ( DM.higherRanking(event, tempEvent) ) return i;
 	}
 	return this.threadList.length;
@@ -74,20 +74,14 @@ DomManager.prototype.drawThread = function(event) {
 	var index = this.getThreadIndex(event);
 	var html;
 	if (index === this.threadList.length) {
-		this.threadList.push({
-			eid : event.eid,
-			updateTime : event.updateTime,
-		});
+		this.threadList.push(event.eid);
 		html = this.writeThreadHtml(event, index);
 		$('#thread-'+index).append(html);
 		setDetailListener(event.eid);
 		setMessageFormListener(event.eid);
 	} else {
 		this.shiftThreadsDown(index);
-		this.threadList[index] = {
-			eid : event.eid,
-			updateTime : time,
-		};
+		this.threadList[index] = event.eid;
 		html = this.writeThreadHtml(event, index);
 		$('#thread-'+index).append(html);
 		setDetailListener(event.eid);
@@ -179,5 +173,13 @@ DomManager.prototype.writeMessageChainHtml = function(event) {
 ////////////////////////////////////////////////////////////////////////////////
 
 function parseDateTime(dateTime) {
-	
+	var date = new Date(dateTime);
+	var month = date.getMonth() + 1;
+	var day = date.getDate();
+	var hours = (date.getHours() % 12) || 12;
+	var minutes = date.getMinutes();
+	var period = (date.getHours() >= 12) ? 'pm' : 'am';
+
+	var dateString = month+'/'+day+', '+hours+':'+minutes+period;
+	return dateString;
 }

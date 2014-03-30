@@ -46,8 +46,8 @@ function tests1(){
   var danielToken = 'CAAClyP2DrA0BAMPgkgfrXeZCJbEgbIehqZARtEDEmD2CtQqj6pqOW1XKY4p90FJLnxZBSZBTgZCYeNFikr3G8ByRtkCpCEYO8owEqEYJqjptXJvXIULQYHA6TQUgxCFtfuxfQEt0lSaK1pKshcOaizfbH68019WE4j3a3gDZAiZBaUI5oWLPT8ePFQgDe8upsAZD';
   async.series({
     d: function(cb){ users.getOrAddMember(danielFBProfile, danielToken, '+13016420019', 'iosToken', cb) },
-    // j: function(cb){ users.getOrAddMember(joelFBProfile, joelToken, '+13475346100', 'iosToken', cb) },
-    // a: function(cb){ users.getOrAddMember(andrewFBProfile, andrewToken, '+13107102956', 'iosToken', cb) },
+    j: function(cb){ users.getOrAddMember(joelFBProfile, joelToken, '+13475346100', 'iosToken', cb) },
+    a: function(cb){ users.getOrAddMember(andrewFBProfile, andrewToken, '+13107102956', 'iosToken', cb) },
   }, function(err, results) {
     if (err) {
       console.log(err);
@@ -66,15 +66,15 @@ function createEvents() {
     inviteOnly: true
   }, {handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
 
-  // handler.newEvent({
-  //   text: "Andrew's First Event",
-  //   inviteOnly: true
-  // }, {handshake:{user:a}}); // MAKE THIS USER THE CREATOR, a, j or d
+  handler.newEvent({
+    text: "Andrew's First Event",
+    inviteOnly: true
+  }, {handshake:{user:a}}); // MAKE THIS USER THE CREATOR, a, j or d
 
-  // handler.newEvent({
-  //   text: "Joel's First Event",
-  //   inviteOnly: true
-  // }, {handshake:{user:j}}); // MAKE THIS USER THE CREATOR, a, j or d
+  handler.newEvent({
+    text: "Joel's First Event",
+    inviteOnly: true
+  }, {handshake:{user:j}}); // MAKE THIS USER THE CREATOR, a, j or d
 
   setTimeout(function(){
     inviteOneAnother();
@@ -89,20 +89,24 @@ function inviteOneAnother() {
   handler.invite({
     eid: 1,
     inviteList: [],
-    invitePnList: ['+13475346100', '+13107102956'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)
+    invitePnList: ['+13107102956', '+13475346100', '+13013358587'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)
   },{handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
- 
-  // handler.invite({
-  //   eid: 2,
-  //   inviteList: [],
-  //   invitePnList: ['19494647070', '+13107102956'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)
-  // },{handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
+  
+  setTimeout(function() {
+    handler.invite({
+      eid: 2,
+      inviteList: [],
+      invitePnList: ['+13475346100', '+13016420019', '+13013358587'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)
+    },{handshake:{user:a}}); // MAKE THIS USER THE CREATOR, a, j or d
 
-  // handler.invite({
-  //   eid: 3,
-  //   inviteList: [],
-  //   invitePnList: ['19494647070', '+13107102956'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)
-  // },{handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
+    handler.invite({
+      eid: 3,
+      inviteList: [],
+      invitePnList: ['+13107102956', '+13016420019', '+13013358587'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)
+    },{handshake:{user:j}}); // MAKE THIS USER THE CREATOR, a, j or d
+
+    addMessages(2,3,1);
+  }, 2000);
 }
 
 function afterTests() {
@@ -111,15 +115,16 @@ function afterTests() {
 
 function addMessages(ae, je, de) {
   // console.log('Leaving messages.');
-  //joel leaves a comment on andrews event.
-  // events.addMessage(ae, j.uid, 'Joels comment on andrews event.', function(err){
-  //   if (err) return console.log(err);
-  //   events.addMessage(de, a.uid, 'Andrews comment on daniels event.', function(err){
-  //     if (err) return console.log(err);
-  //     events.addMessage(je, d.uid, 'Daniels comment on joels event.', function(err){
-  //       if (err) return console.log(err);
-  //       afterTests();
-  //     });
-  //   });
-  // });
+  // joel leaves a comment on andrews event.
+
+  events.addMessage(ae, j.uid, "Joel's first message", function(err){
+    if (err) return console.log(err);
+    events.addMessage(de, a.uid, "Andrew's first message", function(err){
+      if (err) return console.log(err);
+      events.addMessage(je, d.uid, "Daniel's first message", function(err){
+        if (err) return console.log(err);
+        afterTests();
+      });
+    });
+  });
 }

@@ -60,17 +60,6 @@ ul {
 	background-color: darkgrey;
 }
 
-.pagination {
-	font-weight: bold;
-	cursor: pointer;
-
-	position: fixed;
-
-	cursor: pointer;
-	display: inline-block;
-	width: 100%;
-}
-
 .thread-top {
 	top: 0;
 	padding-bottom: 15px;
@@ -109,16 +98,18 @@ ul {
 
 .invite-list {
 	flex: 1 0 0;
-	/*background-color: blue;*/
+	background-color: rgba(50,50,180,0.7);
 }
 
 .guest-list {
 	flex: 1 0 0;
-	/*background-color: green;*/
+	background-color: rgba(50,180,50,0.7);
 }
 
 .guest-list img, .invite-list img {
-	opacity: 0;
+	height: 50px;
+	width: 50px;
+	/*opacity: 0;*/
 }
 
 /*
