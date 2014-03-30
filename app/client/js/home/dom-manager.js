@@ -99,8 +99,7 @@ DomManager.prototype.drawMessage = function(message) {
 	var event = ELM.getEvent(message.eid);
 	var sender = event.getUser(message.uid);
 	var html = this.writeMessageHtml(sender, message);
-	var thread = this.getThread(event.eid);
-	$('#thread-'+thread+' .message-list').append(html);
+	$('#mf-'+event.eid).before(html);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

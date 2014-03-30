@@ -176,29 +176,13 @@ ul {
 /*
 @media all and (min-width: 600px) and (max-width: 1199px) {
 
-	#collapse {
-		display: none !important;
-		visibility: hidden !important;
-	}
-
-	#thread-list {
-		margin-left: 40vw;
-		width: 60vw;
-	}
+	
 
 }
 
 @media all and (min-width: 1200px) {
 
-	#collapse {
-		display: none !important;
-		visibility: hidden !important;
-	}
-
-	#thread-list {
-		margin-left: 20vw;
-		width: 40vw;
-	}
+	
 
 }
 */
