@@ -49,8 +49,8 @@ module.exports = function(app, passport) {
 			res.send(200, 'Logged In!');
 		});
 
-	app.get('/:k', ensureAuthenticated, function(req, res) {
-		console.log(req.k);
+	app.get('/', ensureAuthenticated, function(req, res) {
+		// console.log(req.k);
 		res.redirect('/home');
 	});
 	
