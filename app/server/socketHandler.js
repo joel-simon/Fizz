@@ -15,6 +15,16 @@ var
   types = require('./fizzTypes.js'),
   check = require('easy-types').addTypes(types);
 
+var godSocket = {
+  handshake: {
+    user: {
+      uid: -1,
+      name: '',
+      fbid: 0,
+      pn : ''
+    }
+  }
+}
 /**
  * Handle login socket
  * @param {Object} Data - contains .id and .admin
@@ -239,7 +249,12 @@ exports.invite = function(data, socket) {
 
 exports.request = function(data, socket) {
   check.is(data, {eid: 'posInt'});
-  exports.newMessage({eid:data.eid,text:' is interested in this event!!'},socket);
+  var user = getUserSession(socket);
+  var msg = {
+    eid:  data.eid,
+    text: user.name+' is interested in this event!!'
+  }
+  exports.newMessage(msg, godSocket);
 }
 
 exports.newMessage = function(data, socket) {
@@ -257,7 +272,7 @@ exports.newMessage = function(data, socket) {
     }
   },
   function(err, results) {
-    log(results);
+    // log(results);
     // add will generate the messages mid.
     check.is(results, {recipients: '[user]'});
     emit({

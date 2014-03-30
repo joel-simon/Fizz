@@ -46,7 +46,7 @@ function tests1(){
   var danielToken = 'CAAClyP2DrA0BAMPgkgfrXeZCJbEgbIehqZARtEDEmD2CtQqj6pqOW1XKY4p90FJLnxZBSZBTgZCYeNFikr3G8ByRtkCpCEYO8owEqEYJqjptXJvXIULQYHA6TQUgxCFtfuxfQEt0lSaK1pKshcOaizfbH68019WE4j3a3gDZAiZBaUI5oWLPT8ePFQgDe8upsAZD';
   async.series({
     d: function(cb){ users.getOrAddMember(danielFBProfile, danielToken, '+13016420019', 'iosToken', cb) },
-    // j: function(cb){ users.getOrAddMember(joelFBProfile, joelToken, '+13475346100', 'iosToken', cb) },
+    j: function(cb){ users.getOrAddMember(joelFBProfile, joelToken, '+13475346100', 'iosToken', cb) },
     // a: function(cb){ users.getOrAddMember(andrewFBProfile, andrewToken, '+13107102956', 'iosToken', cb) },
   }, function(err, results) {
     if (err) {
@@ -86,12 +86,13 @@ function createEvents() {
 }
 
 function inviteOneAnother() {
-  handler.invite({
-    eid: 1,
-    inviteList: [],
-    invitePnList: ['+13475346100'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)  '+13107102956'
-  },{handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
+  // handler.invite({
+  //   eid: 1,
+  //   inviteList: [],
+  //   invitePnList: ['+13475346100'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)  '+13107102956'
+  // },{handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
  
+  sendRequests();
   // handler.invite({
   //   eid: 2,
   //   inviteList: [],
@@ -105,21 +106,11 @@ function inviteOneAnother() {
   // },{handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
 }
 
-function afterTests() {
+function sendRequests() {
+  handler.request({eid: 1}, {handshake:{user:j}});
   // console.log('Completed tests.');
 }
 
 function addMessages(ae, je, de) {
-  // console.log('Leaving messages.');
-  //joel leaves a comment on andrews event.
-  // events.addMessage(ae, j.uid, 'Joels comment on andrews event.', function(err){
-  //   if (err) return console.log(err);
-  //   events.addMessage(de, a.uid, 'Andrews comment on daniels event.', function(err){
-  //     if (err) return console.log(err);
-  //     events.addMessage(je, d.uid, 'Daniels comment on joels event.', function(err){
-  //       if (err) return console.log(err);
-  //       afterTests();
-  //     });
-  //   });
-  // });
+
 }
