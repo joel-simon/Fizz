@@ -89,7 +89,7 @@ function inviteOneAnother() {
   handler.invite({
     eid: 1,
     inviteList: [],
-    invitePnList: ['+13475346100', '+13107102956'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)
+    invitePnList: ['+13475346100'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)  '+13107102956'
   },{handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
  
   // handler.invite({
