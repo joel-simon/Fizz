@@ -19,6 +19,10 @@ User.prototype.isEqual = function(user) {
 }
 
 User.prototype.getInfo = function(callback) {
+	if (this.fbid === 0) {
+		if (callback) callback(this.name, this.pic);
+		return;
+	}
 	var self = this;
 	getFacebookInfo(this.fbid, function(name, pic) {
 		self.name = name;
@@ -28,6 +32,10 @@ User.prototype.getInfo = function(callback) {
 }
 
 User.prototype.updateInfo = function(callback) {
+	if (this.fbid === 0) {
+		if (callback) callback(this.name, this.pic);
+		return;
+	}
 	var self = this;
 	updateFacebookInfo(this.fbid, function(name, pic) {
 		self.name = name;

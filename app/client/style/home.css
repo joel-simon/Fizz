@@ -149,6 +149,8 @@ ul {
 .message-pic {
 	float: left;
 	border-radius: 50%;
+	height: 50px;
+	width: 50px;
 }
 
 .message-time {

@@ -76,7 +76,7 @@ DomManager.prototype.drawThread = function(event) {
 	if (index === this.threadList.length) {
 		this.threadList.push({
 			eid : event.eid,
-			updateTime : time,
+			updateTime : event.updateTime,
 		});
 		html = this.writeThreadHtml(event, index);
 		$('#thread-'+index).append(html);
@@ -99,7 +99,7 @@ DomManager.prototype.drawMessage = function(message) {
 	var event = ELM.getEvent(message.eid);
 	var sender = event.getUser(message.uid);
 	var html = this.writeMessageHtml(sender, message);
-	$('#mf-'+event.eid).before(html);
+	$('#mf-'+event.eid).siblings('.message-list').append(html);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -149,10 +149,11 @@ DomManager.prototype.writeGuestListHtml = function(event) {
 }
 
 DomManager.prototype.writeMessageHtml = function(sender, message) {
+	var time = parseDateTime(message.creationTime);
 	var html = 
 		'<li class="message">'+
 			'<img class="message-pic" title="'+sender.name+'" src="'+sender.pic+'">'+
-			'<p class="message-time">'+message.creationTime+'</p>'+
+			'<p class="message-time">'+time+'</p>'+
 			'<p class="message-name">'+sender.name+'</p>'+
 			'<p class="message-text">'+message.text+'</p>'+
 		'</li>';
@@ -173,4 +174,10 @@ DomManager.prototype.writeMessageChainHtml = function(event) {
 			'<input type="submit" value="Send">'+
 		'</form></div>';
 	return html;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+function parseDateTime(dateTime) {
+	
 }
