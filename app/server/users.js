@@ -47,7 +47,7 @@ exports.get = function(uid, cb) {
 				pn   : data.pn.S,
 				type : data.type.S,
 				fbid : +data.fbid.N,
-				key : data.key.S
+				key : data.key ? data.key.S : null
 			});
 		}
 	});

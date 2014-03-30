@@ -218,12 +218,15 @@ exports.invite = function(data, socket) {
           recipients: inviteList,
           iosPush: user.name+':'+message0
         });
-      }
-
+      };
       async.each(results.pnUsers,
         function(pnUser, cb) {
-          var link = '\n extraFizzy.com/c?k='+pnUser.key;
-          output.sendSms(pnUser, msgOut+link)
+          emit({ //emit to non sms users
+            eventName: 'newEvent',
+            recipients: [pnUser],
+            sms: msgOut+'\n extraFizzy.com/c?k='+pnUser.key,
+            iosPush: user.name+':'+message0
+          });
           cb();
         },
         function(err) {
