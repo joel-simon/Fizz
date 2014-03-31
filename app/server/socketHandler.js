@@ -69,28 +69,6 @@ exports.onAuth = function(profile, pn, fbToken, iosToken, cb) {
     users.getOrAddMember(profile, longToken, pn, iosToken, function(err, user) {
       if(err) cb(err);
       else cb(null, user);
-
-      // for each of the users new friends, reciprocate the friendship and emit.
-      users.getFriendUserList(user.uid, function(err, friendUserList) {
-        async.each(friendUserList, function(friend, cb2) {
-          users.addFriendList(friend, [''+user.uid], function(err) {
-            if(err) cb2(err)
-            else {
-              emit({
-                eventName:  'newFriend',
-                data:       null,
-                recipients: [friend],
-                iosPush: nameShorten(user.name)+' '+'has added you as friend!',
-                sms: null,
-              });
-            }
-          });
-        },
-        function(err) {
-          if(err) logError(err);
-        });
-      });
-
     });
   });
 }
@@ -127,6 +105,7 @@ exports.newEvent = function (data, socket) {
     } else {
       users.getFizzFriendsUidsOf(ful, function(err, fof) {
         if(err) return logError(err);
+        console.log(fof);
         events.addVisibleList(Object.keys(fof), e.eid, function(err){
           if(err) return logError(err);
           emit({

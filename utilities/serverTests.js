@@ -18,6 +18,7 @@ function beforeTests() {
     function(cb){users.delete(3, cb)},
     function(cb){users.delete(4, cb)},
     function(cb){users.delete(5, cb)},
+    function(cb){users.delete(6, cb)}
   ], function(err){
     if (err) {
       console.log(err);
@@ -55,7 +56,10 @@ function tests1(){
       d = results.d;
       j = results.j;
       a = results.a;
-      createEvents();
+      setTimeout(function(){
+        createEvents();
+      },1000);
+      
     }
   });
 }
@@ -63,7 +67,7 @@ function tests1(){
 function createEvents() {  
   handler.newEvent({
     text: "Daniel's First Event",
-    inviteOnly: true
+    inviteOnly: false
   }, {handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
 
   // handler.newEvent({
@@ -78,7 +82,7 @@ function createEvents() {
 
   setTimeout(function(){
     inviteOneAnother();
-  },500)
+  },1000)
 }
 
 function inviteOneAnother() {
@@ -87,7 +91,7 @@ function inviteOneAnother() {
 
   handler.invite({
     eid: 1,
-    inviteList: [a],
+    inviteList: [],
     invitePnList: ['+13475346100'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)
   },{handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
   

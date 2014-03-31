@@ -5,11 +5,13 @@ var config = ((args.dev) ? require('./../../configDev.json') : require('./../../
 var store   = require('./redisStore.js').store;
 var utils   = require('./utilities.js');
 var log     = utils.log;
+var nameShorten = utils.nameShorten;
 var db      = mongojs(config.DB.MONGOHQ_UR, ['users', 'events']);
 var exports = module.exports;
 var async   = require('async');
 var fb      = require('./fb.js');
 var db      = require('./dynamo.js');
+var emit = require('./output.js').emit;
 var io;
 /*
   REDIS VARIABLES
@@ -17,6 +19,8 @@ var io;
   pn->uid 				| pn -> uid
   user:{uid} 			| eid -> pn // what pn user uses for this event
   									count -> int //number of events ever invited to
+	
+
 */
 exports.isConnected = function(uid, callback) {
 	if(!io) io = require('../../app.js').io;
@@ -47,7 +51,7 @@ exports.get = function(uid, cb) {
 				pn   : data.pn.S,
 				type : data.type.S,
 				fbid : +data.fbid.N,
-				key : data.key ? data.key.S : null
+				key : data.key ? data.key.S : undefined
 			});
 		}
 	});
@@ -77,9 +81,9 @@ exports.getFromKey = function(key, cb) {
 ////////////////////////////////////////////////////////////////////////////////
 //	GETTING/CREATING/MODIFYING USERS
 ////////////////////////////////////////////////////////////////////////////////
-function set(uid, user, cb) {
+function set(user, cb) {
 	var item = {
-		uid  : {'N'  : ''+uid},
+		uid  : {'N'  : ''+user.uid},
 		pn   : {'S'  : user.pn},
 		fbid : {'N'  : ''+user.fbid},
 		name : {'S'  : user.name},
@@ -90,7 +94,7 @@ function set(uid, user, cb) {
 		item.friendList = {'NS' : user.friendList.map(String)}
 	}
 	if (user.key) item.key = {'S' : user.key};
-
+	delete user.friendList;
 	db.putItem({
 		'TableName': 'users',
 		'Item': item
@@ -103,21 +107,49 @@ function set(uid, user, cb) {
 	});
 }
 
+
+//HELPER FUNCTION FOR MAKEFRIENDS
 function findFizzFriends(fbToken,  cb) {
 	fb.get(fbToken, '/me/friends/', function(err, friends) {
 		if (err) return cb(err);
 		if (!friends.data) return cb(null, []);
 		async.map(friends.data, function(friend, cb2) {
-			// console.log(friend);
-			store.hget('fbid->uid', friend.id, function(err, uid) {
+			exports.getFromFbid(friend.id, function(err, user) {
 				if(err) return cb2(err);
-				if(!uid) return cb2(null, null);
-				cb2(null, +uid);
+				if(!user) return cb2(null, null);
+				cb2(null, user);
 			});
 		},
 		function(err, fizzFriends) {
 			cb(null, fizzFriends.filter(function(u){return !!u}));
 		});
+	});
+}
+
+function makeFriends(user, fbToken, cb) {
+	findFizzFriends(fbToken, function(err, friendUserList) {
+		// console.log('test2', err, friendUserList);
+		if (err) return cb(err);
+    // for each of the users new friends, reciprocate the friendship and emit.
+    async.each(friendUserList, function(friend, cb2) {
+      exports.addFriendList(friend, [''+user.uid], function(err) {
+        if(err) return cb2(err)
+        
+        emit({
+          eventName:  'newFriend',
+          data:       null,
+          recipients: [friend],
+          iosPush: nameShorten(user.name)+' '+'has added you as friend!',
+          sms: null,
+        });
+        cb2(null);
+
+      });
+    },
+    function(err) {
+      if(err) cb(err);
+      else cb(null, friendUserList);
+    });
 	});
 }
 
@@ -134,68 +166,46 @@ exports.getOrAddPhoneList =  function(pnList, cb) {
 */
 exports.getOrAddMember = function(profile, fbToken, pn, iosToken, cb) {
 	var fbid = +profile.id;
-	exports.getFromFbid(+profile.id, function(err, user) {
-		if (err) {
-			cb(err);
-		} else if (user && user.type === 'Member') {
-			cb(null, user);
-		} else if (user && user.type === 'Guest') {
-			user.type = 'Member';
-			user.iosToken = iosToken;
-			log('Upgrading', user.name, 'from Guest to Member.');
-			set(user.uid, user, cb);
-		} else { // see if a phone user exists. 
-			exports.getFromPn(pn, function(err, user) {
-				if (err) return cb(err);
-				findFizzFriends(fbToken, function(err, fizzFriends) {
-					// console.log('fizzFriends:', fizzFriends);
-					if (err) return cb(err);
-					if (user && user.type === 'Phone') {
-						user.type = 'Member';
-						user.iosToken = iosToken;
-						user.fbid = fbid;
-						user.name = profile.displayName;
-						user.friendList = fizzFriends;
-						store.hset('fbid->uid', fbid, user.uid);
-						log('Upgraded', user.name, 'from Phone to Member. \n\thas friends:', fizzFriends);
-						set(user.uid, user, cb);
-					} else { // create a new user from scratch.
-						blankUser(pn, fbid, function(err, user) {
-							if (err) return cb(err);
-							user.pn = pn;
-							user.type = "Member";
-							user.name = profile.displayName;
-							user.fbid = fbid;
-							user.friendList = fizzFriends;
-							log('Created', user.name, 'as Member.\n\thas friends:', fizzFriends);
-							set(user.uid, user, cb);
-						});
-					}
-				});
-			});
-		}
-	});
-}
-/*
-	User has been invited via text and goes to the website. 
-	Must already exist as a phone user.
-*/
-exports.getOrAddGuest = function(profile, fbToken, cb) {
-	exports.getFromFbid(+profile.id, function(err, user) {
-		if (err)  return cb(err);
+
+	exports.getFromFbid(fbid, function(err, user) {
+		if (err) return cb(err);
 		if (user) return cb(null, user);
-		exports.getOrAddPhone(pn, function(err, user) {
-			if (err) return cb(err);
-			store.hset('fbid->uid', +profile.id, user.uid);
-			user.fbid = +profile.id;
-		 	user.name = profile.displayName;
-		 	user.type = 'Guest';
-		 	user.fbToken = fbToken;
-		 	set(user.uid, user, cb);
-		});
 		
+		exports.getFromPn(pn, function(err, pnUser) {
+			if (err) return cb(err);
+			var member = {
+				name : profile.displayName,
+				type : 'Member', 
+				fbid : fbid,
+				pn : pn,
+				iosToken : iosToken
+			}
+			if (pnUser) {
+				member.uid = pnUser.uid;
+				store.hset('fbid->uid', fbid, user.uid);
+				log('Upgraded', member.name, 'from Phone to Member. \n\thas friends:', fizzFriends);
+				done(member);
+			} else {
+				blankUser(pn, fbid, function(err, newBlank) {
+					member.uid = newBlank.uid;
+					if (err) return cb(err);
+					log('Created', member.name, 'as Member.');
+					done(member);
+				});
+			}
+		});
 	});
+	function done(member) {
+		makeFriends(member, fbToken, function(err, friendUserList){
+			if (err) return cb(err);
+			member.friendList = friendUserList.map(function(user){return user.uid});
+			return set(member, cb);
+		});
+	}
 }
+
+
+
 /*
 	User has been invited via phone number.
 	Return user if already exists.
@@ -217,7 +227,7 @@ exports.getOrAddPhone = function(pn, cb) {
 				user.type = "Phone";
 				user.name = pn;
 
-				set(user.uid, user, function(err) {
+				set(user, function(err) {
 					if(err) cb(err);
 					else {
 						log('Created phone user'+pn+'. Has key:'+key);
@@ -357,5 +367,26 @@ exports.deleteVisible = function(userId, eid, callback) {
 // 	store.hget('locations', uid, function(err, json){
 // 		if(err) callback(err);
 // 		else callback(JSON.stringify(json));
+// 	});
+// }
+
+// /*
+// 	User has been invited via text and goes to the website. 
+// 	Must already exist as a phone user.
+// */
+// exports.getOrAddGuest = function(profile, fbToken, cb) {
+// 	exports.getFromFbid(+profile.id, function(err, user) {
+// 		if (err)  return cb(err);
+// 		if (user) return cb(null, user);
+// 		exports.getOrAddPhone(pn, function(err, user) {
+// 			if (err) return cb(err);
+// 			store.hset('fbid->uid', +profile.id, user.uid);
+// 			user.fbid = +profile.id;
+// 		 	user.name = profile.displayName;
+// 		 	user.type = 'Guest';
+// 		 	user.fbToken = fbToken;
+// 		 	set(user, cb);
+// 		});
+		
 // 	});
 // }

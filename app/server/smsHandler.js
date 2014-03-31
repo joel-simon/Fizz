@@ -5,15 +5,15 @@ var
   logError  = utils.logError,
 	output = require('./output.js');
 
-// module.exports = function(from, sms) {
-// 	users.getFromPn(from, function(err, user) {
-// 		if (err) {
-// 			logError(err)
-// 		} else {
-// 			handler.newMessage({})
-// 		}
-// 	});
-// }
+module.exports = function(from, sms) {
+	users.getFromPn(from, function(err, user) {
+		if (err) {
+			logError(err)
+		} else {
+			handler.newMessage({})
+		}
+	});
+}
 
 // var 
 // 	handler 	= require('./socketHandler.js'),
