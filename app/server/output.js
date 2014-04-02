@@ -10,14 +10,16 @@ var
   config = ((args.dev) ? require('./../../configDev.json') : require('./../../config.json')),
   exports  = module.exports,
   users    = require('./users.js'),
+  phoneManager = require('./phoneManager.js'),
   async    = require('async'),
   apn      = require('apn'),
-  args     = require('./args.js'),
-  store    = require('./redisStore.js').store;
+  args     = require('./args.js');
+  // store    = require('./redisStore.js').store;
 
 ////////////////////////////////////////////////////////////////////////////////
 //        PUSH IOS
 ////////////////////////////////////////////////////////////////////////////////
+
 var pushIos = (function(){
   
   var apnConnection = new apn.Connection({
@@ -63,28 +65,24 @@ exports.sendSms = (function(){
   var twilio = require('twilio');
   var client = new twilio.RestClient(config.TWILIO.SID, config.TWILIO.TOKEN);
   
-  var twilioNumbers = [
-    '+13476255694',
-    '+14123301599',
-    '+14123301653',
-    '+14123301648',
-  ];
-  return function(user, msg) {
+  return function(user, eid, msg) {
+    phoneManager.getNumberFor(user, eid, function(err, pn) {
+      if (err) return logError(err);
+
       if (args.sendSms) {
-        log("SENT SMS To "+user.name, msg);
+        log("SENT '"+msg+"' To "+pn);
       } else {
-        log("SMS NOT SENT TO '"+user.name+"' ENABLE SMS WITH 'node app sendSms'");
+        log("SMS NOT SENT '"+msg+"' To "+pn+ "ENABLE SMS WITH 'node app sendSms'");
         return;
       }
-
-    client.sms.messages.create({
-      to:   user.pn,
-      from: twilioNumbers[0],
-      body: msg
-    },
-    function(error, message) {
-      if (error) logError(error);
-      // else log('sent sms to', user.name);
+      client.sms.messages.create({
+        to:   user.pn,
+        from: twilioNumbers[pn],
+        body: msg
+      },
+      function(error, message) {
+        if (error) logError(error);
+      });
     });
   }
 })();
@@ -99,6 +97,14 @@ exports.sendSms = (function(){
  * @param {String} eventName
  * @param {Object} Data
  */
+
+// var foo='BC45506F3DD570B9C51363068DFBEF0FE178B7F7318D3CA7485F6040F980B74A'
+// exports.emit({
+//   eventName:'foo',
+//   data: 'foo',
+//   recipients:
+// })
+
 var io;
 exports.emit = function(options) {
   // check.is(options, {
@@ -110,8 +116,7 @@ exports.emit = function(options) {
     eventName  = options.eventName,
     data       = options.data,
     recipients = options.recipients,
-    iosPush    = options.iosPush || null,
-    sms        = options.sms || null;
+    iosPush    = options.iosPush || null;
 
   // Deal with a circular dependency by delaying invocation.
   if(!io) io = require('../../app.js').io;
@@ -121,39 +126,15 @@ exports.emit = function(options) {
       );
 
   async.each(recipients, function(user, callback) {
-    switch(user.type) {
-      case 'Phone':
-        if (users.isConnected(user.uid)) {
-          io.sockets.in(user.uid).emit(eventName, data);
-        } else if (sms && args.sendSms) {
-          exports.sendSms(user, sms);
-          log("SENT SMS To "+user.name);
-        } else if(sms){
-          log("SMS NOT SENT TO '"+user.name+"' ENABLE SMS WITH 'node app sendSms'");
-        }
-        break;
-
-      case "Guest":
-        if (users.isConnected(user.uid)) {
-          io.sockets.in(user.uid).emit(eventName, data);
-        } else if (sms) {
-          exports.sendSms(user, message);
-        }
-        break;
-
-      case "Member":
-        if (users.isConnected(user.uid)) {
-          io.sockets.in(''+user.uid).emit(eventName, data);
-        } else if(iosPush){
-          if(args.pushIos) {
-            exports.pushIos(message, user.IOSToken, 1);
-            log("Send push to "+user.name)
-          } else {
-            log("PUSH NOT SENT TO "+user.name+" Enable PUSH WITH 'node app pushIos'")
-          }
-          
-        }
-        break;
+    if (users.isConnected(user.uid)) {
+      io.sockets.in(user.uid).emit(eventName, data);
+    } else if(iosPush) {
+      if(args.pushIos) {
+        exports.pushIos(message, user.iosToken, 1);
+        log("Send push to "+user.name)
+      } else {
+        log("PUSH NOT SENT TO "+user.name+" Enable PUSH WITH 'node app pushIos'")
+      }
     }
   });
 }

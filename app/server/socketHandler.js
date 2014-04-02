@@ -105,7 +105,6 @@ exports.newEvent = function (data, socket) {
     } else {
       users.getFizzFriendsUidsOf(ful, function(err, fof) {
         if(err) return logError(err);
-        console.log(fof);
         events.addVisibleList(Object.keys(fof), e.eid, function(err){
           if(err) return logError(err);
           emit({
@@ -182,7 +181,7 @@ exports.invite = function(data, socket) {
   check.is(data, {
     eid: 'posInt',
     inviteList: '[user]',
-    invitePnList: '[string]'
+    invitePnList: 'array'
   });
   var eid=data.eid,
       inviteList=data.inviteList,
@@ -211,12 +210,11 @@ exports.invite = function(data, socket) {
       };
       async.each(results.pnUsers,
         function(pnUser, cb) {
-          emit({ //emit to non sms users
-            eventName: 'newEvent',
-            recipients: [pnUser],
-            sms: msgOut+'\nRespond to join the event.\n'+server+pnUser.key,
-            iosPush: nameShorten(user.name)+':'+message0
-          });
+          output.sendSms(
+            pnUser,
+            results.e.eid,
+            msgOut+'\nRespond to join the event.\n'+server+pnUser.key
+          );
           cb();
         },
         function(err) {
@@ -247,18 +245,24 @@ exports.newMessage = function(data, socket) {
     newMsg        : function(cb) {
       events.addMessage(eid, user.uid, text, cb);
     },
-    recipients : function(cb) {
-      events.getInviteList(eid, cb);
+    e : function(cb) {
+      events.get(eid, cb);
     }
   },
   function(err, results) {
+    var e = results.e;
+    check.is(e, 'event');
     // add will generate the messages mid.
-    check.is(results, {recipients: '[user]'});
     emit({
       eventName: 'newMessage',
       recipients: results.recipients,
       data: {message: results.newMsg},
       iosPush: nameShorten(user.name)+':'+text,
+    });
+    // send sms ONLY TO SMS ATTENDING
+    emit({
+      eventName: 'newMessage',
+      recipients: results.recipients,
       sms: nameShorten(user.name)+':'+text,
     });
   });

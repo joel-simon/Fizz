@@ -10,10 +10,10 @@ exports = module.exports;
   viewableBy:uid  | set(eid)
 
   inviteList:eid  | set(users) 
-  event:uid       | seats->int
-                    inviteOnly -> boolean
-                    creator -> uid
-                    requests-> uid list
+  event:uid       | {seats :int
+                    inviteOnly  : boolean
+                    creator  : uid
+                    requests : uid list}
   messages:eid    | list(json message)
   guestList:eid   | list(uid)
 */

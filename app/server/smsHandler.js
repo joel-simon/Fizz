@@ -7,11 +7,11 @@ var
 
 module.exports = function(from, sms) {
 	users.getFromPn(from, function(err, user) {
-		if (err) {
-			logError(err)
-		} else {
-			handler.newMessage({})
-		}
+		if (err) return logError(err)
+		users.getUserAndEidFromPn(from, function(err, user, eid) {
+			if (err) return logError(err);
+			handler.newMessage({eid: eid,text: msg},{handshake:{user:d}});
+		});
 	});
 }
 

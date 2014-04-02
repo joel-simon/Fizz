@@ -154,7 +154,7 @@ function makeFriends(user, fbToken, cb) {
 }
 
 exports.getOrAddPhoneList =  function(pnList, cb) {
-	async.map(pnList, exports.getOrAddPhone,
+	async.map(pnList, getOrAddPhone,
 	function(err, userList) {
 		if (err) cb (err);
 		else cb (null, userList);
@@ -210,12 +210,12 @@ exports.getOrAddMember = function(profile, fbToken, pn, iosToken, cb) {
 	User has been invited via phone number.
 	Return user if already exists.
 */
-exports.getOrAddPhone = function(pn, cb) {
-	exports.getFromPn(pn, function(err, user) {
+function getOrAddPhone (u, cb) {
+	exports.getFromPn(u.pn, function(err, user) {
 		if 			(err)  cb(err);
 		else if (user) cb(null, user);
 		else {
-			blankUser(pn, null, function(err, user) {
+			blankUser(u.pn, null, function(err, user) {
 				if (err) return cb(err);
 				store.hset('users:'+user.uid, 'count', 0);
 				
@@ -223,14 +223,14 @@ exports.getOrAddPhone = function(pn, cb) {
 				store.hset('key->uid', key, user.uid);
 				user.key = key;
 
-				user.pn = pn;
+				user.pn = u.pn;
 				user.type = "Phone";
-				user.name = pn;
+				user.name = u.name || u.pn;
 
 				set(user, function(err) {
 					if(err) cb(err);
 					else {
-						log('Created phone user'+pn+'. Has key:'+key);
+						log('Created phone user'+u.pn+'. Has key:'+key);
 						cb(null, user);
 					}
 				});
@@ -358,6 +358,16 @@ exports.removeFriend = function(user, friendUid, callback) {
 
 exports.deleteVisible = function(userId, eid, callback) {
   store.srem('viewableBy:'+userId, eid, callback);
+}
+
+// Deal with phone numbers
+
+exports.getUserAndEidFromPn = function(pn, cb) {
+
+}
+
+exports.getNextPN = function(uid) {
+
 }
 
 // exports.setLocation = function(uid, latlng, callback) {
