@@ -255,16 +255,16 @@ exports.newMessage = function(data, socket) {
     // add will generate the messages mid.
     emit({
       eventName: 'newMessage',
-      recipients: results.recipients,
+      recipients: results.e.inviteList,
       data: {message: results.newMsg},
       iosPush: nameShorten(user.name)+':'+text,
     });
     // send sms ONLY TO SMS ATTENDING
-    emit({
-      eventName: 'newMessage',
-      recipients: results.recipients,
-      sms: nameShorten(user.name)+':'+text,
-    });
+    // emit({
+    //   eventName: 'newMessage',
+    //   recipients: results.recipients,
+    //   sms: nameShorten(user.name)+':'+text,
+    // });
   });
 }
 
