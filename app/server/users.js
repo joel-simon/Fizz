@@ -87,7 +87,8 @@ function set(user, cb) {
 		pn   : {'S'  : user.pn},
 		fbid : {'N'  : ''+user.fbid},
 		name : {'S'  : user.name},
-		type : {'S'  : user.type}
+		type : {'S'  : user.type},
+		iosToken: {'S' : user.iosToken || ''}
 		// friendList: 
 	}
 	if (user.friendList && user.friendList.length > 0) {
@@ -182,8 +183,8 @@ exports.getOrAddMember = function(profile, fbToken, pn, iosToken, cb) {
 			}
 			if (pnUser) {
 				member.uid = pnUser.uid;
-				store.hset('fbid->uid', fbid, user.uid);
-				log('Upgraded', member.name, 'from Phone to Member. \n\thas friends:', fizzFriends);
+				store.hset('fbid->uid', fbid, member.uid);
+				log('Upgraded', member.name, 'from Phone to Member.');
 				done(member);
 			} else {
 				blankUser(pn, fbid, function(err, newBlank) {

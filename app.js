@@ -15,7 +15,7 @@ var
   d       = require('domain').create(),  // create domain for error routing.
   handler = require('./app/server/socketHandler.js'), //all socket.io requests go here.
   colors  = require('colors'),
-
+  utils   = require('./app/server/utilities.js'),
   redis   = require('redis'),
   redisStore = require('connect-redis')(express),
   redisConns = require('./app/server/redisStore.js'),
@@ -94,8 +94,10 @@ passport.use(new FacebookTokenStrategy(
 
     if (pn && pn.length == 11) {
       pn = '+1'+pn.substring(1);
-    } else {
-      pn = null;
+    }
+    if (!utils.isPn(pn)) {
+      console.log('Bad phone number:', pn);
+      return done('Bad phone number')
     }
     iosToken = iosToken || null;
     console.log(pn);

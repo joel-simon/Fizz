@@ -78,8 +78,6 @@ function foo() {
     console.log(clean);
 }
 
-
-
 exports.logError = function(e) {
   if (!e) return;
   var date = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
@@ -127,7 +125,13 @@ function getStackTrace() {
   return obj.stack;
 }
 
-
+exports.isPn = function(pn) {
+  var regexp = /^[\s()+-]*([0-9][\s()+-]*){6,20}$/
+  return (regexp.test(pn));
+}
+// console.log(isPn('sadasdsa'));
+// console.log(isPn('+13475346100'));
+// console.log(isPn('+3475346100'));
 
 exports.isSubset = function(a, b) {
 	if (a.length > b.length) return false;
@@ -157,15 +161,15 @@ function binaryIndexOf(arr, e) {
 
 Object.defineProperty(global, '__stack', {
 get: function() {
-      var orig = Error.prepareStackTrace;
-      Error.prepareStackTrace = function(_, stack) {
-          return stack;
-      };
-      var err = new Error;
-      Error.captureStackTrace(err, arguments.callee);
-      var stack = err.stack;
-      Error.prepareStackTrace = orig;
-      return stack;
+    var orig = Error.prepareStackTrace;
+    Error.prepareStackTrace = function(_, stack) {
+        return stack;
+    };
+    var err = new Error;
+    Error.captureStackTrace(err, arguments.callee);
+    var stack = err.stack;
+    Error.prepareStackTrace = orig;
+    return stack;
   }
 });
 
