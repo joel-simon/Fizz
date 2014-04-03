@@ -60,32 +60,45 @@ var pushIos = (function(){
 ////////////////////////////////////////////////////////////////////////////////
 // TWILIO
 ////////////////////////////////////////////////////////////////////////////////
-exports.sendSms = (function(){
-        
-  var twilio = require('twilio');
-  var client = new twilio.RestClient(config.TWILIO.SID, config.TWILIO.TOKEN);
+var twilio = require('twilio');
+var client = new twilio.RestClient(config.TWILIO.SID, config.TWILIO.TOKEN);
   
-  return function(user, eid, msg) {
-    phoneManager.getNumberFor(user, eid, function(err, pn) {
-      if (err) return logError(err);
+exports.sendSms = function(user, eid, msg) {
+  phoneManager.getNumberFor(user, eid, function(err, pn) {
+    if (err) return logError(err);
 
-      if (args.sendSms) {
-        log("SENT '"+msg+"' To "+pn);
-      } else {
-        log("SMS NOT SENT '"+msg+"' To "+pn+ "ENABLE SMS WITH 'node app sendSms'");
-        return;
-      }
-      client.sms.messages.create({
-        to:   user.pn,
-        from: twilioNumbers[pn],
-        body: msg
-      },
-      function(error, message) {
-        if (error) logError(error);
-      });
+    if (args.sendSms) {
+      log("SENT SMS To:"+user.name+'. On number:'+pn+
+          '\n\t\tMessage:'+JSON.stringify(msg));
+    } else {
+      log("SMS NOT SENT To:"+user.name+'. On number:'+pn+
+          '\n\t\tMessage:'+JSON.stringify(msg));
+      // log("SMS NOT SENT '"+msg+"' To "+pn+ "ENABLE SMS WITH 'node app sendSms'");
+      return;
+    }
+    client.sms.messages.create({
+      to:   user.pn,
+      from: twilioNumbers[pn],
+      body: msg
+    },
+    function(error, message) {
+      if (error) logError(error);
     });
-  }
-})();
+  });
+}
+
+exports.sendGroupSms = function(userList, eid, msgFun) {
+  async.each(userList,
+    function(u, cb) {
+      if (!u.type == 'Phone') return cb(null);
+      exports.sendSms(u, eid, msgFun(u));
+      cb();
+    },
+    function(err) {
+      if(err) logError(err);
+    }
+  );
+}
 
 // exports.sendSms({pn:'+13475346100'},'heyhey\nextraFizzy.com')
 ////////////////////////////////////////////////////////////////////////////////
@@ -107,11 +120,6 @@ exports.sendSms = (function(){
 
 var io;
 exports.emit = function(options) {
-  // check.is(options, {
-  //   eventName: 'string',
-  //   data: 'object',
-  //   recipients: '[user]'
-  // });
   var 
     eventName  = options.eventName,
     data       = options.data,
@@ -128,7 +136,7 @@ exports.emit = function(options) {
   async.each(recipients, function(user, callback) {
     if (users.isConnected(user.uid)) {
       io.sockets.in(user.uid).emit(eventName, data);
-    } else if(iosPush) {
+    } else if(iosPush && user.type === "Member") {
       if(args.pushIos) {
         exports.pushIos(message, user.iosToken, 1);
         log("Send push to "+user.name)

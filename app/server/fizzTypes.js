@@ -8,7 +8,7 @@ var pn = function(n) {
 }
 module.exports = {
   user: function(u) {
-    if (!u) return false
+    if (!u) throw (u +' user');
     if ((typeof u.uid !== 'number') || u.uid === 0) throw('Bad uid:'+uid);
     if ((typeof u.fbid !== 'number')) throw('Bad fbid:'+fbid);
     // if ((typeof u.pn !== 'string')) throw('foo');
@@ -33,7 +33,7 @@ module.exports = {
         if (u.pn.length === 0) throw('No pn for Phone user.')
         break;
       default:
-        return false;
+        throw ('Undefined user type');
     }
     return true;
   },

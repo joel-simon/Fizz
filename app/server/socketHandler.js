@@ -22,7 +22,8 @@ var godSocket = {
       uid: -1,
       name: '',
       fbid: 0,
-      pn : ''
+      pn : '',
+      type: 'Member'
     }
   }
 }
@@ -187,6 +188,7 @@ exports.invite = function(data, socket) {
       inviteList=data.inviteList,
       invitePnList=data.invitePnList;
   var user = getUserSession(socket);
+  var server = 'http://fzz.bz/';
 
   async.parallel({
     pnUsers : function(cb){ users.getOrAddPhoneList(invitePnList, cb) },
@@ -194,33 +196,35 @@ exports.invite = function(data, socket) {
   },
   function(err, results){
     if (err) return logError(err);
-    events.addInvitees(eid, inviteList.concat(results.pnUsers), function(err) {
+    var e = results.e;
+    var newInvitedUsers = inviteList.concat(results.pnUsers);
+    // newInvitedUsers = newInvitedUsers.filter(function(u){
+    //   return e.inviteList
+    // })
+    var oldInvitedUsers = e.inviteList;
+
+    events.addInvitees(eid, newInvitedUsers, function(err) {
       if (err) return logError(err);
       var message0 = results.e.messageList[0].text;
       var msgOut = nameShorten(user.name)+':'+message0;
       // var server = 'http://128.237.195.119:9001/c/'; //joel local machine
-      var server = 'http://fzz.bz/'; //server
-      if (inviteList.length) {
-        emit({ //emit to non sms users
-          eventName: 'newEvent',
-          data: {'event' : results.e},
-          recipients: inviteList,
-          iosPush: nameShorten(user.name)+':'+message0
-        });
-      };
-      async.each(results.pnUsers,
-        function(pnUser, cb) {
-          output.sendSms(
-            pnUser,
-            results.e.eid,
-            msgOut+'\nRespond to join the event.\n'+server+pnUser.key
-          );
-          cb();
-        },
-        function(err) {
-          if(err) logError(err);
-        }
-      );
+      e.inviteList = e.inviteList.concat(newInvitedUsers); //update local copy.
+      emit({ // Emit to people that they are invited.
+        eventName: 'newEvent',
+        data: {'event' : e},
+        recipients: newInvitedUsers,
+        iosPush: nameShorten(user.name)+':'+message0
+      });
+      emit({ // Let other people that new people have been invited. 
+        eventName: 'newInviteList',
+        data: {'eid' : e.eid, inviteList: newInvitedUsers},
+        recipients: oldInvitedUsers
+        // iosPush: nameShorten(user.name)+':'+message0
+      });
+      // sms those smsUers who have been invited. 
+      output.sendGroupSms(inviteList, results.e.eid, function(user) {
+        return msgOut+'\nRespond to join the event.\n'+server+user.key
+      });
     });
   });
 }
@@ -252,19 +256,25 @@ exports.newMessage = function(data, socket) {
   function(err, results) {
     var e = results.e;
     check.is(e, 'event');
-    // add will generate the messages mid.
+    // sms users join when they respond
+    if (e.guestList.indexOf(user.uid) === -1) {
+      exports.joinEvent({eid: eid}, socket);
+    }
+    // Emit to everyone connected.
     emit({
       eventName: 'newMessage',
       recipients: results.e.inviteList,
       data: {message: results.newMsg},
       iosPush: nameShorten(user.name)+':'+text,
     });
-    // send sms ONLY TO SMS ATTENDING
-    // emit({
-    //   eventName: 'newMessage',
-    //   recipients: results.recipients,
-    //   sms: nameShorten(user.name)+':'+text,
-    // });
+    // Sms everyone else who is going. 
+    var smsRecipients = results.e.inviteList.filter(function(u){
+      return (u.type === 'Phone' && e.guestList.indexOf(u.uid) >=0 && u.uid != user.uid);
+    });
+    output.sendGroupSms(smsRecipients, e.eid, function(u){
+      return nameShorten(u.name)+':'+text
+    });
+
   });
 }
 
