@@ -18,3 +18,7 @@ exports.getNumberFor = function (user, eid, cb) {
 	});	
 }
 
+exports.getUserAndEidFromPn = function(pn, cb) {
+
+	cb (null, user, eid);
+}

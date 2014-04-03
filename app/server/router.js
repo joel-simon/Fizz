@@ -40,10 +40,11 @@ module.exports = function(app, passport) {
 		res.redirect('/index');
 	});
 
-	var handler = require('./socketHandler.js');	
-	app.post('onMessage', function(req, res){
+	var handler = require('./smsHandler.js');	
+	app.post('onMessage', function(req, res) {
 		var message = req.body.Body;
 		var from = req.body.From;
+		console.log(req.body);
 		handler.onSms(from, message);
 		res.end('');
 	});

@@ -1,14 +1,16 @@
 var
 	handler = require('./socketHandler.js'),
-	users     = require('./users.js'),
+	// users     = require('./users.js'),
+	phoneManager = require('./phoneManager.js'),
 	utils     = require('./utilities.js'),
   logError  = utils.logError,
 	output = require('./output.js');
-
-module.exports = function(from, sms) {
+module.exports = exports;
+exports.onSms = function(from, sms) {
 	users.getFromPn(from, function(err, user) {
-		if (err) return logError(err)
-		users.getUserAndEidFromPn(from, function(err, user, eid) {
+		return console.log(user);
+		if (err) return logError(err);
+		phoneManager.getUserAndEidFromPn(from, function(err, user, eid) {
 			if (err) return logError(err);
 			handler.newMessage({eid: eid,text: msg},{handshake:{user:d}});
 		});
