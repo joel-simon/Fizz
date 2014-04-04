@@ -49,10 +49,10 @@ var pushIos = (function(){
       if (!args.pushIos)
         return log(mainLog, "Status: FAILED! Enable PUSH WITH 'node app pushIos'")
 
-      if(user.token == 'iosToken')
+      if(user.iosToken == 'iosToken')
         return log(mainLog, 'Status: FAILED! Token is fake as shit.');
   
-      var myDevice = new apn.Device(user.token);
+      var myDevice = new apn.Device(user.iosToken);
       var note = new apn.Notification();
       note.expiry = Math.floor(Date.now() / 1000) + 3600*hoursToExpiration;
       note.badge = 3;
