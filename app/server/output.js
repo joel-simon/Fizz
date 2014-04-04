@@ -51,17 +51,19 @@ var pushIos = (function(){
 
       if(user.iosToken == 'iosToken')
         return log(mainLog, 'Status: FAILED! Token is fake as shit.');
-  
-      var myDevice = new apn.Device(user.iosToken);
-      var note = new apn.Notification();
-      note.expiry = Math.floor(Date.now() / 1000) + 3600*hoursToExpiration;
-      note.badge = 3;
-      note.sound = "ping.aiff";
-      note.alert = "Beacon Data";
-      note.payload = {'messageFrom': 'Beacon'};
-  
-      apnConnection.pushNotification(note, myDevice);
-      
+      try{
+        var myDevice = new apn.Device(user.iosToken);
+        var note = new apn.Notification();
+        note.expiry = Math.floor(Date.now() / 1000) + 3600*hoursToExpiration;
+        note.badge = 3;
+        note.sound = "ping.aiff";
+        note.alert = "Beacon Data";
+        note.payload = {'messageFrom': 'Beacon'};
+    
+        apnConnection.pushNotification(note, myDevice);
+      } catch(e) {
+        return log(mainLog, "Status: FAILED.",'ERR:'+e,'Token:'+user.iosToken);
+      }
       log(mainLog, "Status: Success.'")
 
     })
