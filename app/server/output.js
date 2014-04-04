@@ -43,7 +43,14 @@ var pushIos = (function(){
   });
 
   return (function(msg, token, hoursToExpiration) {
-      if(!msg || !token) return;
+      var mainLog = "Sending push to "+user.name
+      
+      
+      if (!args.pushIos)
+        return log(mainLog, "Status: FAILED! Enable PUSH WITH 'node app pushIos'")
+
+      if(token == 'iosToken')
+        return log(mainLog, 'Status: FAILED! Token is fake as shit.');
   
       var myDevice = new apn.Device(token);
       var note = new apn.Notification();
@@ -54,6 +61,9 @@ var pushIos = (function(){
       note.payload = {'messageFrom': 'Beacon'};
   
       apnConnection.pushNotification(note, myDevice);
+      
+      log(mainLog, "Status: Success.'")
+
     })
 })();
 
@@ -138,10 +148,7 @@ exports.emit = function(options) {
       io.sockets.in(user.uid).emit(eventName, data);
     } else if(iosPush && user.type === "Member") {
       if(args.pushIos) {
-        exports.pushIos(message, user.iosToken, 1);
-        log("Send push to "+user.name)
-      } else {
-        log("PUSH NOT SENT TO "+user.name+" Enable PUSH WITH 'node app pushIos'")
+        exports.pushIos(iosPush, user.iosToken, 1);
       }
     }
   });
