@@ -42,17 +42,17 @@ var pushIos = (function(){
       // });
   });
 
-  return (function(msg, token, hoursToExpiration) {
+  return (function(msg, user, hoursToExpiration) {
       var mainLog = "Sending push to "+user.name
       
       
       if (!args.pushIos)
         return log(mainLog, "Status: FAILED! Enable PUSH WITH 'node app pushIos'")
 
-      if(token == 'iosToken')
+      if(user.token == 'iosToken')
         return log(mainLog, 'Status: FAILED! Token is fake as shit.');
   
-      var myDevice = new apn.Device(token);
+      var myDevice = new apn.Device(user.token);
       var note = new apn.Notification();
       note.expiry = Math.floor(Date.now() / 1000) + 3600*hoursToExpiration;
       note.badge = 3;
@@ -147,7 +147,7 @@ exports.emit = function(options) {
     if (users.isConnected(user.uid)) {
       io.sockets.in(user.uid).emit(eventName, data);
     } else if(iosPush && user.type === "Member") {
-      pushIos(iosPush, user.iosToken, 1);
+      pushIos(iosPush, user, 1);
     }
   });
 }
