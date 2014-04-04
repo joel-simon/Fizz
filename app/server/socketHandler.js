@@ -257,7 +257,7 @@ exports.newMessage = function(data, socket) {
     var e = results.e;
     check.is(e, 'event');
     // sms users join when they respond
-    if (e.guestList.indexOf(user.uid) === -1 && yser.type === 'Member') {
+    if (e.guestList.indexOf(user.uid) === -1 && user.type === 'Member') {
       exports.joinEvent({eid: eid}, socket);
     }
     // Emit to everyone connected.
