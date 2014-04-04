@@ -142,10 +142,9 @@ function makeFriends(user, fbToken, cb) {
         
         emit({
           eventName:  'newFriend',
-          data:       null,
+          data:       user,
           recipients: [friend],
-          iosPush: nameShorten(user.name)+' '+'has added you as friend!',
-          sms: null,
+          iosPush: nameShorten(user.name)+' '+'has added you as friend!'
         });
         cb2(null);
 
@@ -187,7 +186,7 @@ exports.getOrAddMember = function(profile, fbToken, pn, iosToken, cb) {
 			if (pnUser) {
 				member.uid = pnUser.uid;
 				store.hset('fbid->uid', fbid, member.uid);
-				log('Upgraded', member.name, 'from Phone to Member.');
+				log('Upgraded '+member.name, 'From Phone to Member.');
 				done(member);
 			} else {
 				blankUser(pn, fbid, function(err, newBlank) {
