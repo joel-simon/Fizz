@@ -147,9 +147,7 @@ exports.emit = function(options) {
     if (users.isConnected(user.uid)) {
       io.sockets.in(user.uid).emit(eventName, data);
     } else if(iosPush && user.type === "Member") {
-      if(args.pushIos) {
-        exports.pushIos(iosPush, user.iosToken, 1);
-      }
+      pushIos(iosPush, user.iosToken, 1);
     }
   });
 }
