@@ -132,14 +132,17 @@ exports.isPn = function(pn) {
 
 exports.formatPn = function(pn) {
   pn = pn.replace(/ /g,'');
-  if (pn && pn.length == 11) {
+  if (pn[0] !== '+') pn = '+'+pn;
+  if (pn [1] !== '1') {
     pn = '+1'+pn.substring(1);
   }
-  return pn
+  return pn;
 }
-// console.log(isPn('sadasdsa'));
-// console.log(isPn('+13475346100'));
-// console.log(isPn('+3475346100'));
+console.log(exports.formatPn('sadasdsa'));
+console.log(exports.formatPn('+13475346100'));
+console.log(exports.formatPn('+3475346100'));
+console.log(exports.formatPn('13475346100'));
+console.log(exports.formatPn('3475346100'));
 
 exports.isSubset = function(a, b) {
 	if (a.length > b.length) return false;

@@ -41,6 +41,9 @@ function getAttributes(uid, attributes, cb) {
 	});
 }
 exports.get = function(uid, cb) {
+	// store.get('user:'+user.uid, function(err, jsonUser) {
+	// 	return cb(null, JSON.parse(jsonUser));
+	// });
 	getAttributes(''+uid, ['type', 'fbid', 'pn', 'name', 'key'], function(err, data) {
 		if (err) cb(err);
 		else if (!data) cb(null, null);
@@ -82,6 +85,7 @@ exports.getFromKey = function(key, cb) {
 //	GETTING/CREATING/MODIFYING USERS
 ////////////////////////////////////////////////////////////////////////////////
 function set(user, cb) {
+	// return store.set('user:'+user.uid, JSON.stringify(user), cb);
 	var item = {
 		uid  : {'N'  : ''+user.uid},
 		pn   : {'S'  : user.pn},
@@ -155,8 +159,7 @@ function makeFriends(user, fbToken, cb) {
 }
 
 exports.getOrAddPhoneList =  function(pnList, cb) {
-	async.map(pnList, getOrAddPhone,
-	function(err, userList) {
+	async.map(pnList, getOrAddPhone, function(err, userList) {
 		if (err) cb (err);
 		else cb (null, userList);
 	});
@@ -212,6 +215,7 @@ exports.getOrAddMember = function(profile, fbToken, pn, iosToken, cb) {
 	Return user if already exists.
 */
 function getOrAddPhone (u, cb) {
+	u.pn = utils.formatPn(u.pn);
 	exports.getFromPn(u.pn, function(err, user) {
 		if 			(err)  cb(err);
 		else if (user) cb(null, user);

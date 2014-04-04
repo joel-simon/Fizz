@@ -8,6 +8,7 @@ var pn = function(n) {
 }
 module.exports = {
   user: function(u) {
+    if (u.type === 'Server') return true;
     if (!u) throw (u +' user');
     if ((typeof u.uid !== 'number') || u.uid === 0) throw('Bad uid:'+uid);
     if ((typeof u.fbid !== 'number')) throw('Bad fbid:'+fbid);

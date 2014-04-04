@@ -20,10 +20,8 @@ var godSocket = {
   handshake: {
     user: {
       uid: -1,
-      name: '',
-      fbid: 0,
-      pn : '',
-      type: 'Member'
+      name:'',
+      type: 'Server'
     }
   }
 }
@@ -265,7 +263,7 @@ exports.newMessage = function(data, socket) {
     });
     // Sms everyone else who is going. 
     // console.log(results.e.inviteList);
-    var smsRecipients = results.e.inviteList.filter(function(u){
+    var smsRecipients = results.e.inviteList.filter(function(u) {
       return (u.type === 'Phone' && e.guestList.indexOf(u.uid) >=0 && u.uid != user.uid);
     });
     var smsMessage = nameShorten( user.name )+':'+text;

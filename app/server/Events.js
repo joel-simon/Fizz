@@ -1,6 +1,7 @@
 var async = require('async');
 var sanitize = require('validator').sanitize;
 var store = require('./redisStore.js').store;
+var users = require('./users.js');
 exports = module.exports;
 
 /*
@@ -60,7 +61,7 @@ exports.add = function(text, user, FUL, inviteOnly, callback) {
       },
       function(cb) {
         async.each(e.inviteList, function(u, cb2) {
-          store.sadd('inviteList:'+e.eid, JSON.stringify(u), function(err){
+          store.sadd('inviteList:'+e.eid, u.uid, function(err){
             if (err) cb2 (err); 
             else exports.addVisible(u.uid, e.eid, cb2);
           });
@@ -103,7 +104,8 @@ exports.get = function(eid, callback) {
       });
     },
     inviteList: function(cb) {
-      store.smembers('inviteList:'+eid, cb);
+      exports.getInviteList(eid, cb);
+      // store.smembers('inviteList:'+eid, cb);
     },
     event: function(cb) {
       store.get('event:'+eid, cb);
@@ -121,7 +123,7 @@ exports.get = function(eid, callback) {
     // event.creator = results.event[2];
 
     event.messageList = results.messages.map(JSON.parse);
-    event.inviteList = results.inviteList.map(JSON.parse);
+    event.inviteList = results.inviteList;//.map(JSON.parse);
     event.guestList = results.guestList;
     callback(null, event);
   });
@@ -161,11 +163,17 @@ exports.addMessage = function(eid, uid, text, callback) {
 }
 
 exports.getInviteList = function(eid, cb) {
-  store.smembers('inviteList:'+eid, function(err, list) {
+  store.smembers('inviteList:'+eid, function(err, uidList) {
     if (err) cb(err);
     else {
-      console.log(list);
-      cb(null, list.map(JSON.parse));
+      async.map(uidList, function(uid, cb2){
+        if(err) return cb2(err);
+        users.get(uid, cb2);
+      },
+      function(err, inviteList) {
+        if(err) return cb(err);
+        cb(null, inviteList);
+      });
     }
   });
 }
@@ -184,7 +192,7 @@ exports.canSee = function(uid, callback) {
 }
 
 exports.addInvitees = function(eid, users, cb) {
-  store.sadd('inviteList:'+eid, users.map(JSON.stringify),function(err){
+  store.sadd('inviteList:'+eid, users.map(function(u){return u.uid}),function(err){
     async.each(users, function(user, cb2) {
       exports.addVisible(user.uid, eid, cb2);
     }, cb);
