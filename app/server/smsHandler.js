@@ -26,6 +26,7 @@ exports.onSms = function(from, to, body) {
 		});
 	});
 	function done(user, eid, guests) {
+		console.log(user);
 		if (guests.indexOf(user.uid) === -1) {
 			handler.joinEvent({eid: eid}, {handshake:{user:user}});
 		}
