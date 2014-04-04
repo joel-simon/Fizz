@@ -268,9 +268,10 @@ exports.newMessage = function(data, socket) {
     var smsRecipients = results.e.inviteList.filter(function(u){
       return (u.type === 'Phone' && e.guestList.indexOf(u.uid) >=0 && u.uid != user.uid);
     });
-    console.log(smsRecipients)
+    var smsMessage = nameShorten( user.name )+':'+text;
+    log(smsMessage)
     output.sendGroupSms(smsRecipients, e.eid, function(u){
-      return nameShorten( user.name )+':'+text
+      return smsMessage;
     });
 
   });
