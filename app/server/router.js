@@ -41,7 +41,7 @@ module.exports = function(app, passport) {
 	});
 
 	var handler = require('./smsHandler.js');	
-	app.post('onMessage', function(req, res) {
+	app.post('/onMessage', function(req, res) {
 		var message = req.body.Body;
 		var from = req.body.From;
 		console.log(req.body);
