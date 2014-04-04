@@ -133,7 +133,9 @@ exports.addGuest = function(eid, uid, callback) {
     else if (seats>1) store.sadd('guestList:'+eid, uid, callback);
   });
 }
-
+exports.getGuestList = function(eid, cb) {
+  store.smembers('guestList:'+eid,cb);
+}
 exports.removeGuest = function(eid, uid, cb) {
   store.srem('guestList:'+eid, uid, cb);
 }
@@ -161,7 +163,10 @@ exports.addMessage = function(eid, uid, text, callback) {
 exports.getInviteList = function(eid, cb) {
   store.smembers('inviteList:'+eid, function(err, list) {
     if (err) cb(err);
-    else cb(null, list.map(JSON.parse));
+    else {
+      console.log(list);
+      cb(null, list.map(JSON.parse));
+    }
   });
 }
 

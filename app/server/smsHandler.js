@@ -4,21 +4,32 @@ var
 	phoneManager = require('./phoneManager.js'),
 	utils     = require('./utilities.js'),
   logError  = utils.logError,
-	output = require('./output.js');
+  events 		= require('./Events.js'),
+	output = require('./output.js'),
+	async = require('async');
 
 module.exports = exports;
 exports.onSms = function(from, to, sms) {
 	from = utils.formatPn(from);
 	to = utils.formatPn(to);
+	
 	users.getFromPn(from, function(err, user) {
 		if (err) return logError(err);
-		console.log(user);
 		phoneManager.getEid(user, to, function(err, eid) {
 			if (err) return logError(err);
-			var msg = utils.nameShorten(user.name)+':'+sms;
-			handler.newMessage({eid: eid,text: msg},{handshake:{user:user}});
+			events.getGuestList(eid, function(err, guests) {
+				if (err) return logError(err);
+				done(user, eid, guests);
+			});
 		});
 	});
+	function done(user, eid, guests) {
+		if (guests.indexOf(user.uid) === -1) {
+			handler.joinEvent({eid: eid}, {handshake:{user:user}});
+		}
+		var msg = utils.nameShorten(user.name)+':'+sms;
+		handler.newMessage({eid: eid,text: msg},{handshake:{user:user}});
+	}
 }
 
 // var 

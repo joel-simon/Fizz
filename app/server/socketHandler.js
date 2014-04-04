@@ -133,7 +133,7 @@ exports.joinEvent = function(data, socket) {
 
   async.parallel({
     add     : function(cb){ events.addGuest( eid, uid, cb) },
-    invited : function(cb){ events.getInviteList(uid, cb) },
+    invited : function(cb){ events.getInviteList(eid, cb) },
   },
   function (err, results) {
     if (err) return logError(err);
@@ -256,10 +256,6 @@ exports.newMessage = function(data, socket) {
   function(err, results) {
     var e = results.e;
     check.is(e, 'event');
-    // sms users join when they respond
-    if (e.guestList.indexOf(user.uid) === -1 && user.type === 'Member') {
-      exports.joinEvent({eid: eid}, socket);
-    }
     // Emit to everyone connected.
     emit({
       eventName: 'newMessage',
@@ -268,9 +264,11 @@ exports.newMessage = function(data, socket) {
       iosPush: nameShorten(user.name)+':'+text,
     });
     // Sms everyone else who is going. 
+    // console.log(results.e.inviteList);
     var smsRecipients = results.e.inviteList.filter(function(u){
       return (u.type === 'Phone' && e.guestList.indexOf(u.uid) >=0 && u.uid != user.uid);
     });
+    console.log(smsRecipients)
     output.sendGroupSms(smsRecipients, e.eid, function(u){
       return nameShorten(u.name)+':'+text
     });
