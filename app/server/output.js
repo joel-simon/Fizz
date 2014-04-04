@@ -78,7 +78,7 @@ exports.sendSms = function(user, eid, msg) {
     }
     client.sms.messages.create({
       to:   user.pn,
-      from: twilioNumbers[pn],
+      from: pn,
       body: msg
     },
     function(error, message) {
