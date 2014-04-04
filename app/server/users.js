@@ -44,7 +44,7 @@ exports.get = function(uid, cb) {
 	// store.get('user:'+user.uid, function(err, jsonUser) {
 	// 	return cb(null, JSON.parse(jsonUser));
 	// });
-	getAttributes(''+uid, ['type', 'fbid', 'pn', 'name', 'key'], function(err, data) {
+	getAttributes(''+uid, ['type', 'fbid', 'pn', 'name', 'key', 'iosToken'], function(err, data) {
 		if (err) cb(err);
 		else if (!data) cb(null, null);
 		else {
