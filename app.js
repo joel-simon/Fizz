@@ -91,7 +91,7 @@ passport.use(new FacebookTokenStrategy(
 
     pn = utils.formatPn(pn);
     // console.log('pn:', pn)
-    // console.log('iosToken:', iosToken)
+    console.log('iosToken:', iosToken)
     
     if (!utils.isPn(pn)) {
       console.log('Bad phone number:', pn);

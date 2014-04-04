@@ -85,6 +85,7 @@ exports.getFromKey = function(key, cb) {
 //	GETTING/CREATING/MODIFYING USERS
 ////////////////////////////////////////////////////////////////////////////////
 function set(user, cb) {
+	console.log('inSet', iosToken);
 	// return store.set('user:'+user.uid, JSON.stringify(user), cb);
 	var item = {
 		uid  : {'N'  : ''+user.uid},
@@ -168,6 +169,7 @@ exports.getOrAddPhoneList =  function(pnList, cb) {
 	Must already exist as a guest or phone user. 
 */
 exports.getOrAddMember = function(profile, fbToken, pn, iosToken, cb) {
+	console.log('inGetOrAdd', iosToken);
 	var fbid = +profile.id;
 
 	exports.getFromFbid(fbid, function(err, user) {
