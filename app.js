@@ -89,12 +89,10 @@ passport.use(new FacebookTokenStrategy(
   },
   function(fbToken, refreshToken, profile, pn, iosToken, done) {
 
+    pn = utils.formatPn(pn);
     console.log('pn:', pn)
     console.log('iosToken:', iosToken)
-
-    if (pn && pn.length == 11) {
-      pn = '+1'+pn.substring(1);
-    }
+    
     if (!utils.isPn(pn)) {
       console.log('Bad phone number:', pn);
       return done('Bad phone number')

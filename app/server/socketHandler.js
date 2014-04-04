@@ -133,7 +133,7 @@ exports.joinEvent = function(data, socket) {
 
   async.parallel({
     add     : function(cb){ events.addGuest( eid, uid, cb) },
-    attends : function(cb){ events.getInviteList(uid, cb) },
+    invited : function(cb){ events.getInviteList(uid, cb) },
   },
   function (err, results) {
     if (err) return logError(err);
@@ -142,7 +142,7 @@ exports.joinEvent = function(data, socket) {
     emit({
       eventName : 'addGuest',
       data      : data,
-      recipients: results.attends
+      recipients: results.invited
     });
     log(nameShorten(user.name), 'joined event', uid);
   });
@@ -222,7 +222,7 @@ exports.invite = function(data, socket) {
         // iosPush: nameShorten(user.name)+':'+message0
       });
       // sms those smsUers who have been invited. 
-      output.sendGroupSms(inviteList, results.e.eid, function(user) {
+      output.sendGroupSms(results.pnUsers , eid, function(user) {
         return msgOut+'\nRespond to join the event.\n'+server+user.key
       });
     });
@@ -257,7 +257,7 @@ exports.newMessage = function(data, socket) {
     var e = results.e;
     check.is(e, 'event');
     // sms users join when they respond
-    if (e.guestList.indexOf(user.uid) === -1) {
+    if (e.guestList.indexOf(user.uid) === -1 && yser.type === 'Member') {
       exports.joinEvent({eid: eid}, socket);
     }
     // Emit to everyone connected.

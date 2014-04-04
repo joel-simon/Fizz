@@ -5,14 +5,18 @@ var
 	utils     = require('./utilities.js'),
   logError  = utils.logError,
 	output = require('./output.js');
+
 module.exports = exports;
-exports.onSms = function(from, sms) {
+exports.onSms = function(from, to, sms) {
+	from = utils.formatPn(from);
+	to = utils.formatPn(to);
 	users.getFromPn(from, function(err, user) {
-		return console.log(user);
 		if (err) return logError(err);
-		phoneManager.getUserAndEidFromPn(from, function(err, user, eid) {
+		console.log(user);
+		phoneManager.getEid(user, to, function(err, eid) {
 			if (err) return logError(err);
-			handler.newMessage({eid: eid,text: msg},{handshake:{user:d}});
+			var msg = utils.nameShorten(user.name)+':'+sms;
+			handler.newMessage({eid: eid,text: msg},{handshake:{user:user}});
 		});
 	});
 }

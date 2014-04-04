@@ -44,8 +44,9 @@ module.exports = function(app, passport) {
 	app.post('/onMessage', function(req, res) {
 		var message = req.body.Body;
 		var from = req.body.From;
+		var to = req.body.To;
 		console.log(req.body);
-		handler.onSms(from, message);
+		handler.onSms(from, to, message);
 		res.end('');
 	});
 

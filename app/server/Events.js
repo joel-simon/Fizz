@@ -128,7 +128,7 @@ exports.get = function(eid, callback) {
 }
 
 exports.addGuest = function(eid, uid, callback) {
-  store.hget('event:'+eid, 'seats', function(err, seats){
+  store.get('seats:'+eid, function(err, seats){
     if (err) callback(err);
     else if (seats>1) store.sadd('guestList:'+eid, uid, callback);
   });

@@ -64,7 +64,7 @@ var twilio = require('twilio');
 var client = new twilio.RestClient(config.TWILIO.SID, config.TWILIO.TOKEN);
   
 exports.sendSms = function(user, eid, msg) {
-  phoneManager.getNumberFor(user, eid, function(err, pn) {
+  phoneManager.getPn(user, eid, function(err, pn) {
     if (err) return logError(err);
 
     if (args.sendSms) {

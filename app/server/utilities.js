@@ -49,7 +49,7 @@ exports.debug = function() {
 
 exports.nameShorten = function(s) {
   var split = s.split(' ');
-  if (!split.length) {
+  if (!split.length === 2) {
     return s
   } else {
     var first = split[0];
@@ -128,6 +128,14 @@ function getStackTrace() {
 exports.isPn = function(pn) {
   var regexp = /^[\s()+-]*([0-9][\s()+-]*){6,20}$/
   return (regexp.test(pn));
+}
+
+exports.formatPn = function(pn) {
+  pn = pn.replace(/ /g,'');
+  if (pn && pn.length == 11) {
+    pn = '+1'+pn.substring(1);
+  }
+  return pn
 }
 // console.log(isPn('sadasdsa'));
 // console.log(isPn('+13475346100'));
