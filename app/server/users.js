@@ -85,7 +85,7 @@ exports.getFromKey = function(key, cb) {
 //	GETTING/CREATING/MODIFYING USERS
 ////////////////////////////////////////////////////////////////////////////////
 function set(user, cb) {
-	console.log('inSet', iosToken);
+	console.log('inSet', user.iosToken);
 	// return store.set('user:'+user.uid, JSON.stringify(user), cb);
 	var item = {
 		uid  : {'N'  : ''+user.uid},
