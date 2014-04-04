@@ -43,10 +43,11 @@ exports.connect = function(socket) {
   function(err, results) {
     if (err) return logError(err);
 
-    var str = nameShorten(user.name)+' has connected. uid:'+user.uid+'\n\t\t';
-    str += results.eventList.length + ' visible events:'
-    str += JSON.stringify(results.eventList.map(function(e){return e.messageList[0].text}));
-    log(str);
+    var str1 = nameShorten(user.name)+' has connected.';
+    var str2 = results.eventList.length + ' visible events:'
+    str2 += JSON.stringify(results.eventList.map(function(e){return e.messageList[0].text}));
+    log(str1, 'uid:'+user.uid, str2);
+
 
     check.is(results.eventList, '[event]');
     emit({
@@ -82,7 +83,7 @@ exports.newEvent = function (data, socket) {
   var user       = getUserSession(socket),
       text       = data.text,
       inviteOnly = data.inviteOnly;
-  log('New fizzlevent by', nameShorten(user.name)+'\n\t\t',text);
+  log('New fizzlevent by'+nameShorten(user.name),'Msg:'+text);
   var ful;
   async.waterfall([
     function(cb) { users.getFriendUserList(user.uid, cb) },
@@ -142,7 +143,7 @@ exports.joinEvent = function(data, socket) {
       data      : data,
       recipients: results.invited
     });
-    log(nameShorten(user.name), 'joined event', uid);
+    log(nameShorten(user.name)+' joined event '+uid);
   });
 }
 
@@ -171,8 +172,8 @@ exports.leaveEvent = function(data, socket) {
       data: data,
       recipients: results.recipients
     });
-    if (err) return logError('leave beacon', err);
-    log(nameShorten(user.name), 'left beacon', uid);
+    if (err) return logError('leave event', err);
+    log(nameShorten(user.name)+'left event '+uid);
   });
 }
 
@@ -267,7 +268,7 @@ exports.newMessage = function(data, socket) {
       return (u.type === 'Phone' && e.guestList.indexOf(u.uid) >=0 && u.uid != user.uid);
     });
     var smsMessage = nameShorten( user.name )+':'+text;
-    log(smsMessage)
+    // log(smsMessage)
     output.sendGroupSms(smsRecipients, e.eid, function(u){
       return smsMessage;
     });
@@ -292,7 +293,7 @@ exports.addFriendList = function(data, socket) {
   function(err, uidList) {
     users.addFriendList(user, data.uid, function(err) {
       if (err) logError(err)
-      else log('Added friends list for', nameShorten(user.name));
+      else log('Added friends list for '+nameShorten(user.name));
     });
   });
   
@@ -316,8 +317,7 @@ exports.setSeatCapacity = function(data, socket) {
     user  = getUserSession(socket),
     eid   = data.eid,
     seats = data.seats;
-  log(nameShorten(user.name), 'set seat capacity to:', seats);
-
+  log(nameShorten(user.name)+'set seat capacity of event '+eid,'To: '+seats);
   async.parallel({
     set: function(cb){  events.setSeatCapacity(eid, seats,cb) },
     recipients: function(cb){ events.getInviteList(eid, cb) }
@@ -401,7 +401,7 @@ exports.getFBFriendList = function(socket) {
 
 exports.disconnect = function(socket) {
   var self = this, user = getUserSession(socket)
-  log(nameShorten(user.name), "has disconnected.")
+  log(nameShorten(user.name)+" has disconnected.")
 }
 
 function getUserSession(socket) {

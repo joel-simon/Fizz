@@ -90,15 +90,15 @@ passport.use(new FacebookTokenStrategy(
   function(fbToken, refreshToken, profile, pn, iosToken, done) {
 
     pn = utils.formatPn(pn);
-    console.log('pn:', pn)
-    console.log('iosToken:', iosToken)
+    // console.log('pn:', pn)
+    // console.log('iosToken:', iosToken)
     
     if (!utils.isPn(pn)) {
       console.log('Bad phone number:', pn);
       return done('Bad phone number')
     }
     iosToken = iosToken || null;
-    console.log(pn);
+    // console.log(pn);
     process.nextTick(function () {
       handler.onAuth(profile, pn, fbToken, iosToken, function(err, user) {
          if(err) console.log(err);

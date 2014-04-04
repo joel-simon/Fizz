@@ -14,15 +14,20 @@ colors.setTheme({
 exports = exports;
 
 exports.log = function() {
-	var s = '\tInfo: ';
+	var main = '\tInfo: ';
 	var e;
+  var more = ''
 	for (var i = 0; i < arguments.length; i++) {
 		e = arguments[i];
-		s += ((e instanceof Object) ? JSON.stringify(e, null, '') : e)+' ';
+		var s = ((e instanceof Object) ? JSON.stringify(e, null, '') : e)+' ';
+    if (i == 0) {
+      main += s;
+    } else {
+      more += '\n\t\t'+s;
+    }
 	}
-  // JSON.stringify({"foo":"lorem","bar":"ipsum"}, null, '\t');
-	console.log(s.data);
-  console.log('\t'+'———————————————————————————————————————————————————————————————'.data);
+	console.log(main, more.data);
+  console.log('\t'+'———————————————————————————————————————————————————————————————\n'.data);
 }
 
 exports.logImportant = function() {
@@ -138,11 +143,11 @@ exports.formatPn = function(pn) {
   }
   return pn;
 }
-console.log(exports.formatPn('sadasdsa'));
-console.log(exports.formatPn('+13475346100'));
-console.log(exports.formatPn('+3475346100'));
-console.log(exports.formatPn('13475346100'));
-console.log(exports.formatPn('3475346100'));
+// console.log(exports.formatPn('sadasdsa'));
+// console.log(exports.formatPn('+13475346100'));
+// console.log(exports.formatPn('+3475346100'));
+// console.log(exports.formatPn('13475346100'));
+// console.log(exports.formatPn('3475346100'));
 
 exports.isSubset = function(a, b) {
 	if (a.length > b.length) return false;
