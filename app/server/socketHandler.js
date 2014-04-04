@@ -316,15 +316,27 @@ exports.setSeatCapacity = function(data, socket) {
     user  = getUserSession(socket),
     eid   = data.eid,
     seats = data.seats;
+  log(nameShorten(user.name), 'set seat capacity to:', seats);
 
-  events.setSeatCapacity(eid, seats, function(err) {
+  async.parallel({
+    set: function(cb){  events.setSeatCapacity(eid, seats,cb) },
+    recipients: function(cb){ events.getInviteList(eid, cb) }
+  }, function(err, results) {
     if(err) return logError(err);
-    log(nameShorten(user.name), 'set seat capacity to:', seats);
     var msg = {
       eid:  eid,
       text: nameShorten(user.name)+' set seat capacity to '+seats+'.'
     }
+    var data = {
+      eid: eid,
+      seats: seats
+    }
     exports.newMessage(msg, godSocket);
+    emit({
+      eventName: 'setSeatCapacity',
+      data: data,
+      recipients: results.recipients
+    });
   });
 }
 
