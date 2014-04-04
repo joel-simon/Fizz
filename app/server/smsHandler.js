@@ -3,6 +3,7 @@ var
 	users     = require('./users.js'),
 	phoneManager = require('./phoneManager.js'),
 	utils     = require('./utilities.js'),
+	log 			= utils.log,
   logError  = utils.logError,
   events 		= require('./Events.js'),
 	output = require('./output.js'),
@@ -10,6 +11,7 @@ var
 
 module.exports = exports;
 exports.onSms = function(from, to, sms) {
+	log('New Sms {from:'+from+', to:'+to+', body:'+body+'}')
 	from = utils.formatPn(from);
 	to = utils.formatPn(to);
 	
@@ -27,8 +29,8 @@ exports.onSms = function(from, to, sms) {
 		if (guests.indexOf(user.uid) === -1) {
 			handler.joinEvent({eid: eid}, {handshake:{user:user}});
 		}
-		var msg = utils.nameShorten(user.name)+':'+sms;
-		handler.newMessage({eid: eid,text: msg},{handshake:{user:user}});
+		// var msg = utils.nameShorten(user.name)+':'+sms;
+		handler.newMessage({eid: eid,text: sms},{handshake:{user:user}});
 	}
 }
 

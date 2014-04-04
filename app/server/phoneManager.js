@@ -20,12 +20,10 @@ exports.getPn = function (user, eid, cb) {
 		if (data){
 			var data = JSON.parse(data); // array [pni0, eid0, pni1, eid1... ]
 			var i = data.eidList.indexOf(eid);
-			if (i >=1) return cb(null, twilioNumbers[data.pniList[i]]);
+			if (i !== -1) return cb(null, twilioNumbers[data.pniList[i]]);
 		} else {
 			data = {eidList:[],pniList:[]};
 		}
-		
-
 		store.hincrby('idCounter', 'pncount:'+user.uid, 1, function(err, pni) {
 			data.eidList.push(+eid);
 			data.pniList.push(+pni);
