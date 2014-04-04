@@ -270,7 +270,7 @@ exports.newMessage = function(data, socket) {
     });
     console.log(smsRecipients)
     output.sendGroupSms(smsRecipients, e.eid, function(u){
-      return nameShorten( user )+':'+text
+      return nameShorten( user.name )+':'+text
     });
 
   });
