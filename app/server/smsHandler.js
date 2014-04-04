@@ -10,7 +10,7 @@ var
 	async = require('async');
 
 module.exports = exports;
-exports.onSms = function(from, to, sms) {
+exports.onSms = function(from, to, body) {
 	log('New Sms {from:'+from+', to:'+to+', body:'+body+'}')
 	from = utils.formatPn(from);
 	to = utils.formatPn(to);
@@ -30,7 +30,7 @@ exports.onSms = function(from, to, sms) {
 			handler.joinEvent({eid: eid}, {handshake:{user:user}});
 		}
 		// var msg = utils.nameShorten(user.name)+':'+sms;
-		handler.newMessage({eid: eid,text: sms},{handshake:{user:user}});
+		handler.newMessage({eid: eid,text: body},{handshake:{user:user}});
 	}
 }
 
