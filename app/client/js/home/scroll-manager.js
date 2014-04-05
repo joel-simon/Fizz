@@ -11,7 +11,6 @@ function ScrollManager() {
 	this.currentThread = 0;
 	this.threadCount = $('.thread').length;
 	this.countDown = null;
-
 	resetStyle();
 }
 

@@ -65,6 +65,5 @@ function openThreadList() {
 	});
 
 	resetStyle();
-
 	collapse = false;
 }

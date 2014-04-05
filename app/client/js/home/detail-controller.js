@@ -51,7 +51,6 @@ function transitionToDetail(thread) {
 	$('#thread-'+thread+' .guest-list').css('height', '25vh');
 
 	$('#collapse').addClass('hidden');
-
 	detail = true;
 }
 
@@ -76,6 +75,5 @@ function transitionFromDetail(thread) {
 	$('#thread-'+thread+' .guest-list').css('height', '45vh');
 
 	$('#collapse').removeClass('hidden');
-
 	detail = false;
 }
