@@ -54,7 +54,8 @@ exports.debug = function() {
 
 exports.nameShorten = function(s) {
   var split = s.split(' ');
-  if (!split.length === 2) {
+  console.log(s, split);
+  if (split.length !== 2) {
     return s
   } else {
     var first = split[0];
@@ -63,6 +64,7 @@ exports.nameShorten = function(s) {
   }
 }
 
+console.log(exports.nameShorten('andrew'));
 function convertToServerTimeZone(){
   //EST
   offset = -4.0
