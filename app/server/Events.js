@@ -23,9 +23,9 @@ exports = module.exports;
   //     if (err) logError(err);
   //   });
 
-exports.addVisibleList = function(users, eid, cb) {
-  async.each(users, function(u, cb2) {
-    exports.addVisible(u.uid, eid, cb2);
+exports.addVisibleList = function(uidList, eid, cb) {
+  async.each(uidList, function(uid, cb2) {
+    exports.addVisible(uid, eid, cb2);
   }, cb);
 }
 exports.addVisible = function(uid, eid, callback) {
