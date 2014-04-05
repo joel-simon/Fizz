@@ -9,22 +9,28 @@ colors.setTheme({
   debug: 'blue',
   error: 'red',
   data: 'grey'
-
 });
 
-module.exports.log = function() {
-	var s = '\tInfo: ';
+exports = exports;
+
+exports.log = function() {
+	var main = '\tInfo: ';
 	var e;
+  var more = ''
 	for (var i = 0; i < arguments.length; i++) {
 		e = arguments[i];
-		s += ((e instanceof Object) ? JSON.stringify(e, null, '') : e)+' ';
+		var s = ((e instanceof Object) ? JSON.stringify(e, null, '') : e)+' ';
+    if (i == 0) {
+      main += s;
+    } else {
+      more += '\n\t\t'+s;
+    }
 	}
-  // JSON.stringify({"foo":"lorem","bar":"ipsum"}, null, '\t');
-	console.log(s.data);
-  console.log('\t'+'———————————————————————————————————————————————————————————————'.data);
+	console.log(main, more.data);
+  console.log('\t'+'———————————————————————————————————————————————————————————————\n'.data);
 }
 
-module.exports.logImportant = function() {
+exports.logImportant = function() {
   var s = '\tInfo: ';
   var e;
   for (var i = 0; i < arguments.length; i++) {
@@ -35,7 +41,7 @@ module.exports.logImportant = function() {
   console.log('\t'+'———————————————————————————————————————————————————————————————'.info);
 }
 
-module.exports.debug = function() {
+exports.debug = function() {
 	if(!debug) return;
 	var s = '\tInfo: ';
 	var e;
@@ -46,6 +52,19 @@ module.exports.debug = function() {
 	console.log(s.debug);
 }
 
+exports.nameShorten = function(s) {
+  var split = s.split(' ');
+  console.log(s, split);
+  if (split.length !== 2) {
+    return s
+  } else {
+    var first = split[0];
+    var last = split[split.length-1][0];
+    return first+' '+last +''  
+  }
+}
+
+console.log(exports.nameShorten('andrew'));
 function convertToServerTimeZone(){
   //EST
   offset = -4.0
@@ -66,9 +85,7 @@ function foo() {
     console.log(clean);
 }
 
-
-
-module.exports.logError = function(e) {
+exports.logError = function(e) {
   if (!e) return;
   var date = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
   date = date.substring(0,date.search("GMT")-1)
@@ -115,9 +132,26 @@ function getStackTrace() {
   return obj.stack;
 }
 
+exports.isPn = function(pn) {
+  var regexp = /^[\s()+-]*([0-9][\s()+-]*){6,20}$/
+  return (regexp.test(pn));
+}
 
+exports.formatPn = function(pn) {
+  pn = pn.replace(/ /g,'');
+  if (pn[0] !== '+') pn = '+'+pn;
+  if (pn [1] !== '1') {
+    pn = '+1'+pn.substring(1);
+  }
+  return pn;
+}
+// console.log(exports.formatPn('sadasdsa'));
+// console.log(exports.formatPn('+13475346100'));
+// console.log(exports.formatPn('+3475346100'));
+// console.log(exports.formatPn('13475346100'));
+// console.log(exports.formatPn('3475346100'));
 
-module.exports.isSubset = function(a, b) {
+exports.isSubset = function(a, b) {
 	if (a.length > b.length) return false;
 	a.sort();
 	b.sort();
@@ -145,15 +179,15 @@ function binaryIndexOf(arr, e) {
 
 Object.defineProperty(global, '__stack', {
 get: function() {
-      var orig = Error.prepareStackTrace;
-      Error.prepareStackTrace = function(_, stack) {
-          return stack;
-      };
-      var err = new Error;
-      Error.captureStackTrace(err, arguments.callee);
-      var stack = err.stack;
-      Error.prepareStackTrace = orig;
-      return stack;
+    var orig = Error.prepareStackTrace;
+    Error.prepareStackTrace = function(_, stack) {
+        return stack;
+    };
+    var err = new Error;
+    Error.captureStackTrace(err, arguments.callee);
+    var stack = err.stack;
+    Error.prepareStackTrace = orig;
+    return stack;
   }
 });
 

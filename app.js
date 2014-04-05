@@ -15,7 +15,7 @@ var
   d       = require('domain').create(),  // create domain for error routing.
   handler = require('./app/server/socketHandler.js'), //all socket.io requests go here.
   colors  = require('colors'),
-
+  utils   = require('./app/server/utilities.js'),
   redis   = require('redis'),
   redisStore = require('connect-redis')(express),
   redisConns = require('./app/server/redisStore.js'),
@@ -89,16 +89,16 @@ passport.use(new FacebookTokenStrategy(
   },
   function(fbToken, refreshToken, profile, pn, iosToken, done) {
 
-    console.log('pn:', pn)
+    pn = utils.formatPn(pn);
+    // console.log('pn:', pn)
     console.log('iosToken:', iosToken)
 
-    if (pn && pn.length == 11) {
-      pn = '+1'+pn.substring(1);
-    } else {
-      pn = null;
+    if (!utils.isPn(pn)) {
+      console.log('Bad phone number:', pn);
+      return done('Bad phone number')
     }
     iosToken = iosToken || null;
-    console.log(pn);
+    // console.log(pn);
     process.nextTick(function () {
       handler.onAuth(profile, pn, fbToken, iosToken, function(err, user) {
          if(err) console.log(err);
@@ -155,8 +155,8 @@ io.set('authorization', passportSocketIo.authorize({
 }));
 
 function onAuthorizeSuccess(data, accept){
-  console.log('successful connection to socket.io');
-  console.log(data);
+  // console.log('successful connection to socket.io');
+  // console.log(data);
   // The accept-callback still allows us to decide whether to
   // accept the connection or not.
   accept(null, true);
@@ -166,8 +166,8 @@ function onAuthorizeFail(data, message, error, accept){
 
   if(error)
     throw new Error(message);
-  console.log('failed connection to socket.io:', message);
-  console.log(data);
+  // console.log('failed connection to socket.io:', message);
+  // console.log(data);
   // We use this callback to log all of our failed connections.
   accept(null, false);
 }
@@ -181,11 +181,9 @@ function onAuthorizeFail(data, message, error, accept){
     socket.on('newEvent',       (function(data){ handler.newEvent   (data, socket) }));
     socket.on('joinEvent',      (function(data){ handler.joinEvent  (data, socket) }));
     socket.on('leaveEvent',     (function(data){ handler.leaveEvent (data, socket) }));
-    socket.on('invite',         (function(data){ handler.leaveEvent (data, socket) }));
-    socket.on('request',        (function(data){ handler.leaveEvent (data, socket) }));
-
+    socket.on('invite',         (function(data){ handler.invite     (data, socket) }));
+    socket.on('request',        (function(data){ handler.request    (data, socket) }));
     socket.on('newMessage',     (function(data){ handler.newMessage (data, socket) }));
-
     socket.on('getFriendList',  (function(data){ handler.getFriendList(socket) }));
 
     socket.on('newFriend',      (function(data){ handler.newFriend  (data, socket) }));
@@ -218,8 +216,8 @@ var domo =  ''+
 '▔▔╰━╯╰━╯▔▔▔▔╰━╯╰━╯▔▔▔▔╰━╯╰━╯▔▔▔▔╰━╯╰━╯▔▔';
 console.log(domo.rainbow);
 console.log('Port:', (''+port).bold);
-console.log('Send sms:', (''+args.sendSms).bold);
-console.log('Push ios:', (''+args.pushIos).bold);
+console.log('sendSms:', (''+args.sendSms).bold);
+console.log('pushIos:', (''+args.pushIos).bold);
 console.log('#########################################'.rainbow);
 
 

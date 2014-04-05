@@ -1,17 +1,12 @@
+// var onSms = require('./smsHandler.js');
 
 module.exports = function(app, passport) {
 	
-
 	app.get('/c/*',
 		passport.authenticate('sms', { failureRedirect: '/' }),
 		function(req, res) {
 			res.render('home', {});
 	});
-
-	// app.get('/foo/*', function(req, res) {
-	// 	console.log(req.params);
-	// 	res.render('index', {});
-	// });
 
 	app.post('/iosLogin',
 		passport.authenticate('facebook-token', { display: 'page', scope: ['user_friends', 'user_groups', 'email'] }),
@@ -23,12 +18,6 @@ module.exports = function(app, passport) {
 		function(req, res) {
 			res.send('Logged in');
 		});
-
-	// app.get('/:id(\\d+)/', ensureAuthenticated, function(req, res) {
-	// 	res.send(200, req.params.id);
-	// 	// console.log(req.k);
-	// 	// res.redirect('/home');
-	// });
 
 	app.get('/', ensureAuthenticated, function(req, res) {
 		res.redirect('/home');
@@ -51,18 +40,16 @@ module.exports = function(app, passport) {
 		res.redirect('/index');
 	});
 
-	var onSms = require('./smsHandler.js');
-	app.post('onMessage', function(req, res){
-		var message = req.body.Body;
+	var handler = require('./smsHandler.js');	
+	app.post('/onMessage', function(req, res) {
+		var body = req.body.Body;
 		var from = req.body.From;
-		onSms(from, message);
-		// console.log(req.body);
+		var to = req.body.To;
+		handler.onSms(from, to, body);
 		res.end('');
-		// res.end('<Message>Hello, Mobile Monkey</Message>');
 	});
 
 	app.get('*', function(req, res) { res.render('404', { title: 'Page Not Found'}); });
-
 };
 
 // Simple route middleware to ensure user is authenticated.

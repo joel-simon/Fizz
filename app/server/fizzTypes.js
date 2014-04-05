@@ -8,13 +8,13 @@ var pn = function(n) {
 }
 module.exports = {
   user: function(u) {
-    return true;
-    if (!u) return false
-    if ((typeof u.uid !== 'number')|| u.uid === 0) throw('foo');
-    if ((typeof u.fbid !== 'number')) throw('foo');
+    if (u.type === 'Server') return true;
+    if (!u) throw (u +' user');
+    if ((typeof u.uid !== 'number') || u.uid === 0) throw('Bad uid:'+uid);
+    if ((typeof u.fbid !== 'number')) throw('Bad fbid:'+fbid);
     // if ((typeof u.pn !== 'string')) throw('foo');
-    if ((typeof u.type !== 'string')) throw('foo');
-    if ((typeof u.name !== 'string')) throw('foo');
+    if ((typeof u.type !== 'string')) throw('Bad type:'+type);
+    if ((typeof u.name !== 'string')) throw('Bad name:'+name);
     // if ((typeof u.fbToken !== 'string')) throw('foo');
     // if ((typeof u.iosToken !== 'string')) throw('foo');
 
@@ -34,7 +34,7 @@ module.exports = {
         if (u.pn.length === 0) throw('No pn for Phone user.')
         break;
       default:
-        return false;
+        throw ('Undefined user type');
     }
     return true;
   },
@@ -61,7 +61,7 @@ module.exports = {
     eid:        'posInt',
     // creator:    'posInt',
     guestList:  '[posInt]',
-    // inviteList: '[user]',
+    inviteList: '[user]',
     seats:      'posInt',
   },
   newEvent: {

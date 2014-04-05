@@ -10,14 +10,16 @@ var
   config = ((args.dev) ? require('./../../configDev.json') : require('./../../config.json')),
   exports  = module.exports,
   users    = require('./users.js'),
+  phoneManager = require('./phoneManager.js'),
   async    = require('async'),
   apn      = require('apn'),
-  args     = require('./args.js'),
-  store    = require('./redisStore.js').store;
+  args     = require('./args.js');
+  // store    = require('./redisStore.js').store;
 
 ////////////////////////////////////////////////////////////////////////////////
 //        PUSH IOS
 ////////////////////////////////////////////////////////////////////////////////
+
 var pushIos = (function(){
   
   var apnConnection = new apn.Connection({
@@ -40,54 +42,79 @@ var pushIos = (function(){
       // });
   });
 
-  return (function(msg, token, hoursToExpiration) {
-      if(!msg || !token) return;
-  
-      var myDevice = new apn.Device(token);
-      var note = new apn.Notification();
-      note.expiry = Math.floor(Date.now() / 1000) + 3600*hoursToExpiration;
-      note.badge = 3;
-      note.sound = "ping.aiff";
-      note.alert = "Beacon Data";
-      note.payload = {'messageFrom': 'Beacon'};
-  
-      apnConnection.pushNotification(note, myDevice);
+  return (function(msg, user, hoursToExpiration) {
+      var mainLog = "Sending push to "+user.name
+      
+      
+      if (!args.pushIos)
+        return log(mainLog, "Status: FAILED! Enable PUSH WITH 'node app pushIos'")
+
+      if(user.iosToken == 'iosToken')
+        return log(mainLog, 'Status: FAILED! Token is fake as shit.');
+      users.getIosToken(user.uid, function(err, iosToken) {
+        log('TOKEN:'+iosToken);
+        if(err) return logError(err)
+        if(!iosToken) return logError('No token found for'+JSON.stringify(user));
+        try{
+          var myDevice = new apn.Device(iosToken);
+          var note = new apn.Notification();
+          note.expiry = Math.floor(Date.now() / 1000) + 3600*hoursToExpiration;
+          note.badge = 3;
+          note.sound = "ping.aiff";
+          note.alert = msg;
+          note.payload = {'messageFrom': 'Beacon'};
+      
+          apnConnection.pushNotification(note, myDevice);
+        } catch(e) {
+          return log(mainLog, "Status: FAILED.",'ERR:'+e,'Token:'+iosToken);
+        }
+        log(mainLog, "Status: Success.'")
+      });
     })
 })();
 
 ////////////////////////////////////////////////////////////////////////////////
 // TWILIO
 ////////////////////////////////////////////////////////////////////////////////
-exports.sendSms = (function(){
-        
-  var twilio = require('twilio');
-  var client = new twilio.RestClient(config.TWILIO.SID, config.TWILIO.TOKEN);
+var twilio = require('twilio');
+var client = new twilio.RestClient(config.TWILIO.SID, config.TWILIO.TOKEN);
   
-  var twilioNumbers = [
-    '+13476255694',
-    '+14123301599',
-    '+14123301653',
-    '+14123301648',
-  ];
-  return function(user, msg) {
-      if (args.sendSms) {
-        log("SENT SMS To "+user.name, msg);
-      } else {
-        log("SMS NOT SENT TO '"+user.name+"' ENABLE SMS WITH 'node app sendSms'");
-        return;
-      }
+exports.sendSms = function(user, eid, msg) {
+  phoneManager.getPn(user, eid, function(err, pn) {
+    if (err) return logError(err);
 
+    if (args.sendSms) {
+      log("SENT SMS To:"+user.name+'. On number:'+pn+
+          '\n\t\tMessage:'+JSON.stringify(msg));
+    } else {
+      log("SMS NOT SENT To:"+user.name+'. On number:'+pn+
+          '\n\t\tMessage:'+JSON.stringify(msg));
+      // log("SMS NOT SENT '"+msg+"' To "+pn+ "ENABLE SMS WITH 'node app sendSms'");
+      return;
+    }
     client.sms.messages.create({
       to:   user.pn,
-      from: twilioNumbers[0],
+      from: pn,
       body: msg
     },
     function(error, message) {
       if (error) logError(error);
-      // else log('sent sms to', user.name);
     });
-  }
-})();
+  });
+}
+
+exports.sendGroupSms = function(userList, eid, msgFun) {
+  async.each(userList,
+    function(u, cb) {
+      if (!u.type == 'Phone') return cb(null);
+      exports.sendSms(u, eid, msgFun(u));
+      cb();
+    },
+    function(err) {
+      if(err) logError(err);
+    }
+  );
+}
 
 // exports.sendSms({pn:'+13475346100'},'heyhey\nextraFizzy.com')
 ////////////////////////////////////////////////////////////////////////////////
@@ -99,61 +126,36 @@ exports.sendSms = (function(){
  * @param {String} eventName
  * @param {Object} Data
  */
+
+// var foo='BC45506F3DD570B9C51363068DFBEF0FE178B7F7318D3CA7485F6040F980B74A'
+// exports.emit({
+//   eventName:'foo',
+//   data: 'foo',
+//   recipients:
+// })
+
 var io;
 exports.emit = function(options) {
-  // check.is(options, {
-  //   eventName: 'string',
-  //   data: 'object',
-  //   recipients: '[user]'
-  // });
   var 
     eventName  = options.eventName,
     data       = options.data,
     recipients = options.recipients,
-    iosPush    = options.iosPush || null,
-    sms        = options.sms || null;
+    iosPush    = options.iosPush || null
+    pushRecipients = options.pushRecipients;
 
   // Deal with a circular dependency by delaying invocation.
   if(!io) io = require('../../app.js').io;
-  log('Emitting '+eventName+
-      '\n\t\tto:'+JSON.stringify(recipients.map(function(u){return u.name+':'+u.type}))+
-      '\n\t\tdata:' + JSON.stringify(data)
+  log('Emitting '+eventName,
+      'to:'+JSON.stringify(recipients.map(function(u){return u.name+':'+u.type}))+
+      'data:' + JSON.stringify(data)
       );
 
   async.each(recipients, function(user, callback) {
-    switch(user.type) {
-      case 'Phone':
-        if (users.isConnected(user.uid)) {
-          io.sockets.in(user.uid).emit(eventName, data);
-        } else if (sms && args.sendSms) {
-          exports.sendSms(user, sms);
-          log("SENT SMS To "+user.name);
-        } else if(sms){
-          log("SMS NOT SENT TO '"+user.name+"' ENABLE SMS WITH 'node app sendSms'");
-        }
-        break;
-
-      case "Guest":
-        if (users.isConnected(user.uid)) {
-          io.sockets.in(user.uid).emit(eventName, data);
-        } else if (sms) {
-          exports.sendSms(user, message);
-        }
-        break;
-
-      case "Member":
-        if (users.isConnected(user.uid)) {
-          io.sockets.in(''+user.uid).emit(eventName, data);
-        } else if(iosPush){
-          if(args.pushIos) {
-            exports.pushIos(message, user.IOSToken, 1);
-            log("Send push to "+user.name)
-          } else {
-            log("PUSH NOT SENT TO "+user.name+" Enable PUSH WITH 'node app pushIos'")
-          }
-          
-        }
-        break;
+    if (users.isConnected(user.uid)) {
+      io.sockets.in(user.uid).emit(eventName, data);
+    } else if ( iosPush && user.type === "Member" && (!pushRecipients ||
+                pushRecipients.indexOf(user.uid) !== -1)) {
+      pushIos(iosPush, user, 1);
     }
   });
 }

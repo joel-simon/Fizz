@@ -15,6 +15,16 @@ var
   types = require('./fizzTypes.js'),
   check = require('easy-types').addTypes(types);
 
+var nameShorten = utils.nameShorten;
+var godSocket = {
+  handshake: {
+    user: {
+      uid: -1,
+      name:'',
+      type: 'Server'
+    }
+  }
+}
 /**
  * Handle login socket
  * @param {Object} Data - contains .id and .admin
@@ -33,10 +43,11 @@ exports.connect = function(socket) {
   function(err, results) {
     if (err) return logError(err);
 
-    var str = user.name+' has connected. uid:'+user.uid+'\n\t\t';
-    str += results.eventList.length + ' visible events:'
-    str += JSON.stringify(results.eventList.map(function(e){return e.messageList[0].text}));
-    log(str);
+    var str1 = nameShorten(user.name)+' has connected.';
+    var str2 = results.eventList.length + ' visible events:'
+    str2 += JSON.stringify(results.eventList.map(function(e){return e.messageList[0].text}));
+    log(str1, 'uid:'+user.uid, str2);
+
 
     check.is(results.eventList, '[event]');
     emit({
@@ -52,35 +63,13 @@ exports.connect = function(socket) {
 
   });
 }
-
 exports.onAuth = function(profile, pn, fbToken, iosToken, cb) {
+  console.log('inOnAuth', iosToken);
   fb.extendToken(fbToken, function(err, longToken) {
     if (err) return cb(err);
     users.getOrAddMember(profile, longToken, pn, iosToken, function(err, user) {
       if(err) cb(err);
       else cb(null, user);
-
-      // for each of the users new friends, reciprocate the friendship and emit.
-      users.getFriendUserList(user.uid, function(err, friendUserList) {
-        async.each(friendUserList, function(friend, cb2) {
-          users.addFriendList(friend, [''+user.uid], function(err) {
-            if(err) cb2(err)
-            else {
-              emit({
-                eventName:  'newFriend',
-                data:       null,
-                recipients: [friend],
-                iosPush: user.name+' '+'has added you as friend!',
-                sms: null,
-              });
-            }
-          });
-        },
-        function(err) {
-          if(err) logError(err);
-        });
-      });
-
     });
   });
 }
@@ -95,7 +84,7 @@ exports.newEvent = function (data, socket) {
   var user       = getUserSession(socket),
       text       = data.text,
       inviteOnly = data.inviteOnly;
-  log('New fizzlevent by', user.name+'\n\t\t',text);
+  log('New fizzlevent by'+nameShorten(user.name),'Msg:'+text);
   var ful;
   async.waterfall([
     function(cb) { users.getFriendUserList(user.uid, cb) },
@@ -109,9 +98,7 @@ exports.newEvent = function (data, socket) {
       emit({
         eventName:  'newEvent',
         data:       {'event' : e},
-        recipients: e.inviteList,
-        iosPush: user.name+':'+e.messageList[0].text,
-        sms: user.name+':'+e.messageList[0].text,
+        recipients: e.inviteList
       });
      
     } else {
@@ -123,7 +110,7 @@ exports.newEvent = function (data, socket) {
             eventName:  'newEvent',
             data:       {'event' : e},
             recipients: e.inviteList,
-            iosPush: user.name+':'+e.messageList[0].text,
+            iosPush: nameShorten(user.name)+':'+e.messageList[0].text,
             sms: false
           });
         });
@@ -143,19 +130,35 @@ exports.joinEvent = function(data, socket) {
   var uid = user.uid;
 
   async.parallel({
-    add     : function(cb){ events.addGuest( eid, uid, cb) },
-    attends : function(cb){ events.getInviteList(uid, cb) },
+    invited : function(cb){ events.getInviteList(eid, cb) },
+    seats   : function(cb){ events.getSeatCapacity(eid, cb) },
+    guests  : function(cb){ events.getGuestList(eid, cb) } 
   },
   function (err, results) {
     if (err) return logError(err);
-    var data =     {'eid':eid,'uid':uid };
-    check.is(data, {'eid':'posInt', 'uid':'posInt' } );
-    emit({
-      eventName : 'addGuest',
-      data      : data,
-      recipients: results.attends
-    });
-    log(user.name, 'joined event', uid);
+    // check.is(results, {'invited':'[user]', 'seats':'posInt', 'guests':'[posInt]'});
+    if (results.guests.length < results.seats) {
+      events.addGuest( eid, uid, function(err) {
+        if (err) return logError(err);
+        log(nameShorten(user.name)+' joined event '+uid);
+        emit({
+          eventName : 'addGuest',
+          data      : { eid: eid, uid: uid },
+          recipients: results.invited
+        });
+      });
+    } else { 
+      log(nameShorten(user.name)+' COULD NOT JOIN event '+uid);
+      exports.newServerMessage({
+        eid: eid,
+        text: nameShorten(user.name)+' tried to join this event and there were not enough seats.'
+      });
+      if (user.type === 'Phone') {
+        output.sendSms(user, eid, '*There were not enough seats*');
+      }
+    }
+
+    
   });
 }
 
@@ -184,8 +187,8 @@ exports.leaveEvent = function(data, socket) {
       data: data,
       recipients: results.recipients
     });
-    if (err) return logError('leave beacon', err);
-    log(user.name, 'left beacon', uid);
+    if (err) return logError('leave event', err);
+    log(nameShorten(user.name)+'left event '+uid);
   });
 }
 
@@ -193,12 +196,13 @@ exports.invite = function(data, socket) {
   check.is(data, {
     eid: 'posInt',
     inviteList: '[user]',
-    invitePnList: '[string]'
+    invitePnList: 'array'
   });
   var eid=data.eid,
       inviteList=data.inviteList,
       invitePnList=data.invitePnList;
   var user = getUserSession(socket);
+  var server = 'http://fzz.bz/';
 
   async.parallel({
     pnUsers : function(cb){ users.getOrAddPhoneList(invitePnList, cb) },
@@ -206,40 +210,66 @@ exports.invite = function(data, socket) {
   },
   function(err, results){
     if (err) return logError(err);
-    events.addInvitees(eid, inviteList.concat(results.pnUsers), function(err) {
+    var e = results.e;
+    var newInvitedUsers = inviteList.concat(results.pnUsers);
+    // newInvitedUsers = newInvitedUsers.filter(function(u){
+    //   return e.inviteList
+    // })
+    var oldInvitedUsers = e.inviteList;
+
+    events.addInvitees(eid, newInvitedUsers, function(err) {
       if (err) return logError(err);
       var message0 = results.e.messageList[0].text;
-      var msgOut = user.name+':'+message0;
-
-      if (inviteList.length) {
-        emit({ //emit to non sms users
-          eventName: 'newEvent',
-          data: {'event' : results.e},
-          recipients: inviteList,
-          iosPush: user.name+':'+message0
-        });
-      };
-      async.each(results.pnUsers,
-        function(pnUser, cb) {
-          emit({ //emit to non sms users
-            eventName: 'newEvent',
-            recipients: [pnUser],
-            sms: msgOut+'\nRespond to join the event.\nfzz.bz/'+pnUser.key,
-            iosPush: user.name+':'+message0
-          });
-          cb();
-        },
-        function(err) {
-          if(err) logError(err);
-        }
-      );
+      var msgOut = nameShorten(user.name)+':'+message0;
+      // var server = 'http://128.237.195.119:9001/c/'; //joel local machine
+      e.inviteList = e.inviteList.concat(newInvitedUsers); //update local copy.
+      emit({ // Emit to people that they are invited.
+        eventName: 'newEvent',
+        data: {'event' : e},
+        recipients: newInvitedUsers,
+        iosPush: nameShorten(user.name)+':'+message0,
+        pushRecipients : newInvitedUsers.map(function(u){ return u.uid })
+      });
+      emit({ // Let other people that new people have been invited. 
+        eventName: 'newInviteList',
+        data: {'eid' : e.eid, inviteList: newInvitedUsers},
+        recipients: oldInvitedUsers
+        // iosPush: nameShorten(user.name)+':'+message0
+      });
+      // sms those smsUers who have been invited. 
+      output.sendGroupSms(results.pnUsers , eid, function(user) {
+        return msgOut+'\nRespond to join the event.\n'+server+user.key
+      });
     });
   });
 }
 
 exports.request = function(data, socket) {
   check.is(data, {eid: 'posInt'});
-  exports.newMessage({eid:data.eid,text:' is interested in this event!!'},socket);
+  var user = getUserSession(socket);
+  var msg = {
+    eid:  data.eid,
+    text: nameShorten(user.name)+' is interested in this event!!'
+  }
+  exports.newServerMessage(msg);
+}
+
+exports.newServerMessage = function(data) {
+  check.is(data, {eid: 'posInt', text:'string'});
+  var eid  = data.eid, text = data.text;
+  async.parallel({
+    newMsg: function(cb){ events.addMessage(eid, -1, text, cb) },
+    e: function(cb) {events.get(eid, cb) }
+  },
+  function(err, results) {
+    var e = results.e;
+    check.is(e, 'event');
+    emit({
+      eventName: 'newMessage',
+      recipients: results.e.inviteList,
+      data: {message: results.newMsg}
+    });
+  });
 }
 
 exports.newMessage = function(data, socket) {
@@ -252,21 +282,32 @@ exports.newMessage = function(data, socket) {
     newMsg        : function(cb) {
       events.addMessage(eid, user.uid, text, cb);
     },
-    recipients : function(cb) {
-      events.getInviteList(eid, cb);
+    e : function(cb) {
+      events.get(eid, cb);
     }
   },
   function(err, results) {
-    log(results);
-    // add will generate the messages mid.
-    check.is(results, {recipients: '[user]'});
+    var e = results.e;
+    check.is(e, 'event');
+    // Emit to everyone connected.
     emit({
       eventName: 'newMessage',
-      recipients: results.recipients,
+      recipients: results.e.inviteList,
       data: {message: results.newMsg},
-      iosPush: user.name+':'+text,
-      sms: user.name+':'+text,
+      iosPush: nameShorten(user.name)+': '+text,
+      pushRecipients: results.e.guestList
     });
+    // Sms everyone else who is going. 
+    // console.log(results.e.inviteList);
+    var smsRecipients = results.e.inviteList.filter(function(u) {
+      return (u.type === 'Phone' && e.guestList.indexOf(u.uid) >=0 && u.uid != user.uid);
+    });
+    var smsMessage = nameShorten( user.name )+':'+text;
+    // log(smsMessage)
+    output.sendGroupSms(smsRecipients, e.eid, function(u){
+      return smsMessage;
+    });
+
   });
 }
 
@@ -287,7 +328,7 @@ exports.addFriendList = function(data, socket) {
   function(err, uidList) {
     users.addFriendList(user, data.uid, function(err) {
       if (err) logError(err)
-      else log('Added friends list for', user.name);
+      else log('Added friends list for '+nameShorten(user.name));
     });
   });
   
@@ -306,13 +347,105 @@ exports.removeFriendList = function(data, socket)  {
 }
 
 exports.setSeatCapacity = function(data, socket) {
-  var user = getUserSession(socket);
   check.is(data, {eid: 'posInt', seats: 'posInt'});
-  events.setSeatCapacity(data.eid, data.seats, function(err) {
-    if(err)logError(err);
-    else log(user.name, 'set seat capacity to:',data.seats);
+  var
+    user  = getUserSession(socket),
+    eid   = data.eid,
+    seats = data.seats;
+  log(nameShorten(user.name)+'set seat capacity','eid: '+eid,'To: '+seats);
+  async.parallel({
+    set: function(cb){  events.setSeatCapacity(eid, seats,cb) },
+    recipients: function(cb){ events.getInviteList(eid, cb) }
+  }, function(err, results) {
+    if(err) return logError(err);
+    var msg = {
+      eid:  eid,
+      text: nameShorten(user.name)+' set seat capacity to '+seats+'.'
+    }
+    var data = {
+      eid: eid,
+      seats: seats
+    }
+    exports.newServerMessage(msg);
+    emit({
+      eventName: 'setSeatCapacity',
+      data: data,
+      recipients: results.recipients
+    });
   });
 }
+
+function getEidAndRecipients (e, callback) {
+  async.parallel({
+    eid: function(cb){
+      events.getNextId(cb)
+    },
+    recipients: function(cb) {
+      if (e.inviteList.length) return cb(null, e.inviteList)
+      users.getFriendsList(user, function(err, friendsList) {
+        cb(err, err ? null : friendsList);
+      });
+    }
+  },
+  callback);
+}
+
+// function shareEvent(e, callback) {
+//   async.parallel([
+//     function(cb) { users.addVisible(e.host, e, cb) },
+//     function(cb) {
+//       async.each(e.inviteList, add, cb);
+//       function add(friend, cb2) {
+//         users.addVisible(friend, e, function(err) {
+//           if (err) cb2(err);
+//           else cb2 (null);
+//         });
+//       }
+//     },
+//     function(cb) {
+//       emit({
+//         host: B.host,
+//         eventName: 'newBeacon',
+//         data: {"beacon" : B},
+//         message: message,
+//         recipients: B.invited
+//       });
+//       cb(null);
+//     }
+//   ],
+//   callback);
+// }
+
+exports.getFBFriendList = function(socket) {
+  var user = getUserSession(socket);
+  var idArr = [];
+  fb.get(user.fbToken, '/me/friends', function(err, friends) {
+    err = err || friends.error;
+    if (err) return logError('from facebook.get:', err);
+    if (!friends.data) return logError('no friends data')
+    friends = friends.data.map(function(fbuser){return fbuser.id});
+    async.map(friends, users.get, function(err, friendsList) {
+      if (err) {
+        logError(err);
+      } else {
+        socket.emit('friendList', friendsList);
+      }
+    })
+  });
+}
+
+exports.disconnect = function(socket) {
+  var self = this, user = getUserSession(socket)
+  log(nameShorten(user.name)+" has disconnected.")
+}
+
+function getUserSession(socket) {
+  var user = socket.handshake.user;
+  // console.log(user);
+  check.is(user, 'user');
+  return user;
+}
+
 
 
 
@@ -339,97 +472,4 @@ exports.setSeatCapacity = function(data, socket) {
 //   });
 // }
 
-function getEidAndRecipients (e, callback) {
-  async.parallel({
-    eid: function(cb){
-      events.getNextId(cb)
-    },
-    recipients: function(cb) {
-      if (e.inviteList.length) return cb(null, e.inviteList)
-      users.getFriendsList(user, function(err, friendsList) {
-        cb(err, err ? null : friendsList);
-      });
-    }
-  },
-  callback);
-}
-
-function shareEvent(e, callback) {
-  async.parallel([
-    function(cb) { users.addVisible(e.host, e, cb) },
-    function(cb) {
-      async.each(e.inviteList, add, cb);
-      function add(friend, cb2) {
-        users.addVisible(friend, e, function(err) {
-          if (err) cb2(err);
-          else cb2 (null);
-        });
-      }
-    },
-    function(cb) {
-      emit({
-        host: B.host,
-        eventName: 'newBeacon',
-        data: {"beacon" : B},
-        message: message,
-        recipients: B.invited
-      });
-      cb(null);
-    }
-  ],
-  callback);
-}
-
-
-// async.parallel({
-//   a: function(cb){ },
-//   b: function(cb) {}
-//   }
-// },
-// function(err, data) {
-// });
-
-exports.getFBFriendList = function(socket) {
-  var user = getUserSession(socket);
-  var idArr = [];
-  fb.get(user.fbToken, '/me/friends', function(err, friends) {
-    err = err || friends.error;
-    if (err) return logError('from facebook.get:', err);
-    if (!friends.data) return logError('no friends data')
-    friends = friends.data.map(function(fbuser){return fbuser.id});
-    async.map(friends, users.get, function(err, friendsList) {
-      if (err) {
-        logError(err);
-      } else {
-        socket.emit('friendList', friendsList);
-      }
-    })
-  });
-}
-
-exports.disconnect = function(socket) {
-  var self = this, user = getUserSession(socket)
-  log(user.name, "has disconnected.")
-}
-
-function getUserSession(socket) {
-  var user = socket.handshake.user;
-  // console.log(user);
-  check.is(user, 'user');
-  return user;
-}
-
-// function newUser(user, socket) {
-//   log('newUser', user.name);
-//   var idArr = [];
-//   var userData;
-//   fb.get(user.token, '/me/friends', function(err, res) {
-//     if (err) return logError('from facebook.get', err);
-//     userData = { friends:res.data, 'group':[] };
-//     users.addUser(user.id, userData, function(err2, doc) {
-//       if (err2) return logError(err2);
-//       existingUser(user, userData, socket);
-//     });
-//   });
-// }
 

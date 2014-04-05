@@ -18,6 +18,7 @@ function beforeTests() {
     function(cb){users.delete(3, cb)},
     function(cb){users.delete(4, cb)},
     function(cb){users.delete(5, cb)},
+    function(cb){users.delete(6, cb)}
   ], function(err){
     if (err) {
       console.log(err);
@@ -46,8 +47,8 @@ function tests1(){
   var danielToken = 'CAAClyP2DrA0BAMPgkgfrXeZCJbEgbIehqZARtEDEmD2CtQqj6pqOW1XKY4p90FJLnxZBSZBTgZCYeNFikr3G8ByRtkCpCEYO8owEqEYJqjptXJvXIULQYHA6TQUgxCFtfuxfQEt0lSaK1pKshcOaizfbH68019WE4j3a3gDZAiZBaUI5oWLPT8ePFQgDe8upsAZD';
   async.series({
     d: function(cb){ users.getOrAddMember(danielFBProfile, danielToken, '+13016420019', 'iosToken', cb) },
-    j: function(cb){ users.getOrAddMember(joelFBProfile, joelToken, '+13475346100', 'iosToken', cb) },
-    a: function(cb){ users.getOrAddMember(andrewFBProfile, andrewToken, '+13107102956', 'iosToken', cb) },
+    // j: function(cb){ users.getOrAddMember(joelFBProfile, joelToken, '+13475346100', 'iosToken', cb) },
+    // a: function(cb){ users.getOrAddMember(andrewFBProfile, andrewToken, '+13107102956', 'iosToken', cb) },
   }, function(err, results) {
     if (err) {
       console.log(err);
@@ -55,7 +56,10 @@ function tests1(){
       d = results.d;
       j = results.j;
       a = results.a;
-      createEvents();
+      setTimeout(function(){
+        createEvents();
+      },1000);
+      
     }
   });
 }
@@ -66,65 +70,54 @@ function createEvents() {
     inviteOnly: true
   }, {handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
 
-  handler.newEvent({
-    text: "Andrew's First Event",
-    inviteOnly: true
-  }, {handshake:{user:a}}); // MAKE THIS USER THE CREATOR, a, j or d
+  // handler.newEvent({
+  //   text: "Andrew's First Event",
+  //   inviteOnly: true
+  // }, {handshake:{user:a}}); // MAKE THIS USER THE CREATOR, a, j or d
 
-  handler.newEvent({
-    text: "Joel's First Event",
-    inviteOnly: true
-  }, {handshake:{user:j}}); // MAKE THIS USER THE CREATOR, a, j or d
+  // handler.newEvent({
+  //   text: "Joel's First Event",
+  //   inviteOnly: true
+  // }, {handshake:{user:j}}); // MAKE THIS USER THE CREATOR, a, j or d
 
   setTimeout(function(){
     inviteOneAnother();
-  },500)
-
-  // setTimeout(function(){
-  //   addMessages(2, 3, 1);
-  // },500)
+  },2000)
 }
 
 function inviteOneAnother() {
+
+  // sendRequests();
+
   handler.invite({
     eid: 1,
     inviteList: [],
-    invitePnList: ['+13016420019', '+13107102956', '+13475346100', '+13013358587'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)
+    invitePnList: [{name:'jsjoel', pn:'+13475346100'},{name:'andrew', pn:'+13107102956'}] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)//
   },{handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
-  
-  setTimeout(function() {
-    handler.invite({
-      eid: 2,
-      inviteList: [],
-      invitePnList: ['+13016420019', '+13107102956', '+13475346100', '+13013358587'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)
-    },{handshake:{user:a}}); // MAKE THIS USER THE CREATOR, a, j or d
 
-    handler.invite({
-      eid: 3,
-      inviteList: [],
-      invitePnList: ['+13016420019', '+13107102956', '+13475346100', '+13013358587'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)
-    },{handshake:{user:j}}); // MAKE THIS USER THE CREATOR, a, j or d
 
-    addMessages(2,3,1);
-  }, 2000);
+  // handler.invite({
+  //   eid: 1,
+  //   inviteList: [j],
+  //   invitePnList: [] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)//
+  // },{handshake:{user:d}});
+  // setTimeout(function() {
+  //   handler.invite({
+  //     eid: 2,
+  //     inviteList: [],
+  //     invitePnList: ['+13016420019', '+13107102956', '+13475346100', '+13013358587'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)
+  //   },{handshake:{user:a}}); // MAKE THIS USER THE CREATOR, a, j or d
+
+  //   handler.invite({
+  //     eid: 3,
+  //     inviteList: [],
+  //     invitePnList: ['+13016420019', '+13107102956', '+13475346100', '+13013358587'] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)
+  //   },{handshake:{user:j}}); // MAKE THIS USER THE CREATOR, a, j or d
+
+  // }, 2000);
 }
 
-function afterTests() {
-  // console.log('Completed tests.');
+function sendRequests() {
+  handler.request({eid: 1}, {handshake:{user:j}});
 }
 
-function addMessages(ae, je, de) {
-  // console.log('Leaving messages.');
-  // joel leaves a comment on andrews event.
-
-  events.addMessage(ae, j.uid, "Joel's first message", function(err){
-    if (err) return console.log(err);
-    events.addMessage(de, a.uid, "Andrew's first message", function(err){
-      if (err) return console.log(err);
-      events.addMessage(je, d.uid, "Daniel's first message", function(err){
-        if (err) return console.log(err);
-        afterTests();
-      });
-    });
-  });
-}
