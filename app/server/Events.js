@@ -188,5 +188,8 @@ exports.setSeatCapacity = function(eid, seats, cb) {
   // store.hset('event:'+eid, 'seats', seats, cb);
 }
 exports.getSeatCapacity = function(eid, cb) {
-  store.get('seats:'+eid, cb);
+  store.get('seats:'+eid, function(err, seatString){
+    if(err) return cb(err);
+    cb (null, +seatString);
+  });
 }
