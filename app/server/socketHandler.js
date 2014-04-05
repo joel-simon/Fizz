@@ -130,19 +130,28 @@ exports.joinEvent = function(data, socket) {
   var uid = user.uid;
 
   async.parallel({
-    add     : function(cb){ events.addGuest( eid, uid, cb) },
     invited : function(cb){ events.getInviteList(eid, cb) },
+    seats   : function(cb){ events.getSeatCapacity(eid, cb) },
+    guests  : function(cb){ events.getGuestList(eid, cb) } 
   },
   function (err, results) {
     if (err) return logError(err);
-    var data =     {'eid':eid,'uid':uid };
-    check.is(data, {'eid':'posInt', 'uid':'posInt' } );
-    emit({
-      eventName : 'addGuest',
-      data      : data,
-      recipients: results.invited
-    });
-    log(nameShorten(user.name)+' joined event '+uid);
+    check.is(results, {'invited':'[user]', 'seats':'posInt', 'guests':'[posInt]'});
+    if (results.guests.length < results.seats) {
+      events.addGuest( eid, uid, function(err) {
+        if (err) return logError(err);
+        log(nameShorten(user.name)+' joined event '+uid);
+        emit({
+          eventName : 'addGuest',
+          data      : data,
+          recipients: results.invited
+        });
+      });
+    } else {
+      log(nameShorten(user.name)+' COULD NOT JOIN event '+uid);
+    }
+
+    
   });
 }
 
@@ -278,7 +287,7 @@ exports.newMessage = function(data, socket) {
       eventName: 'newMessage',
       recipients: results.e.inviteList,
       data: {message: results.newMsg},
-      iosPush: nameShorten(user.name)+':'+text,
+      iosPush: nameShorten(user.name)+': '+text,
       pushRecipients: results.e.guestList
     });
     // Sms everyone else who is going. 

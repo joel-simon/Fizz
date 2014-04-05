@@ -91,37 +91,18 @@ exports.add = function(text, user, FUL, inviteOnly, callback) {
 // returns null on failure
 exports.get = function(eid, callback) {
   var eid = +eid;
-  var self = this;
-
   async.parallel({
-    messages: function(cb) {
-      store.lrange('messages:'+eid, 0, -1, cb);
-    },
-    guestList: function(cb) {
-      store.smembers('guestList:'+eid, function(err, strings){
-        var nums = strings.map(function(s){return(+s)});
-        cb(err, nums);
-      });
-    },
-    inviteList: function(cb) {
-      exports.getInviteList(eid, cb);
-      // store.smembers('inviteList:'+eid, cb);
-    },
-    event: function(cb) {
-      store.get('event:'+eid, cb);
-    },
-    seats: function(cb) {
-      store.get('seats:'+eid, cb);
-    }
+    messages: function(cb) { store.lrange('messages:'+eid, 0, -1, cb) },
+    guestList: function(cb) { exports.getGuestList(eid, cb) },
+    inviteList: function(cb) { exports.getInviteList(eid, cb) },
+    event: function(cb) { store.get('event:'+eid, cb) },
+    seats: function(cb) { store.get('seats:'+eid, cb) }
   },
   function(err, results) {
     if(err) return callback(err);
 
     var event = JSON.parse(results.event);//{'eid' : eid};
     event.seats = +results.seats;
-    // event.inviteOnly = JSON.parse(results.event[1]);
-    // event.creator = results.event[2];
-
     event.messageList = results.messages.map(JSON.parse);
     event.inviteList = results.inviteList;//.map(JSON.parse);
     event.guestList = results.guestList;
@@ -136,7 +117,10 @@ exports.addGuest = function(eid, uid, callback) {
   });
 }
 exports.getGuestList = function(eid, cb) {
-  store.smembers('guestList:'+eid,cb);
+  store.smembers('guestList:'+eid, function(err, strings){
+    var nums = strings.map(function(s){return(+s)});
+    cb(err, nums);
+  });
 }
 exports.removeGuest = function(eid, uid, cb) {
   store.srem('guestList:'+eid, uid, cb);
@@ -202,4 +186,7 @@ exports.addInvitees = function(eid, users, cb) {
 exports.setSeatCapacity = function(eid, seats, cb) {
   store.set('seats:'+eid, seats, cb);
   // store.hset('event:'+eid, 'seats', seats, cb);
+}
+exports.getSeatCapacity = function(eid, cb) {
+  store.get('seats:'+eid, cb);
 }

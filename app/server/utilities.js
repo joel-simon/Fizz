@@ -59,7 +59,7 @@ exports.nameShorten = function(s) {
   } else {
     var first = split[0];
     var last = split[split.length-1][0];
-    return first+' '+last +'.'  
+    return first+' '+last +''  
   }
 }
 
