@@ -44,7 +44,7 @@ exports.get = function(uid, cb) {
 	// store.get('user:'+user.uid, function(err, jsonUser) {
 	// 	return cb(null, JSON.parse(jsonUser));
 	// });
-	getAttributes(''+uid, ['type', 'fbid', 'pn', 'name', 'key', 'iosToken'], function(err, data) {
+	getAttributes(''+uid, ['type', 'fbid', 'pn', 'name', 'key'], function(err, data) {
 		if (err) cb(err);
 		else if (!data) cb(null, null);
 		else {
@@ -59,6 +59,16 @@ exports.get = function(uid, cb) {
 		}
 	});
 }
+exports.getIosToken = function(uid, cb) {
+	getAttributes(''+uid, ['iosToken'], function(err, data) {
+		if (err) cb(err);
+		else if (!data) cb(null, null);
+		else {
+			cb(null,data.iosToken.S);
+		}
+	});
+}
+
 exports.getFromFbid = function(fbid, cb) {
 	store.hget('fbid->uid', fbid, function(err, uid) {
 		if(err) return cb(err);
@@ -85,7 +95,6 @@ exports.getFromKey = function(key, cb) {
 //	GETTING/CREATING/MODIFYING USERS
 ////////////////////////////////////////////////////////////////////////////////
 function set(user, cb) {
-	console.log('inSet', user.iosToken);
 	// return store.set('user:'+user.uid, JSON.stringify(user), cb);
 	var item = {
 		uid  : {'N'  : ''+user.uid},
