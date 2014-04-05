@@ -64,6 +64,7 @@ exports.connect = function(socket) {
   });
 }
 exports.onAuth = function(profile, pn, fbToken, iosToken, cb) {
+  console.log('inOnAuth', iosToken);
   fb.extendToken(fbToken, function(err, longToken) {
     if (err) return cb(err);
     users.getOrAddMember(profile, longToken, pn, iosToken, function(err, user) {
@@ -97,9 +98,7 @@ exports.newEvent = function (data, socket) {
       emit({
         eventName:  'newEvent',
         data:       {'event' : e},
-        recipients: e.inviteList,
-        iosPush: nameShorten(user.name)+':'+e.messageList[0].text,
-        sms: nameShorten(user.name)+':'+e.messageList[0].text,
+        recipients: e.inviteList
       });
      
     } else {
@@ -212,7 +211,8 @@ exports.invite = function(data, socket) {
         eventName: 'newEvent',
         data: {'event' : e},
         recipients: newInvitedUsers,
-        iosPush: nameShorten(user.name)+':'+message0
+        iosPush: nameShorten(user.name)+':'+message0,
+        pushRecipients : newInvitedUsers.map(function(u){ return u.uid })
       });
       emit({ // Let other people that new people have been invited. 
         eventName: 'newInviteList',
@@ -261,6 +261,7 @@ exports.newMessage = function(data, socket) {
       recipients: results.e.inviteList,
       data: {message: results.newMsg},
       iosPush: nameShorten(user.name)+':'+text,
+      pushRecipients: results.e.guestList
     });
     // Sms everyone else who is going. 
     // console.log(results.e.inviteList);

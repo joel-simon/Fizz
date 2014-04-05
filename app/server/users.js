@@ -152,7 +152,7 @@ function makeFriends(user, fbToken, cb) {
         
         emit({
           eventName:  'newFriend',
-          data:       user,
+          data:       {user: user},
           recipients: [friend],
           iosPush: nameShorten(user.name)+' '+'has added you as friend!'
         });

@@ -140,7 +140,8 @@ exports.emit = function(options) {
     eventName  = options.eventName,
     data       = options.data,
     recipients = options.recipients,
-    iosPush    = options.iosPush || null;
+    iosPush    = options.iosPush || null
+    pushRecipients = options.pushRecipients;
 
   // Deal with a circular dependency by delaying invocation.
   if(!io) io = require('../../app.js').io;
@@ -152,7 +153,8 @@ exports.emit = function(options) {
   async.each(recipients, function(user, callback) {
     if (users.isConnected(user.uid)) {
       io.sockets.in(user.uid).emit(eventName, data);
-    } else if(iosPush && user.type === "Member") {
+    } else if ( iosPush && user.type === "Member" && (!pushRecipients ||
+                pushRecipients.indexOf(user.uid) !== -1)) {
       pushIos(iosPush, user, 1);
     }
   });
