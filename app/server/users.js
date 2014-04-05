@@ -325,6 +325,7 @@ exports.getFriendUserList = function(uid, cb) {
 }
 
 exports.getFizzFriendsUidsOf = function(friends, cb) {
+	console.log(friends);
 	var fof = {};
 	async.each(friends, function(user, hollaback) {
 		getFriendIdList(user.uid, function(err, friendUids) {
