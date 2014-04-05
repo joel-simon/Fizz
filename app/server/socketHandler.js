@@ -136,15 +136,14 @@ exports.joinEvent = function(data, socket) {
   },
   function (err, results) {
     if (err) return logError(err);
-    console.log(results);
-    check.is(results, {'invited':'[user]', 'seats':'posInt', 'guests':'[posInt]'});
+    // check.is(results, {'invited':'[user]', 'seats':'posInt', 'guests':'[posInt]'});
     if (results.guests.length < results.seats) {
       events.addGuest( eid, uid, function(err) {
         if (err) return logError(err);
         log(nameShorten(user.name)+' joined event '+uid);
         emit({
           eventName : 'addGuest',
-          data      : data,
+          data      : { eid: eid, uid: uid },
           recipients: results.invited
         });
       });
