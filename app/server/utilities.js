@@ -54,7 +54,7 @@ exports.debug = function() {
 
 exports.nameShorten = function(s) {
   var split = s.split(' ');
-  console.log(s, split);
+  // console.log(s, split);
   if (split.length !== 2) {
     return s
   } else {
