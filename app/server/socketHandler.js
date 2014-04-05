@@ -153,7 +153,9 @@ exports.joinEvent = function(data, socket) {
         eid: eid,
         text: nameShorten(user.name)+' tried to join this event and there were not enough seats.'
       });
-      output.sendSms(user, eid, '*There were not enough seats*');
+      if (user.type === 'Phone') {
+        output.sendSms(user, eid, '*There were not enough seats*');
+      }
     }
 
     

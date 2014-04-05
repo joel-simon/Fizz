@@ -92,7 +92,7 @@ passport.use(new FacebookTokenStrategy(
     pn = utils.formatPn(pn);
     // console.log('pn:', pn)
     console.log('iosToken:', iosToken)
-    
+
     if (!utils.isPn(pn)) {
       console.log('Bad phone number:', pn);
       return done('Bad phone number')
@@ -216,8 +216,8 @@ var domo =  ''+
 '▔▔╰━╯╰━╯▔▔▔▔╰━╯╰━╯▔▔▔▔╰━╯╰━╯▔▔▔▔╰━╯╰━╯▔▔';
 console.log(domo.rainbow);
 console.log('Port:', (''+port).bold);
-console.log('Send sms:', (''+args.sendSms).bold);
-console.log('Push ios:', (''+args.pushIos).bold);
+console.log('sendSms:', (''+args.sendSms).bold);
+console.log('pushIos:', (''+args.pushIos).bold);
 console.log('#########################################'.rainbow);
 
 
