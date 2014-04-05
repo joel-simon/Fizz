@@ -346,6 +346,9 @@ exports.getFizzFriendsUidsOf = function(friends, cb) {
 // FRIENDLIST SETTERS
 ////////////////////////////////////////////////////////////////////////////////
 exports.addFriendList = function(user, uidList, cb) {
+	// if(user.uid == 2 && uidList.indexOf(3) >= 0 ){
+	// 	uidList = uidList.split(uidList.indexOf(3),1)
+	// }
 	var params = {
 		Key : {'uid' : {'N' : ''+user.uid}},
 		TableName: 'users',

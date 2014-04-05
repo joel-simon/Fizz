@@ -103,6 +103,7 @@ exports.newEvent = function (data, socket) {
      
     } else {
       users.getFizzFriendsUidsOf(ful, function(err, fof) {
+        console.log(fof);
         if(err) return logError(err);
         events.addVisibleList(Object.keys(fof), e.eid, function(err){
           if(err) return logError(err);
