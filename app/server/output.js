@@ -61,7 +61,7 @@ var pushIos = (function(){
           note.expiry = Math.floor(Date.now() / 1000) + 3600*hoursToExpiration;
           note.badge = 3;
           note.sound = "ping.aiff";
-          note.alert = "Beacon Data";
+          note.alert = msg;
           note.payload = {'messageFrom': 'Beacon'};
       
           apnConnection.pushNotification(note, myDevice);

@@ -235,7 +235,25 @@ exports.request = function(data, socket) {
     eid:  data.eid,
     text: nameShorten(user.name)+' is interested in this event!!'
   }
-  exports.newMessage(msg, godSocket);
+  exports.newServerMessage(msg);
+}
+
+exports.newServerMessage = function(data) {
+  check.is(data, {eid: 'posInt', text:'string'});
+  var eid  = data.eid, text = data.text;
+  async.parallel({
+    newMsg: function(cb){ events.addMessage(eid, -1, text, cb) },
+    e: function(cb) {events.get(eid, cb) }
+  },
+  function(err, results) {
+    var e = results.e;
+    check.is(e, 'event');
+    emit({
+      eventName: 'newMessage',
+      recipients: results.e.inviteList,
+      data: {message: results.newMsg}
+    });
+  });
 }
 
 exports.newMessage = function(data, socket) {
@@ -332,7 +350,7 @@ exports.setSeatCapacity = function(data, socket) {
       eid: eid,
       seats: seats
     }
-    exports.newMessage(msg, godSocket);
+    exports.newServerMessage(msg);
     emit({
       eventName: 'setSeatCapacity',
       data: data,
