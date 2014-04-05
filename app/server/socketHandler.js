@@ -147,8 +147,13 @@ exports.joinEvent = function(data, socket) {
           recipients: results.invited
         });
       });
-    } else {
+    } else { 
       log(nameShorten(user.name)+' COULD NOT JOIN event '+uid);
+      exports.newServerMessage({
+        eid: eid,
+        text: nameShorten(user.name)+' tried to join this event and there were not enough seats.'
+      });
+      output.sendSms(user, eid, '*There were not enough seats*');
     }
 
     
@@ -345,7 +350,7 @@ exports.setSeatCapacity = function(data, socket) {
     user  = getUserSession(socket),
     eid   = data.eid,
     seats = data.seats;
-  log(nameShorten(user.name)+'set seat capacity of event '+eid,'To: '+seats);
+  log(nameShorten(user.name)+'set seat capacity','eid: '+eid,'To: '+seats);
   async.parallel({
     set: function(cb){  events.setSeatCapacity(eid, seats,cb) },
     recipients: function(cb){ events.getInviteList(eid, cb) }
