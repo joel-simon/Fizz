@@ -72,7 +72,7 @@ ul {
 
 .thread {
 	position: relative;
-	font-size: 1.2em;
+	font-size: 0.8em;
 
 	text-align: center;
 
@@ -102,18 +102,19 @@ ul {
 .invite-list {
 	/*flex: 1 0 0;*/
 	height: 45vh;
-	background-color: rgba(50,50,180,0.7);
+	/*background-color: rgba(50,50,180,0.7);*/
 }
 
 .guest-list {
 	/*flex: 1 0 0;*/
 	height: 45vh;
-	background-color: rgba(50,180,50,0.7);
+	/*background-color: rgba(50,180,50,0.7);*/
 }
 
 .guest-list img, .invite-list img {
 	height: 50px;
 	width: 50px;
+	border-radius: 50%;
 }
 
 /*
