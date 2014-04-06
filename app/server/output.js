@@ -43,7 +43,7 @@ var pushIos = (function(){
   });
 
   return (function(msg, user, hoursToExpiration) {
-      var mainLog = "Sending push to "+user.name
+      var mainLog = "Sending push to "+user.name +'\n\t\tmsg:'+msg;
       
       
       if (!args.pushIos)
@@ -51,6 +51,9 @@ var pushIos = (function(){
 
       if(user.iosToken == 'iosToken')
         return log(mainLog, 'Status: FAILED! Token is fake as shit.');
+      if (!msg)
+        return log(mainLog, 'Status: FAILED! MSG is bad:'+msg);
+
       users.getIosToken(user.uid, function(err, iosToken) {
         log('TOKEN:'+iosToken);
         if(err) return logError(err)
@@ -146,7 +149,7 @@ exports.emit = function(options) {
   // Deal with a circular dependency by delaying invocation.
   if(!io) io = require('../../app.js').io;
   log('Emitting '+eventName,
-      'to:'+JSON.stringify(recipients.map(function(u){return u.name+':'+u.type}))+
+      'to:'+JSON.stringify(recipients.map(function(u){return u.name+':'+u.type})),
       'data:' + JSON.stringify(data)
       );
 
