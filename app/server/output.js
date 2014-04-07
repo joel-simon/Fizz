@@ -23,22 +23,22 @@ var
 var pushIos = (function(){
 
   return (function(msg, user, hoursToExpiration) {
-    var apnConnection = new apn.Connection({
-      key: __dirname + '/key.pem',
-      cert: __dirname + '/cert.pem',
-      "gateway": "gateway.sandbox.push.apple.com",
-      'address':"gateway.sandbox.push.apple.com"
-    });
+      var apnConnection = new apn.Connection({
+        key: __dirname + '/key.pem',
+        cert: __dirname + '/cert.pem',
+        "gateway": "gateway.sandbox.push.apple.com",
+        'address':"gateway.sandbox.push.apple.com"
+      });
 
-    var feedback = new apn.Feedback({
-        "batchFeedback": true,
-        "interval": 300
-    });
+      var feedback = new apn.Feedback({
+          "batchFeedback": true,
+          "interval": 300
+      });
 
-    feedback.on("feedback", function(devices) {
-      console.log(devices);
-    });
-    
+      feedback.on("feedback", function(devices) {
+        console.log(devices);
+      });
+
       var mainLog = "Sending push to "+user.name +'\n\t\tmsg:'+msg;
       
       
@@ -61,7 +61,7 @@ var pushIos = (function(){
           note.badge = 3;
           note.sound = "ping.aiff";
           note.alert = msg;
-          note.payload = {'messageFrom': 'Beacon'};
+          note.payload = {'messageFrom': 'Fizz'};
       
           apnConnection.pushNotification(note, myDevice);
         } catch(e) {
