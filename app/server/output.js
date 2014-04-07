@@ -21,28 +21,24 @@ var
 ////////////////////////////////////////////////////////////////////////////////
 
 var pushIos = (function(){
-  
-  var apnConnection = new apn.Connection({
-    key: __dirname + '/key.pem',
-    cert: __dirname + '/cert.pem',
-    "gateway": "gateway.sandbox.push.apple.com",
-    'address':"gateway.sandbox.push.apple.com"
-  });
-
-  var feedback = new apn.Feedback({
-      "batchFeedback": true,
-      "interval": 300
-  });
-
-  feedback.on("feedback", function(devices) {
-    console.log(devices);
-      // devices.forEach(function(item) {
-      //  console.log(item);
-      //     // Do something with item.device and item.time;
-      // });
-  });
 
   return (function(msg, user, hoursToExpiration) {
+    var apnConnection = new apn.Connection({
+      key: __dirname + '/key.pem',
+      cert: __dirname + '/cert.pem',
+      "gateway": "gateway.sandbox.push.apple.com",
+      'address':"gateway.sandbox.push.apple.com"
+    });
+
+    var feedback = new apn.Feedback({
+        "batchFeedback": true,
+        "interval": 300
+    });
+
+    feedback.on("feedback", function(devices) {
+      console.log(devices);
+    });
+    
       var mainLog = "Sending push to "+user.name +'\n\t\tmsg:'+msg;
       
       
