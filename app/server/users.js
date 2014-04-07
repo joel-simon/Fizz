@@ -12,6 +12,7 @@ var async   = require('async');
 var fb      = require('./fb.js');
 var db      = require('./dynamo.js');
 var emit = require('./output.js').emit;
+var check = require('easy-types');
 var io;
 /*
   REDIS VARIABLES
@@ -46,7 +47,7 @@ exports.get = function(uid, cb) {
 	// });
 	getAttributes(''+uid, ['type', 'fbid', 'pn', 'name', 'key'], function(err, data) {
 		if (err) cb(err);
-		else if (!data) cb(null, null);
+		else if (!data) cb('No user found for uid:'+uid, null);
 		else {
 			cb(null, {
 				uid  : +uid,
