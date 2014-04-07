@@ -41,6 +41,7 @@ exports.connect = function(socket) {
 
   },
   function(err, results) {
+    logError(results);
     if (err) return logError(err);
 
     var str1 = nameShorten(user.name)+' has connected.';

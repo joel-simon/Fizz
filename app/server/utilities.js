@@ -3,14 +3,14 @@ var fs = require('fs');
 var debug = true;
 var sanitize = require('validator').sanitize;
 var stackTrace = require('stack-trace');
-
+var output = require('./output');
 colors.setTheme({
   info: 'green',
   debug: 'blue',
   error: 'red',
   data: 'grey'
 });
-
+var mail = require("nodemailer").mail;
 exports = exports;
 
 exports.log = function() {
@@ -119,12 +119,13 @@ exports.logError = function(e) {
   
 	s += ('\n\t'+stackTrace.error+'\n');
   console.log(s);
-  
- //  fs.appendFile("./err.txt", s, function(err2) {
- //    if(err2) {
- //      console.log(err2);
- //    }
-	// }); 
+  mail({
+    from: "Fuck you <foo@blurdybloop.com>", // sender address
+    to: "joelsimon6@gmail.com", // list of receivers
+    subject: "You fucked up.", // Subject line
+    text: s, // plaintext body
+    html: "<b>Hello world ✔</b>" // html body
+  });
 }
 function getStackTrace() {
   var obj = {};
