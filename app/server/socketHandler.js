@@ -300,7 +300,7 @@ exports.newMessage = function(data, socket) {
       eventName: 'newMessage',
       recipients: results.e.inviteList,
       data: {message: results.newMsg}
-    })
+    });
     pushIos({
       msg: nameShorten(user.name)+': '+text,
       eid: eid,

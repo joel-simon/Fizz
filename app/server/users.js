@@ -328,14 +328,12 @@ exports.getFriendUserList = function(uid, cb) {
 }
 
 exports.getFizzFriendsUidsOf = function(friends, cb) {
-	console.log(friends);
 	var fof = {};
 	async.each(friends, function(user, hollaback) {
 		getFriendIdList(user.uid, function(err, friendUids) {
 			if (err) hollaback(err);
 			else if (!friendUids.length) cb(null, []);
 			else {
-				console.log('284',friendUids);
 				friendUids.forEach(function(f){ fof[f]=true });
 				hollaback(null);
 			}

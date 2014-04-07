@@ -38,7 +38,7 @@ var pushIos = function(msg, user, eid, hoursToExpiration) {
   users.getIosToken(user.uid, function(err, iosToken) {
     if(err) return logError(err);
     var mainLog = "Sending push to "+user.name +'\n\t\tmsg:'+msg+
-                  '\n\t\ttoken:'+iosToken;
+                  '\n\t\ttoken: '+iosToken + '\teid: '+eid;
     
     
     if (!args.pushIos)
@@ -153,7 +153,7 @@ exports.emit = function(options) {
   if(!io) io = require('../../app.js').io;
   log('Emitting '+eventName,
       'to:'+JSON.stringify(recipients.map(function(u){return u.name+':'+u.type})),
-      'data:' + JSON.stringify(data)
+      // 'data:' + JSON.stringify(data)
       );
 
   async.each(recipients, function(user, callback) {
