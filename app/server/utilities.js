@@ -3,16 +3,15 @@ var fs = require('fs');
 var debug = true;
 var sanitize = require('validator').sanitize;
 var stackTrace = require('stack-trace');
-var output = require('./output');
 colors.setTheme({
   info: 'green',
   debug: 'blue',
   error: 'red',
   data: 'grey'
 });
-var mail = require("nodemailer").mail;
-exports = exports;
 
+module.exports = exports;
+// var mail = require("nodemailer").mail;
 exports.log = function() {
 	var main = '\tInfo: ';
 	var e;
@@ -64,7 +63,6 @@ exports.nameShorten = function(s) {
   }
 }
 
-console.log(exports.nameShorten('andrew'));
 function convertToServerTimeZone(){
   //EST
   offset = -4.0
