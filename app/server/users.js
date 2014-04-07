@@ -155,7 +155,10 @@ function makeFriends(user, fbToken, cb) {
           eventName:  'newFriend',
           data:       {user: user},
           recipients: [friend],
-          iosPush: nameShorten(user.name)+' '+'has added you as friend!'
+        })
+      	output.pushIos({
+      		userList: [friend],
+          msg: nameShorten(user.name)+' '+'has added you as friend!'
         });
         cb2(null);
 
@@ -179,7 +182,6 @@ exports.getOrAddPhoneList =  function(pnList, cb) {
 	Must already exist as a guest or phone user. 
 */
 exports.getOrAddMember = function(profile, fbToken, pn, iosToken, cb) {
-	console.log('inGetOrAdd', iosToken);
 	var fbid = +profile.id;
 
 	exports.getFromFbid(fbid, function(err, user) {

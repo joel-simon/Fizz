@@ -34,9 +34,7 @@ var apnConnection = new apn.Connection({
   feedback.on("feedback", function(devices) {
     console.log(devices);
   });
-exports.pushIos = function(msg, user, hoursToExpiration) {
-  
-
+var pushIos = function(msg, user, eid, hoursToExpiration) {
   users.getIosToken(user.uid, function(err, iosToken) {
     if(err) return logError(err);
     var mainLog = "Sending push to "+user.name +'\n\t\tmsg:'+msg+
@@ -59,7 +57,7 @@ exports.pushIos = function(msg, user, hoursToExpiration) {
       note.badge = 3;
       note.sound = "ping.aiff";
       note.alert = msg;
-      note.payload = {'messageFrom': 'Fizz'};
+      note.payload = {'messageFrom': 'Fizz', eid:eid};
   
       apnConnection.pushNotification(note, myDevice);
     } catch(e) {
@@ -69,6 +67,16 @@ exports.pushIos = function(msg, user, hoursToExpiration) {
   });
 }
 
+exports.pushIos = function(options) {
+  var msg = options.msg;
+  var userList = options.userList;
+  var eid = options.eid || null;
+  async.each(userList, function(user, callback) {
+    if (user.type === "Member") {
+      pushIos(msg, user, eid,  1);
+    }
+  });
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // TWILIO
@@ -152,9 +160,9 @@ exports.emit = function(options) {
     if (users.isConnected(user.uid)) {
       io.sockets.in(user.uid).emit(eventName, data);
     } 
-    if ( iosPush && user.type === "Member" && (!pushRecipients ||
-                pushRecipients.indexOf(user.uid) !== -1)) {
-      exports.pushIos(iosPush, user, 1);
-    }
+    // if ( iosPush && user.type === "Member" && (!pushRecipients ||
+    //             pushRecipients.indexOf(user.uid) !== -1)) {
+    //   exports.pushIos(iosPush, user, 1);
+    // }
   });
 }
