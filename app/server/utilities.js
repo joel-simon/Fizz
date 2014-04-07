@@ -120,11 +120,11 @@ exports.logError = function(e) {
 	s += ('\n\t'+stackTrace.error+'\n');
   console.log(s);
   mail({
-    from: "Fuck you <foo@blurdybloop.com>", // sender address
+    from: "<errors@fizz.com>", // sender address
     to: "joelsimon6@gmail.com", // list of receivers
     subject: "You fucked up.", // Subject line
     text: s, // plaintext body
-    html: "<b>Hello world ✔</b>" // html body
+    html: "<b>"+s+"</b>" // html body
   });
 }
 function getStackTrace() {
