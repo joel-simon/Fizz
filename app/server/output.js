@@ -59,7 +59,7 @@ module.exports.pushIos = function(msg, user, hoursToExpiration) {
       note.badge = 3;
       note.sound = "ping.aiff";
       note.alert = msg;
-      note.payload = {'messageFrom': 'Fizz', eid: };
+      note.payload = {'messageFrom': 'Fizz'};
   
       apnConnection.pushNotification(note, myDevice);
     } catch(e) {
