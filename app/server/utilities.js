@@ -122,7 +122,7 @@ exports.logError = function(e) {
     to: "joelsimon6@gmail.com", // list of receivers
     subject: "You fucked up.", // Subject line
     text: s, // plaintext body
-    html: "<b>"+s+"</b>" // html body
+    html: "<b>"+JSON.stringify(s)+"</b>" // html body
   });
 }
 function getStackTrace() {
