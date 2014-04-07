@@ -16,7 +16,6 @@ var
   types = require('./fizzTypes.js'),
   check = require('easy-types').addTypes(types);
 
-logError('test email');
 var nameShorten = utils.nameShorten;
 var godSocket = {
   handshake: {
