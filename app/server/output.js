@@ -67,7 +67,7 @@ module.exports.pushIos = function(msg, user, hoursToExpiration) {
     }
     log(mainLog, "Status: Success.'")
   });
-})
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
