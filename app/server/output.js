@@ -15,7 +15,7 @@ var
   apn      = require('apn'),
   args     = require('./args.js');
   // store    = require('./redisStore.js').store;
-
+module.exports = exports;
 ////////////////////////////////////////////////////////////////////////////////
 //        PUSH IOS
 ////////////////////////////////////////////////////////////////////////////////
@@ -34,7 +34,7 @@ var apnConnection = new apn.Connection({
   feedback.on("feedback", function(devices) {
     console.log(devices);
   });
-module.exports.pushIos = function(msg, user, hoursToExpiration) {
+exports.pushIos = function(msg, user, hoursToExpiration) {
   
   var mainLog = "Sending push to "+user.name +'\n\t\tmsg:'+msg+
                 '\n\t\ttoken:'+user.iosToken;
@@ -154,7 +154,7 @@ exports.emit = function(options) {
     } 
     if ( iosPush && user.type === "Member" && (!pushRecipients ||
                 pushRecipients.indexOf(user.uid) !== -1)) {
-      pushIos(iosPush, user, 1);
+      exports.pushIos(iosPush, user, 1);
     }
   });
 }
