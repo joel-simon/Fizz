@@ -112,7 +112,7 @@ exports.newEvent = function (data, socket) {
             eventName:  'newEvent',
             data:       {'event' : e},
             recipients: e.inviteList,
-            iosPush: nameShorten(user.name)+':'+e.messageList[0].text,
+            iosPush: nameShorten(user.name)+': '+e.messageList[0].text,
             sms: false
           });
         });
@@ -229,7 +229,7 @@ exports.invite = function(data, socket) {
         eventName: 'newEvent',
         data: {'event' : e},
         recipients: newInvitedUsers,
-        iosPush: nameShorten(user.name)+':'+message0,
+        iosPush: nameShorten(user.name)+': '+message0,
         pushRecipients : newInvitedUsers.map(function(u){ return u.uid })
       });
       emit({ // Let other people that new people have been invited. 

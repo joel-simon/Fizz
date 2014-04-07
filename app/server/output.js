@@ -19,58 +19,56 @@ var
 ////////////////////////////////////////////////////////////////////////////////
 //        PUSH IOS
 ////////////////////////////////////////////////////////////////////////////////
+var apnConnection = new apn.Connection({
+    key: __dirname + '/key.pem',
+    cert: __dirname + '/cert.pem',
+    "gateway": "gateway.sandbox.push.apple.com",
+    'address':"gateway.sandbox.push.apple.com"
+  });
 
-var pushIos = (function(){
+  var feedback = new apn.Feedback({
+      "batchFeedback": true,
+      "interval": 300
+  });
 
-  return (function(msg, user, hoursToExpiration) {
-      var apnConnection = new apn.Connection({
-        key: __dirname + '/key.pem',
-        cert: __dirname + '/cert.pem',
-        "gateway": "gateway.sandbox.push.apple.com",
-        'address':"gateway.sandbox.push.apple.com"
-      });
+  feedback.on("feedback", function(devices) {
+    console.log(devices);
+  });
+module.exports.pushIos = function(msg, user, hoursToExpiration) {
+  
+  var mainLog = "Sending push to "+user.name +'\n\t\tmsg:'+msg+
+                '\n\t\ttoken:'+user.iosToken;
+  
+  
+  if (!args.pushIos)
+    return log(mainLog, "Status: FAILED! Enable PUSH WITH 'node app pushIos'")
 
-      var feedback = new apn.Feedback({
-          "batchFeedback": true,
-          "interval": 300
-      });
+  if(user.iosToken == 'iosToken')
+    return log(mainLog, 'Status: FAILED! Token is fake as shit.');
+  if (!msg)
+    return log(mainLog, 'Status: FAILED! MSG is bad:'+msg);
 
-      feedback.on("feedback", function(devices) {
-        console.log(devices);
-      });
+  users.getIosToken(user.uid, function(err, iosToken) {
+    // log('TOKEN:'+iosToken);
+    if(err) return logError(err)
+    if(!iosToken) return logError('No token found for'+JSON.stringify(user));
+    try{
+      var myDevice = new apn.Device(iosToken);
+      var note = new apn.Notification();
+      note.expiry = Math.floor(Date.now() / 1000) + 3600*hoursToExpiration;
+      note.badge = 3;
+      note.sound = "ping.aiff";
+      note.alert = msg;
+      note.payload = {'messageFrom': 'Fizz', eid: };
+  
+      apnConnection.pushNotification(note, myDevice);
+    } catch(e) {
+      return log(mainLog, "Status: FAILED.",'ERR:'+e,'Token:'+iosToken);
+    }
+    log(mainLog, "Status: Success.'")
+  });
+})
 
-      var mainLog = "Sending push to "+user.name +'\n\t\tmsg:'+msg;
-      
-      
-      if (!args.pushIos)
-        return log(mainLog, "Status: FAILED! Enable PUSH WITH 'node app pushIos'")
-
-      if(user.iosToken == 'iosToken')
-        return log(mainLog, 'Status: FAILED! Token is fake as shit.');
-      if (!msg)
-        return log(mainLog, 'Status: FAILED! MSG is bad:'+msg);
-
-      users.getIosToken(user.uid, function(err, iosToken) {
-        log('TOKEN:'+iosToken);
-        if(err) return logError(err)
-        if(!iosToken) return logError('No token found for'+JSON.stringify(user));
-        try{
-          var myDevice = new apn.Device(iosToken);
-          var note = new apn.Notification();
-          note.expiry = Math.floor(Date.now() / 1000) + 3600*hoursToExpiration;
-          note.badge = 3;
-          note.sound = "ping.aiff";
-          note.alert = msg;
-          note.payload = {'messageFrom': 'Fizz'};
-      
-          apnConnection.pushNotification(note, myDevice);
-        } catch(e) {
-          return log(mainLog, "Status: FAILED.",'ERR:'+e,'Token:'+iosToken);
-        }
-        log(mainLog, "Status: Success.'")
-      });
-    })
-})();
 
 ////////////////////////////////////////////////////////////////////////////////
 // TWILIO
@@ -153,7 +151,8 @@ exports.emit = function(options) {
   async.each(recipients, function(user, callback) {
     if (users.isConnected(user.uid)) {
       io.sockets.in(user.uid).emit(eventName, data);
-    } else if ( iosPush && user.type === "Member" && (!pushRecipients ||
+    } 
+    if ( iosPush && user.type === "Member" && (!pushRecipients ||
                 pushRecipients.indexOf(user.uid) !== -1)) {
       pushIos(iosPush, user, 1);
     }
