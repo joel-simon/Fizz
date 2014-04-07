@@ -36,22 +36,22 @@ var apnConnection = new apn.Connection({
   });
 exports.pushIos = function(msg, user, hoursToExpiration) {
   
-  var mainLog = "Sending push to "+user.name +'\n\t\tmsg:'+msg+
-                '\n\t\ttoken:'+user.iosToken;
-  
-  
-  if (!args.pushIos)
-    return log(mainLog, "Status: FAILED! Enable PUSH WITH 'node app pushIos'")
-
-  if(user.iosToken == 'iosToken')
-    return log(mainLog, 'Status: FAILED! Token is fake as shit.');
-  if (!msg)
-    return log(mainLog, 'Status: FAILED! MSG is bad:'+msg);
 
   users.getIosToken(user.uid, function(err, iosToken) {
-    // log('TOKEN:'+iosToken);
-    if(err) return logError(err)
+    if(err) return logError(err);
+    var mainLog = "Sending push to "+user.name +'\n\t\tmsg:'+msg+
+                  '\n\t\ttoken:'+iosToken;
+    
+    
+    if (!args.pushIos)
+      return log(mainLog, "Status: FAILED! Enable PUSH WITH 'node app pushIos'")
+
+    if(iosToken == 'iosToken')
+      return log(mainLog, 'Status: FAILED! Token is fake as shit:'+iosToken);
+    if (!msg)
+      return log(mainLog, 'Status: FAILED! MSG is bad:'+msg);
     if(!iosToken) return logError('No token found for'+JSON.stringify(user));
+    
     try{
       var myDevice = new apn.Device(iosToken);
       var note = new apn.Notification();
