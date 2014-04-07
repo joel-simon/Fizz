@@ -1,4 +1,5 @@
 'use strict';
+
 var
   io,
   events   = require('./Events.js'),
@@ -15,6 +16,7 @@ var
   types = require('./fizzTypes.js'),
   check = require('easy-types').addTypes(types);
 
+logError('test email');
 var nameShorten = utils.nameShorten;
 var godSocket = {
   handshake: {
@@ -41,7 +43,7 @@ exports.connect = function(socket) {
 
   },
   function(err, results) {
-    logError(results);
+    
     if (err) return logError(err);
 
     var str1 = nameShorten(user.name)+' has connected.';

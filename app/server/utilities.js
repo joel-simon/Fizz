@@ -11,7 +11,7 @@ colors.setTheme({
 });
 
 module.exports = exports;
-// var mail = require("nodemailer").mail;
+var mail = require("nodemailer").mail;
 exports.log = function() {
 	var main = '\tInfo: ';
 	var e;
