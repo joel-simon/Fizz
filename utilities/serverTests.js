@@ -9,7 +9,9 @@ store.flushdb();
 var a, d, j;
 function onErr(err){if (err) throw err;};
 
-beforeTests();
+
+console.log('TEST MODE HAS BEEN DISABLED. PLEASE TEST MANUALLY AND DONT CHANGE THE DATABASE!');
+// beforeTests();
 
 function beforeTests() {
   async.parallel([
@@ -21,9 +23,9 @@ function beforeTests() {
     function(cb){users.delete(6, cb)}
   ], function(err){
     if (err) {
-      console.log(err);
+      // console.log(err);
     } else {
-      tests1();  
+      // tests1();  
     }
   });
 }
