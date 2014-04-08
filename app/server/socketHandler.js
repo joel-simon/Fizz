@@ -27,6 +27,19 @@ var godSocket = {
     }
   }
 }
+
+// output.pushIos({
+//   msg: 'Let me know if this works.',
+//   userList: [{
+//     name: 'joel simon',
+//     uid: 2,
+//     type:'Member'
+//     // iosToken: 'B6BCB78E61FB7C9F47587DEB3FCBD68385AB819C1EB7B0D17FC123E45E06D4F8'
+//     // iosToken: 'BC45506F3DD570B9C51363068DFBEF0FE178B7F7318D3CA7485F6040F980B74A'
+//   }],
+//   eid:1
+// });
+
 /**
  * Handle login socket
  * @param {Object} Data - contains .id and .admin
@@ -42,16 +55,12 @@ exports.connect = function(socket) {
     friendList:function(cb){ users.getFriendUserList(user.uid, cb) }
 
   },
-  function(err, results) {
-    
+  function(err, results) {    
     if (err) return logError(err);
-
-    var str1 = nameShorten(user.name)+' has connected.';
-    var str2 = results.eventList.length + ' visible events:'
-    str2 += JSON.stringify(results.eventList.map(function(e){return e.messageList[0].text}));
-    log(str1, 'uid:'+user.uid, str2);
-
-
+    // var str1 = nameShorten(user.name)+' has connected.';
+    // var str2 = results.eventList.length + ' visible events:'
+    // str2 += JSON.stringify(results.eventList.map(function(e){return e.messageList[0].text}));
+    // log(str1, 'uid:'+user.uid, str2);
     check.is(results.eventList, '[event]');
     emit({
       eventName: 'onLogin',
@@ -244,7 +253,7 @@ exports.invite = function(data, socket) {
       });
       // sms those smsUers who have been invited. 
       output.sendGroupSms(results.pnUsers , eid, function(user) {
-        return msgOut+'\nRespond to join the event.\n'+server+user.key
+        return msgOut+'\nRespond to join the event.\n';//+server+user.key
       });
     });
   });

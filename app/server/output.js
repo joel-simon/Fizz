@@ -20,34 +20,35 @@ module.exports = exports;
 //        PUSH IOS
 ////////////////////////////////////////////////////////////////////////////////
 var apnConnection = new apn.Connection({
-    key: __dirname + '/key.pem',
-    cert: __dirname + '/cert.pem',
-    "gateway": "gateway.sandbox.push.apple.com",
-    'address':"gateway.sandbox.push.apple.com"
-  });
+  key: __dirname + '/key.pem',
+  cert: __dirname + '/cert.pem',
+  "gateway": "gateway.sandbox.push.apple.com",
+  'address':"gateway.sandbox.push.apple.com"
+});
 
-  var feedback = new apn.Feedback({
-      "batchFeedback": true,
-      "interval": 300
-  });
+var feedback = new apn.Feedback({
+  "batchFeedback": true,
+  "interval": 300
+});
 
-  feedback.on("feedback", function(devices) {
-    console.log(devices);
-  });
+feedback.on("feedback", function(devices) {
+  console.log(devices);
+});
+
 var pushIos = function(msg, user, eid, hoursToExpiration) {
   users.getIosToken(user.uid, function(err, iosToken) {
     if(err) return logError(err);
-    var mainLog = "Sending push to "+user.name +'\n\t\tmsg:'+msg+
-                  '\n\t\ttoken: '+iosToken + '\teid: '+eid;
-    
+    var mainLog = "Sending push to "+user.name
+    var toLog = 'msg:'+msg+
+                '\n\t\ttoken: '+iosToken + '\n\t\teid: '+eid;
     
     if (!args.pushIos)
-      return log(mainLog, "Status: FAILED! Enable PUSH WITH 'node app pushIos'")
+      return log(mainLog, toLog, "Status: FAILED! Enable PUSH WITH 'node app pushIos'")
 
     if(iosToken == 'iosToken')
-      return log(mainLog, 'Status: FAILED! Token is fake as shit:'+iosToken);
+      return log(mainLog, toLog, 'Status: FAILED! Token is fake as shit:'+iosToken);
     if (!msg)
-      return log(mainLog, 'Status: FAILED! MSG is bad:'+msg);
+      return log(mainLog, toLog, 'Status: FAILED! MSG is bad:'+msg);
     if(!iosToken) return logError('No token found for'+JSON.stringify(user));
     
     try{
@@ -61,9 +62,9 @@ var pushIos = function(msg, user, eid, hoursToExpiration) {
   
       apnConnection.pushNotification(note, myDevice);
     } catch(e) {
-      return log(mainLog, "Status: FAILED.",'ERR:'+e,'Token:'+iosToken);
+      return log(mainLog, toLog, "Status: FAILED.",'ERR:'+e,'Token:'+iosToken);
     }
-    log(mainLog, "Status: Success.'")
+    log(mainLog, toLog, "Status: Success.'")
   });
 }
 

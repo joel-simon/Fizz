@@ -13,6 +13,9 @@ colors.setTheme({
 module.exports = exports;
 var mail = require("nodemailer").mail;
 exports.log = function() {
+   var date = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
+  date = date.substring(0,date.search("GMT")-1);
+
 	var main = '\tInfo: ';
 	var e;
   var more = ''
@@ -21,12 +24,13 @@ exports.log = function() {
 		var s = ((e instanceof Object) ? JSON.stringify(e, null, '') : e)+' ';
     if (i == 0) {
       main += s;
+      main += ' @'+date;
     } else {
       more += '\n\t\t'+s;
     }
 	}
 	console.log(main, more.data);
-  console.log('\t'+'———————————————————————————————————————————————————————————————\n'.data);
+  console.log('\t'+'———————————————————————————————————————————————————————————————'.data);
 }
 
 exports.logImportant = function() {
