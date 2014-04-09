@@ -1,5 +1,6 @@
 'use strict';
-
+process.env['DEBUG'] = 'apn';
+process.env['DEBUG=apn'] = true;
 var
   io,
   events   = require('./Events.js'),
@@ -27,18 +28,12 @@ var godSocket = {
     }
   }
 }
-
-// output.pushIos({
-//   msg: 'Let me know if this works.',
-//   userList: [{
-//     name: 'joel simon',
-//     uid: 2,
-//     type:'Member'
-//     // iosToken: 'B6BCB78E61FB7C9F47587DEB3FCBD68385AB819C1EB7B0D17FC123E45E06D4F8'
-//     // iosToken: 'BC45506F3DD570B9C51363068DFBEF0FE178B7F7318D3CA7485F6040F980B74A'
-//   }],
-//   eid:1
-// });
+//,{name: 'andrew sweet',uid: 1},{name: 'antonio ono', uid: 4}],
+output.pushIos({
+  msg: 'Let me know if this works.',
+  userList: [{name: 'joel simon',uid: 1}],
+  eid:1
+});
 
 /**
  * Handle login socket

@@ -19,15 +19,38 @@ module.exports = exports;
 ////////////////////////////////////////////////////////////////////////////////
 //        PUSH IOS
 ////////////////////////////////////////////////////////////////////////////////
+// -cert aps_development.pem -key fizzCommonName.pem 
 var apnConnection = new apn.Connection({
-  key: __dirname + '/key.pem',
-  cert: __dirname + '/cert.pem',
-  "gateway": "gateway.sandbox.push.apple.com",
-  'address':"gateway.sandbox.push.apple.com"
+  key: __dirname + '/fizzCommonName.pem',
+  cert: __dirname + '/aps_development.pem',
+  "gateway": "gateway.push.apple.com",
+  'address':"gateway.push.apple.com"
 });
 
+apnConnection.on('connected', function() {
+    console.log("APN Connected");
+});
+
+apnConnection.on('transmitted', function(notification, device) {
+    console.log("Notification transmitted to:" + device.token.toString('hex'));
+});
+
+apnConnection.on('transmissionError', function(errCode, notification, device) {
+    console.error("Notification caused error: " + errCode + " for device ", device, notification);
+});
+
+apnConnection.on('timeout', function () {
+    console.log("Connection Timeout");
+});
+
+apnConnection.on('disconnected', function() {
+    console.log("Disconnected from APNS");
+});
+
+apnConnection.on('socketError', console.error);
+
 var feedback = new apn.Feedback({
-  "batchFeedback": true,
+  "batchFeedback": false,
   "interval": 300
 });
 
@@ -55,7 +78,7 @@ var pushIos = function(msg, user, eid, hoursToExpiration) {
       var myDevice = new apn.Device(iosToken);
       var note = new apn.Notification();
       note.expiry = Math.floor(Date.now() / 1000) + 3600*hoursToExpiration;
-      note.badge = 3;
+      note.badge = 1;
       note.sound = "ping.aiff";
       note.alert = msg;
       note.payload = {'messageFrom': 'Fizz', eid:eid};
@@ -73,9 +96,9 @@ exports.pushIos = function(options) {
   var userList = options.userList;
   var eid = options.eid || null;
   async.each(userList, function(user, callback) {
-    if (user.type === "Member") {
+    // if (user.type === "Member") {
       pushIos(msg, user, eid,  1);
-    }
+    // }
   });
 }
 
