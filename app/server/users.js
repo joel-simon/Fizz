@@ -11,8 +11,9 @@ var exports = module.exports;
 var async   = require('async');
 var fb      = require('./fb.js');
 var db      = require('./dynamo.js');
-var emit = require('./output.js').emit;
-var check = require('easy-types');
+var output  = require('./output.js');
+var emit    = output.emit;
+var check   = require('easy-types');
 var io;
 /*
   REDIS VARIABLES
