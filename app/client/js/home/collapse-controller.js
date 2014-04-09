@@ -45,9 +45,9 @@ function openThreadList() {
 	$('.guest-list').removeClass('hidden');
 
 	$('.thread').css({
-		'height' : '90vh',
-		'padding-top' : '5vh',
-		'padding-bottom' : '5vh',
+		'height' : '100vh',
+		// 'padding-top' : '5vh',
+		// 'padding-bottom' : '5vh',
 		'border' : 'none',
 		'background-color' : 'white',
 	});

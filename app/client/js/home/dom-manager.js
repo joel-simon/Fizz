@@ -100,11 +100,11 @@ DomManager.prototype.drawMessage = function(message) {
 ////////////////////////////////////////////////////////////////////////////////
 
 DomManager.prototype.writeThreadHtml = function(event, index) {
-	var html = this.writeInviteListHtml(event);
-	html += '<h2 class="thread-title">'+event.messageList[0].text+'</h2>';
-	html += this.writeGuestListHtml(event);
-	html += this.writeMessageChainHtml(event);
-	return html;
+	var inviteList = this.writeInviteListHtml(event);
+	var title = '<h2 class="thread-title">'+event.messageList[0].text+'</h2>';
+	var guestList = this.writeGuestListHtml(event);
+	var messageList = this.writeMessageChainHtml(event);
+	return guestList + title + inviteList + messageList;
 }
 
 DomManager.prototype.writeUserImgHtml = function(name, pic) {
@@ -160,8 +160,12 @@ DomManager.prototype.writeMessageChainHtml = function(event) {
 	var message, sender;
 	for (var i = 0; i < event.messageList.length; i++) {
 		message = event.messageList[i];
-		sender = event.getUser(message.uid);
-		html += this.writeMessageHtml(sender, message);
+		if (message.uid <= 0) {
+			console.log('Server Message:', message);
+		} else {
+			sender = event.getUser(message.uid);
+			html += this.writeMessageHtml(sender, message);
+		}
 	}
 	var button = ''; 
 	if (!event.isGuest(MIM.me.uid)) {
