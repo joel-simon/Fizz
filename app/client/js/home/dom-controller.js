@@ -16,10 +16,8 @@ function setMessageFormListener(eid) {
 		socket.emit('newMessage', messageData);
 		this.message.value = '';
 	});
+}
 
-	$('#mf-'+eid+' .join').on('click', function() {
-		console.log('SENDING [request]:', eid);
-		socket.emit('request', eid);
-		$(this).addClass('hidden');
-	});
+function setJoinListener() {
+	
 }

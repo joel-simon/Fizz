@@ -45,24 +45,24 @@ function openThreadList() {
 	$('.guest-list').removeClass('hidden');
 
 	$('.thread').css({
-		'height' : '90vh',
-		'padding-top' : '5vh',
-		'padding-bottom' : '5vh',
+		'height' : '100vh',
+		// 'padding-top' : '5vh',
+		// 'padding-bottom' : '5vh',
 		'border' : 'none',
 		'background-color' : 'white',
 	});
 
-	$( $('.thread-title')[0] ).css({
-		'margin-top': '-5vh',
-	});
+	// $( $('.thread-title')[0] ).css({
+	// 	'margin-top': '-5vh',
+	// });
 
-	$( $('.thread-title')[1] ).css({
-		'margin-top': '-55vh',
-	});
+	// $( $('.thread-title')[1] ).css({
+	// 	'margin-top': '-55vh',
+	// });
 
-	$('.thread-title').css({
-		'position': 'absolute',
-	});
+	// $('.thread-title').css({
+	// 	'position': 'absolute',
+	// });
 
 	resetStyle();
 	collapse = false;

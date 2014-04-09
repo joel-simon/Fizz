@@ -37,13 +37,14 @@ ul {
 
 #collapse {
 	position: fixed;
-	top: 10px;
-	left: 10px;
+	margin: 0;
+	top: 1vh;
+	right: 1vw;
 
 	z-index: 200;
 
-	width: 50px;
-	height: 50px;
+	width: 10vh;
+	height: 10vh;
 
 	cursor: pointer;
 }
@@ -72,15 +73,17 @@ ul {
 
 .thread {
 	position: relative;
-	font-size: 1.2em;
+	font-size: 0.8em;
+
+	overflow: hidden;
 
 	text-align: center;
 
-	height: 90vh;
+	height: 100vh;
 	width: 100%;
 
-	padding-top: 5vh;
-	padding-bottom: 5vh;
+	/*padding-top: 5vh;
+	padding-bottom: 5vh;*/
 
 	display: flex;
 	flex-direction: column;
@@ -89,11 +92,12 @@ ul {
 }
 
 .thread-title {
-	position: absolute;
-	font-weight: bold;
-	padding: 1em;
+	/*position: absolute;*/
+	display: block;
+	height: 6vh;
+	padding: 2vh;
 
-	margin-top: -5vh;
+	font-weight: bold;
 
 	cursor: pointer;
 	z-index: 100;
@@ -101,19 +105,24 @@ ul {
 
 .invite-list {
 	/*flex: 1 0 0;*/
+	display: block;
 	height: 45vh;
-	background-color: rgba(50,50,180,0.7);
+	/*background-color: rgba(50,50,180,0.7);*/
 }
 
 .guest-list {
 	/*flex: 1 0 0;*/
+	display: block;
 	height: 45vh;
-	background-color: rgba(50,180,50,0.7);
+	/*background-color: rgba(50,180,50,0.7);*/
 }
 
 .guest-list img, .invite-list img {
-	height: 50px;
-	width: 50px;
+	height: 8vw;
+	width: 8vw;
+	border-radius: 50%;
+	float: left;
+	padding: 5px;
 }
 
 /*
@@ -133,19 +142,20 @@ ul {
 }
 
 .message-list {
-	flex: 1 0 0;
+	height: 40vh;
+	overflow-y: auto;
 }
 
 .message {
 	padding: 0.5em;
-	min-height: 50px;
+	min-height: 8vw;
 }
 
 .message-pic {
 	float: left;
 	border-radius: 50%;
-	height: 50px;
-	width: 50px;
+	height: 8vw;
+	width: 8vw;
 }
 
 .message-time {
@@ -156,7 +166,7 @@ ul {
 
 .message-name, .message-text {
 	font-size: 0.8em;
-	padding-left: 60px;
+	padding-left: 10vw;
 }
 
 .message-name {
@@ -165,9 +175,79 @@ ul {
 }
 
 .message-form {
-	margin-left: 60px;
+	height: 8vh;
+	/*margin-left: 60px;*/
+	padding: 1vw;
+}
 
-	padding: 0.5em;
+.message-form textarea {
+	float: left;
+	height: 6vh;
+	padding: 1vw;
+	min-width: 60vw;
+}
+
+.message-form input {
+	float: left;
+	/*margin-top: 12px;*/
+	display: inline-block;
+	border: 1px solid #999;
+
+	height: 6vh;
+	padding: 1vw;
+
+	-webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+	-moz-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+	box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+}
+
+@media all and (min-width: 600px) {
+
+	#collapse {
+		height: 50px;
+		width: 50px;
+	}
+
+	.thread {
+		font-size: 1.2em;
+	}
+
+	.guest-list img, .invite-list img {
+		height: 50px;
+		width: 50px;
+		border-radius: 50%;
+		float: left;
+		padding: 5px;
+	}
+
+	.message-pic {
+		float: left;
+		border-radius: 50%;
+		height: 50px;
+		width: 50px;
+	}
+
+	.message-name, .message-text {
+		font-size: 0.8em;
+		padding-left: 60px;
+	}
+
+	.message {
+		padding: 0.5em;
+		min-height: 50px;
+	}
+
+	.message-form textarea {
+		float: left;
+		height: 40px;
+		padding: 5px;
+	}
+
+	.message-form input {
+		height: 50px;
+		width: 50px;
+		padding: 5px;
+	}
 }
 
 /*

@@ -47,6 +47,10 @@ Event.prototype.removeGuest = function(uid) {
 	}
 }
 
+Event.prototype.emptySeats = function() {
+	return this.seats - this.guestList.length;
+}
+
 Event.prototype.setSeats = function(seats) {
 	this.seats = seats;
 }

@@ -69,6 +69,7 @@ DomManager.prototype.drawThread = function(event) {
 	var next = this.threadList.length;
 	var newThread = '<li id="thread-'+next+'" class="thread"></li>';
 	$('#thread-list').append(newThread);
+	SM.threadCount++;
 	setCollapseListener(next);
 
 	var index = this.getThreadIndex(event);
@@ -93,21 +94,28 @@ DomManager.prototype.drawMessage = function(message) {
 	var event = ELM.getEvent(message.eid);
 	var sender = event.getUser(message.uid);
 	var html = this.writeMessageHtml(sender, message);
-	$('#mf-'+event.eid).siblings('.message-list').append(html);
+	var messageListSelector = $('#mf-'+event.eid).siblings('.message-list');
+	messageListSelector.append(html);
+	var scrollHeight = messageListSelector[0].scrollHeight;
+	messageListSelector.scrollTop(scrollHeight);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 DomManager.prototype.writeThreadHtml = function(event, index) {
-	var html = this.writeInviteListHtml(event);
-	html += '<h2 class="thread-title">'+event.messageList[0].text+'</h2>';
-	html += this.writeGuestListHtml(event);
-	html += this.writeMessageChainHtml(event);
-	return html;
+	var inviteList = this.writeInviteListHtml(event);
+	var title = '<h2 class="thread-title">'+event.messageList[0].text+'</h2>';
+	var guestList = this.writeGuestListHtml(event);
+	var messageList = this.writeMessageChainHtml(event);
+	return guestList + title + inviteList + messageList;
 }
 
-DomManager.prototype.writeUserImgHtml = function(name, pic) {
-	return '<li><img title="'+name+'" src="'+pic+'"></li>';
+DomManager.prototype.writeUserImgHtml = function(name, pic, user) {
+	if (MIM.me.uid === user.uid) {
+		return '<li><img class="me" title="'+name+'" src="'+pic+'"></li>';
+	} else {
+		return '<li><img title="'+name+'" src="'+pic+'"></li>';
+	}
 }
 
 DomManager.prototype.writeInviteListHtml = function(event) {
@@ -118,7 +126,7 @@ DomManager.prototype.writeInviteListHtml = function(event) {
 		user = event.getUser(id);
 		if (!event.isGuest(user.uid)) {
 			user.getInfo(function(name, pic) {
-				html += self.writeUserImgHtml(name, pic);
+				html += self.writeUserImgHtml(name, pic, user);
 			});
 		}
 	}
@@ -134,9 +142,13 @@ DomManager.prototype.writeGuestListHtml = function(event) {
 		user = event.getUser(id);
 		if (event.isGuest(user.uid)) {
 			user.getInfo(function(name, pic) {
-				html += self.writeUserImgHtml(name, pic);
+				html += self.writeUserImgHtml(name, pic, user);
 			});
 		}
+	}
+	var emptySeats = event.emptySeats();
+	for (var i = 0; i < emptySeats; i++) {
+		html += '<li><img src="/img/emptySeat.png"></li>';
 	}
 	html += '</ul>';
 	return html;
@@ -159,17 +171,18 @@ DomManager.prototype.writeMessageChainHtml = function(event) {
 	var message, sender;
 	for (var i = 0; i < event.messageList.length; i++) {
 		message = event.messageList[i];
-		sender = event.getUser(message.uid);
-		html += this.writeMessageHtml(sender, message);
-	}
-	var button = ''; 
-	if (!event.isGuest(MIM.me.uid)) {
-		button = '<input class="join" type="button" value="Join">';
+		if (message.uid <= 0) {
+			console.log('Server Message:', message);
+		} else {
+			sender = event.getUser(message.uid);
+			html += this.writeMessageHtml(sender, message);
+		}
 	}
 	html += '</ul>'+
 		'<form id="mf-'+event.eid+'" class="message-form hidden">'+
-			button+
-			'<input type="text" name="message" autocomplete="off" placeholder="Enter a message.">'+
+			'<img class="message-pic" title="'+MIM.me.name+'" src="'+MIM.me.pic+'">'+
+			'<textarea name="message" placeholder="Enter a message."></textarea>'+
+			// '<input type="text" name="message" autocomplete="off" placeholder="Enter a message.">'+
 			'<input type="submit" value="Send">'+
 		'</form></div>';
 	return html;
