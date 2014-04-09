@@ -248,7 +248,7 @@ exports.invite = function(data, socket) {
       });
       // sms those smsUers who have been invited. 
       output.sendGroupSms(results.pnUsers , eid, function(user) {
-        return msgOut+'\nRespond to join the event.\n';//+server+user.key
+        return msgOut+'\nRespond to join the event.\n'+server+user.key;
       });
     });
   });
