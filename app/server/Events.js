@@ -147,22 +147,20 @@ exports.addMessage = function(eid, uid, text, callback) {
 }
 
 exports.getInviteList = function(eid, cb) {
+
   store.smembers('inviteList:'+eid, function(err, uidList) {
-    if (err) cb(err);
-    else {
-      async.map(uidList, function(uid, cb2){
-        if(err) return cb2(err);
-        users.get(uid, cb2);
-      },
-      function(err, inviteList) {
-        if(err) return cb(err);
-        cb(null, inviteList);
-      });
-    }
+    if (err) return cb(err);
+    
+    async.map(uidList, users.get, function(err, inviteList) {
+      if(err) return cb(err);
+      cb(null, inviteList);
+    });
+    
   });
 }
 
 exports.canSee = function(uid, callback) {
+
   store.smembers('viewableBy:'+uid, function(err1, eidList) {
     if (err1) return callback(err);
     if (eidList.length === 0) callback(null, []);
@@ -176,7 +174,8 @@ exports.canSee = function(uid, callback) {
 }
 
 exports.addInvitees = function(eid, users, cb) {
-  store.sadd('inviteList:'+eid, users.map(function(u){return u.uid}),function(err){
+  var uidList = users.map(function(u){return u.uid});
+  store.sadd('inviteList:'+eid, uidList, function(err) {
     async.each(users, function(user, cb2) {
       exports.addVisible(user.uid, eid, cb2);
     }, cb);

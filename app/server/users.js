@@ -12,6 +12,7 @@ var async   = require('async');
 var fb      = require('./fb.js');
 var db      = require('./dynamo.js');
 var emit = require('./output.js').emit;
+var check = require('easy-types');
 var io;
 /*
   REDIS VARIABLES
@@ -46,7 +47,7 @@ exports.get = function(uid, cb) {
 	// });
 	getAttributes(''+uid, ['type', 'fbid', 'pn', 'name', 'key'], function(err, data) {
 		if (err) cb(err);
-		else if (!data) cb(null, null);
+		else if (!data) cb('No user found for uid:'+uid, null);
 		else {
 			cb(null, {
 				uid  : +uid,
@@ -154,7 +155,10 @@ function makeFriends(user, fbToken, cb) {
           eventName:  'newFriend',
           data:       {user: user},
           recipients: [friend],
-          iosPush: nameShorten(user.name)+' '+'has added you as friend!'
+        })
+      	output.pushIos({
+      		userList: [friend],
+          msg: nameShorten(user.name)+' '+'has added you as friend!'
         });
         cb2(null);
 
@@ -178,7 +182,6 @@ exports.getOrAddPhoneList =  function(pnList, cb) {
 	Must already exist as a guest or phone user. 
 */
 exports.getOrAddMember = function(profile, fbToken, pn, iosToken, cb) {
-	console.log('inGetOrAdd', iosToken);
 	var fbid = +profile.id;
 
 	exports.getFromFbid(fbid, function(err, user) {
@@ -325,14 +328,12 @@ exports.getFriendUserList = function(uid, cb) {
 }
 
 exports.getFizzFriendsUidsOf = function(friends, cb) {
-	console.log(friends);
 	var fof = {};
 	async.each(friends, function(user, hollaback) {
 		getFriendIdList(user.uid, function(err, friendUids) {
 			if (err) hollaback(err);
 			else if (!friendUids.length) cb(null, []);
 			else {
-				console.log('284',friendUids);
 				friendUids.forEach(function(f){ fof[f]=true });
 				hollaback(null);
 			}

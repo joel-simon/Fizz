@@ -3,7 +3,6 @@ var fs = require('fs');
 var debug = true;
 var sanitize = require('validator').sanitize;
 var stackTrace = require('stack-trace');
-
 colors.setTheme({
   info: 'green',
   debug: 'blue',
@@ -11,9 +10,12 @@ colors.setTheme({
   data: 'grey'
 });
 
-exports = exports;
-
+module.exports = exports;
+var mail = require("nodemailer").mail;
 exports.log = function() {
+   var date = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
+  date = date.substring(0,date.search("GMT")-1);
+
 	var main = '\tInfo: ';
 	var e;
   var more = ''
@@ -22,12 +24,13 @@ exports.log = function() {
 		var s = ((e instanceof Object) ? JSON.stringify(e, null, '') : e)+' ';
     if (i == 0) {
       main += s;
+      main += ' @'+date;
     } else {
       more += '\n\t\t'+s;
     }
 	}
 	console.log(main, more.data);
-  console.log('\t'+'———————————————————————————————————————————————————————————————\n'.data);
+  console.log('\t'+'———————————————————————————————————————————————————————————————'.data);
 }
 
 exports.logImportant = function() {
@@ -64,7 +67,6 @@ exports.nameShorten = function(s) {
   }
 }
 
-console.log(exports.nameShorten('andrew'));
 function convertToServerTimeZone(){
   //EST
   offset = -4.0
@@ -119,12 +121,13 @@ exports.logError = function(e) {
   
 	s += ('\n\t'+stackTrace.error+'\n');
   console.log(s);
-  
- //  fs.appendFile("./err.txt", s, function(err2) {
- //    if(err2) {
- //      console.log(err2);
- //    }
-	// }); 
+  mail({
+    from: "<errors@fizz.com>", // sender address
+    to: "joelsimon6@gmail.com", // list of receivers
+    subject: "You fucked up.", // Subject line
+    text: s, // plaintext body
+    html: "<b>"+JSON.stringify(s)+"</b>" // html body
+  });
 }
 function getStackTrace() {
   var obj = {};

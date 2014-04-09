@@ -1,4 +1,6 @@
 'use strict';
+process.env['DEBUG'] = 'apn';
+process.env['DEBUG=apn'] = true;
 var
   io,
   events   = require('./Events.js'),
@@ -11,6 +13,7 @@ var
   async     = require('async'),
   output    = require('./output.js'),
   emit      = output.emit,
+  pushIos   = output.pushIos,
   exports = module.exports,
   types = require('./fizzTypes.js'),
   check = require('easy-types').addTypes(types);
@@ -25,6 +28,13 @@ var godSocket = {
     }
   }
 }
+//,{name: 'andrew sweet',uid: 1},{name: 'antonio ono', uid: 4}],
+output.pushIos({
+  msg: 'Let me know if this works.',
+  userList: [{name: 'joel simon',uid: 1}],
+  eid:1
+});
+
 /**
  * Handle login socket
  * @param {Object} Data - contains .id and .admin
@@ -40,15 +50,12 @@ exports.connect = function(socket) {
     friendList:function(cb){ users.getFriendUserList(user.uid, cb) }
 
   },
-  function(err, results) {
+  function(err, results) {    
     if (err) return logError(err);
-
-    var str1 = nameShorten(user.name)+' has connected.';
-    var str2 = results.eventList.length + ' visible events:'
-    str2 += JSON.stringify(results.eventList.map(function(e){return e.messageList[0].text}));
-    log(str1, 'uid:'+user.uid, str2);
-
-
+    // var str1 = nameShorten(user.name)+' has connected.';
+    // var str2 = results.eventList.length + ' visible events:'
+    // str2 += JSON.stringify(results.eventList.map(function(e){return e.messageList[0].text}));
+    // log(str1, 'uid:'+user.uid, str2);
     check.is(results.eventList, '[event]');
     emit({
       eventName: 'onLogin',
@@ -64,7 +71,6 @@ exports.connect = function(socket) {
   });
 }
 exports.onAuth = function(profile, pn, fbToken, iosToken, cb) {
-  console.log('inOnAuth', iosToken);
   fb.extendToken(fbToken, function(err, longToken) {
     if (err) return cb(err);
     users.getOrAddMember(profile, longToken, pn, iosToken, function(err, user) {
@@ -110,8 +116,11 @@ exports.newEvent = function (data, socket) {
             eventName:  'newEvent',
             data:       {'event' : e},
             recipients: e.inviteList,
-            iosPush: nameShorten(user.name)+':'+e.messageList[0].text,
-            sms: false
+          });
+          pushIos({
+            msg: nameShorten(user.name)+': '+e.messageList[0].text,
+            userList: e.inviteList,
+            eid: e.eid,
           });
         });
       });
@@ -221,24 +230,25 @@ exports.invite = function(data, socket) {
       if (err) return logError(err);
       var message0 = results.e.messageList[0].text;
       var msgOut = nameShorten(user.name)+':'+message0;
-      // var server = 'http://128.237.195.119:9001/c/'; //joel local machine
       e.inviteList = e.inviteList.concat(newInvitedUsers); //update local copy.
       emit({ // Emit to people that they are invited.
         eventName: 'newEvent',
         data: {'event' : e},
-        recipients: newInvitedUsers,
-        iosPush: nameShorten(user.name)+':'+message0,
-        pushRecipients : newInvitedUsers.map(function(u){ return u.uid })
+        recipients: newInvitedUsers
+      })
+      pushIos({
+        msg: nameShorten(user.name)+': '+message0,
+        userList : newInvitedUsers,
+        eid: eid
       });
       emit({ // Let other people that new people have been invited. 
         eventName: 'newInviteList',
         data: {'eid' : e.eid, inviteList: newInvitedUsers},
         recipients: oldInvitedUsers
-        // iosPush: nameShorten(user.name)+':'+message0
       });
       // sms those smsUers who have been invited. 
       output.sendGroupSms(results.pnUsers , eid, function(user) {
-        return msgOut+'\nRespond to join the event.\n'+server+user.key
+        return msgOut+'\nRespond to join the event.\n';//+server+user.key
       });
     });
   });
@@ -293,9 +303,12 @@ exports.newMessage = function(data, socket) {
     emit({
       eventName: 'newMessage',
       recipients: results.e.inviteList,
-      data: {message: results.newMsg},
-      iosPush: nameShorten(user.name)+': '+text,
-      pushRecipients: results.e.guestList
+      data: {message: results.newMsg}
+    });
+    pushIos({
+      msg: nameShorten(user.name)+': '+text,
+      eid: eid,
+      userList: results.e.guestList
     });
     // Sms everyone else who is going. 
     // console.log(results.e.inviteList);
