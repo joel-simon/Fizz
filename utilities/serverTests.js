@@ -5,31 +5,39 @@ var store = require('../app/server/redisStore.js').store;
 var db = require('../app/server/dynamo.js');
 var async    = require('async');
 var handler = require('../app/server/socketHandler.js');
-store.flushdb();
+var args = require('../app/server/args.js');
+
+if (args.dev) {
+  console.log('NOT FLUSHING LOCAL REDIS BECASUE ON DEV MODE.');
+} else {
+  console.log('FLUSHING LOCAL REDIS.');
+  store.flushdb();
+}
+
+
 var a, d, j;
 function onErr(err){if (err) throw err;};
 
 
-console.log('TEST MODE HAS BEEN DISABLED. PLEASE TEST MANUALLY AND DONT CHANGE THE DATABASE!');
+// console.log('TEST MODE HAS BEEN DISABLED. PLEASE TEST MANUALLY AND DONT CHANGE THE DATABASE!');
 // beforeTests();
-
 function beforeTests() {
-  async.parallel([
-    function(cb){users.delete(1, cb)},
-    function(cb){users.delete(2, cb)},
-    function(cb){users.delete(3, cb)},
-    function(cb){users.delete(4, cb)},
-    function(cb){users.delete(5, cb)},
-    function(cb){users.delete(6, cb)}
-  ], function(err){
-    if (err) {
-      // console.log(err);
-    } else {
-      // tests1();  
-    }
-  });
+  // async.parallel([
+  //   function(cb){users.delete(1, cb)},
+  //   function(cb){users.delete(2, cb)},
+  //   function(cb){users.delete(3, cb)},
+  //   function(cb){users.delete(4, cb)},
+  //   function(cb){users.delete(5, cb)},
+  //   function(cb){users.delete(6, cb)}
+  // ], function(err){
+  //   if (err) {
+  //     // console.log(err);
+  //   } else {
+  //     // tests1();  
+  //   }
+  // });
 }
-
+tests1();
 function tests1(){
   var andrewFBProfile = {
     id: '100000157939878',
@@ -44,8 +52,8 @@ function tests1(){
     displayName: 'Daniel Belchamber'
   }
 
-  var joelToken = 'CAAClyP2DrA0BAAAKbjBbA1ZAn4LRberdT90lJ81uZC3CotkOMnaezvDrc4HDQhI7ZBo1eSCwIurGruLpN4x70p9FHFRRT2405Jgoa8bbp1gbUa1WL8KPAUtRFx0PjdCEIVoCmzChtyKgEE5pDhMLpAzn1kGD1Ec5NwLgI6OjPgabiGCMKf2';
-  var andrewToken= 'CAAGa4EJzl7kBAES8QjmOnURcDjMoZCO9B8o3sHGEwcEIcXri0rnQJR1XLcHhfbZAz33fxYjFzPeJrNochdeoxw45MjGIxghC0XgUHcQ6m0ZAXtxnXkLnSTy3M9Ams07ZAYkGbSa1pH2DZAzG0rp5Gk32USiSBMF2rQBNusV8lME0OKmXFbvH0rBDagzJuqUJrqP773AwO7sKCzGIAGTPn';
+  var joelToken   = 'CAAClyP2DrA0BAAAKbjBbA1ZAn4LRberdT90lJ81uZC3CotkOMnaezvDrc4HDQhI7ZBo1eSCwIurGruLpN4x70p9FHFRRT2405Jgoa8bbp1gbUa1WL8KPAUtRFx0PjdCEIVoCmzChtyKgEE5pDhMLpAzn1kGD1Ec5NwLgI6OjPgabiGCMKf2';
+  var andrewToken = 'CAAGa4EJzl7kBAES8QjmOnURcDjMoZCO9B8o3sHGEwcEIcXri0rnQJR1XLcHhfbZAz33fxYjFzPeJrNochdeoxw45MjGIxghC0XgUHcQ6m0ZAXtxnXkLnSTy3M9Ams07ZAYkGbSa1pH2DZAzG0rp5Gk32USiSBMF2rQBNusV8lME0OKmXFbvH0rBDagzJuqUJrqP773AwO7sKCzGIAGTPn';
   var danielToken = 'CAAClyP2DrA0BAMPgkgfrXeZCJbEgbIehqZARtEDEmD2CtQqj6pqOW1XKY4p90FJLnxZBSZBTgZCYeNFikr3G8ByRtkCpCEYO8owEqEYJqjptXJvXIULQYHA6TQUgxCFtfuxfQEt0lSaK1pKshcOaizfbH68019WE4j3a3gDZAiZBaUI5oWLPT8ePFQgDe8upsAZD';
   async.series({
     d: function(cb){ users.getOrAddMember(danielFBProfile, danielToken, '+13016420019', 'E4A2C2ABDFC2F88ABD748D78AF97E125D4522B30604A57D37C5F56FBDD088461', cb) },
@@ -56,17 +64,17 @@ function tests1(){
       console.log(err);
     } else {
       d = results.d;
-      j = results.j;
-      a = results.a;
+      // j = results.j;
+      // a = results.a;
       setTimeout(function(){
         createEvents();
-      },1000);
-      
+      },1000); 
     }
   });
 }
 
 function createEvents() {  
+  console.log('CREATING TEST EVENTS...');
   handler.newEvent({
     text: "Daniel's First Event",
     inviteOnly: true
@@ -81,30 +89,30 @@ function createEvents() {
     text: "Daniel's Third Event",
     inviteOnly: true
   }, {handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
+  // console.log('FINISHED CREATING TEST EVENTS');
+  // setTimeout(function(){
+  //   handler.invite({
+  //     eid: 1,
+  //     inviteList: [],
+  //     invitePnList: [{name:'jsjoel', pn:'+13475346100'},{name:'andrew', pn:'+13107102956'}] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)//
+  //   },{handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
 
-  setTimeout(function(){
-    handler.invite({
-      eid: 1,
-      inviteList: [],
-      invitePnList: [{name:'jsjoel', pn:'+13475346100'},{name:'andrew', pn:'+13107102956'}] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)//
-    },{handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
+  //   setTimeout(function(){
+  //     handler.invite({
+  //       eid: 2,
+  //       inviteList: [],
+  //       invitePnList: [{name:'jsjoel', pn:'+13475346100'},{name:'andrew', pn:'+13107102956'}] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)//
+  //     },{handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
 
-    setTimeout(function(){
-      handler.invite({
-        eid: 2,
-        inviteList: [],
-        invitePnList: [{name:'jsjoel', pn:'+13475346100'},{name:'andrew', pn:'+13107102956'}] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)//
-      },{handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
-
-      setTimeout(function(){
-      handler.invite({
-          eid: 3,
-          inviteList: [],
-          invitePnList: [{name:'jsjoel', pn:'+13475346100'},{name:'andrew', pn:'+13107102956'}] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)//
-        },{handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
-      }, 2000);
-    }, 2000);
-  },2000);
+  //     setTimeout(function(){
+  //     handler.invite({
+  //         eid: 3,
+  //         inviteList: [],
+  //         invitePnList: [{name:'jsjoel', pn:'+13475346100'},{name:'andrew', pn:'+13107102956'}] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)//
+  //       },{handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
+  //     }, 2000);
+  //   }, 2000);
+  // },2000);
 }
 
 function inviteOneAnother() {
@@ -130,7 +138,7 @@ function inviteOneAnother() {
   // },{handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
 }
 
-function sendRequests() {
-  handler.request({eid: 1}, {handshake:{user:j}});
-}
+// function sendRequests() {
+//   handler.request({eid: 1}, {handshake:{user:j}});
+// }
 
