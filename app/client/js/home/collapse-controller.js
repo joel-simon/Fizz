@@ -52,17 +52,17 @@ function openThreadList() {
 		'background-color' : 'white',
 	});
 
-	$( $('.thread-title')[0] ).css({
-		'margin-top': '-5vh',
-	});
+	// $( $('.thread-title')[0] ).css({
+	// 	'margin-top': '-5vh',
+	// });
 
-	$( $('.thread-title')[1] ).css({
-		'margin-top': '-55vh',
-	});
+	// $( $('.thread-title')[1] ).css({
+	// 	'margin-top': '-55vh',
+	// });
 
-	$('.thread-title').css({
-		'position': 'absolute',
-	});
+	// $('.thread-title').css({
+	// 	'position': 'absolute',
+	// });
 
 	resetStyle();
 	collapse = false;

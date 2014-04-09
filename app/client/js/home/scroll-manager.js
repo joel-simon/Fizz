@@ -11,6 +11,8 @@ function ScrollManager() {
 	this.currentThread = 0;
 	this.threadCount = $('.thread').length;
 	this.countDown = null;
+	this.animating = false;
+	this.moving = false;
 	resetStyle();
 }
 
@@ -30,12 +32,29 @@ ScrollManager.prototype.getNearestThread = function() {
 	return thread;
 }
 
-ScrollManager.prototype.scrollToThread = function(thread) {
+ScrollManager.prototype.scrollToThread = function(thread, speed) {
 	var height = $(window).height();
 	var scroll = thread*height;
-	$('#thread-list').animate({'scrollTop': scroll}, 100, function() {
-		this.currentThread = thread;
+	var n = speed || 100;
+	SM.animating = true;
+	$('#thread-list').animate({'scrollTop': scroll}, speed, function() {
+		SM.currentThread = thread;
+		SM.animating = false;
 	});
+}
+
+ScrollManager.prototype.scrollUp = function(fromThread) {
+	thread = fromThread;
+	if (thread > 0) {
+		this.scrollToThread(thread - 1, 300);
+	}
+}
+
+ScrollManager.prototype.scrollDown = function(fromThread) {
+	thread = fromThread;
+	if (thread < this.threadCount - 1) {
+		this.scrollToThread(thread + 1, 300);
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -53,11 +72,11 @@ function centerTitles() {
 
 function resetStyle() {
 	var thread = this.currentThread;
-	$('#thread-'+(thread-1)+' .thread-title').css('margin-top', '45vh');
-	$('#thread-'+thread).css('background-color', 'rgb(255,255,255)');
-	$('#thread-'+thread+' .thread-title').css('margin-top', '-5vh');
-	$('#thread-'+(thread+1)+' .thread-title').css('margin-top', '-55vh');
-	centerTitles();
+	// $('#thread-'+(thread-1)+' .thread-title').css('margin-top', '45vh');
+	// $('#thread-'+thread).css('background-color', 'rgb(255,255,255)');
+	// $('#thread-'+thread+' .thread-title').css('margin-top', '-5vh');
+	// $('#thread-'+(thread+1)+' .thread-title').css('margin-top', '-55vh');
+	// centerTitles();
 }
 
 function getMargin(thread) {
@@ -156,16 +175,41 @@ function parallax() {
 
 $(window).on('resize', function() {
 	SM.scrollToThread(SM.currentThread);
+	resetStyle();
 });
 
-$('#thread-list').on('scroll', function() {
-	if (!collapse) {
-		parallax();
-		clearTimeout(SM.countDown);
-		SM.countDown = setTimeout(function() {
-			var thread = SM.getNearestThread();
-			SM.currentThread = thread;
-			SM.scrollToThread(thread);
-		}, 100);
+var fromThread, scrollStart, scrollEnd;
+
+$('#thread-list').on('scroll', function(e) {
+	// e.preventDefault();
+	if (!collapse && !SM.animating) {
+		if( /iPhone|iPad|iPod/i.test(navigator.userAgent) ) {
+			e.preventDefault();
+			e.stopPropagation();
+
+			if (SM.moving) {
+				scrollEnd = $('#thread-list').scrollTop();
+
+				var delta = scrollEnd - scrollStart;
+				if (delta > 0) {
+					SM.scrollDown(fromThread);
+				} else if (delta < 0) {
+					SM.scrollUp(fromThread);
+				}
+				SM.moving = false;
+			} else {
+				fromThread = SM.currentThread;
+				scrollStart = $('#thread-list').scrollTop();
+				SM.moving = true;
+			}
+		} else {
+			// parallax();
+			clearTimeout(SM.countDown);
+			SM.countDown = setTimeout(function() {
+				var thread = SM.getNearestThread();
+				SM.currentThread = thread;
+				SM.scrollToThread(thread, 100);
+			}, 300);
+		}
 	}
 });

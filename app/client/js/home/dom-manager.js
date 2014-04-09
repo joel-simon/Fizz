@@ -69,6 +69,7 @@ DomManager.prototype.drawThread = function(event) {
 	var next = this.threadList.length;
 	var newThread = '<li id="thread-'+next+'" class="thread"></li>';
 	$('#thread-list').append(newThread);
+	SM.threadCount++;
 	setCollapseListener(next);
 
 	var index = this.getThreadIndex(event);

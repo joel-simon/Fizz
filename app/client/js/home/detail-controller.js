@@ -64,7 +64,7 @@ function transitionFromDetail(thread) {
 		'height':'90vh',
 	});
 	$('#thread-'+thread).prepend( $('#thread-'+thread+' .invite-list') );
-	$('#thread-'+thread+' .thread-title').css({'margin-top':'-5vh'});
+	// $('#thread-'+thread+' .thread-title').css({'margin-top':'-5vh'});
 	$('#thread-'+thread+' .message-chain')
 		.css({'height':'0'})
 		.addClass('hidden');
