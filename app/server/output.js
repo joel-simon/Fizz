@@ -59,6 +59,7 @@ feedback.on("feedback", function(devices) {
 });
 
 var pushIos = function(msg, user, eid, hoursToExpiration) {
+  if (user.type !== 'Member') return;
   users.getIosToken(user.uid, function(err, iosToken) {
     if(err) return logError(err);
     var mainLog = "Sending push to "+user.name

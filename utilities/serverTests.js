@@ -96,7 +96,7 @@ function createEvents() {
       inviteList: [],
       invitePnList: [{name:'rando', pn:'+123'}] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)//
     },{handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
-
+    
   //   setTimeout(function(){
   //     handler.invite({
   //       eid: 2,
