@@ -29,11 +29,11 @@ var godSocket = {
   }
 }
 //,{name: 'andrew sweet',uid: 1},{name: 'antonio ono', uid: 4}],
-output.pushIos({
-  msg: 'Let me know if this works.',
-  userList: [{name: 'joel simon',uid: 1}],
-  eid:1
-});
+// output.pushIos({
+//   msg: 'Let me know if this works.',
+//   userList: [{name: 'joel simon',uid: 1}],
+//   eid:1
+// });
 
 /**
  * Handle login socket
