@@ -142,7 +142,8 @@ ul {
 }
 
 .message-list {
-	flex: 1 0 0;
+	height: 40vh;
+	overflow-y: auto;
 }
 
 .message {
@@ -174,12 +175,42 @@ ul {
 }
 
 .message-form {
-	margin-left: 60px;
-	padding: 0.5em;
-	/*overflow-y: scroll;*/
+	height: 8vh;
+	/*margin-left: 60px;*/
+	padding: 1vw;
+}
+
+.message-form textarea {
+	float: left;
+	height: 6vh;
+	padding: 1vw;
+	min-width: 60vw;
+}
+
+.message-form input {
+	float: left;
+	/*margin-top: 12px;*/
+	display: inline-block;
+	border: 1px solid #999;
+
+	height: 6vh;
+	padding: 1vw;
+
+	-webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+	-moz-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+	box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
 }
 
 @media all and (min-width: 600px) {
+
+	#collapse {
+		height: 50px;
+		width: 50px;
+	}
+
+	.thread {
+		font-size: 1.2em;
+	}
 
 	.guest-list img, .invite-list img {
 		height: 50px;
@@ -201,15 +232,22 @@ ul {
 		padding-left: 60px;
 	}
 
-	.thread {
-		font-size: 1.2em;
+	.message {
+		padding: 0.5em;
+		min-height: 50px;
 	}
 
-	#collapse {
+	.message-form textarea {
+		float: left;
+		height: 40px;
+		padding: 5px;
+	}
+
+	.message-form input {
 		height: 50px;
 		width: 50px;
+		padding: 5px;
 	}
-
 }
 
 /*

@@ -44,6 +44,8 @@ function transitionToDetail(thread) {
 	$('#thread-'+thread+' .message-chain')
 		.css({'height':'50vh'})
 		.removeClass('hidden');
+	var scrollHeight = $('#thread-'+thread+' .message-list')[0].scrollHeight;
+	$('#thread-'+thread+' .message-list').scrollTop(scrollHeight);
 	$('#thread-'+thread+' .message-form')
 		.removeClass('hidden');
 
