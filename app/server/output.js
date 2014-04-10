@@ -96,10 +96,11 @@ exports.pushIos = function(options) {
   var msg = options.msg;
   var userList = options.userList;
   var eid = options.eid || null;
+  if (!userList) return logError('no userList given');
   async.each(userList, function(user, callback) {
-    // if (user.type === "Member") {
+    if (user.type === "Member") {
       pushIos(msg, user, eid,  1);
-    // }
+    }
   });
 }
 
