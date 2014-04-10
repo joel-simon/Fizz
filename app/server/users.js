@@ -63,6 +63,9 @@ exports.get = function(uid, cb) {
 	});
 }
 exports.getIosToken = function(uid, cb) {
+	if(!uid) {
+		return console.log('tried to get bad uid', uid);
+	}
 	getAttributes(''+uid, ['iosToken'], function(err, data) {
 		if (err) cb(err);
 		else if (!data) cb(null, null);
