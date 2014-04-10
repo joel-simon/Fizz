@@ -27,25 +27,25 @@ var apnConnection = new apn.Connection({
   'address':"gateway.push.apple.com"
 });
 
-apnConnection.on('connected', function() {
-    console.log("APN Connected");
-});
+// apnConnection.on('connected', function() {
+//     console.log("APN Connected");
+// });
 
-apnConnection.on('transmitted', function(notification, device) {
-    console.log("Notification transmitted to:" + device.token.toString('hex'));
-});
+// apnConnection.on('transmitted', function(notification, device) {
+//     console.log("Notification transmitted to:" + device.token.toString('hex'));
+// });
 
-apnConnection.on('transmissionError', function(errCode, notification, device) {
-    console.error("Notification caused error: " + errCode + " for device ", device, notification);
-});
+// apnConnection.on('transmissionError', function(errCode, notification, device) {
+//     console.error("Notification caused error: " + errCode + " for device ", device, notification);
+// });
 
-apnConnection.on('timeout', function () {
-    console.log("Connection Timeout");
-});
+// apnConnection.on('timeout', function () {
+//     console.log("Connection Timeout");
+// });
 
-apnConnection.on('disconnected', function() {
-    console.log("Disconnected from APNS");
-});
+// apnConnection.on('disconnected', function() {
+//     console.log("Disconnected from APNS");
+// });
 
 apnConnection.on('socketError', console.error);
 
