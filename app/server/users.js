@@ -5,6 +5,7 @@ var config = ((args.dev) ? require('./../../configDev.json') : require('./../../
 var store   = require('./redisStore.js').store;
 var utils   = require('./utilities.js');
 var log     = utils.log;
+var logError = utils.logError;
 var nameShorten = utils.nameShorten;
 var db      = mongojs(config.DB.MONGOHQ_UR, ['users', 'events']);
 var exports = module.exports;
@@ -64,7 +65,7 @@ exports.get = function(uid, cb) {
 }
 exports.getIosToken = function(uid, cb) {
 	if(!uid) {
-		return console.log('tried to get bad uid', uid);
+		return logError('tried to get bad uid:'+uid);
 	}
 	getAttributes(''+uid, ['iosToken'], function(err, data) {
 		if (err) cb(err);
