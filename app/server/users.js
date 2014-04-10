@@ -32,6 +32,7 @@ exports.isConnected = function(uid, callback) {
 //	GET USER
 ////////////////////////////////////////////////////////////////////////////////
 function getAttributes(uid, attributes, cb) {
+	log('getting for '+uid, typeof(uid));
 	db.getItem({
 		TableName : 'users',
 		Key : {'uid' : {'N' : uid} },
