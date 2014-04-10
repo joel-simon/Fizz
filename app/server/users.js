@@ -104,7 +104,8 @@ function set(user, cb) {
 		fbid : {'N'  : ''+user.fbid},
 		name : {'S'  : user.name},
 		type : {'S'  : user.type},
-		iosToken: {'S' : user.iosToken || 'iosToken'}
+		iosToken: {'S' : user.iosToken || 'iosToken'},
+		key : {'S' : user.key || 'key'},
 		// friendList: 
 	}
 	if (user.friendList && user.friendList.length > 0) {
