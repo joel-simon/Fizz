@@ -97,12 +97,12 @@ function createEvents() {
       invitePnList: [{name:'rando', pn:'+123'}] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)//
     },{handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
     
-  //   setTimeout(function(){
-  //     handler.invite({
-  //       eid: 2,
-  //       inviteList: [],
-  //       invitePnList: [{name:'jsjoel', pn:'+13475346100'},{name:'andrew', pn:'+13107102956'}] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)//
-  //     },{handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
+    setTimeout(function(){
+      handler.invite({
+        eid: 2,
+        inviteList: [],
+        invitePnList: [{name:'jsjoel', pn:'+13475346100'},{name:'andrew', pn:'+13107102956'}] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)//
+      },{handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
 
   //     setTimeout(function(){
   //     handler.invite({
@@ -111,7 +111,7 @@ function createEvents() {
   //         invitePnList: [{name:'jsjoel', pn:'+13475346100'},{name:'andrew', pn:'+13107102956'}] // PUT THE PEOPLE TO INVITE (NOT HOSTS #)//
   //       },{handshake:{user:d}}); // MAKE THIS USER THE CREATOR, a, j or d
   //     }, 2000);
-  //   }, 2000);
+    }, 2000);
   },2000);
 }
 

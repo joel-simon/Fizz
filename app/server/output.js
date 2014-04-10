@@ -21,8 +21,8 @@ module.exports = exports;
 ////////////////////////////////////////////////////////////////////////////////
 // -cert aps_development.pem -key fizzCommonName.pem 
 var apnConnection = new apn.Connection({
-  key: __dirname + '/fizzCommonName.pem',
-  cert: __dirname + '/aps_development.pem',
+  key: __dirname + '/newcert.pem',
+  cert: __dirname + '/PushChatCert.pem',
   "gateway": "gateway.push.apple.com",
   'address':"gateway.push.apple.com"
 });
@@ -59,7 +59,7 @@ feedback.on("feedback", function(devices) {
 });
 
 var pushIos = function(msg, user, eid, hoursToExpiration) {
-  if (user.type !== 'Member') return;
+  // if (user.type !== 'Member') return;
   users.getIosToken(user.uid, function(err, iosToken) {
     if(err) return logError(err);
     var mainLog = "Sending push to "+user.name
@@ -110,6 +110,7 @@ var twilio = require('twilio');
 var client = new twilio.RestClient(config.TWILIO.SID, config.TWILIO.TOKEN);
   
 exports.sendSms = function(user, eid, msg) {
+  if (user.pn.length <= 5) return;
   phoneManager.getPn(user, eid, function(err, pn) {
     if (err) return logError(err);
 
