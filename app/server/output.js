@@ -97,6 +97,7 @@ exports.pushIos = function(options) {
   var userList = options.userList;
   var eid = options.eid || null;
   if (!userList) return logError('no userList given');
+  console.log('Pushing to'+JSON.stringify());
   async.each(userList, function(user, callback) {
     if (user.type === "Member") {
       pushIos(msg, user, eid,  1);

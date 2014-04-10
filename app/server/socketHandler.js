@@ -70,6 +70,7 @@ exports.connect = function(socket) {
 
   });
 }
+
 exports.onAuth = function(profile, pn, fbToken, iosToken, cb) {
   fb.extendToken(fbToken, function(err, longToken) {
     if (err) return cb(err);
@@ -298,6 +299,8 @@ exports.newMessage = function(data, socket) {
   },
   function(err, results) {
     var e = results.e;
+    var gl = results.e.guestList;
+    var il = results.e.inviteList;
     check.is(e, 'event');
     // Emit to everyone connected.
     emit({
@@ -308,7 +311,9 @@ exports.newMessage = function(data, socket) {
     pushIos({
       msg: nameShorten(user.name)+': '+text,
       eid: eid,
-      userList: results.e.guestList
+      userList: il.filter(function(el){
+        return (gl.indexOf(el.uid) >= 0);
+      })
     });
     // Sms everyone else who is going. 
     // console.log(results.e.inviteList);
@@ -344,7 +349,6 @@ exports.addFriendList = function(data, socket) {
       else log('Added friends list for '+nameShorten(user.name));
     });
   });
-  
 }
 
 exports.removeFriendList = function(data, socket)  {
@@ -403,32 +407,6 @@ function getEidAndRecipients (e, callback) {
   callback);
 }
 
-// function shareEvent(e, callback) {
-//   async.parallel([
-//     function(cb) { users.addVisible(e.host, e, cb) },
-//     function(cb) {
-//       async.each(e.inviteList, add, cb);
-//       function add(friend, cb2) {
-//         users.addVisible(friend, e, function(err) {
-//           if (err) cb2(err);
-//           else cb2 (null);
-//         });
-//       }
-//     },
-//     function(cb) {
-//       emit({
-//         host: B.host,
-//         eventName: 'newBeacon',
-//         data: {"beacon" : B},
-//         message: message,
-//         recipients: B.invited
-//       });
-//       cb(null);
-//     }
-//   ],
-//   callback);
-// }
-
 exports.getFBFriendList = function(socket) {
   var user = getUserSession(socket);
   var idArr = [];
@@ -458,31 +436,4 @@ function getUserSession(socket) {
   check.is(user, 'user');
   return user;
 }
-
-
-
-
-// exports.newUserLocation = function(dataIn, socket) {
-//   check.is(dataIn, {uid: 'posInt', latlng: 'latlng'});
-//   var user = getUserSession(socket);
-
-//   async.parallel({
-//     a: function(cb){
-//       users.updateLocation(dataIn.uid, dataIn.latlng, cb)
-//     },
-//     recipients: function(cb) {
-//       events.getInviteList(dataIn.eid, cb);
-//     }
-//   },
-//   function(err, results) {
-//     check.is(results, {recipients: '[user]'});
-//     var dataOut = [{uid: user.uid, latlng: data.latlng}];
-//     emit({
-//       eventName: 'newUserLocationList',
-//       data: dataOut,
-//       recipients: results.recipients
-//     });
-//   });
-// }
-
 
