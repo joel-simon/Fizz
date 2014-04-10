@@ -139,7 +139,7 @@ exports.sendSms = function(user, eid, msg) {
 exports.sendGroupSms = function(userList, eid, msgFun) {
   async.each(userList,
     function(u, cb) {
-      if (!u.type == 'Phone') return cb(null);
+      if (u.type != 'Phone') return cb(null);
       exports.sendSms(u, eid, msgFun(u));
       cb();
     },
