@@ -8,16 +8,18 @@ module.exports = function(app, passport) {
 			res.render('home', {});
 	});
 
-	app.post('/iosLogin',
+	app.post('/login',
 		passport.authenticate('facebook-token', { display: 'page', scope: ['user_friends', 'user_groups', 'email'] }),
 		function(req, res) {
 			res.send(200, 'Logged In!');
-		});
+		}
+	);
 
-	app.get('/auth/facebook/iosCallback',  passport.authenticate('facebook', { failureRedirect: '/' }),
+	app.get('/auth/facebook/callback',  passport.authenticate('facebook', { failureRedirect: '/' }),
 		function(req, res) {
 			res.send('Logged in');
-		});
+		}
+	);
 
 	app.get('/', ensureAuthenticated, function(req, res) {
 		res.redirect('/home');

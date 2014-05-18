@@ -13,7 +13,7 @@ colors.setTheme({
 module.exports = exports;
 var mail = require("nodemailer").mail;
 exports.log = function() {
-   var date = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
+  var date = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
   date = date.substring(0,date.search("GMT")-1);
 
 	var main = '\tInfo: ';

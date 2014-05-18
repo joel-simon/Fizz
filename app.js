@@ -19,7 +19,6 @@ var
   redis   = require('redis'),
   redisStore = require('connect-redis')(express),
   redisConns = require('./app/server/redisStore.js'),
-
   passport = require('passport'),
   FacebookStrategy = require('passport-facebook').Strategy,
   FacebookTokenStrategy = require('passport-facebook-token').Strategy,
@@ -41,6 +40,7 @@ passport.deserializeUser(function(obj, done) { done(null, obj); });
 var users = require('./app/server/users.js');
 var fb        = require('./app/server/fb.js');
 
+
 passport.use(new smsStrategy(
   function(key, done) {
     console.log(key);
@@ -59,49 +59,35 @@ passport.use(new smsStrategy(
   }
 ));
 
-/*
-  Web Login Flow.
-*/
-passport.use(new FacebookStrategy(
-  {
-    clientID: config.FB.FACEBOOK_APP_ID,
-    clientSecret: config.FB.FACEBOOK_APP_SECRET,
-    callbackURL: config.HOST+"auth/facebook/callback"
-  },
-  function(fbToken, refreshToken, profile, done) {
-    console.log('fbToken', fbToken);
-    process.nextTick(function () {
-      users.getOrAddGuest(profile,fbToken, function(err, user) {
-        console.log(user);
-        done(null, user);  
-      });
-    });
-  }));
 
 /*
   ios Login Flow.
 */
-passport.use(new FacebookTokenStrategy(
-  {
+passport.use(new FacebookTokenStrategy({
     clientID: config.FB.FACEBOOK_APP_ID,
     clientSecret: config.FB.FACEBOOK_APP_SECRET,
     callbackURL: config.HOST+"auth/facebook/iosCallback"
   },
-  function(fbToken, refreshToken, profile, pn, iosToken, done) {
+  function(fbToken, refreshToken, profile, pn, iosToken, androidToken, done) {
 
     pn = utils.formatPn(pn);
-    // console.log('pn:', pn)
-    console.log('iosToken:', iosToken)
-
+    if (iosToken) {
+      console.log('iosToken:', iosToken)
+    } else if (androidToken) {
+      console.log('androidToken:', androidToken)
+    } else {
+      console.log('No token!');
+    }
+  
     if (!utils.isPn(pn)) {
       console.log('Bad phone number:', pn);
       return done('Bad phone number')
     }
-    iosToken = iosToken || null;
+
     // console.log(pn);
     process.nextTick(function () {
       handler.onAuth(profile, pn, fbToken, iosToken, function(err, user) {
-         if(err) console.log(err);
+        if(err) console.log(err);
         else done(null, user);  
       });
     });
@@ -175,23 +161,21 @@ function onAuthorizeFail(data, message, error, accept){
 
 // Bind socket handlers.
 //d.run
-(function(){
+(function() {
   io.sockets.on('connection',   (function(socket) {
     handler.connect(socket);
     socket.on('newEvent',       (function(data){ handler.newEvent   (data, socket) }));
+    socket.on('getEvents',      (function(data){ handler.getEvents  (data, socket) }));
     socket.on('joinEvent',      (function(data){ handler.joinEvent  (data, socket) }));
     socket.on('leaveEvent',     (function(data){ handler.leaveEvent (data, socket) }));
-    socket.on('invite',         (function(data){ handler.invite     (data, socket) }));
-    socket.on('request',        (function(data){ handler.request    (data, socket) }));
+    socket.on('newInvites',     (function(data){ handler.newInvites (data, socket) }));
+    socket.on('suggestInvitedList',(function(data){ handler.suggestInvitedList (data, socket) }));
     socket.on('newMessage',     (function(data){ handler.newMessage (data, socket) }));
-    socket.on('getFriendList',  (function(data){ handler.getFriendList(socket) }));
+    socket.on('getMoreMessages',(function(data){ handler.getMoreMessages  (data, socket) }));
+    socket.on('newMarker',      (function(data){ handler.newMarker  (data, socket) }));
+    socket.on('locationChange', (function(data){ handler.locationChange(data, socket) }));
+    socket.on('disconnect',     (function()    { handler.disconnect (socket) }));
 
-    socket.on('newFriend',      (function(data){ handler.newFriend  (data, socket) }));
-    socket.on('removeFriendList', (function(data){ handler.getFriendList(socket) }));
-    socket.on('setSeatCapacity',  (function(data){ handler.setSeatCapacity(data, socket) }));
-    // socket.on('newUserLocation',(function(data){ handler.newUserLocation(data, socket)}));
-    socket.on('disconnect',     (function()    { handler.disconnect(socket) }));
-    // socket.on('benchMark',      (function()    { handler.benchMark(socket) }));
   }));
 })();
 

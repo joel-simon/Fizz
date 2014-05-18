@@ -166,8 +166,6 @@ exports.sendGroupSms = function(userList, eid, msgFun) {
 //   data: 'foo',
 //   recipients:
 // })
-console.log(utils);
-log('test')
 var io;
 exports.emit = function(options) {
   var 

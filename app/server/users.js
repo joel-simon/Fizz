@@ -6,16 +6,19 @@ var store   = require('./redisStore.js').store;
 var utils   = require('./utilities.js');
 var log     = utils.log;
 var logError = utils.logError;
+
 var nameShorten = utils.nameShorten;
 var db      = mongojs(config.DB.MONGOHQ_UR, ['users', 'events']);
 var exports = module.exports;
 var async   = require('async');
 var fb      = require('./fb.js');
 var db      = require('./dynamo.js');
+
 var output  = require('./output.js');
 var emit    = output.emit;
 var check   = require('easy-types');
 var io;
+
 /*
   REDIS VARIABLES
   fbid->uid 			| fbid -> uid

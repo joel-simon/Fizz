@@ -50,7 +50,6 @@ exports.get = function(accessToken, apiPath, callback) {
 }
 
 exports.getFriendUidList = function(fbToken, cb) {
-	console.log('test');
 	exports.get(fbToken, '/me/friends',function(err, foo) {
 		if (err) cb(err);
 		else cb(null, foo.data.map(function(obj){return obj.id}));
