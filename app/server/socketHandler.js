@@ -63,7 +63,7 @@ exports.connect = function(socket) {
   var response = {
     me: user,
     newFriendList : [],
-    newEventList: [],
+    newEventList: [event1],
     newMessageList: [],
     fbToken: 'FAKE_FB_TOKEN',
     friendScoreMap : {},
