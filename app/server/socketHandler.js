@@ -21,8 +21,12 @@ var nameShorten = utils.nameShorten;
  * Handle a socket connection.
  */
 exports.connect = function(socket) {
+  console.log('connection success!');
   try {var user = getUserSession(socket);}
-  catch(e) {return;}
+  catch(e) {
+    console.log('Failure to get user:', e);
+    return;
+  }
   socket.join(''+user.uid);
   var andrew = {
     uid: 1,
@@ -31,7 +35,6 @@ exports.connect = function(socket) {
     appUserDetails: {
       fbid: '100000157939878'
     }
-
   }
   var joel = {
     uid: 2, 

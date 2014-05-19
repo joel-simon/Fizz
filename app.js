@@ -69,7 +69,7 @@ passport.use(new FacebookTokenStrategy({
     callbackURL: config.HOST+"auth/facebook/iosCallback"
   },
   function(fbToken, refreshToken, profile, pn, iosToken, androidToken, done) {
-
+    console.log('Recieved tokens, attempting to verify user.');
     pn = utils.formatPn(pn);
     if (iosToken) {
       console.log('iosToken:', iosToken)
@@ -87,7 +87,7 @@ passport.use(new FacebookTokenStrategy({
     // console.log(pn);
     process.nextTick(function () {
       handler.onAuth(profile, pn, fbToken, iosToken, function(err, user) {
-        if(err) console.log(err);
+        if(err) console.log('Error in onAuth:', err);
         else done(null, user);  
       });
     });
