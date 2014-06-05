@@ -1,6 +1,7 @@
 *.tar
 pwds.json
 config.json
+configDev.json
 err.txt
 *.zip
 *.tar
@@ -8,4 +9,5 @@ err.txt
 *.env
 *.log
 *.DS_Store
+*.swp
 .elasticbeanstalk/
