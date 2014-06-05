@@ -3,6 +3,7 @@
 */
 // require('newrelic');
 'use strict';
+require('coffee-script');
 var
   args    = require('./app/server/args.js'), //read in command line args.
   http    = require('http'),
@@ -13,7 +14,6 @@ var
   server  = app.listen(port),
   io      = require('socket.io').listen(server),
   d       = require('domain').create(),  // create domain for error routing.
-  handler = require('./app/server/socketHandler.js'), //all socket.io requests go here.
   colors  = require('colors'),
   utils   = require('./app/server/utilities.js'),
   redis   = require('redis'),
@@ -25,6 +25,7 @@ var
   smsStrategy = require('passport-sms').Strategy,
   passportSocketIo = require("passport.socketio");
 
+require('coffee-script/register')
 var config = ((args.dev) ? require('./configDev.json') : require('./config.json'));
 
 var store = redisConns.store,
@@ -164,26 +165,25 @@ function onAuthorizeFail(data, message, error, accept){
 (function() {
   io.sockets.on('connection',   (function(socket) {
     handler.connect(socket);
-    socket.on('newEvent',       (function(data){ handler.newEvent   (data, socket) }));
-    socket.on('getEvents',      (function(data){ handler.getEvents  (data, socket) }));
-    socket.on('joinEvent',      (function(data){ handler.joinEvent  (data, socket) }));
-    socket.on('leaveEvent',     (function(data){ handler.leaveEvent (data, socket) }));
-    socket.on('newInvites',     (function(data){ handler.newInvites (data, socket) }));
-    socket.on('suggestInvitedList',(function(data){ handler.suggestInvitedList (data, socket) }));
-    socket.on('newMessage',     (function(data){ handler.newMessage (data, socket) }));
-    socket.on('getMoreMessages',(function(data){ handler.getMoreMessages  (data, socket) }));
-    socket.on('newMarker',      (function(data){ handler.newMarker  (data, socket) }));
-    socket.on('locationChange', (function(data){ handler.locationChange(data, socket) }));
-    socket.on('disconnect',     (function()    { handler.disconnect (socket) }));
+    socket.on('newEvent',       (function(data){ require('./app/socketHandlers/newEvent')(data, socket) }));
+    socket.on('joinEvent',      (function(data){ require('./app/socketHandlers/joinEvent ')(data, socket) }));
+    socket.on('leaveEvent',     (function(data){ require('./app/socketHandlers/leaveEvent')(data, socket) }));
+    socket.on('newInvites',     (function(data){ require('./app/socketHandlers/newInvites')(data, socket) }));
+    socket.on('suggestInvitedList',(function(data){ require('./app/socketHandlers/suggestInvitedList')(data, socket) }));
+    socket.on('newMessage',     (function(data){ require('./app/socketHandlers/newMessage')(data, socket) }));
+    socket.on('getMoreMessages',(function(data){ new require('./app/socketHandlers/getMoreMessages ')(data, socket) }));
+    socket.on('newMarker',      (function(data){ require('./app/socketHandlers/newMarker ')(data, socket) }));
+    socket.on('locationChange', (function(data){ require('./app/socketHandlers/locationChang')(data, socket) }));
+    socket.on('disconnect',     (function()    { require('./app/socketHandlers/disconnect')(socket) }));
 
   }));
 })();
 
 var utils     = require('./app/server/utilities.js'),
 logError  = utils.logError;
-d.on('error', function(err){
+d.on('error', function(err) {
   logError('d caught error',err);
-})
+});
 
 // Route all routes.
 require('./app/server/router')(app, passport);
@@ -205,5 +205,6 @@ console.log('pushIos:', (''+args.pushIos).bold);
 console.log('#########################################'.rainbow);
 
 
-if (args.testing) require('./utilities/serverTests.js');
+// if (args.testing) require('./utilities/serverTests.js');
 
+require('./app/server/serverInit');

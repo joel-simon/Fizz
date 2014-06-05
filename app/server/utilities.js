@@ -11,6 +11,11 @@ colors.setTheme({
 });
 
 module.exports = exports;
+
+exports.getUserSession = function(socket) {
+  return socket.handshake.user
+}
+
 var mail = require("nodemailer").mail;
 exports.log = function() {
   var date = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
@@ -120,7 +125,7 @@ exports.logError = function(e) {
   stackTrace = stackTrace.replaceAll(pattern, '');
   
 	s += ('\n\t'+stackTrace.error+'\n');
-  console.log(s);
+  return console.log(s);
   mail({
     from: "<errors@fizz.com>", // sender address
     to: "joelsimon6@gmail.com", // list of receivers
@@ -211,3 +216,4 @@ String.prototype.replaceAll = function(str1, str2, ignore)
 {
   return this.replace(new RegExp(str1.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g,"\\$&"),(ignore?"gi":"g")),(typeof(str2)=="string")?str2.replace(/\$/g,"$$$$"):str2);
 }
+

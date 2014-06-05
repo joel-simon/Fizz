@@ -1,5 +1,4 @@
 var
-	handler = require('./socketHandler.js'),
 	users     = require('./users.js'),
 	phoneManager = require('./phoneManager.js'),
 	utils     = require('./utilities.js'),

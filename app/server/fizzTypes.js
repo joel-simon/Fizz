@@ -6,36 +6,16 @@ var pn = function(n) {
   var regexp = /^[\s()+-]*([0-9][\s()+-]*){6,20}$/
   return regexp.test(n);
 }
+
+
 module.exports = {
   user: function(u) {
     if (!u) throw (u +' user');
-    if (u.type === 'Server') return true;   
-    if ((typeof u.uid !== 'number') || u.uid === 0) throw('Bad uid:'+uid);
-    if ((typeof u.fbid !== 'number')) throw('Bad fbid:'+fbid);
-    // if ((typeof u.pn !== 'string')) throw('foo');
-    if ((typeof u.type !== 'string')) throw('Bad type:'+type);
-    if ((typeof u.name !== 'string')) throw('Bad name:'+name);
-    // if ((typeof u.fbToken !== 'string')) throw('foo');
-    // if ((typeof u.iosToken !== 'string')) throw('foo');
+    if (u.isServer) return true;   
 
-    switch(u.type) {
-      case "Member":
-        if (u.fbid === 0) throw('foo');
-        if (u.pn.length === 0) throw('foo');
-        // if (u.fbToken.length === 0) throw('foo');
-        // if (u.iosToken.length === 0) throw('foo');
-        break;
-      case "Guest":
-        if (u.fbid === 0) throw('foo');
-        if (u.pn.length === 0) throw('foo');
-        // if (u.fbToken.length === 0) throw('foo');
-        break;
-      case "Phone":
-        if (u.pn.length === 0) throw('No pn for Phone user.')
-        break;
-      default:
-        throw ('Undefined user type');
-    }
+    if ((typeof u.uid !== 'number') || u.uid === 0) throw('Bad uid:'+uid);
+    if ((typeof u.pn !== 'string')) throw('Bad Pn:'+pn);
+    if ((typeof u.name !== 'string')) throw('Bad name:'+name);
     return true;
   },
   friendsList: {
