@@ -48,7 +48,7 @@
   "main": "app.js",
   "devDependencies": {},
   "scripts": {
-    "start": "node app.js dev",
+    "start": "node app.js",
     "test": "node app test"
   },
   "keywords": [
