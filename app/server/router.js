@@ -42,14 +42,14 @@ module.exports = function(app, passport) {
 		res.redirect('/index');
 	});
 
-	var handler = require('./smsHandler.js');	
-	app.post('/onMessage', function(req, res) {
-		var body = req.body.Body;
-		var from = req.body.From;
-		var to = req.body.To;
-		handler.onSms(from, to, body);
-		res.end('');
-	});
+	// var handler = require('./smsHandler.js');	
+	// app.post('/onMessage', function(req, res) {
+	// 	var body = req.body.Body;
+	// 	var from = req.body.From;
+	// 	var to = req.body.To;
+	// 	handler.onSms(from, to, body);
+	// 	res.end('');
+	// });
 
 	app.get('*', function(req, res) { res.render('404', { title: 'Page Not Found'}); });
 };

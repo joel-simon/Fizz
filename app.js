@@ -22,7 +22,7 @@ var
   passport = require('passport'),
   FacebookStrategy = require('passport-facebook').Strategy,
   FacebookTokenStrategy = require('passport-facebook-token').Strategy,
-  smsStrategy = require('passport-sms').Strategy,
+  // smsStrategy = require('passport-sms').Strategy,
   passportSocketIo = require("passport.socketio");
 
 require('coffee-script/register')
@@ -42,23 +42,23 @@ var users = require('./app/server/users.js');
 var fb        = require('./app/server/fb.js');
 
 
-passport.use(new smsStrategy(
-  function(key, done) {
-    console.log(key);
-    users.getFromKey(key, function(err, user) {
-      if (err) {
-        console.log('Err on auth', err);
-        done(err);
-      } else if (!user) {
-        console.log('No user found');
-        done(null, false);
-      } else {
-        console.log('User found', user);
-        done(null, user);
-      }
-    });
-  }
-));
+// passport.use(new smsStrategy(
+//   function(key, done) {
+//     console.log(key);
+//     users.getFromKey(key, function(err, user) {
+//       if (err) {
+//         console.log('Err on auth', err);
+//         done(err);
+//       } else if (!user) {
+//         console.log('No user found');
+//         done(null, false);
+//       } else {
+//         console.log('User found', user);
+//         done(null, user);
+//       }
+//     });
+//   }
+// ));
 
 
 /*
