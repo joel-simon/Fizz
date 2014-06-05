@@ -15,7 +15,7 @@ handler =
   newMessage : require './socketHandlers/newMessage'
   onAuth : require './socketHandlers/onAuth.js'
 
-console.log handler.connect
+console.log handler.joinEvent, handler.leaveEvent
 # var joel =  {
 #   uid: 58,
 #   pn: '+13475346100',
@@ -48,8 +48,10 @@ async.series [
       (cb) -> handler.newInvites {eid: eid, inviteList: [andrew] } , {handshake: { user: joel }} , cb
       (cb) -> handler.newMessage { eid: eid, text: "newMessage" }, {handshake: {user: joel}}, cb
       (cb) -> handler.connect {handshake: { user: andrew }}, cb
+      (cb) -> handler.joinEvent {eid:eid},{handshake: { user: andrew }}, cb
+      (cb) -> handler.leaveEvent {eid:eid},{handshake: { user: andrew }}, cb
     ],
     (err) ->
-      if err console.log "ERR:", err
-      else console.log "All Done"
+      return console.log "ERR:", err if err
+      console.log "All Done"
       # function(cb){ handler.getMoreMessages({eid:eid, oldestMid:0}, {handshake:{user:joel}}, cb) },

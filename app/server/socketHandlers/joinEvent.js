@@ -22,7 +22,8 @@ function getUserSession(socket) {
   // check.is(user, 'user');
   return user;
 }
-exports.joinEvent = function(data, socket) {
+module.exports = function(data, socket, cb) {
+  console.log('In Join Event');
   check.is(data, {eid: 'posInt'});
 
   var user = getUserSession(socket);
@@ -34,11 +35,15 @@ exports.joinEvent = function(data, socket) {
     invited : function(cb){ events.getInviteList(eid, cb) }
   },
   function (err, results) {
-    if (err) return logError(err);
-    emit({
-      eventName : 'addGuest',
-      data      : { eid: eid, uid: uid },
-      recipients: results.invited
-    });
+    console.log('done join event', err);
+    if (cb) cb(err)
+    else if (err) logError(err) 
+    else if (socket.emit) {
+      emit({
+        eventName : 'addGuest',
+        data      : { eid: eid, uid: uid },
+        recipients: results.invited
+      });
+    }
   });
 }

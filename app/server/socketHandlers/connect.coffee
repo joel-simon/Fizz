@@ -59,7 +59,7 @@ QUERIES =
     (events.last_cluster_update >= $2 OR events.last_accepted_update > $2)
     "
 
-handle = (socket) ->
+handle = (socket, cb) ->
   user = getUserSession(socket)
   query =  "SELECT eid FROM invites WHERE uid = $1"
   db.query query, [user.uid], (err, results) ->
@@ -120,8 +120,9 @@ handle = (socket) ->
         suggestedInvites : []
       
       console.log 'Emitting:', data
-      if socket?
+      if socket.emit?
         socket.emit('onLogin', data)
+      cb(null) if cb?
       )
 
 module.exports = handle

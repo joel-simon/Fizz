@@ -207,4 +207,4 @@ console.log('#########################################'.rainbow);
 
 // if (args.testing) require('./utilities/serverTests.js');
 
-require('./app/server/serverInit');
+if (args.testing) require('./app/server/serverInit');

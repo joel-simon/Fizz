@@ -47,7 +47,7 @@ module.exports = function(data, socket, cb) {
     // var newInvitedUsers = inviteList.concat(results.pnUsers);
 
     
-    events.addInvites(eid, user.uid, newInvites, false, function(err) {
+    events.addInvites(eid, user.uid, newInvites, true, function(err) {
       if (err) return logError(err);
       var msgOut = nameShorten(user.name)+' has invited you to: '+messages[0].text;
       
