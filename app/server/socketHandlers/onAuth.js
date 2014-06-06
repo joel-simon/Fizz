@@ -11,6 +11,7 @@ function getUserSession(socket) {
  * Handle a socket connection.
  */
 module.exports = function(profile, pn, fbToken, phoneToken, cb) {
+  console.log('ONAUTH');
   fb.extendToken(fbToken, function(err, longToken) {
     if (err) return cb(err);
     users.getOrAddMember(profile, longToken, pn, 'ios', phoneToken, function(err, user) {

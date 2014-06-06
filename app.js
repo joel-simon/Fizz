@@ -64,6 +64,7 @@ var fb        = require('./app/server/fb.js');
 /*
   ios Login Flow.
 */
+
 passport.use(new FacebookTokenStrategy({
     clientID: config.FB.FACEBOOK_APP_ID,
     clientSecret: config.FB.FACEBOOK_APP_SECRET,
@@ -86,8 +87,9 @@ passport.use(new FacebookTokenStrategy({
     }
 
     // console.log(pn);
+
     process.nextTick(function () {
-      handler.onAuth(profile, pn, fbToken, iosToken, function(err, user) {
+      (require('./app/server/socketHandlers/onAuth'))(profile, pn, fbToken, iosToken, function(err, user) {
         if (err) console.log('Error in onAuth:', err);
         else done(null, user);  
       });
@@ -173,7 +175,7 @@ function onAuthorizeFail(data, message, error, accept){
     socket.on('newMessage',     (function(data){ require('./app/socketHandlers/newMessage')(data, socket) }));
     socket.on('getMoreMessages',(function(data){ new require('./app/socketHandlers/getMoreMessages ')(data, socket) }));
     socket.on('newMarker',      (function(data){ require('./app/socketHandlers/newMarker ')(data, socket) }));
-    socket.on('locationChange', (function(data){ require('./app/socketHandlers/locationChang')(data, socket) }));
+    socket.on('locationChange', (function(data){ require('./app/socketHandlers/locationChange')(data, socket) }));
     socket.on('disconnect',     (function()    { require('./app/socketHandlers/disconnect')(socket) }));
 
   }));

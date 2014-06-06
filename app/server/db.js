@@ -28,10 +28,14 @@ exports.query = function(text, values, cb) {
     client.query(text, values, function(err, result) {
       done();
       if (err) {
-        // console.log('test');
         err.text = (text.insert(err.position-1, '->'))
       }
-      cb(err, result);
+      if(cb) {
+        cb(err, result);
+      } else {
+        console.log('Call to db.query withouth a callback, very bad!!');
+        console.trace();
+      }
     })
   });
 }
