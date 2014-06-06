@@ -166,7 +166,7 @@ function onAuthorizeFail(data, message, error, accept){
 //d.run
 (function() {
   io.sockets.on('connection',   (function(socket) {
-    handler.connect(socket);
+    require('./app/server/socketHandlers/connect')(socket);
     socket.on('newEvent',       (function(data){ require('./app/socketHandlers/newEvent')(data, socket) }));
     socket.on('joinEvent',      (function(data){ require('./app/socketHandlers/joinEvent ')(data, socket) }));
     socket.on('leaveEvent',     (function(data){ require('./app/socketHandlers/leaveEvent')(data, socket) }));
