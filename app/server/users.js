@@ -30,49 +30,58 @@ exports.isConnected = function(uid, callback) {
 //	GET USER
 ////////////////////////////////////////////////////////////////////////////////
 exports.get = function(uid, cb) {
-	var q1 = "select (uid, pn, name, fbid) from users where uid = $1";
-	pg.connect(dbstring, function(err, client, done) {
-	  if(err) return logError(err);
-		client.query(q1, [uid], function(err, result) {
-    	done();
-    	if (err) logError(err);
-    	else cb(null, result.rows[0]);
-    });
+	var q1 = "select * from users where uid = $1";
+	db.query(q1, [uid], function(err, result) {
+    	if (err) cb(err);
+    	else if (!result.rows.length) cb(null, null);
+    	else {
+    		var r0 = result.rows[0]
+    		var user = { uid: r0.uid, pn : r0.pn, name : r0.name}
+    		if (r0.fbid) user.appUserDetails = { fbid: r0.fbid , lastLogin: r0.last_login }
+	    	cb(null, user);
+	    }
 	});
 }
 exports.getTokens = function(uidList, cb) {
-	var q1 = "select (uid, token) from users where uid = ANY($1::int[])";
-	pg.connect(dbstring, function(err, client, done) {
-	  if(err) return logError(err);
-		client.query(q1, [uid], function(err, result) {
-    	done();
-    	if (err) logError(err);
-    	else cb(null, result.rows);
-    });
+	var q1 = "select uid, token from users where uid = ANY($1::int[])";
+	db.query(q1, [uid], function(err, result) {
+    	if (err) cb(err);
+    	else if (!result.rows.length) cb(null, null);
+    	else {
+    		var r0 = result.rows[0]
+    		var user = { uid: r0.uid, pn : r0.pn, name : r0.name}
+    		if (r0.fbid) user.appUserDetails = { fbid: r0.fbid , lastLogin: r0.last_login }
+	    	cb(null, user);
+	    }
 	});
 }
 
 exports.getFromFbid = function(fbid, cb) {
-	var q1 = "select (uid, pn, name, fbid) from users where fbid = $1";
-	pg.connect(dbstring, function(err, client, done) {
-	  if(err) return logError(err);
-		client.query(q1, [fbid], function(err, result) {
-    	done();
-    	if (err) logError(err);
-    	else cb(null, result.rows[0]);
+	var q1 = "select * from users where fbid = $1";
+	db.query(q1, [fbid], function(err, result) {
+    	if (err) cb(err);
+    	else if (!result.rows.length) cb(null, null);
+    	else {
+    		var r0 = result.rows[0]
+    		var user = { uid: r0.uid, pn : r0.pn, name : r0.name}
+    		if (r0.fbid) user.appUserDetails = { fbid: r0.fbid , lastLogin: r0.last_login }
+	    	cb(null, user);
+	    }
     });
-	});
 }
+
 exports.getFromPn = function(pn, cb) {
-	var q1 = "select (uid, pn, name, fbid) from users where pn = $1";
-	pg.connect(dbstring, function(err, client, done) {
-	  if(err) return logError(err);
-		client.query(q1, [pn], function(err, result) {
-    	done();
-    	if (err) logError(err);
-    	else cb(null, result.rows[0]);
+	var q1 = "select * from users where pn = $1";
+	db.query(q1, [pn], function(err, result) {
+    	if (err) cb(err);
+    	else if (!result.rows.length) cb(null, null);
+    	else {
+    		var r0 = result.rows[0]
+    		var user = { uid: r0.uid, pn : r0.pn, name : r0.name}
+    		if (r0.fbid) user.appUserDetails = { fbid: r0.fbid , lastLogin: r0.last_login }
+	    	cb(null, user);
+	    }
     });
-	});
 }
 
 ////////////////////////////////////////////////////////////////////////////////

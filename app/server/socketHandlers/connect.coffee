@@ -61,6 +61,7 @@ QUERIES =
 
 handle = (socket, cb) ->
   user = getUserSession(socket)
+  console.log user
   query =  "SELECT eid FROM invites WHERE uid = $1"
   db.query query, [user.uid], (err, results) ->
     return logError(err) if err
