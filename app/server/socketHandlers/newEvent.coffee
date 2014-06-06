@@ -3,13 +3,13 @@ async  = require 'async'
 SocketHandler = require './SocketHandler'
 utils     = require('./../utilities.js')
 logError = utils.logError
-class NewEvent extends SocketHandler
-  handle: (data, socket, cb) ->
-    user       = @getUserSession(socket)
+getUserSession = utils.getUserSession
+
+module.exports = (data, socket, cb) ->
+    user       = getUserSession(socket)
     text       = data.text;
-    console.log user, @logError
+    console.log "NEW EVENT CALLED. Text: #{text}"
     events.add user, text, (err, eid) =>
-      console.log  @
       return logError(err) if err
       async.parallel {
         event: (cb) -> events.get(eid, cb)
@@ -28,9 +28,8 @@ class NewEvent extends SocketHandler
           guests : [user.uid]
           clusters : []
         }]
-        console.log('Emitting from newEvent:', JSON.stringify(data));
+        console.log('Emitting from newEvent:', JSON.stringify(data))
         if cb
-          cb null, eid;
-      # try { socket.emit('newEvents', data) } catch(e){}
-
-module.exports = NewEvent
+          cb err, eid
+        if (socket.emit)
+          socket.emit 'newEvents', data

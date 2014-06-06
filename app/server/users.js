@@ -46,15 +46,20 @@ exports.getTokens = function(uidList, cb) {
 	var q1 = "select uid, token from users where uid = ANY($1::int[])";
 	db.query(q1, [uid], function(err, result) {
     	if (err) cb(err);
-    	else if (!result.rows.length) cb(null, null);
-    	else {
-    		var r0 = result.rows[0]
-    		var user = { uid: r0.uid, pn : r0.pn, name : r0.name}
-    		if (r0.fbid) user.appUserDetails = { fbid: r0.fbid , lastLogin: r0.last_login }
-	    	cb(null, user);
-	    }
+    	else cb (null, result.rows)
 	});
 }
+exports.getFbToken = function(uid, cb) {
+	var q1 = "select uid, fbtoken from users where uid = $1";
+	db.query(q1, [uid], function(err, result) {
+    	if (err) cb(err);
+    	else {
+    		console.log('foor',result.rows[0])
+    		cb (null, result.rows[0].fbtoken)
+    	}
+	});
+}
+
 
 exports.getFromFbid = function(fbid, cb) {
 	var q1 = "select * from users where fbid = $1";
@@ -121,8 +126,8 @@ exports.getOrAddMember = function(profile, fbToken, pn, platform, phoneToken, cb
 				});
 			// they have never had any interaction with fizz. 
 			} else {
-				var q1 = "INSERT into users (pn, name, fbid, platform, last_login) values($1,$2,$3,$4, NOW()) RETURNING uid, last_login";
-				db.query(q1, [pn, profile.displayName, fbid, platform], function(err, result) {
+				var q1 = "INSERT into users (pn, name, fbid, platform, last_login, fbtoken) values($1,$2,$3,$4, NOW(),$5) RETURNING uid, last_login";
+				db.query(q1, [pn, profile.displayName, fbid, platform, fbToken], function(err, result) {
 					if (err) return cb(err);
 					log('Created', profile.displayName+'as Member.');
 					makeFriends(result.rows[0].uid, result.rows[0].last_login);

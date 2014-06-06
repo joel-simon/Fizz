@@ -8,6 +8,7 @@ pushIos   = output.pushIos
 types = require './../fizzTypes.js'
 check = require('easy-types').addTypes types
 db = require './../db.js'
+users = require './../users.js'
 
 QUERIES = 
   newFriendList: 
@@ -105,6 +106,9 @@ handle = (socket, cb) ->
 
       "deadEventList": (cb) ->
         cb null, {rows:[]}
+
+      "fbToken" : (cb) ->
+        users.getFbToken(user.uid, cb)
     },
     (err, results) ->
       return console.log('Connection Err:',err) if err
@@ -117,7 +121,7 @@ handle = (socket, cb) ->
         invitees      : results.invitees
         guests        : results.guests
         clusters      : results.clusters
-        fbToken       : user.fbToken
+        fbToken       : results.fbToken
         suggestedInvites : []
       
       console.log 'Emitting:', data
