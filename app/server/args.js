@@ -12,7 +12,6 @@ process.argv.forEach(function (val, index) {
           throw "Invalid Port, use 'port=x'"
         exports.port = val[1]
         break;
-      case 'daniel':
       case 'test':
         exports.testing = true;
         break;

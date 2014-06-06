@@ -21,7 +21,7 @@ var
   redisConns = require('./app/server/redisStore.js'),
   passport = require('passport'),
   FacebookStrategy = require('passport-facebook').Strategy,
-  FacebookTokenStrategy = require('passport-facebook-token').Strategy,
+  FacebookTokenStrategy = require('./lib/passport-facebook-token').Strategy,
   // smsStrategy = require('passport-sms').Strategy,
   passportSocketIo = require("passport.socketio");
 
@@ -67,7 +67,7 @@ var fb        = require('./app/server/fb.js');
 passport.use(new FacebookTokenStrategy({
     clientID: config.FB.FACEBOOK_APP_ID,
     clientSecret: config.FB.FACEBOOK_APP_SECRET,
-    callbackURL: config.HOST+"auth/facebook/iosCallback"
+    callbackURL: config.HOST+"auth/facebook/callback"
   },
   function(fbToken, refreshToken, profile, pn, iosToken, androidToken, done) {
     console.log('Recieved tokens, attempting to verify user.');
@@ -88,7 +88,7 @@ passport.use(new FacebookTokenStrategy({
     // console.log(pn);
     process.nextTick(function () {
       handler.onAuth(profile, pn, fbToken, iosToken, function(err, user) {
-        if(err) console.log('Error in onAuth:', err);
+        if (err) console.log('Error in onAuth:', err);
         else done(null, user);  
       });
     });
