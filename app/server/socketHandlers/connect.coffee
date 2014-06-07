@@ -9,7 +9,8 @@ types = require './../fizzTypes.js'
 check = require('easy-types').addTypes types
 db = require './../db.js'
 users = require './../users.js'
-
+toUnixSecond = (s) ->
+  (Date.parse "2014-06-07T02:19:15.606Z") // 1000
 QUERIES = 
   newFriendList: 
     "
@@ -74,13 +75,26 @@ handle = (socket, cb) ->
         db.query QUERIES.newFriendList, values, cb
       "newEventList": (cb) -> 
         values = [user.uid, user.appUserDetails.lastLogin]
-        db.query QUERIES.newEventList, values, cb
+
+        db.query QUERIES.newEventList, values, (err, results) ->
+          return cb err if err?
+          for e in results.rows
+            e.creationTime = toUnixSecond e.creation_time
+            delete e.creation_time
+          console.log results.rows
+          cb null, results.rows
+
+                     
       "newMessageList": (cb) -> 
         values = [invited_list, user.appUserDetails.lastLogin]
         db.query QUERIES.newMessageList, values, (err, results) ->
           return cb err if err?
           data = {}
           for m in results.rows
+            m.creationTime = toUnixSecond m.creation_time
+            m.text = m.data
+            delete m.creation_time
+            delete m.data
             if not data[m.eid]
               data[m.eid] = []
             data[m.eid].push m
@@ -122,7 +136,7 @@ handle = (socket, cb) ->
       data =
         me : user
         newFriendList : results.newFriendList.rows
-        newEventList  : results.newEventList.rows
+        newEventList  : results.newEventList
         newMessages   : results.newMessageList
         deadEventList : results.deadEventList.rows
         invitees      : results.invitees
