@@ -15,7 +15,7 @@ module.exports = (data, socket, cb) ->
       console.log 'newEventData', data
       eid = data.eid
       creationTime = data.creationTime
-      messages = [{mid:1, eid:data.eid, text:text, marker:null,creationTime:creationTime}];
+      messages = [{mid:1, eid:data.eid, uid:user.uid, text:text, marker:null,creationTime:creationTime}];
       newEvents = data:
         [{
           eid : eid
