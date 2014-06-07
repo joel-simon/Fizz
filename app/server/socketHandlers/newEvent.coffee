@@ -16,16 +16,16 @@ module.exports = (data, socket, cb) ->
       eid = data.eid
       creationTime = data.creationTime
       messages = [{mid:1, eid:data.eid, text:text, marker:null,creationTime:creationTime}];
-      newEvents = {};
-      newEvents[eid] = [{
-        eid : eid
-        creator : user.uid
-        creationTime : creationTime
-        messages : messages
-        invites : [user]
-        guests : [user.uid]
-        clusters : []
-      }]
+      newEvents = data:
+        [{
+          eid : eid
+          creator : user.uid
+          creationTime : creationTime
+          messages : messages
+          invites : [user]
+          guests : [user.uid]
+          clusters : []
+        }]
       console.log('Emitting from newEvent:', JSON.stringify(newEvents))
       if cb
         cb err, eid

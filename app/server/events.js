@@ -16,10 +16,10 @@ var rollback = function(client, done) {
 
 
 exports.add = function(user, text, callback) {
-  var q1 = "INSERT INTO events (creator, clusters) VALUES ($1, $2) RETURNING eid";
+  var q1 = "INSERT INTO events (creator, clusters) VALUES ($1, $2) RETURNING eid, creation_time";
   var q2 = "INSERT INTO messages (mid, eid, uid, data) VALUES ($1, $2, $3, $4)";
   var q3 = "INSERT INTO invites (eid, uid, inviter, confirmed, accepted) VALUES ($1, $2, $3, $4, $5)";
-  var eid; 
+  var eid, creationTime; 
   pg.connect(dbstring, function(err, client, done) {
     if (err) return callback(err);
     async.waterfall([
@@ -28,19 +28,20 @@ exports.add = function(user, text, callback) {
       function() {client.query(q1, [ user.uid, '{}' ], arguments[arguments.length-1]) },
       function(result, cb) {
         eid = result.rows[0].eid;
+        creationTime = Date.parse(result.rows[0].creation_time);
         client.query(q2, [ 1, eid, user.uid, text ], cb)
       },
       function() {
         client.query(q3, [eid, user.uid, user.uid, true, true], arguments[arguments.length-1])
       }
     ],
-    function(err, results){
+    function(err, results) {
       if (err) {
         rollback(client, done);
         callback(err);
       } else {
         client.query('COMMIT', done);
-        return callback(null, eid);
+        return callback(null, {eid:eid, creationTime:creationTime});
       }
     });
   });

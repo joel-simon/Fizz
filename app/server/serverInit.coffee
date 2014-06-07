@@ -56,5 +56,5 @@ async.series [
     ],
     (err, results) ->
       return console.log "ERR:", err if err
-      console.log "All Done", results
+      console.log "All Done"
       # function(cb){ handler.getMoreMessages({eid:eid, oldestMid:0}, {handshake:{user:joel}}, cb) },

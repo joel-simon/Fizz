@@ -40,12 +40,12 @@ module.exports = function(data, socket, cb) {
     var inviteList = results.inviteList;
     if (err) return cb(err);
     else if (cb) return cb(null);
-    var data = {};
-    data[eid] = [msg];
+    var out = {};
+    out[eid] = [msg];
     emit({
       eventName: 'newMessages',
       recipients: inviteList,
-      data: data
+      "data": {"data":out}
     });
     pushIos({
       msg: nameShorten(user.name)+': '+text,
