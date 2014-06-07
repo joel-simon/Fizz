@@ -166,17 +166,17 @@ function onAuthorizeFail(data, message, error, accept){
 //d.run
 (function() {
   io.sockets.on('connection',   (function(socket) {
-    handler.connect(socket);
-    socket.on('newEvent',       (function(data){ require('./app/socketHandlers/newEvent')(data, socket) }));
-    socket.on('joinEvent',      (function(data){ require('./app/socketHandlers/joinEvent ')(data, socket) }));
-    socket.on('leaveEvent',     (function(data){ require('./app/socketHandlers/leaveEvent')(data, socket) }));
-    socket.on('newInvites',     (function(data){ require('./app/socketHandlers/newInvites')(data, socket) }));
-    socket.on('suggestInvitedList',(function(data){ require('./app/socketHandlers/suggestInvitedList')(data, socket) }));
-    socket.on('newMessage',     (function(data){ require('./app/socketHandlers/newMessage')(data, socket) }));
-    socket.on('getMoreMessages',(function(data){ new require('./app/socketHandlers/getMoreMessages ')(data, socket) }));
-    socket.on('newMarker',      (function(data){ require('./app/socketHandlers/newMarker ')(data, socket) }));
-    socket.on('locationChange', (function(data){ require('./app/socketHandlers/locationChange')(data, socket) }));
-    socket.on('disconnect',     (function()    { require('./app/socketHandlers/disconnect')(socket) }));
+    require('./app/server/socketHandlers/connect')(socket);
+    socket.on('newEvent',       (function(data){ require('./app/server/socketHandlers/newEvent')(data, socket) }));
+    socket.on('joinEvent',      (function(data){ require('./app/server/socketHandlers/joinEvent ')(data, socket) }));
+    socket.on('leaveEvent',     (function(data){ require('./app/server/socketHandlers/leaveEvent')(data, socket) }));
+    socket.on('newInvites',     (function(data){ require('./app/server/socketHandlers/newInvites')(data, socket) }));
+    socket.on('suggestInvitedList',(function(data){ require('./app/server/socketHandlers/suggestInvitedList')(data, socket) }));
+    socket.on('newMessage',     (function(data){ require('./app/server/socketHandlers/newMessage')(data, socket) }));
+    socket.on('getMoreMessages',(function(data){ new require('./app/server/socketHandlers/getMoreMessages ')(data, socket) }));
+    socket.on('newMarker',      (function(data){ require('./app/server/socketHandlers/newMarker ')(data, socket) }));
+    socket.on('locationChange', (function(data){ require('./app/server/socketHandlers/locationChange')(data, socket) }));
+    socket.on('disconnect',     (function()    { require('./app/server/socketHandlers/disconnect')(socket) }));
 
   }));
 })();

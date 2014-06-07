@@ -31,14 +31,12 @@ exports.add = function(user, text, callback) {
         client.query(q2, [ 1, eid, user.uid, text ], cb)
       },
       function() {
-        console.log(eid, user.uid, user.uid, true, true, arguments[arguments.length-1]);
         client.query(q3, [eid, user.uid, user.uid, true, true], arguments[arguments.length-1])
       }
     ],
     function(err, results){
       if (err) {
         rollback(client, done);
-        console.log(q3.insert(err.position-1, '->'));
         callback(err);
       } else {
         client.query('COMMIT', done);

@@ -1,4 +1,4 @@
-
+users = require('./users')
 async     = require('async')
 db     = require('./db.js')
 fb = require './fb.js'
@@ -9,13 +9,12 @@ handler =
   joinEvent : require './socketHandlers/joinEvent'
   leaveEvent : require './socketHandlers/leaveEvent'
   locationChange : require './socketHandlers/locationChange'
-  newEvent : new (require './socketHandlers/newEvent')
+  newEvent : require './socketHandlers/newEvent'
   newInvites : require './socketHandlers/newInvites'
   newMarker : require './socketHandlers/newMarker'
   newMessage : require './socketHandlers/newMessage'
   onAuth : require './socketHandlers/onAuth.js'
 
-console.log handler.joinEvent, handler.leaveEvent
 # var joel =  {
 #   uid: 58,
 #   pn: '+13475346100',
@@ -43,15 +42,18 @@ async.series [
  ], (err, results) ->
   return console.log("ERR:", err) if err
   [_,joel,andrew] = results
-  handler.newEvent.handle {text: "myEvent"}, handshake:{user: joel}, (err, eid) ->
+  handler.newEvent {text: "myEvent"}, handshake:{user: joel}, (err, eid) ->
     async.series [
-      (cb) -> handler.newInvites {eid: eid, inviteList: [andrew] } , {handshake: { user: joel }} , cb
-      (cb) -> handler.newMessage { eid: eid, text: "newMessage" }, {handshake: {user: joel}}, cb
+      # (cb) -> handler.newInvites {eid: eid, inviteList: [andrew] } , {handshake: { user: joel }} , cb
+      # (cb) -> handler.newMessage { eid: eid, text: "newMessage" }, {handshake: {user: joel}}, cb
       (cb) -> handler.connect {handshake: { user: andrew }}, cb
-      (cb) -> handler.joinEvent {eid:eid},{handshake: { user: andrew }}, cb
-      (cb) -> handler.leaveEvent {eid:eid},{handshake: { user: andrew }}, cb
+      # (cb) -> handler.joinEvent {eid:eid},{handshake: { user: andrew }}, cb
+      # (cb) -> handler.leaveEvent {eid:eid},{handshake: { user: andrew }}, cb
+      # (cb) -> users.get(joel.uid, cb)
+      # (cb) -> users.getFromFbid(joel.appUserDetails.fbid, cb)
+      # (cb) -> users.getFromPn(joel.pn, cb)
     ],
-    (err) ->
+    (err, results) ->
       return console.log "ERR:", err if err
-      console.log "All Done"
+      console.log "All Done", results
       # function(cb){ handler.getMoreMessages({eid:eid, oldestMid:0}, {handshake:{user:joel}}, cb) },

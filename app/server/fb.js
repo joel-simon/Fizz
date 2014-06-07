@@ -1,7 +1,7 @@
 var https = require('https');
 var path = require('path'),
 	appDir = path.dirname(require.main.filename),
-	config = require(appDir+'/configDev.json');
+	config = require(appDir+'/config.json');
 exports.get = function(accessToken, apiPath, callback) {
 	
 	// creating options object for the https request
