@@ -44,8 +44,9 @@ async.series [
   [_,joel,andrew] = results
   handler.newEvent {text: "myEvent"}, handshake:{user: joel}, (err, eid) ->
     async.series [
-      # (cb) -> handler.newInvites {eid: eid, inviteList: [andrew] } , {handshake: { user: joel }} , cb
-      # (cb) -> handler.newMessage { eid: eid, text: "newMessage" }, {handshake: {user: joel}}, cb
+      (cb) -> handler.newInvites {eid: eid, inviteList: [andrew] } , {handshake: { user: joel }} , cb
+      (cb) -> handler.newMessage { eid: eid, text: "newMessage1" }, {handshake: {user: joel}}, cb
+      (cb) -> handler.newMessage { eid: eid, text: "newMessage2" }, {handshake: {user: andrew}}, cb
       (cb) -> handler.connect {handshake: { user: andrew }}, cb
       # (cb) -> handler.joinEvent {eid:eid},{handshake: { user: andrew }}, cb
       # (cb) -> handler.leaveEvent {eid:eid},{handshake: { user: andrew }}, cb

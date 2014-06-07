@@ -77,7 +77,14 @@ handle = (socket, cb) ->
         db.query QUERIES.newEventList, values, cb
       "newMessageList": (cb) -> 
         values = [invited_list, user.appUserDetails.lastLogin]
-        db.query QUERIES.newMessageList, values, cb
+        db.query QUERIES.newMessageList, values, (err, results) ->
+          return cb err if err?
+          data = {}
+          for m in results.rows
+            if not data[m.eid]
+              data[m.eid] = []
+            data[m.eid].push m
+          cb null, data
       "clusters": (cb) ->
         values = [invited_list, user.appUserDetails.lastLogin]
         db.query QUERIES.clusters, values, (err, results) ->
@@ -116,7 +123,7 @@ handle = (socket, cb) ->
         me : user
         newFriendList : results.newFriendList.rows
         newEventList  : results.newEventList.rows
-        newMessages   : results.newMessageList.rows
+        newMessages   : results.newMessageList
         deadEventList : results.deadEventList.rows
         invitees      : results.invitees
         guests        : results.guests
@@ -124,7 +131,7 @@ handle = (socket, cb) ->
         fbToken       : results.fbToken
         suggestedInvites : []
       
-      console.log 'Emitting:', data
+      console.log 'Emitting:', JSON.stringify data
       if socket.emit?
         socket.emit('onLogin', data)
       cb(null) if cb?

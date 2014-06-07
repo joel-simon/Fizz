@@ -54,7 +54,6 @@ exports.getFbToken = function(uid, cb) {
 	db.query(q1, [uid], function(err, result) {
     	if (err) cb(err);
     	else {
-    		console.log('foor',result.rows[0])
     		cb (null, result.rows[0].fbtoken)
     	}
 	});
