@@ -64,7 +64,7 @@ var fb        = require('./app/server/fb.js');
 /*
   ios Login Flow.
 */
-
+var onAuth = (require('./app/server/socketHandlers/onAuth'));
 passport.use(new FacebookTokenStrategy({
     clientID: config.FB.FACEBOOK_APP_ID,
     clientSecret: config.FB.FACEBOOK_APP_SECRET,
@@ -89,7 +89,7 @@ passport.use(new FacebookTokenStrategy({
     // console.log(pn);
 
     process.nextTick(function () {
-      (require('./app/server/socketHandlers/onAuth'))(profile, pn, fbToken, iosToken, function(err, user) {
+      onAuth(profile, pn, fbToken, iosToken, function(err, user) {
         if (err) console.log('Error in onAuth:', err);
         else done(null, user);  
       });
