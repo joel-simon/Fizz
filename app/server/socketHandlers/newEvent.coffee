@@ -6,16 +6,18 @@ logError = utils.logError
 getUserSession = utils.getUserSession
 
 module.exports = (data, socket, cb) ->
+    handle = cb || console.log 
     user       = getUserSession(socket)
     text       = data.text;
-    console.log "NEW EVENT CALLED. Text: #{text}"
+    console.log "NEW EVENT CALLED. Data:", JSON.stringify data 
     events.add user, text, (err, eid) =>
-      return logError(err) if err
+      return (handle err) if err?
       async.parallel {
         event: (cb) -> events.get(eid, cb)
         messages: (cb) -> events.getMoreMessages(eid, 0, cb)
       },
       (err, result) ->
+        return (handle err) if err?
         messages = result.messages;
         evnt = result.event;
         data = {};
