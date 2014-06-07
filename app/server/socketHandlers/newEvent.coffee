@@ -10,28 +10,24 @@ module.exports = (data, socket, cb) ->
     user       = getUserSession(socket)
     text       = data.text;
     console.log "NEW EVENT CALLED. Data:", JSON.stringify data 
-    events.add user, text, (err, eid) =>
+    events.add user, text, (err, data) =>
       return (handle err) if err?
-      async.parallel {
-        event: (cb) -> events.get(eid, cb)
-        messages: (cb) -> events.getMoreMessages(eid, 0, cb)
-      },
-      (err, result) ->
-        return (handle err) if err?
-        messages = result.messages;
-        evnt = result.event;
-        data = {};
-        data[eid] = [{
-          eid : evnt.eid
-          creator : user.uid
-          creationTime : evnt.creationTime
-          messages : messages
-          invites : [user]
-          guests : [user.uid]
-          clusters : []
-        }]
-        console.log('Emitting from newEvent:', JSON.stringify(data))
-        if cb
-          cb err, eid
-        if (socket.emit)
-          socket.emit 'newEvents', data
+      console.log 'newEventData', data
+      eid = data.eid
+      creationTime = data.creationTime
+      messages = [{mid:1, eid:data.eid, text:text, marker:null,creationTime:creationTime}];
+      newEvents = {};
+      newEvents[eid] = [{
+        eid : eid
+        creator : user.uid
+        creationTime : creationTime
+        messages : messages
+        invites : [user]
+        guests : [user.uid]
+        clusters : []
+      }]
+      console.log('Emitting from newEvent:', JSON.stringify(newEvents))
+      if cb
+        cb err, eid
+      if (socket.emit)
+        socket.emit 'newEvents', newEvents
