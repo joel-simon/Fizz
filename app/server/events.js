@@ -47,6 +47,11 @@ exports.add = function(user, text, callback) {
   });
 }
 
+exports.delete = function(eid, callback) {
+  var q1 = "UPDATE events set death_time = NOW() WHERE eid = $1";
+  db.query(q1, [eid], callback);
+}
+
 // returns null on failure
 exports.get = function(eid, callback) {
   var eid = +eid;

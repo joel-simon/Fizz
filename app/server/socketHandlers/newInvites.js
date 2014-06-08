@@ -52,18 +52,19 @@ module.exports = function(data, socket, cb) {
       var msgOut = nameShorten(user.name)+' has invited you to: '+messages[0].text;
       
       var inviteList = oldInvites.concat(newInvites);
-      if (cb) cb();
-      // Emit to people that they are invited.
-      // emit({ 
-      //   eventName: 'newEvents',
-      //   data: [{
-      //     eid : e.eid,
-      //     creator : e.creator,
-      //     creationTime : e.creation_time,
-      //     messages : messages
-      //   }],
-      //   recipients: newInvites
-      // })
+
+      //Emit to people that they are invited.
+      if (cb) return cb(null)
+      emit({ 
+        eventName: 'newEvents',
+        data:{ data: [{
+          eid : e.eid,
+          creator : e.creator,
+          creationTime : e.creation_time,
+          messages : messages
+        }]},
+        recipients: newInvites
+      })
       
       // // Push to people that they are invited.
       // pushIos({

@@ -12,7 +12,7 @@ users = require './../users.js'
 toUnixSecond = (s) ->
   (Date.parse "2014-06-07T02:19:15.606Z") // 1000
 QUERIES = 
-  newFriendList: 
+  newFriendList:
     "
     SELECT (users.uid, users.name, users.fbid)
     FROM users, new_friends
@@ -21,10 +21,10 @@ QUERIES =
   newEventList:
     "
     SELECT events.eid, events.creator, events.creation_time
-    FROM events, invites where
-    invites.uid = $1 AND
-    events.eid = invites.eid AND
-    events.creation_time >= date($2)
+    FROM events where
+    events.eid = ANY($1::int[]) AND
+    events.creation_time >= date($2) AND
+    events.death_time IS NOT NULL
     ORDER BY creation_time
     "
   newMessageList:
@@ -60,11 +60,33 @@ QUERIES =
     events.eid = ANY($1::int[]) AND
     (events.last_cluster_update >= $2 OR events.last_accepted_update > $2)
     "
+  deadEventList:
+    "
+    SELECT events.eid
+    FROM events, invites WHERE
+    events.eid = invites.eid AND
+    invites.uid = $1 AND
+    events.death_time IS NOT NULL AND
+    events.creation_time <= date($2) AND
+    events.death_time >= date($2)
+    "
+  updateUser:
+    "
+    UPDATE users
+    SET last_login = NOW()
+    WHERE uid = $1
+    "
 
-handle = (socket, cb) ->
+connect = (socket, cb) ->
   user = getUserSession(socket)
   console.log user
-  query =  "SELECT eid FROM invites WHERE uid = $1"
+  query =  "
+    SELECT invites.eid FROM
+    invites, events WHERE
+    invites.uid = $1 AND
+    invites.eid = events.eid AND
+    events.death_time IS NULL
+    "
   db.query query, [user.uid], (err, results) ->
     return logError(err) if err
     invited_list = results?.rows?.map((e) -> e.eid)
@@ -74,7 +96,7 @@ handle = (socket, cb) ->
         values = [user.uid]
         db.query QUERIES.newFriendList, values, cb
       "newEventList": (cb) -> 
-        values = [user.uid, user.appUserDetails.lastLogin]
+        values = [invited_list, user.appUserDetails.lastLogin]
 
         db.query QUERIES.newEventList, values, (err, results) ->
           return cb err if err?
@@ -82,9 +104,7 @@ handle = (socket, cb) ->
             e.creationTime = toUnixSecond e.creation_time
             delete e.creation_time
           console.log results.rows
-          cb null, results.rows
-
-                     
+          cb null, results.rows               
       "newMessageList": (cb) -> 
         values = [invited_list, user.appUserDetails.lastLogin]
         db.query QUERIES.newMessageList, values, (err, results) ->
@@ -126,10 +146,14 @@ handle = (socket, cb) ->
           cb null, data
 
       "deadEventList": (cb) ->
-        cb null, {rows:[]}
+        values = [user.uid, user.appUserDetails.lastLogin]
+        db.query QUERIES.deadEventList, values, cb
 
       "fbToken" : (cb) ->
         users.getFbToken(user.uid, cb)
+
+      "updateUser" : (cb) ->
+        db.query QUERIES.updateUser, [user.uid], cb
     },
     (err, results) ->
       return console.log('Connection Err:',err) if err
@@ -145,10 +169,10 @@ handle = (socket, cb) ->
         fbToken       : results.fbToken
         suggestedInvites : []
       
-      console.log 'Emitting:', JSON.stringify data
+      console.log 'Emitting:', (JSON.stringify data,null,'\t')
       if socket.emit?
         socket.emit('onLogin', data)
       cb(null) if cb?
       )
 
-module.exports = handle
+module.exports = connect

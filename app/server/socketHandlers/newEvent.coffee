@@ -26,7 +26,7 @@ module.exports = (data, socket, cb) ->
           guests : [user.uid]
           clusters : []
         }]
-      console.log('Emitting from newEvent:', JSON.stringify(newEvents))
+      # console.log('Emitting from newEvent:', JSON.stringify(newEvents))
       if cb
         cb err, eid
       if (socket.emit)
