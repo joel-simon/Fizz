@@ -22,6 +22,22 @@ var pg = require('pg');
 var dbstring = 'postgres://Fizz:derptopia@fizzdbinstance.cdzhdhngrg63.us-east-1.rds.amazonaws.com:5432/fizzdb';
 
 var db = require('./db.js');
+
+exports.parse = function(data) {
+	var user = {
+		eid: +data.eid,
+		pn: data.pn,
+		name: data.name
+	}
+	if (data.fbid) {
+		user.appUserDetails = {
+			fbid: +data.fbid,
+			lastLogin: Date.parse(data.last_login)
+		}
+	}
+	return user
+}
+
 exports.isConnected = function(uid, callback) {
 	if(!io) io = require('../../app.js').io;
 	return(io.sockets.clients(''+uid).length > 0);
@@ -37,7 +53,12 @@ exports.get = function(uid, cb) {
     	else {
     		var r0 = result.rows[0]
     		var user = { uid: r0.uid, pn : r0.pn, name : r0.name}
-    		if (r0.fbid) user.appUserDetails = { fbid: r0.fbid , lastLogin: r0.last_login }
+    		if (r0.fbid) {
+    			user.appUserDetails = {
+    				fbid: r0.fbid,
+    				lastLogin: Date.parse(r0.last_login)
+    			}
+    		}
 	    	cb(null, user);
 	    }
 	});
@@ -66,9 +87,7 @@ exports.getFromFbid = function(fbid, cb) {
     	if (err) cb(err);
     	else if (!result.rows.length) cb(null, null);
     	else {
-    		var r0 = result.rows[0]
-    		var user = { uid: r0.uid, pn : r0.pn, name : r0.name}
-    		if (r0.fbid) user.appUserDetails = { fbid: r0.fbid , lastLogin: r0.last_login }
+    		var user = exports.parse(result.rows[0])
 	    	cb(null, user);
 	    }
     });
@@ -80,9 +99,7 @@ exports.getFromPn = function(pn, cb) {
     	if (err) cb(err);
     	else if (!result.rows.length) cb(null, null);
     	else {
-    		var r0 = result.rows[0]
-    		var user = { uid: r0.uid, pn : r0.pn, name : r0.name}
-    		if (r0.fbid) user.appUserDetails = { fbid: r0.fbid , lastLogin: r0.last_login }
+    	  var user = exports.parse(result.rows[0])
 	    	cb(null, user);
 	    }
     });
@@ -128,8 +145,8 @@ exports.getOrAddMember = function(profile, fbToken, pn, platform, phoneToken, cb
 				var q1 = "INSERT into users (pn, name, fbid, platform, last_login, fbtoken) values($1,$2,$3,$4, NOW(),$5) RETURNING uid, last_login";
 				db.query(q1, [pn, profile.displayName, fbid, platform, fbToken], function(err, result) {
 					if (err) return cb(err);
-					log('Created', profile.displayName+'as Member.');
-					makeFriends(result.rows[0].uid, result.rows[0].last_login);
+					log('Created', profile.displayName+' as Member.');
+					makeFriends(result.rows[0].uid, Date.parse(result.rows[0].last_login));
 				});
 			}
 		});

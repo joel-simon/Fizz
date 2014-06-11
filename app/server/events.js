@@ -57,8 +57,11 @@ exports.get = function(eid, callback) {
   var eid = +eid;
   var q1 = "SELECT * FROM events WHERE events.eid = $1";
   db.query(q1, [eid], function(err, result) {
-    if (err) callback (err);
-    else callback(null, result.rows[0]);
+    if (err) return callback (err);
+    var event = result.rows[0];
+    event.creationTime = Date.parse(event.creation_time);
+    delete event.creation_time;
+    callback(null, event);
   });
 }
 
@@ -128,14 +131,22 @@ exports.getMoreMessages = function(eid, mid, cb) {
     else cb(null, results.rows);
   });
 }
+
+exports.getGuestList = function(eid, callback) {
+  q1 = "SELECT array_agg(uid) FROM invites WHERE eid = $1 and accepted = true"
+  db.query(q1, [eid], function(err, result) {
+    if (err) callback(err);
+    else callback(null, result.rows[0]['array_agg']);
+  });
+}
+
 exports.getInviteList = function(eid, cb) {
-  var q = "SELECT (users.uid, pn, name, fbid, accepted) FROM users, invites WHERE invites.eid = $1 and users.uid = invites.uid";
+  var q = "SELECT users.uid, pn, name, fbid, accepted FROM users, invites WHERE invites.eid = $1 and users.uid = invites.uid";
   db.query(q, [eid], function(err, result) {
     if (err) cb(err);
     else cb(null, result.rows);
   });
 }
-
 
 exports.addInvites = function(eid, inviter, users, confirmed, cb) {
   var q = "insert into invites (eid, uid, inviter, confirmed) values ";

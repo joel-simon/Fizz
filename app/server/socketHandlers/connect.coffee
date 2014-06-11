@@ -9,6 +9,9 @@ types = require './../fizzTypes.js'
 check = require('easy-types').addTypes types
 db = require './../db.js'
 users = require './../users.js'
+args = require './../args.js'
+pretty = (s) -> JSON.stringify s, null, '\t'
+
 toUnixSecond = (s) ->
   (Date.parse "2014-06-07T02:19:15.606Z") // 1000
 QUERIES = 
@@ -20,7 +23,7 @@ QUERIES =
     "
   newEventList:
     "
-    SELECT events.eid, events.creator, events.creation_time
+    SELECT *
     FROM events where
     events.eid = ANY($1::int[]) AND
     events.creation_time >= date($2) AND
@@ -29,7 +32,8 @@ QUERIES =
     "
   newMessageList:
     "
-    SELECT * FROM messages WHERE
+    SELECT *
+    FROM messages WHERE
     messages.eid = ANY($1::int[]) AND
     messages.creation_time >= date($2)
     order by creation_time
@@ -76,8 +80,22 @@ QUERIES =
     SET last_login = NOW()
     WHERE uid = $1
     "
+  suggestedInvites:
+    "
+    SELECT users.*, invites.eid FROM
+    invites, events, users WHERE
+    events.creator = $1 AND
+    events.eid = invites.eid AND
+    users.uid = invites.uid AND
+    invites.confirmed = FALSE
+    "
 
 connect = (socket, cb) ->
+
+  if (args.fakeData and socket?.emit)
+    fakeData = require('./../fakeData').ONLOGIN
+    console.log 'EMITTING FAKE DATA', pretty fakeData
+    return socket.emit('onLogin', fakeData)
   user = getUserSession(socket)
   console.log user
   query =  "
@@ -97,13 +115,12 @@ connect = (socket, cb) ->
         db.query QUERIES.newFriendList, values, cb
       "newEventList": (cb) -> 
         values = [invited_list, user.appUserDetails.lastLogin]
-
         db.query QUERIES.newEventList, values, (err, results) ->
           return cb err if err?
+          console.log 'newevents', results.rows
           for e in results.rows
-            e.creationTime = toUnixSecond e.creation_time
+            e.creationTime = Date.parse e.creation_time
             delete e.creation_time
-          console.log results.rows
           cb null, results.rows               
       "newMessageList": (cb) -> 
         values = [invited_list, user.appUserDetails.lastLogin]
@@ -152,8 +169,16 @@ connect = (socket, cb) ->
       "fbToken" : (cb) ->
         users.getFbToken(user.uid, cb)
 
-      "updateUser" : (cb) ->
-        db.query QUERIES.updateUser, [user.uid], cb
+      # "updateUser" : (cb) ->
+      #   db.query QUERIES.updateUser, [user.uid], cb
+      "suggestedInvites" : (cb) ->
+        db.query QUERIES.suggestedInvites,[user.uid], (err, results) ->
+          return cb err if err?
+          data = {}
+          for u in results.rows
+            data[u.eid] = [] if not data[u.eid]?
+            data[u.eid].push(users.parse(u))
+          cb null, data
     },
     (err, results) ->
       return console.log('Connection Err:',err) if err
@@ -167,7 +192,7 @@ connect = (socket, cb) ->
         guests        : results.guests
         clusters      : results.clusters
         fbToken       : results.fbToken
-        suggestedInvites : []
+        suggestedInvites : results.suggestedInvites
       
       console.log 'Emitting:', (JSON.stringify data,null,'\t')
       if socket.emit?
