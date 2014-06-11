@@ -11,3 +11,4 @@ err.txt
 *.DS_Store
 *.swp
 .elasticbeanstalk/
+node_modules
