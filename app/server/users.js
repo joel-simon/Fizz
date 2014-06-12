@@ -32,7 +32,7 @@ exports.parse = function(data) {
 	if (data.fbid) {
 		user.appUserDetails = {
 			fbid: +data.fbid,
-			lastLogin: Date.parse(data.last_login)
+			lastLogin: (data.last_login)
 		}
 	}
 	return user
@@ -56,7 +56,7 @@ exports.get = function(uid, cb) {
     		if (r0.fbid) {
     			user.appUserDetails = {
     				fbid: r0.fbid,
-    				lastLogin: Date.parse(r0.last_login)
+    				lastLogin: (r0.last_login)
     			}
     		}
 	    	cb(null, user);
@@ -126,7 +126,6 @@ exports.getOrAddMember = function(profile, fbToken, pn, platform, phoneToken, cb
 	exports.getFromFbid(fbid, function(err, user) {
 		if (err) return cb(err);
 		if (user) return cb(null, user);
-	
 		exports.getFromPn(pn, function(err, pnUser) {
 			if (err) return cb(err);
 			/*
@@ -134,19 +133,19 @@ exports.getOrAddMember = function(profile, fbToken, pn, platform, phoneToken, cb
 				phone user.
 			*/
 			if (pnUser) {
-				var q1 = "UDPATE users SET type = $1, fbid = $2, WHERE ";
-				db.query(q1, [platform, fbid], function(err, result) {
+				var q1 = "UDPATE users SET type = $1, fbid = $2, WHERE uid = $3";
+				db.query(q1, [platform, fbid, pnUser.uid], function(err, result) {
 					if (err) return cb (err);
 					log('Upgraded '+pnUser.uid+' to member.');
 					makeFriends(pnUser.uid)
 				});
 			// they have never had any interaction with fizz. 
 			} else {
-				var q1 = "INSERT into users (pn, name, fbid, platform, last_login, fbtoken) values($1,$2,$3,$4, NOW(),$5) RETURNING uid, last_login";
-				db.query(q1, [pn, profile.displayName, fbid, platform, fbToken], function(err, result) {
+				var q1 = "INSERT into users (pn, name, fbid, platform, last_login, fbtoken) values($1,$2,$3,$4,$5,$6) RETURNING uid, last_login";
+				db.query(q1, [pn, profile.displayName, fbid, platform, Date.now(), fbToken], function(err, result) {
 					if (err) return cb(err);
 					log('Created', profile.displayName+' as Member.');
-					makeFriends(result.rows[0].uid, Date.parse(result.rows[0].last_login));
+					makeFriends(result.rows[0].uid, (result.rows[0].last_login));
 				});
 			}
 		});
@@ -180,8 +179,8 @@ function getOrAddPhone (pn, name, cb) {
 			// var key = newKey()
 			// store.hset('key->uid', key, user.uid);
 			// user.key = key;
-			var q1 = "INSERT INTO users (pn, name, platform) VALUES ($1,$2,$3) RETURNING uid";
-			db.query(q1, [pn, name, 'sms'], function(err, result) {
+			var q1 = "INSERT INTO users (pn, name, platform, last_login) VALUES ($1,$2,$3,$4) RETURNING uid";
+			db.query(q1, [pn, name, 'sms', 0], function(err, result) {
 				if (err) return cb(err);
 				log('Created phone user '+name);
 				var uid = +result.rows[0].uid

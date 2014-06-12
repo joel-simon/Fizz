@@ -10,76 +10,60 @@ check = require('easy-types').addTypes types
 db = require './../db.js'
 users = require './../users.js'
 args = require './../args.js'
+logError = utils.logError
 pretty = (s) -> JSON.stringify s, null, '\t'
 
-toUnixSecond = (s) ->
-  (Date.parse "2014-06-07T02:19:15.606Z") // 1000
 QUERIES = 
   newFriendList:
-    "
-    SELECT (users.uid, users.name, users.fbid)
+    "SELECT (users.uid, users.name, users.fbid)
     FROM users, new_friends
-    WHERE new_friends.friend = users.uid AND new_friends.uid = $1
-    "
+    WHERE new_friends.friend = users.uid AND new_friends.uid = $1"
   newEventList:
-    "
-    SELECT *
-    FROM events where
-    events.eid = ANY($1::int[]) AND
-    events.creation_time >= date($2) AND
-    events.death_time IS NOT NULL
-    ORDER BY creation_time
-    "
+    "SELECT events.* FROM
+    events, invites WHERE
+    events.eid = invites.eid AND
+    invites.uid = $1 AND
+    invites.invited_time >= $2 AND
+    events.death_time IS NULL
+    ORDER BY creation_time"
   newMessageList:
-    "
-    SELECT *
+    "SELECT *
     FROM messages WHERE
     messages.eid = ANY($1::int[]) AND
-    messages.creation_time >= date($2)
-    order by creation_time
-    "
+    messages.creation_time >= $2
+    order by creation_time"
   clusters:
-    "
-    SELECT eid, clusters
+    "SELECT eid, clusters
     FROM events WHERE
     events.eid = ANY($1::int[]) AND
-    last_cluster_update >= date($2)
-    "
+    last_cluster_update >= $2"
   guests:
-    "
-    SELECT array_agg(invites.uid), invites.eid
+    "SELECT array_agg(invites.uid), invites.eid
     FROM invites, events WHERE
     events.eid = invites.eid AND 
     invites.accepted = true AND
     events.eid = ANY($1::int[]) AND
     (events.last_cluster_update >= $2 OR events.last_accepted_update > $2)
-    GROUP BY invites.eid
-    "
+    GROUP BY invites.eid"
   invitees:
-    "
-    SELECT users.uid, users.pn, users.fbid, users.name, invites.eid 
+    "SELECT users.uid, users.pn, users.fbid, users.name, invites.eid 
     FROM invites, events, users WHERE
     users.uid = invites.uid AND 
     events.eid = invites.eid AND
     events.eid = ANY($1::int[]) AND
-    (events.last_cluster_update >= $2 OR events.last_accepted_update > $2)
-    "
+    (events.last_cluster_update >= $2 OR events.last_accepted_update > $2)"
   deadEventList:
-    "
-    SELECT events.eid
+    "SELECT events.eid
     FROM events, invites WHERE
     events.eid = invites.eid AND
     invites.uid = $1 AND
     events.death_time IS NOT NULL AND
-    events.creation_time <= date($2) AND
-    events.death_time >= date($2)
-    "
+    events.creation_time <= $2 AND
+    events.death_time >= $2"
   updateUser:
-    "
-    UPDATE users
-    SET last_login = NOW()
-    WHERE uid = $1
-    "
+    "UPDATE users
+    SET last_login = $1
+    WHERE uid = $2"
   suggestedInvites:
     "
     SELECT users.*, invites.eid FROM
@@ -91,13 +75,14 @@ QUERIES =
     "
 
 connect = (socket, cb) ->
-
-  if (args.fakeData and socket?.emit)
+  if (args.fakeData)
     fakeData = require('./../fakeData').ONLOGIN
-    console.log 'EMITTING FAKE DATA', pretty fakeData
-    return socket.emit('onLogin', fakeData)
+    console.log 'EMITTING FAKE onlogin:', pretty fakeData
+    socket.emit('onLogin', fakeData) if socket.emit
+    return
+
   user = getUserSession(socket)
-  console.log user
+  lastLogin = user.appUserDetails.lastLogin
   query =  "
     SELECT invites.eid FROM
     invites, events WHERE
@@ -114,7 +99,7 @@ connect = (socket, cb) ->
         values = [user.uid]
         db.query QUERIES.newFriendList, values, cb
       "newEventList": (cb) -> 
-        values = [invited_list, user.appUserDetails.lastLogin]
+        values = [user.uid, lastLogin]
         db.query QUERIES.newEventList, values, (err, results) ->
           return cb err if err?
           console.log 'newevents', results.rows
@@ -123,12 +108,12 @@ connect = (socket, cb) ->
             delete e.creation_time
           cb null, results.rows               
       "newMessageList": (cb) -> 
-        values = [invited_list, user.appUserDetails.lastLogin]
+        values = [invited_list, lastLogin]
         db.query QUERIES.newMessageList, values, (err, results) ->
           return cb err if err?
           data = {}
           for m in results.rows
-            m.creationTime = toUnixSecond m.creation_time
+            m.creationTime = m.creation_time
             m.text = m.data
             delete m.creation_time
             delete m.data
@@ -137,7 +122,7 @@ connect = (socket, cb) ->
             data[m.eid].push m
           cb null, data
       "clusters": (cb) ->
-        values = [invited_list, user.appUserDetails.lastLogin]
+        values = [invited_list, lastLogin]
         db.query QUERIES.clusters, values, (err, results) ->
           return cb err if err?
           data = {}
@@ -145,7 +130,7 @@ connect = (socket, cb) ->
             data[u.eid] = u.clusters
           cb null, data
       "guests": (cb) -> 
-        values = [invited_list, user.appUserDetails.lastLogin]
+        values = [invited_list, lastLogin]
         db.query QUERIES.guests, values, (err, results) ->
           return cb err if err?
           data = {}
@@ -153,7 +138,7 @@ connect = (socket, cb) ->
             data[u.eid] = u.array_agg
           cb null, data
       "invitees": (cb) ->
-        values = [invited_list, user.appUserDetails.lastLogin]
+        values = [invited_list, lastLogin]
         db.query QUERIES.invitees, values, (err, results) ->
           return cb err if err?
           data = {}
@@ -163,7 +148,7 @@ connect = (socket, cb) ->
           cb null, data
 
       "deadEventList": (cb) ->
-        values = [user.uid, user.appUserDetails.lastLogin]
+        values = [user.uid, lastLogin]
         db.query QUERIES.deadEventList, values, cb
 
       "fbToken" : (cb) ->

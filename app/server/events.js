@@ -16,23 +16,24 @@ var rollback = function(client, done) {
 
 
 exports.add = function(user, text, callback) {
-  var q1 = "INSERT INTO events (creator, clusters) VALUES ($1, $2) RETURNING eid, creation_time";
-  var q2 = "INSERT INTO messages (mid, eid, uid, data) VALUES ($1, $2, $3, $4)";
-  var q3 = "INSERT INTO invites (eid, uid, inviter, confirmed, accepted) VALUES ($1, $2, $3, $4, $5)";
+  var q1 = "INSERT INTO events (creator, clusters, creation_time, last_cluster_update, last_accepted_update) VALUES ($1, $2, $3, $3, $3) RETURNING eid, creation_time";
+  var q2 = "INSERT INTO messages (mid, eid, uid, data, creation_time) VALUES ($1, $2, $3, $4, $5)";
+  var q3 = "INSERT INTO invites (eid, uid, inviter, confirmed, accepted, invited_time, accepted_time) VALUES ($1, $2, $3, $4, $5, $6, $6)";
   var eid, creationTime; 
+  var now = Date.now();
+  console.log('foo',now);
   pg.connect(dbstring, function(err, client, done) {
     if (err) return callback(err);
     async.waterfall([
       function(cb) {client.query('BEGIN', cb)},
       function() {process.nextTick(arguments[arguments.length-1])},
-      function() {client.query(q1, [ user.uid, '{}' ], arguments[arguments.length-1]) },
+      function() {client.query(q1, [ user.uid, '{}', now], arguments[arguments.length-1]) },
       function(result, cb) {
         eid = result.rows[0].eid;
-        creationTime = Date.parse(result.rows[0].creation_time);
-        client.query(q2, [ 1, eid, user.uid, text ], cb)
+        client.query(q2, [ 1, eid, user.uid, text, now ], cb)
       },
       function() {
-        client.query(q3, [eid, user.uid, user.uid, true, true], arguments[arguments.length-1])
+        client.query(q3, [eid, user.uid, user.uid, true, true, now], arguments[arguments.length-1])
       }
     ],
     function(err, results) {
@@ -41,15 +42,15 @@ exports.add = function(user, text, callback) {
         callback(err);
       } else {
         client.query('COMMIT', done);
-        return callback(null, {eid:eid, creationTime:creationTime});
+        return callback(null, {eid:eid, creationTime:now});
       }
     });
   });
 }
 
 exports.delete = function(eid, callback) {
-  var q1 = "UPDATE events set death_time = NOW() WHERE eid = $1";
-  db.query(q1, [eid], callback);
+  var q1 = "UPDATE events set death_time = $1 WHERE eid = $2";
+  db.query(q1, [Date.now(), eid], callback);
 }
 
 // returns null on failure
@@ -59,24 +60,24 @@ exports.get = function(eid, callback) {
   db.query(q1, [eid], function(err, result) {
     if (err) return callback (err);
     var event = result.rows[0];
-    event.creationTime = Date.parse(event.creation_time);
+    event.creationTime = (event.creation_time);
     delete event.creation_time;
     callback(null, event);
   });
 }
 
 exports.join = function(eid, uid, callback) {
-  var q1 = "UPDATE invites SET accepted = true, accepted_time = NOW() "+
-        "WHERE eid = $1 and uid = $2";
-  var q2 = "UPDATE events SET last_accepted_update = NOW() where eid = $1";
+  var q1 = "UPDATE invites SET accepted = true, accepted_time = $1 "+
+        "WHERE eid = $2 and uid = $3";
+  var q2 = "UPDATE events SET last_accepted_update = $1 where eid = $2";
 
   pg.connect(dbstring, function(err, client, done) {
     if (err) return callback(err);
     async.series([
       function(cb) {client.query('BEGIN', cb)},
       function(cb) {process.nextTick(cb)},
-      function(cb) {client.query(q1, [ eid, uid ], cb) },
-      function(cb) {client.query(q2, [ eid ], cb)}
+      function(cb) {client.query(q1, [ Date.now(), eid, uid ], cb) },
+      function(cb) {client.query(q2, [ Date.now(), eid ], cb)}
     ],
     function(err, results){
       if (err) {
@@ -91,17 +92,17 @@ exports.join = function(eid, uid, callback) {
 }
 
 exports.leave = function(eid, uid, callback) {
-  var q1 = "UPDATE invites SET accepted = false, accepted_time = NOW() "+
-        "WHERE eid = $1 and uid = $2";
-  var q2 = "UPDATE events SET last_accepted_update = NOW() where eid = $1";
+  var q1 = "UPDATE invites SET accepted = false, accepted_time = $1 "+
+        "WHERE eid = $2 and uid = $3";
+  var q2 = "UPDATE events SET last_accepted_update = $1 where eid = $2";
 
   pg.connect(dbstring, function(err, client, done) {
     if (err) return logError(err);
     async.series([
       function(cb) {client.query('BEGIN', cb)},
       function(cb) {process.nextTick(cb)},
-      function(cb) {client.query(q1, [ eid, uid ], cb) },
-      function(cb) {client.query(q2, [ eid ], cb)}
+      function(cb) {client.query(q1, [ Date.now(), eid, uid ], cb) },
+      function(cb) {client.query(q2, [ Date.now(), eid ], cb)}
     ],
     function(err, results){
       if (err) {
@@ -119,8 +120,8 @@ exports.addMessage = function(eid, uid, text, callback) {
   // text = sanitize(msg.text).xss();
   store.hincrby('messages', ''+eid, 1, function(err, mid) {
     if (err) return callback(err);
-    var q2 = "INSERT INTO messages (mid, eid, uid, data) VALUES ($1, $2, $3, $4)";
-    db.query(q2, [mid+1, eid, uid, text], callback);
+    var q2 = "INSERT INTO messages (mid, eid, uid, data, creation_time) VALUES ($1, $2, $3, $4, $5)";
+    db.query(q2, [mid+1, eid, uid, text, Date.now()], callback);
   });
 }
 
@@ -149,11 +150,12 @@ exports.getInviteList = function(eid, cb) {
 }
 
 exports.addInvites = function(eid, inviter, users, confirmed, cb) {
-  var q = "insert into invites (eid, uid, inviter, confirmed) values ";
+  var q = "insert into invites (eid, uid, inviter, confirmed, invited_time, accepted_time) values ";
   var values = [];
+  var now = Date.now()
   for (var i = 0; i < users.length; i++) {
     var u = users[i];
-    values=values.concat('('+([eid,u.uid,inviter,confirmed].join(','))+')');
+    values=values.concat('('+([eid,u.uid,inviter,confirmed, now, now].join(','))+')');
   }
   db.query(q+(values.join(',')),[], cb);
 }

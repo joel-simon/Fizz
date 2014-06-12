@@ -1,86 +1,69 @@
+Joel =
+  uid: 1
+  pn: "+13475346100"
+  name: "Domo"
+  appUserDetails: { fbid : 1380180579 }
+Andrew =
+  uid: 2
+  pn: "+13107102956"
+  name: "ASweet"
+  appUserDetails: { fbid : 100000157939878 }
+Antonio =
+  uid: 3
+  pn: "+19494647070"
+  name: "Anton.io"
+  appUserDetails: { fbid : 1234567980 }
+Russell =
+  uid: 4
+  pn: "+3523189733"
+  name: "CoolBrow"
+  appUserDetails: { fbid : 987654321 }
 
+JoelsEvent =
+  "eid" : 1
+  "creator" : Joel.uid
+  "creationTime" : 1402107555
+  "location" : "Pamelas"
+  "time" : null
+AndrewsEvent = 
+  "eid" : 2
+  "creator" : Andrew.uid
+  "creationTime" : 1402107555
+  "location" : null
+  "time" : null 
 
-SAMPLE_DATA = 
+module.exports = 
   ONLOGIN:
-    
-
-SAMPLE_DATA = 
-  ONLOGIN:
-    "me":
-      "uid": 580
-      "pn": "+13475346100"
-      "name": "Joel Simon"
-      "appUserDetails":
-        "fbid": 1380180579
-        "lastLogin": "1402104555"
+    "me": Joel
+    "fbToken": "FBTOKEN"
     "newFriendList": []
-    "newEventList": [
-      "eid" : 302
-      "creator" : 580
-      "creationTime" : 1402107555
-
-      "eid" : 303
-      "creator" : 580
-      "creationTime" : 1402107555      
-    ]
+    "newEventList": [ JoelsEvent, AndrewsEvent ]
     "newMessages":
       "302": [
           "mid": 1
-          "eid": 302
-          "uid": 580
+          "eid": JoelsEvent.eid
+          "uid": Joel.uid
           "marker": null
           "creationTime": 1402107555
-          "text": "JoelEvent1"
+          "text": "Joels Event! Free Sushi!"
       ]
       "303": [
           "mid": 1
-          "eid": 303
-          "uid": 580
+          "eid": AndrewsEvent.eid
+          "uid": Andrew.uid
           "marker": null
           "creationTime": 1402107555
-          "text": "JoelEvent2"
+          "text": "Andrews Event! Free sneakers!"
       ]
     "deadEventList": []
     "invitees":
-      "302": [
-          "uid": 580
-          "name": "Joel Simon"
-          "pn": "+13475346100"
-          "appUserDetails":
-            "fbid": 580,
-      
-          "uid": 582
-          "name": "Antonio Ono"
-          "pn": "+19494647070"
-          "appUserDetails":
-            "fbid": 582
-      ]
-      "303": [
-          {"uid": 580
-          "name": "Joel Simon"
-          "pn": "+13475346100"
-          "appUserDetails":
-            "fbid": 580},
-
-          {"uid": 583
-          "name": "Russell Cullen"
-          "pn": "+3523189733 "
-          "appUserDetails":
-            "fbid": 583}
-      ]
+      "1": [ Joel, Antonio ]
+      "2": [ Andrew, Russell ]
     "guests":
-      "302": [ 580 ]
-      "303": [ 580 ]
+      "1": [ Joel.uid ]
+      "2": [ Andrew.uid ]
     "clusters":
-      "302": []
-      "303": []
-    "fbToken": "FBTOKEN"
+      "1": []
+      "2": [ [ Andrew.uid, Russell.uid ] ]
     "suggestedInvites":
-      "303": [
-          "eid": 303
-          "pn": "+3523189733 "
-          "name": "Russell Cullen"
-          "appUserDetails":
-            "fbid": 987654321
-            "lastLogin": 1402384632000
-        ]
+      "1": [ {"invitees": [Andrew, Russell], "inviter":  Antonio.uid} ]
