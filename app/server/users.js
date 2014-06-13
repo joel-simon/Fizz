@@ -25,7 +25,7 @@ var db = require('./db.js');
 
 exports.parse = function(data) {
 	var user = {
-		eid: +data.eid,
+		uid: +data.uid,
 		pn: data.pn,
 		name: data.name
 	}
@@ -75,7 +75,8 @@ exports.getFbToken = function(uid, cb) {
 	db.query(q1, [uid], function(err, result) {
     	if (err) cb(err);
     	else {
-    		cb (null, result.rows[0].fbtoken)
+    		if (result.rows.length === 0) cb (null, null)
+    		else cb (null, result.rows[0].fbtoken)
     	}
 	});
 }

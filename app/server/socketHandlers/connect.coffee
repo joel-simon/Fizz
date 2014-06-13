@@ -19,7 +19,7 @@ QUERIES =
     FROM users, new_friends
     WHERE new_friends.friend = users.uid AND new_friends.uid = $1"
   newEventList:
-    "SELECT events.* FROM
+    "SELECT eid, creator, location, creation_time FROM
     events, invites WHERE
     events.eid = invites.eid AND
     invites.uid = $1 AND
@@ -80,7 +80,7 @@ connect = (socket, cb) ->
     console.log 'EMITTING FAKE onlogin:', pretty fakeData
     socket.emit('onLogin', fakeData) if socket.emit
     return
-
+  start = new Date().getTime();
   user = getUserSession(socket)
   lastLogin = user.appUserDetails.lastLogin
   query =  "
@@ -104,7 +104,7 @@ connect = (socket, cb) ->
           return cb err if err?
           console.log 'newevents', results.rows
           for e in results.rows
-            e.creationTime = Date.parse e.creation_time
+            e.creationTime = +e.creation_time
             delete e.creation_time
           cb null, results.rows               
       "newMessageList": (cb) -> 
@@ -113,7 +113,7 @@ connect = (socket, cb) ->
           return cb err if err?
           data = {}
           for m in results.rows
-            m.creationTime = m.creation_time
+            m.creationTime = +m.creation_time
             m.text = m.data
             delete m.creation_time
             delete m.data
@@ -172,13 +172,15 @@ connect = (socket, cb) ->
         newFriendList : results.newFriendList.rows
         newEventList  : results.newEventList
         newMessages   : results.newMessageList
-        deadEventList : results.deadEventList.rows
+        completeEventList : results.deadEventList.rows
         invitees      : results.invitees
         guests        : results.guests
         clusters      : results.clusters
-        fbToken       : results.fbToken
+        fbToken       : results.fbToken || ''
         suggestedInvites : results.suggestedInvites
-      
+      end = new Date().getTime();
+      time = end - start;
+      console.log 'Onlogin took:', time
       console.log 'Emitting:', (JSON.stringify data,null,'\t')
       if socket.emit?
         socket.emit('onLogin', data)
