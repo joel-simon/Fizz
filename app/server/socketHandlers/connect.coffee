@@ -19,7 +19,7 @@ QUERIES =
     FROM users, new_friends
     WHERE new_friends.friend = users.uid AND new_friends.uid = $1"
   newEventList:
-    "SELECT eid, creator, location, creation_time FROM
+    "SELECT events.eid, events.creator, events.location, events.creation_time FROM
     events, invites WHERE
     events.eid = invites.eid AND
     invites.uid = $1 AND

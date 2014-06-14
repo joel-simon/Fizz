@@ -25,14 +25,14 @@ var db = require('./db.js');
 
 exports.parse = function(data) {
 	var user = {
-		uid: +data.uid,
+		uid: parseInt(data.uid),
 		pn: data.pn,
 		name: data.name
 	}
 	if (data.fbid) {
 		user.appUserDetails = {
-			fbid: +data.fbid,
-			lastLogin: (data.last_login)
+			fbid: parseInt(data.fbid),
+			lastLogin: parseInt(data.last_login)
 		}
 	}
 	return user
