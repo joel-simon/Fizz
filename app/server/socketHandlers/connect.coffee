@@ -19,7 +19,7 @@ QUERIES =
     FROM users, new_friends
     WHERE new_friends.friend = users.uid AND new_friends.uid = $1"
   newEventList:
-    "SELECT events.eid, events.creator, events.location, events.creation_time FROM
+    "SELECT events.eid, events.creator, events.location, events.time FROM
     events, invites WHERE
     events.eid = invites.eid AND
     invites.uid = $1 AND
@@ -104,8 +104,9 @@ connect = (socket, cb) ->
           return cb err if err?
           console.log 'newevents', results.rows
           for e in results.rows
-            e.creationTime = +e.creation_time
-            delete e.creation_time
+            e.time = +e.time
+            e.location = e.location || ''
+            # delete e.creation_time
           cb null, results.rows               
       "newMessageList": (cb) -> 
         values = [invited_list, lastLogin]
@@ -144,7 +145,7 @@ connect = (socket, cb) ->
           data = {}
           for u in results.rows
             data[u.eid] = [] if not data[u.eid]?
-            data[u.eid].push({uid:u.uid,name:u.name,pn:u.pn,appUserDetails:{fbid:u.uid}});
+            data[u.eid].push({uid:u.uid,name:u.name,pn:u.pn,appUserDetails:{fbid:u.fbid}});
           cb null, data
 
       "deadEventList": (cb) ->
