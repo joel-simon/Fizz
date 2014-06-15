@@ -177,7 +177,7 @@ function onAuthorizeFail(data, message, error, accept){
     socket.on('getMoreMessages',(function(data){ new require('./app/server/socketHandlers/getMoreMessages ')(data, socket) }));
     socket.on('newMarker',      (function(data){ require('./app/server/socketHandlers/newMarker ')(data, socket) }));
     socket.on('locationChange', (function(data){ require('./app/server/socketHandlers/locationChange')(data, socket) }));
-    // socket.on('disconnect',     (function()    { require('./app/server/socketHandlers/disconnect')(socket) }));
+    socket.on('disconnect',     (function()    { require('./app/server/socketHandlers/disconnect')(socket) }));
 
   }));
 })();
@@ -210,4 +210,5 @@ console.log('#########################################'.rainbow);
 
 // if (args.testing) require('./utilities/serverTests.js');
 
-if (args.testing) require('./app/server/serverInit');
+if (args.init) require('./app/server/serverInit');
+if (args.testing) require('./app/server/serverTest');

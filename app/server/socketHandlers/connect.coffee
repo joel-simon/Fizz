@@ -145,7 +145,7 @@ connect = (socket, cb) ->
           data = {}
           for u in results.rows
             data[u.eid] = [] if not data[u.eid]?
-            data[u.eid].push({uid:u.uid,name:u.name,pn:u.pn,appUserDetails:{fbid:u.fbid}});
+            data[u.eid].push({uid:u.uid,name:u.name,pn:u.pn,appUserDetails:{fbid:+u.fbid}});
           cb null, data
 
       "deadEventList": (cb) ->

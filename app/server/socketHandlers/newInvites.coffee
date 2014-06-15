@@ -1,4 +1,4 @@
-events   = require('./../events.js')
+events   = require('./../events')
 utils     = require('./../utilities.js')
 users     = require('./../users.js')
 async     = require('async')

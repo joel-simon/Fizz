@@ -1,5 +1,5 @@
 class SocketHandler 
-  @events   = require('./../events.js')
+  @events   = require('./../events')
   @utils     = require('./../utilities.js')
   @debug     = @utils.debug
   @fb        = require('./../fb.js')

@@ -1,4 +1,6 @@
 db = require './../db'
+events = require './../events'
+
 getMoreMessages = (data, socket, cb) ->
 	eid = data?.eid
 	oldestMid = data?.oldestMid

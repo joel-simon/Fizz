@@ -3,6 +3,7 @@ exports.sendSms = false;
 exports.pushIos = false;
 exports.dev= false;
 exports.test = false;
+
 process.argv.forEach(function (val, index) {
   if (index > 1) {
     switch(val.split('=')[0]) {
@@ -11,6 +12,12 @@ process.argv.forEach(function (val, index) {
         if (val.length !== 2 || typeof val[1] != 'number')
           throw "Invalid Port, use 'port=x'"
         exports.port = val[1]
+        break;
+      case 'test':
+        exports.testing = true;
+        break;
+      case 'init':
+        exports.init = true;
         break;
       case 'test':
         exports.testing = true;
