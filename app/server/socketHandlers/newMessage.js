@@ -14,8 +14,9 @@ var
   types = require('./../fizzTypes.js'),
   check = require('easy-types').addTypes(types);
 
-var dbstring = 'postgres://Fizz:derptopia@fizzdbinstance.cdzhdhngrg63.us-east-1.rds.amazonaws.com:5432/fizzdb';
-
+// var dbstring = 'postgres://Fizz:derptopia@fizzdbinstance.cdzhdhngrg63.us-east-1.rds.amazonaws.com:5432/fizzdb';
+var db = require('../db');
+var dbstring = db.connString;
 function getUserSession(socket) {
   var user = socket.handshake.user;
   // check.is(user, 'user');
@@ -40,17 +41,18 @@ module.exports = function(data, socket, cb) {
     var inviteList = results.inviteList;
     if (err) return cb(err);
     else if (cb) return cb(null);
-    var out = {};
-    out[eid] = [msg];
     emit({
       eventName: 'newMessages',
       recipients: inviteList,
-      "data": {"data":out}
+      data: {
+        eid:out,
+        messages:[msg]
+      }
     });
-    pushIos({
-      msg: nameShorten(user.name)+': '+text,
-      eid: eid,
-      userList: inviteLists
-    });
+    // pushIos({
+    //   msg: nameShorten(user.name)+': '+text,
+    //   eid: eid,
+    //   userList: inviteLists
+    // });
   });
 }

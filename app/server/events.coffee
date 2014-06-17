@@ -4,26 +4,29 @@ store = require('./redisStore.js').store
 users = require './users.js'
 exports = module.exports
 db = require './db.js'
+check = require('easy-types')
 
 pg = require 'pg'
-dbstring = 'postgres://Fizz:derptopia@fizzdbinstance.cdzhdhngrg63.us-east-1.rds.amazonaws.com:5432/fizzdb'
-
+# dbstring = 'postgres://Fizz:derptopia@fizzdbinstance.cdzhdhngrg63.us-east-1.rds.amazonaws.com:5432/fizzdb'
+dbstring = db.connString;
 rollback = (client, done) ->
   client.query 'ROLLBACK', (err) ->
     done err
 
 exports.add =  (user, text, callback) ->
+  check.is(user, 'user')
+  check.is(text, 'string')
 
   q1 = "INSERT INTO events
       (creator, clusters)
       VALUES ($1, $2)
       RETURNING eid, creation_time"
   
-  q2 = "INSERT INTO messages (mid, eid, uid, data, creation_time)
-       VALUES ($1, $2, $3, $4, $5)"
+  q2 = "INSERT INTO messages (mid, eid, uid, data)
+       VALUES ($1, $2, $3, $4)"
 
-  q3 = "INSERT INTO invites (eid, uid, inviter, confirmed, accepted, invited_time, accepted_time)
-        VALUES ($1, $2, $3, $4, $5, $6, $6)"
+  q3 = "INSERT INTO invites (eid, uid, inviter, confirmed, accepted, accepted_time)
+        VALUES ($1, $2, $3, $4, $5, $6)"
 
   eid = null
   creationTime = null
@@ -31,13 +34,18 @@ exports.add =  (user, text, callback) ->
   pg.connect dbstring, (err, client, done) ->
     return callback err if err
     async.waterfall [
-      (cb) -> client.query 'BEGIN', cb
-      ()-> process.nextTick arguments[arguments.length-1]
-      ()-> client.query q1, [ user.uid, '{}'], arguments[arguments.length-1]
+      (cb) ->
+        client.query 'BEGIN', cb
+      () ->
+        process.nextTick arguments[arguments.length-1]
+      () ->
+        client.query q1, [ user.uid, '{}'], arguments[arguments.length-1]
       (result, cb) ->
         eid = result.rows[0].eid
-        client.query q2, [ 1, eid, user.uid, text, now ], cb
-      ()-> client.query q3, [eid, user.uid, user.uid, true, true, now], arguments[arguments.length-1]
+        creationTime = result.rows[0].creation_time
+        client.query q2, [ 1, eid, user.uid, text], cb
+      ()->
+        client.query q3, [eid, user.uid, user.uid, true, true, now], arguments[arguments.length-1]
     ],
      (err, results) ->
       if (err)

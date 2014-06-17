@@ -171,15 +171,16 @@ exports.emit = function(options) {
   var 
     eventName  = options.eventName,
     data       = options.data,
-    recipients = options.recipients,
-    iosPush    = options.iosPush || null
-    pushRecipients = options.pushRecipients;
+    recipients = options.recipients;
+
+    // iosPush    = options.iosPush || null
+    // pushRecipients = options.pushRecipients;
 
   // Deal with a circular dependency by delaying invocation.
   if(!io) io = require('../../app.js').io;
   log('Emitting '+eventName,
-      'to:'+JSON.stringify(recipients.map(function(u){return u.name}))
-      // 'data:' + JSON.stringify(data)
+      '\nTo:'+JSON.stringify(recipients.map(function(u){return u.name})),
+      '\nData:' + JSON.stringify(data)
       );
 
   async.each(recipients, function(user, callback) {

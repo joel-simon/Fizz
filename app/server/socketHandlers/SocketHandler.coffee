@@ -10,7 +10,7 @@ class SocketHandler
   @pushIos   = @output.pushIos
   types = require('./../fizzTypes.js')
   @check = require('easy-types').addTypes(types)
-  @dbstring = 'postgres://Fizz:derptopia@fizzdbinstance.cdzhdhngrg63.us-east-1.rds.amazonaws.com:5432/fizzdb'
+  # @dbstring = 'postgres://Fizz:derptopia@fizzdbinstance.cdzhdhngrg63.us-east-1.rds.amazonaws.com:5432/fizzdb'
 
   constructor: (@name) ->
 

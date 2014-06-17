@@ -1,5 +1,7 @@
 var pg = require('pg');
-var dbstring = 'postgres://Fizz:derptopia@fizzdbinstance.cdzhdhngrg63.us-east-1.rds.amazonaws.com:5432/fizzdb';
+// var dbstring = 'postgres://Fizz:derptopia@fizzdbinstance.cdzhdhngrg63.us-east-1.rds.amazonaws.com:5432/fizzdb';
+var dbstring = 'postgres://localhost/fizzdb';
+
 var utils   = require('./utilities.js');
 var log     = utils.log;
 var logError = utils.logError;
@@ -9,6 +11,9 @@ function rollback(client, done) {
     return done(err);
   });
 }
+
+exports.connString = dbstring;
+
 String.prototype.insert = function (index, string) {
   if (index > 0)
     return this.substring(0, index) + string + this.substring(index, this.length);

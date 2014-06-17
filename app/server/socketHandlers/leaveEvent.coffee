@@ -16,7 +16,7 @@ db = require('./../db.js')
 getUserSession = utils.getUserSession
 
 module.exports = (data, socket, cb) ->
-  console.log 'JOIN EVENT DATA:', JSON.stringify data
+  console.log 'LEAVE EVENT DATA:', JSON.stringify data
   check.is(data, {eid: 'posInt'})
 
   user = getUserSession(socket)
@@ -24,7 +24,7 @@ module.exports = (data, socket, cb) ->
   uid = user.uid
 
   async.parallel {
-    join :    (cb) -> events.join eid, uid, cb
+    leave :    (cb) -> events.leave eid, uid, cb
     invited : (cb) -> events.getInviteList eid, cb
     guests : (cb) -> getGuestList eid, cb
   },

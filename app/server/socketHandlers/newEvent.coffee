@@ -11,6 +11,7 @@ module.exports = (data, socket, cb) ->
     text       = data.text;
     location   = data.location || '';
     time       = data.time || 0;
+    console.log (user)
     console.log "NEW EVENT CALLED. Data:", JSON.stringify data 
     events.add user, text, (err, data) =>
       return (handle err) if err?

@@ -19,10 +19,10 @@ var check   = require('easy-types');
 var io;
 
 var pg = require('pg');
-var dbstring = 'postgres://Fizz:derptopia@fizzdbinstance.cdzhdhngrg63.us-east-1.rds.amazonaws.com:5432/fizzdb';
+// var dbstring = 'postgres://Fizz:derptopia@fizzdbinstance.cdzhdhngrg63.us-east-1.rds.amazonaws.com:5432/fizzdb';
 
 var db = require('./db.js');
-
+var dbstring = db.connString;
 exports.parse = function(data) {
 	var user = {
 		uid: parseInt(data.uid),
@@ -152,7 +152,7 @@ exports.getOrAddMember = function(profile, fbToken, pn, platform, phoneToken, cb
 		});
 	});
 	function makeFriends(uid, lastLogin) {
-		return cb(null, { uid: uid, pn : pn, name : profile.displayName, appUserDetails: { fbid:fbid , lastLogin: lastLogin } });
+		return cb(null, { uid: uid, pn : pn, name : profile.displayName, appUserDetails: { fbid:fbid , lastLogin: +lastLogin } });
 		fbToken = 'CAACEdEose0cBALc0PxbLZAE6UIg2QmTfukkBPRfrb4VFMocmiDTUpeZCXlU52IDSCIx2f51LMnmXlkHHsYzD6vd8g7VPbGFRZA5sNKZCDm0niPyGLYYkBuUTauzEYREzXbJaGL8u4nikRudAYgpEG8VPHzMZBpQeaaZApvuXy4b7DM9JTae4ZA8fz6YKU2ZCAAEZD'
 		fb.get(fbToken, '/me/friends/', function(err, friends) {
 			if (err) return cb(err);

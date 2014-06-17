@@ -94,7 +94,7 @@ connect = (socket, cb) ->
     return logError(err) if err
     invited_list = results?.rows?.map((e) -> e.eid)
     invited_list = '{' + invited_list + '}'
-    async.parallel({
+    async.parallel {
       "newFriendList": (cb) ->
         values = [user.uid]
         db.query QUERIES.newFriendList, values, cb
@@ -165,8 +165,7 @@ connect = (socket, cb) ->
             data[u.eid] = [] if not data[u.eid]?
             data[u.eid].push(users.parse(u))
           cb null, data
-    },
-    (err, results) ->
+    }, (err, results) ->
       return console.log('Connection Err:',err) if err
       data =
         me : user
@@ -182,10 +181,11 @@ connect = (socket, cb) ->
       end = new Date().getTime();
       time = end - start;
       console.log 'Onlogin took:', time
-      console.log 'Emitting:', (JSON.stringify data,null,'\t')
-      if socket.emit?
-        socket.emit('onLogin', data)
-      cb(null) if cb?
-      )
+      emit({
+        eventName: 'onLogin'
+        data: data
+        recipients: [user] 
+      })
+      cb null if cb
 
 module.exports = connect

@@ -31,14 +31,14 @@ isNotHost = (user, event, newInvites, callback) ->
       events.addInvites event.eid, user.uid, newInvites, false, cb,
     creator: (cb) ->
       users.get event.creator, cb
-  },
-  (err, results) ->
-    return callback(err) if err; 
-    data = {data: {}}
-    data.data[event.eid] = [newInvites]
+  }, (err, results) ->
+    return callback(err) if err
     emit({ 
       eventName: 'newSuggestedInvites'
-      data: data
+      data:
+        eid: eid
+        inviter: user.uid
+        invitees: newInvites
       recipients: [results.creator]
     })
     callback(null)
@@ -52,26 +52,33 @@ isHost = (user, event, newInvites, callback) ->
     guests: (cb) -> events.getGuestList event.eid, cb
   }, (err, results) ->
     return callback(err) if err?
-    console.log 'here'
     creator = results.creator
     messages = results.messages
     oldInvites = results.invited
     allInvites = newInvites.concat oldInvites
     
-    newEvents = 
-        data : [
-          eid : event.eid
-          creator : event.creator
-          creationTime : event.creationTime
-          messages : messages
-          invites:  allInvites
-          guests:  results.guests
-          clusters: event.clusters
-        ]
-    emit({ eventName: 'newEvents', data:newEvents, recipients:newInvites })
-    updateInvites = {data : {}}
-    updateInvites.data[event.eid] = newInvites
-    emit({ eventName: 'updateInvitees', data:updateInvites, recipients:oldInvites })
+    data: [
+      eid : event.eid
+      creator : event.creator
+      creationTime : event.creationTime
+      messages : messages
+      invites:  allInvites
+      guests:  results.guests
+      clusters: event.clusters
+      time : event.creationTime
+      location: event.location
+    ]
+    emit
+      eventName: 'newEvent'
+      data:data
+      recipients:newInvites
+
+    emit
+      eventName: 'updateInvitees'
+      data:
+        eid: event.eid
+        unvitees: allInvites
+      recipients: oldInvites
     
     callback(null)
     # # Push to people that they are invited.
