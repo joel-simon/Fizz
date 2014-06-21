@@ -24,13 +24,13 @@ JoelsEvent =
   "creator" : Joel.uid
   "creationTime" : 1402107555
   "location" : "Pamelas"
-  "time" : null
+  "time" : 12345
 AndrewsEvent = 
   "eid" : 2
   "creator" : Andrew.uid
   "creationTime" : 1402107555
   "location" : null
-  "time" : null 
+  "time" : 12345
 
 module.exports = 
   ONLOGIN:

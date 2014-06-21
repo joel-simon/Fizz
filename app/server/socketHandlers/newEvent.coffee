@@ -3,6 +3,7 @@ async  = require 'async'
 SocketHandler = require './SocketHandler'
 utils     = require('./../utilities.js')
 logError = utils.logError
+log = utils.log
 getUserSession = utils.getUserSession
 
 module.exports = (data, socket, cb) ->
@@ -11,8 +12,7 @@ module.exports = (data, socket, cb) ->
     text       = data.text;
     location   = data.location || '';
     time       = data.time || 0;
-    console.log (user)
-    console.log "NEW EVENT CALLED. Data:", JSON.stringify data 
+    log "New Event called", data 
     events.add user, text, (err, data) =>
       return (handle err) if err?
       eid = data.eid
@@ -26,7 +26,7 @@ module.exports = (data, socket, cb) ->
         invites : [user]
         guests : [user.uid]
         clusters : []
-      console.log('Emitting from newEvent:', JSON.stringify(newEvent))
+      log 'Emitting from New Event', newEvent
       if cb
         cb err, eid
       if (socket.emit)

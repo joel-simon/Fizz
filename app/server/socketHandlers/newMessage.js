@@ -45,8 +45,8 @@ module.exports = function(data, socket, cb) {
       eventName: 'newMessages',
       recipients: inviteList,
       data: {
-        eid:out,
-        messages:[msg]
+        eid: eid,
+        messages: [msg]
       }
     });
     // pushIos({

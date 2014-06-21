@@ -15,7 +15,6 @@ module.exports = function(profile, pn, fbToken, phoneToken, cb) {
   fb.extendToken(fbToken, function(err, longToken) {
     if (err) return cb(err);
     users.getOrAddMember(profile, fbToken, pn, 'ios', phoneToken, function(err, user) {
-      console.log(err, user);
       if(err) cb(err);
       else {
         cb(null, user);

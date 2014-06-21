@@ -17,6 +17,8 @@ var
   d       = require('domain').create(),  // create domain for error routing.
   colors  = require('colors'),
   utils   = require('./app/server/utilities.js'),
+  log     = utils.log,
+  logError= utils.logError,
   redis   = require('redis'),
   redisStore = require('connect-redis')(express),
   redisConns = require('./app/server/redisStore.js'),
@@ -73,22 +75,11 @@ passport.use(new FacebookTokenStrategy({
   },
   function(fbToken, refreshToken, profile, pn, iosToken, androidToken, done) {
     console.log('Recieved tokens, attempting to verify user.');
-    pn = utils.formatPn(pn);
-    if (iosToken) {
-      console.log('iosToken:', iosToken)
-    } else if (androidToken) {
-      console.log('androidToken:', androidToken)
-    } else {
-      console.log('No token!');
-    }
-  
+    pn = utils.formatPn(pn);  
     if (!utils.isPn(pn)) {
       console.log('Bad phone number:', pn);
       return done('Bad phone number')
     }
-
-    // console.log(pn);
-
     process.nextTick(function () {
       onAuth(profile, pn, fbToken, iosToken, function(err, user) {
         if (err) console.log('Error in onAuth:', err);
@@ -144,8 +135,8 @@ io.set('authorization', passportSocketIo.authorize({
   fail:        onAuthorizeFail     // *optional* callback on fail/error - read more below
 }));
 
-function onAuthorizeSuccess(data, accept){
-  console.log('successful connection to socket.io');
+function onAuthorizeSuccess(data, accept) {
+  log('successful connection to socket.io');
   // console.log(data);
   // The accept-callback still allows us to decide whether to
   // accept the connection or not.
@@ -153,7 +144,7 @@ function onAuthorizeSuccess(data, accept){
 }
 
 function onAuthorizeFail(data, message, error, accept){
-  console.log('failed connection to socket.io:', message);
+  logError('failed connection to socket.io:', message);
   if(error)
     throw new Error(message);
   
@@ -205,6 +196,7 @@ console.log(domo.rainbow);
 console.log('Port:', (''+port).bold);
 console.log('sendSms:', (''+args.sendSms).bold);
 console.log('pushIos:', (''+args.pushIos).bold);
+console.log('fakeData:', (''+args.fakeData).bold);
 console.log('#########################################'.rainbow);
 
 

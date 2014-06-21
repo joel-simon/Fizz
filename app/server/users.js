@@ -158,7 +158,6 @@ exports.getOrAddMember = function(profile, fbToken, pn, platform, phoneToken, cb
 			if (err) return cb(err);
 			if (!friends.data) return cb('no friends list');
 			var friendUidList = friends.data.map(function(f){return f.id});
-			console.log(uid);
 			var q1 = "UPDATE users SET new_friends = array_append(new_friends, $1) WHERE fbid = ANY($2::bigint[])"
 			db.query(q1, [uid, friendUidList], function(err) {
 				if (err) cb(err);

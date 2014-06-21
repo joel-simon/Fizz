@@ -1,3 +1,6 @@
+utils     = require('./utilities.js')
+logError = utils.logError
+log = utils.log
 async     = require('async')
 db     = require('./db.js')
 async.series [
@@ -75,7 +78,7 @@ async.series [
             FALSE AND accepted IS TRUE)))", cb
 ], (err, results) ->
   if (err)
-    console.log 'Err'+err
+    log 'Error in init', err
   else
-    console.log 'All done'
+    log 'DataBase has been initialized.'
 

@@ -11,6 +11,7 @@ db = require './../db.js'
 users = require './../users.js'
 args = require './../args.js'
 logError = utils.logError
+log = utils.log
 pretty = (s) -> JSON.stringify s, null, '\t'
 
 QUERIES = 
@@ -77,7 +78,7 @@ QUERIES =
 connect = (socket, cb) ->
   if (args.fakeData)
     fakeData = require('./../fakeData').ONLOGIN
-    console.log 'EMITTING FAKE onlogin:', pretty fakeData
+    log 'EMITTING FAKE onlogin:', fakeData
     socket.emit('onLogin', fakeData) if socket.emit
     return
   start = new Date().getTime();
@@ -102,7 +103,6 @@ connect = (socket, cb) ->
         values = [user.uid, lastLogin]
         db.query QUERIES.newEventList, values, (err, results) ->
           return cb err if err?
-          console.log 'newevents', results.rows
           for e in results.rows
             e.time = +e.time
             e.location = e.location || ''
@@ -166,7 +166,7 @@ connect = (socket, cb) ->
             data[u.eid].push(users.parse(u))
           cb null, data
     }, (err, results) ->
-      return console.log('Connection Err:',err) if err
+      return logError('Connection Err:', err) if err
       data =
         me : user
         newFriendList : results.newFriendList.rows
@@ -180,7 +180,6 @@ connect = (socket, cb) ->
         suggestedInvites : results.suggestedInvites
       end = new Date().getTime();
       time = end - start;
-      console.log 'Onlogin took:', time
       emit({
         eventName: 'onLogin'
         data: data
