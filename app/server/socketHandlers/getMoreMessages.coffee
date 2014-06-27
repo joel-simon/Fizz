@@ -1,17 +1,15 @@
 db = require './../db'
 events = require './../events'
 
-getMoreMessages = (data, socket, cb) ->
+getMoreMessages = (data, socket) ->
 	eid = data?.eid
 	oldestMid = data?.oldestMid
 	# check.is data, {eid: "posInt", oldestMid: "posInt"}
 
 	events.getMoreMessages eid, oldestMid, (err, messages) ->
-		if (cb)
-			cb err, messages
-		else if err
+		if err
 			logError(err)
 		else 
-			emit()
+			socket.emit 'newMessages', { eid: eid, messages: messages }
 
 module.exports = getMoreMessages

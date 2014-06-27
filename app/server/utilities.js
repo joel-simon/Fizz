@@ -21,7 +21,7 @@ exports.log = function() {
   var date = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
   date = date.substring(0,date.search("GMT")-1);
 
-	var main = '\tInfo: ';
+	var main = '\tInfo -';
 	var e;
   var more = ''
 	for (var i = 0; i < arguments.length; i++) {
@@ -36,17 +36,6 @@ exports.log = function() {
 	}
 	console.log(main, more.data);
   console.log('\t'+'———————————————————————————————————————————————————————————————'.data);
-}
-
-exports.logImportant = function() {
-  var s = '\tInfo: ';
-  var e;
-  for (var i = 0; i < arguments.length; i++) {
-    e = arguments[i];
-    s += ((e instanceof Object) ? JSON.stringify(e) : e)+' ';
-  }
-  console.log(s.info);
-  console.log('\t'+'———————————————————————————————————————————————————————————————'.info);
 }
 
 exports.debug = function() {
@@ -81,17 +70,6 @@ function convertToServerTimeZone(){
   return (serverDate.toLocaleString());
 }
 
-function foo() {
-  function getErrorObject(){
-      try { throw Error('') } catch(err) { return err; }
-    }
-    var err = getErrorObject();
-    var caller_line = err.stack.split("\n")[4];
-    var index = caller_line.indexOf("at ");
-    var clean = caller_line.slice(index+2, caller_line.length);
-    console.log(clean);
-}
-
 exports.logError = function(e) {
   if (!e) return;
   var date = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
@@ -113,26 +91,27 @@ exports.logError = function(e) {
   } else if (e instanceof URIError) {
     s+=('URIError: '+e.name + ": " + e.message).bold.error;
   } else if (e instanceof Object) {
-    s+= ('Error: '+JSON.stringify(e)).bold.error;
+    s+= ('Error -'+JSON.stringify(e)).bold.error;
   } else {
-    s+= ('Error: '+e).bold.error;
+    s+= ('Error -'+e).bold.error;
   }
 
   s+='\n\t'+date.error;
 
   var pattern = "/Users/joelsimon/Projects/Fizz/";
-  var stackTrace = getStackTrace().replace(/    /g, '\t')
+  var stackTrace = getStackTrace().replace(/  /g, '\t')
   stackTrace = stackTrace.replaceAll(pattern, '');
   
-	s += ('\n\t'+stackTrace.error+'\n');
-  return console.log(s);
-  mail({
-    from: "<errors@fizz.com>", // sender address
-    to: "joelsimon6@gmail.com", // list of receivers
-    subject: "You fucked up.", // Subject line
-    text: s, // plaintext body
-    html: "<b>"+JSON.stringify(s)+"</b>" // html body
-  });
+	s += ('\n\t'+stackTrace.error);
+  console.log(s);
+  console.log('\t'+'———————————————————————————————————————————————————————————————'.data);
+  // mail({
+  //   from: "<errors@fizz.com>", // sender address
+  //   to: "joelsimon6@gmail.com", // list of receivers
+  //   subject: "You fucked up.", // Subject line
+  //   text: s, // plaintext body
+  //   html: "<b>"+JSON.stringify(s)+"</b>" // html body
+  // });
 }
 function getStackTrace() {
   var obj = {};
@@ -152,37 +131,6 @@ exports.formatPn = function(pn) {
     pn = '+1'+pn.substring(1);
   }
   return pn;
-}
-// console.log(exports.formatPn('sadasdsa'));
-// console.log(exports.formatPn('+13475346100'));
-// console.log(exports.formatPn('+3475346100'));
-// console.log(exports.formatPn('13475346100'));
-// console.log(exports.formatPn('3475346100'));
-
-exports.isSubset = function(a, b) {
-	if (a.length > b.length) return false;
-	a.sort();
-	b.sort();
-	for (var i = 0; i < a.length; i++) {
-		if (binaryIndexOf(b, a[i]) < 0) return false;
-	}
-	return true;
-}
-function binaryIndexOf(arr, e) {
-  var minIndex = 0;
-  var maxIndex = arr.length - 1;
-  var currentIndex;
-  var currentElement;
-
-  while (minIndex <= maxIndex) {
-    currentIndex = (minIndex + maxIndex) / 2 | 0;
-    currentElement = arr[currentIndex];
-    if (currentElement < e) minIndex = currentIndex + 1;
-    else if (currentElement > e) maxIndex = currentIndex - 1;
-    else return currentIndex;
-  }
-
-  return -1;
 }
 
 Object.defineProperty(global, '__stack', {

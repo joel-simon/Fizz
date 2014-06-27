@@ -9,8 +9,8 @@ db = require './../db.js'
 module.exports = (socket) ->
   user = utils.getUserSession(socket)
   q1 = "UPDATE users
-    SET last_login = (extract(epoch from now())*1000)::bigint
-    WHERE uid = $1"
+    		SET last_login = (extract(epoch from now())*1000)::bigint
+    		WHERE uid = $1"
   db.query q1, [user.uid], (err) ->
     if err
       console.log 'Err updating lastLogin:',err

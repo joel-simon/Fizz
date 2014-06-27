@@ -6,6 +6,13 @@ var utils   = require('./utilities.js');
 var log     = utils.log;
 var logError = utils.logError;
 
+pg.connect(dbstring, function(err, client, done) {
+  if(!client) {
+    logError('No Connection to Postgresql');
+    throw ('No Connection to Postgresql');
+  } 
+});
+
 function rollback(client, done) {
   client.query('ROLLBACK', function(err) {
     return done(err);

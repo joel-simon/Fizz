@@ -15,8 +15,8 @@ check = require('easy-types').addTypes(types)
 db = require('./../db.js')
 getUserSession = utils.getUserSession
 
-module.exports = (data, socket, cb) ->
-  console.log 'LEAVE EVENT DATA:', JSON.stringify data
+module.exports = (data, socket) ->
+  log 'Leave Event', data
   check.is(data, {eid: 'posInt'})
 
   user = getUserSession(socket)
@@ -29,11 +29,8 @@ module.exports = (data, socket, cb) ->
     guests : (cb) -> getGuestList eid, cb
   },
   (err, results) ->
-    console.log('done join event', err)
-    if (cb) cb err
-    else if (err) logError err
-    else if (socket.emit)
-      emit 
-        eventName : 'updateGuests'
-        data      : { eid: eid, guests: results.guests }
-        recipients: results.invited
+    return logError err if err?
+    emit 
+      eventName : 'updateGuests'
+      data      : { eid: eid, guests: results.guests }
+      recipients: results.invited

@@ -75,7 +75,7 @@ QUERIES =
     invites.confirmed = FALSE
     "
 
-connect = (socket, cb) ->
+connect = (socket) ->
   if (args.fakeData)
     fakeData = require('./../fakeData').ONLOGIN
     log 'EMITTING FAKE onlogin:', fakeData
@@ -155,8 +155,6 @@ connect = (socket, cb) ->
       "fbToken" : (cb) ->
         users.getFbToken(user.uid, cb)
 
-      # "updateUser" : (cb) ->
-      #   db.query QUERIES.updateUser, [user.uid], cb
       "suggestedInvites" : (cb) ->
         db.query QUERIES.suggestedInvites,[user.uid], (err, results) ->
           return cb err if err?
@@ -180,11 +178,6 @@ connect = (socket, cb) ->
         suggestedInvites : results.suggestedInvites
       end = new Date().getTime();
       time = end - start;
-      emit({
-        eventName: 'onLogin'
-        data: data
-        recipients: [user] 
-      })
-      cb null if cb
+      socket.emit('onLogin', data);
 
 module.exports = connect

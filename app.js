@@ -182,22 +182,12 @@ d.on('error', function(err) {
 // Route all routes.
 require('./app/server/router')(app, passport);
 
-var domo =  ''+
-"#########################################\n"+
-'    DOMOS POP SOME FIZZY DRINKS\n'+
-'╲╲╭━━━━╮╲╲╲╲╭━━━━╮╲╲╲╲╭━━━━╮╲╲╲╲╭━━━━╮╲╲\n'+
-'╭╮┃▆┈┈▆┃╭╮╭╮┃▆┈┈▆┃╭╮╭╮┃▆┈┈▆┃╭╮╭╮┃▆┈┈▆┃╭╮\n'+
-'┃╰┫▽▽▽▽┣╯┃┃╰┫▽▽▽▽┣╯┃┃╰┫▽▽▽▽┣╯┃┃╰┫▽▽▽▽┣╯┃\n'+
-'╰━┫△△△△┣━╯╰━┫△△△△┣━╯╰━┫△△△△┣━╯╰━┫△△△△┣━╯\n'+
-'╲╲┃┈┈┈┈┃╲╲╲╲┃┈┈┈┈┃╲╲╲╲┃┈┈┈┈┃╲╲╲╲┃┈┈┈┈┃╲╲\n'+
-'╲╲┃┈┏┓┈┃╲╲╲╲┃┈┏┓┈┃╲╲╲╲┃┈┏┓┈┃╲╲╲╲┃┈┏┓┈┃╲╲\n'+
-'▔▔╰━╯╰━╯▔▔▔▔╰━╯╰━╯▔▔▔▔╰━╯╰━╯▔▔▔▔╰━╯╰━╯▔▔';
-console.log(domo.rainbow);
-console.log('Port:', (''+port).bold);
-console.log('sendSms:', (''+args.sendSms).bold);
-console.log('pushIos:', (''+args.pushIos).bold);
-console.log('fakeData:', (''+args.fakeData).bold);
-console.log('#########################################'.rainbow);
+log('Server Started', args);
+// console.log('Port:', (''+port).bold);
+// console.log('sendSms:', (''+args.sendSms).bold);
+// console.log('pushIos:', (''+args.pushIos).bold);
+// console.log('fakeData:', (''+args.fakeData).bold);
+// console.log('#########################################'.rainbow);
 
 
 // if (args.testing) require('./utilities/serverTests.js');
