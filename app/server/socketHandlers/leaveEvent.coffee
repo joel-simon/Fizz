@@ -1,36 +1,26 @@
-events   = require('./../events')
-utils     = require('./../utilities.js')
-logError  = utils.logError
-log       = utils.log
-debug     = utils.debug
-fb        = require('./../fb.js')
-users     = require('./../users.js')
-async     = require('async')
-output    = require('./../output.js')
-emit      = output.emit
-pushIos   = output.pushIos
-exports = module.exports
-types = require('./../fizzTypes.js')
-check = require('easy-types').addTypes(types)
-db = require('./../db.js')
-getUserSession = utils.getUserSession
+async     = require 'async'
+utils     = require './../utilities.js'
+models    = require './../models'
+output    = require './../output.js'
+db        = require './../adapters/db.js'
 
-module.exports = (data, socket) ->
-  log 'Leave Event', data
-  check.is(data, {eid: 'posInt'})
+module.exports = (data, socket, callback) ->
+  utils.log 'Leave Event', data
+  check.is data, {eid: 'posInt'}
 
-  user = getUserSession(socket)
+  user = getUserSession socket
   eid = data.eid
   uid = user.uid
 
   async.parallel {
-    leave :    (cb) -> events.leave eid, uid, cb
-    invited : (cb) -> events.getInviteList eid, cb
-    guests : (cb) -> getGuestList eid, cb
+    leave:   (cb) -> models.events.leave eid, uid, cb
+    invited: (cb) -> models.events.getInviteList eid, cb
+    guests:  (cb) -> models.events.getGuestList eid, cb
   },
   (err, results) ->
-    return logError err if err?
-    emit 
+    return callback err if err?
+    output.emit 
       eventName : 'updateGuests'
-      data      : { eid: eid, guests: results.guests }
+      data      : { eid, guests: results.guests }
       recipients: results.invited
+    callback null

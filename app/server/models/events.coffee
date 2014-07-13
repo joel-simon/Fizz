@@ -1,21 +1,19 @@
 async = require 'async'
 sanitize = require('validator').sanitize
-store = require('./redisStore.js').store
-users = require './users.js'
+store = require('./../adapters/redisStore.js').store
 exports = module.exports
-db = require './db.js'
+db = require './../adapters/db.js'
 check = require('easy-types')
-
 pg = require 'pg'
-# dbstring = 'postgres://Fizz:derptopia@fizzdbinstance.cdzhdhngrg63.us-east-1.rds.amazonaws.com:5432/fizzdb'
+
 dbstring = db.connString;
 rollback = (client, done) ->
   client.query 'ROLLBACK', (err) ->
     done err
 
-exports.add =  (user, text, callback) ->
-  check.is(user, 'user')
-  check.is(text, 'string')
+exports.add = (user, text, callback) ->
+  # check.is(user, 'user')
+  # check.is(text, 'string')
 
   q1 = "INSERT INTO events
       (creator, clusters)
@@ -115,26 +113,26 @@ exports.leave = (eid, uid, callback) ->
 exports.addMessage = (eid, uid, text, callback) ->
   #text = sanitize(msg.text).xss()
   store.hincrby 'messages', ''+eid, 1, (err, mid) ->
-    return callback err if err
+    return callback err if err?
     q2 = "INSERT INTO messages (mid, eid, uid, data, creation_time) VALUES ($1, $2, $3, $4, $5)"
     db.query q2, [mid+1, eid, uid, text, Date.now()], callback
 
 exports.getMoreMessages = (eid, mid, cb) ->
   q1 = "SELECT * FROM messages WHERE eid = $1 and mid > $2 ORDER BY creation_time LIMIT 10"
   db.query q1, [eid, mid], (err, results) ->
-    cb err if err
-    else cb null, results.rows
+    return cb err if err?
+    cb null, results.rows
 
 exports.getGuestList = (eid, callback) ->
   q1 = "SELECT array_agg(uid) FROM invites WHERE eid = $1 and accepted = true"
   db.query q1, [eid], (err, result) ->
-    return callback err if err
+    return callback err if err?
     callback null, result.rows[0]['array_agg']
 
 exports.getInviteList = (eid, cb) ->
   q = "SELECT users.uid, pn, name, fbid, accepted FROM users, invites WHERE invites.eid = $1 and users.uid = invites.uid"
   db.query q, [eid], (err, result) ->
-    if err
+    if err?
       cb err 
     else
       cb null, result.rows
@@ -143,7 +141,7 @@ exports.addInvites = (eid, inviter, users, confirmed, cb) ->
   q = "insert into invites (eid, uid, inviter, confirmed, invited_time, accepted_time) values "
   values = []
   now = Date.now()
-  for u in array
+  for u in users
     values=values.concat '('+([eid,u.uid,inviter,confirmed, now, now].join(','))+')'
 
   db.query q+(values.join(',')),[], cb

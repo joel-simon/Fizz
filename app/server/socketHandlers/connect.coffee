@@ -1,17 +1,16 @@
 utils     = require './../utilities.js'
 getUserSession = utils.getUserSession
-fb        = require './../fb.js'
 async     = require 'async'
 output    = require './../output.js'
 emit      = output.emit
 pushIos   = output.pushIos
 types = require './../fizzTypes.js'
-check = require('easy-types').addTypes types
-db = require './../db.js'
-users = require './../users.js'
+db = require './../adapters/db.js'
+models = require './../models'
 args = require './../args.js'
 logError = utils.logError
 log = utils.log
+
 pretty = (s) -> JSON.stringify s, null, '\t'
 
 QUERIES = 
@@ -75,14 +74,15 @@ QUERIES =
     invites.confirmed = FALSE
     "
 
-connect = (socket) ->
-  if (args.fakeData)
+connect = (socket, callback) ->
+  if args.fakeData
     fakeData = require('./../fakeData').ONLOGIN
     log 'EMITTING FAKE onlogin:', fakeData
     socket.emit('onLogin', fakeData) if socket.emit
-    return
-  start = new Date().getTime();
-  user = getUserSession(socket)
+    return callback null
+
+  start = new Date().getTime()
+  user = getUserSession socket
   lastLogin = user.appUserDetails.lastLogin
   query =  "
     SELECT invites.eid FROM
@@ -153,7 +153,7 @@ connect = (socket) ->
         db.query QUERIES.deadEventList, values, cb
 
       "fbToken" : (cb) ->
-        users.getFbToken(user.uid, cb)
+        models.users.getFbToken(user.uid, cb)
 
       "suggestedInvites" : (cb) ->
         db.query QUERIES.suggestedInvites,[user.uid], (err, results) ->
@@ -161,10 +161,10 @@ connect = (socket) ->
           data = {}
           for u in results.rows
             data[u.eid] = [] if not data[u.eid]?
-            data[u.eid].push(users.parse(u))
+            data[u.eid].push(models.users.parse(u))
           cb null, data
     }, (err, results) ->
-      return logError('Connection Err:', err) if err
+      return callback err if err
       data =
         me : user
         newFriendList : results.newFriendList.rows
@@ -178,6 +178,9 @@ connect = (socket) ->
         suggestedInvites : results.suggestedInvites
       end = new Date().getTime();
       time = end - start;
-      socket.emit('onLogin', data);
-
+      if socket.emit
+        socket.emit('onLogin', data);
+      else
+        utils.log 'Emitting onLogin', data
+      callback null, data
 module.exports = connect

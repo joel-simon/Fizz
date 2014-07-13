@@ -1,4 +1,4 @@
-appDir = path.dirname(require.main.filename)
+appDir = '../..'
 dev = require('./args.js').dev
 
 if dev

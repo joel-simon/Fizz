@@ -7,14 +7,15 @@ var
   logError = utils.logError,
   logI     = utils.logImportant,
   args = require('./args.js'),
-  config = ((args.dev) ? require('./../../configDev.json') : require('./../../config.json')),
+  config = require('./config'),
   exports  = module.exports,
-  users    = require('./users.js'),
-  phoneManager = require('./phoneManager.js'),
+  // models = require('./models/index'),
+  // phoneManager = require('./phoneManager.js'),
   async    = require('async'),
   apn      = require('apn'),
   args     = require('./args.js');
   // store    = require('./redisStore.js').store;
+  // console.log('test', models);
 module.exports = exports;
 ////////////////////////////////////////////////////////////////////////////////
 //        PUSH IOS
@@ -60,7 +61,7 @@ feedback.on("feedback", function(devices) {
 
 var pushIos = function(msg, user, eid, hoursToExpiration) {
   // if (user.type !== 'Member') return;
-  users.getIosToken(user.uid, function(err, iosToken) {
+  models.users.getIosToken(user.uid, function(err, iosToken) {
     if(err) return logError(err);
     var mainLog = "Sending push to "+user.name
     var toLog = 'msg:'+msg+
@@ -111,30 +112,30 @@ exports.pushIos = function(options) {
 var twilio = require('twilio');
 var client = new twilio.RestClient(config.TWILIO.SID, config.TWILIO.TOKEN);
   
-exports.sendSms = function(user, eid, msg) {
-  if (user.pn.length <= 5) return;
-  phoneManager.getPn(user, eid, function(err, pn) {
-    if (err) return logError(err);
+// exports.sendSms = function(user, eid, msg) {
+//   if (user.pn.length <= 5) return;
+//   phoneManager.getPn(user, eid, function(err, pn) {
+//     if (err) return logError(err);
 
-    if (args.sendSms) {
-      log("SENT SMS To:"+user.name+'. On number:'+pn+
-          '\n\t\tMessage:'+JSON.stringify(msg));
-    } else {
-      log("SMS NOT SENT To:"+user.name+'. On number:'+pn+
-          '\n\t\tMessage:'+JSON.stringify(msg));
-      // log("SMS NOT SENT '"+msg+"' To "+pn+ "ENABLE SMS WITH 'node app sendSms'");
-      return;
-    }
-    client.sms.messages.create({
-      to:   user.pn,
-      from: pn,
-      body: msg
-    },
-    function(error, message) {
-      if (error) logError(error);
-    });
-  });
-}
+//     if (args.sendSms) {
+//       log("SENT SMS To:"+user.name+'. On number:'+pn+
+//           '\n\t\tMessage:'+JSON.stringify(msg));
+//     } else {
+//       log("SMS NOT SENT To:"+user.name+'. On number:'+pn+
+//           '\n\t\tMessage:'+JSON.stringify(msg));
+//       // log("SMS NOT SENT '"+msg+"' To "+pn+ "ENABLE SMS WITH 'node app sendSms'");
+//       return;
+//     }
+//     client.sms.messages.create({
+//       to:   user.pn,
+//       from: pn,
+//       body: msg
+//     },
+//     function(error, message) {
+//       if (error) logError(error);
+//     });
+//   });
+// }
 
 exports.sendGroupSms = function(userList, eid, msgFun) {
   async.each(userList,
@@ -179,14 +180,14 @@ exports.emit = function(options) {
   // Deal with a circular dependency by delaying invocation.
   if(!io) io = require('../../app.js').io;
   log('Emitting '+eventName,
-      '\nTo:'+JSON.stringify(recipients.map(function(u){return u.name})),
-      '\nData:' + JSON.stringify(data)
+      JSON.stringify(recipients.map(function(u){return u.name})),
+      JSON.stringify(data)
       );
 
   async.each(recipients, function(user, callback) {
-    if (users.isConnected(user.uid)) {
+    // if (models.users.isConnected(user.uid)) {
       io.sockets.in(user.uid).emit(eventName, data);
-    } 
+    // }
     // if ( iosPush && user.type === "Member" && (!pushRecipients ||
     //             pushRecipients.indexOf(user.uid) !== -1)) {
     //   exports.pushIos(iosPush, user, 1);

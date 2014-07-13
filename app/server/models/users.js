@@ -1,8 +1,9 @@
+require('coffee-script');
 // Abstraction for all database interactions.
-var args = require('./args.js');
-var config = ((args.dev) ? require('./../../configDev.json') : require('./../../config.json'));
-var store   = require('./redisStore.js').store;
-var utils   = require('./utilities.js');
+var args = require('./../args.js');
+var config = require('./../config')
+var store   = require('./../adapters/redisStore.js').store;
+var utils   = require('./../utilities.js');
 var log     = utils.log;
 var logError = utils.logError;
 
@@ -10,19 +11,18 @@ var nameShorten = utils.nameShorten;
 
 var exports = module.exports;
 var async   = require('async');
-var fb      = require('./fb.js');
+var fb      = require('./../adapters/fb.js');
 
 
-var output  = require('./output.js');
+var output  = require('./../output.js');
 var emit    = output.emit;
 var check   = require('easy-types');
 var io;
 
 var pg = require('pg');
-// var dbstring = 'postgres://Fizz:derptopia@fizzdbinstance.cdzhdhngrg63.us-east-1.rds.amazonaws.com:5432/fizzdb';
-
-var db = require('./db.js');
+var db = require('./../adapters/db.js');
 var dbstring = db.connString;
+
 exports.parse = function(data) {
 	var user = {
 		uid: parseInt(data.uid),
@@ -81,7 +81,6 @@ exports.getFbToken = function(uid, cb) {
 	});
 }
 
-
 exports.getFromFbid = function(fbid, cb) {
 	var q1 = "select * from users where fbid = $1";
 	db.query(q1, [fbid], function(err, result) {
@@ -109,7 +108,6 @@ exports.getFromPn = function(pn, cb) {
 ////////////////////////////////////////////////////////////////////////////////
 //	GETTING/CREATING/MODIFYING USERS
 ////////////////////////////////////////////////////////////////////////////////
-
 
 
 exports.getOrAddPhoneList =  function(pnList, cb) {

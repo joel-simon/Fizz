@@ -1,42 +1,37 @@
-events   = require('./../events')
-utils     = require('./../utilities.js')
-users     = require('./../users.js')
-async     = require('async')
-output    = require('./../output.js')
-emit      = output.emit
-pushIos   = output.pushIos
-exports = module.exports
-types = require('./../fizzTypes.js')
-check = require('easy-types').addTypes(types)
-nameShorten = utils.nameShorten;
+async     = require 'async'
+utils     = require './../utilities.js'
+models    = require './../models'
+output    = require './../output.js'
+db        = require './../adapters/db.js'
 
-getUserSession = (socket) ->
-  socket.handshake.user
-  # check.is(user, 'user');
+# types = require('./../fizzTypes.js')
+# check = require('easy-types').addTypes(types)
 
-module.exports = (data, socket, callback = console.log) ->
-  check.is(data, { eid: 'posInt', inviteList: '[user]'})
-  user = getUserSession(socket);
-  eid = data.eid
+module.exports = (data, socket, callback) ->
+  utils.log 'newInvites', data
+  # check.is(data, { eid: 'posInt', inviteList: '[user]'})
+  user = utils.getUserSession socket
+  eid  = data.eid
   newInvites = data.inviteList
-  events.get eid, (err, event) ->
-    return callback(err) if err?
+  models.events.get eid, (err, event) ->
+    return callback err if err?
     if user.uid == event.creator
-      isHost(user, event, newInvites, callback)
-    else isNotHost(user, event, newInvites, callback)
+      isHost user, event, newInvites, callback
+    else
+      isNotHost user, event, newInvites, callback
 
 isNotHost = (user, event, newInvites, callback) ->
   async.parallel {
     add: (cb) ->
-      events.addInvites event.eid, user.uid, newInvites, false, cb,
+      models.events.addInvites event.eid, user.uid, newInvites, false, cb,
     creator: (cb) ->
-      users.get event.creator, cb
+      models.users.get event.creator, cb
   }, (err, results) ->
     return callback(err) if err
-    emit({ 
+    output.emit({ 
       eventName: 'newSuggestedInvites'
       data:
-        eid: eid
+        eid: event.eid
         inviter: user.uid
         invitees: newInvites
       recipients: [results.creator]
@@ -45,11 +40,11 @@ isNotHost = (user, event, newInvites, callback) ->
 
 isHost = (user, event, newInvites, callback) ->
   async.series {
-    add: (cb) -> events.addInvites event.eid, user.uid, newInvites, true, cb
-    creator: (cb) -> users.get event.creator, cb
-    messages: (cb) -> events.getMoreMessages event.eid, 0, cb
-    invited : (cb)-> events.getInviteList event.eid, cb
-    guests: (cb) -> events.getGuestList event.eid, cb
+    add: (cb) -> models.events.addInvites event.eid, user.uid, newInvites, true, cb
+    creator: (cb) -> models.users.get event.creator, cb
+    messages: (cb) -> models.events.getMoreMessages event.eid, 0, cb
+    invited : (cb)-> models.events.getInviteList event.eid, cb
+    guests: (cb) -> models.events.getGuestList event.eid, cb
   }, (err, results) ->
     return callback(err) if err?
     creator = results.creator
@@ -57,7 +52,7 @@ isHost = (user, event, newInvites, callback) ->
     oldInvites = results.invited
     allInvites = newInvites.concat oldInvites
     
-    data: [
+    data = 
       eid : event.eid
       creator : event.creator
       creationTime : event.creationTime
@@ -67,20 +62,20 @@ isHost = (user, event, newInvites, callback) ->
       clusters: event.clusters
       time : event.creationTime
       location: event.location
-    ]
-    emit
+
+    output.emit
       eventName: 'newEvent'
       data:data
       recipients:newInvites
 
-    emit
+    output.emit
       eventName: 'updateInvitees'
       data:
         eid: event.eid
         unvitees: allInvites
       recipients: oldInvites
     
-    callback(null)
+    callback null, data
     # # Push to people that they are invited.
     # pushIos({
     #   msg: msgOut,

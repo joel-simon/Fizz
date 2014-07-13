@@ -1,6 +1,6 @@
 var async = require('async');
 var sanitize = require('validator').sanitize;
-var store = require('./redisStore.js').store;
+var store = require('./../adapters/redisStore.js').store;
 var pg = require('pg');
 var dbstring = 'postgres://Fizz:derptopia@fizzdbinstance.cdzhdhngrg63.us-east-1.rds.amazonaws.com:5432/fizzdb';
 exports = module.exports;

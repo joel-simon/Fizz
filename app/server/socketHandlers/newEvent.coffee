@@ -1,23 +1,24 @@
-events = require './../events'
-async  = require 'async'
-SocketHandler = require './SocketHandler'
-utils     = require('./../utilities.js')
-logError = utils.logError
-log = utils.log
-getUserSession = utils.getUserSession
+async     = require 'async'
+utils     = require './../utilities.js'
+models    = require './../models'
+output    = require './../output.js'
+db        = require './../adapters/db.js'
 
-module.exports = (data, socket, cb) ->
-  handle = cb || console.log 
-  user       = getUserSession(socket)
-  text       = data.text;
-  location   = data.location || '';
-  time       = data.time || 0;
-  log "New Event called", data 
-  events.add user, text, (err, data) =>
-    return (handle err) if err?
+module.exports = (data, socket, callback) ->
+  user       = utils.getUserSession socket
+  text       = data.text
+  location   = data.location || ''
+  time       = data.time || 0
+  eid = data.eid
+  uid = data.uid
+
+  utils.log "newEvent", {data}, {user}
+  
+  models.events.add user, text, (err, data) =>
+    return callback err if err?
     eid = data.eid
     creationTime = data.creationTime
-    messages = [{mid:1, eid:data.eid, uid:user.uid, text:text, marker:null,creationTime:creationTime}];
+    messages = [{ mid:1, eid, uid, text, marker: null, creationTime }]
     newEvent =
       eid : eid
       creator : user.uid
@@ -26,8 +27,8 @@ module.exports = (data, socket, cb) ->
       invites : [user]
       guests : [user.uid]
       clusters : []
-    log 'Emitting from New Event', newEvent
-    if cb
-      cb err, eid
-    if (socket.emit)
+
+    if socket.emit?
       socket.emit 'newEvent', newEvent
+
+    callback null, newEvent

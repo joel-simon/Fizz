@@ -1,6 +1,9 @@
 module.exports = exports;
-var args = require('./args.js');
-var config = ((args.dev) ? require('./../../configDev.json') : require('./../../config.json'));
+
+require('coffee-script/register');
+
+var args = require('./../args.js');
+var config = require('./../config')
 var redis   = require('redis');
 
 var  rtg  = require("url").parse(config.DB.REDISTOGO_URL),

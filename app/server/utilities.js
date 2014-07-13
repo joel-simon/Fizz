@@ -21,7 +21,7 @@ exports.log = function() {
   var date = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
   date = date.substring(0,date.search("GMT")-1);
 
-	var main = '\tInfo -';
+	var main = '\tInfo- ';
 	var e;
   var more = ''
 	for (var i = 0; i < arguments.length; i++) {
