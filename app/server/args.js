@@ -16,6 +16,9 @@ process.argv.forEach(function (val, index) {
       case 'test':
         exports.testing = true;
         break;
+      case 'test':
+        exports.debug = true;
+        break;
       case 'init':
         exports.init = true;
         break;

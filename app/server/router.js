@@ -16,21 +16,23 @@ module.exports = function(app, passport) {
 
 
 	app.post('/registration', function(req, res) {
-		console.log(req.body);
+		console.log('registration: req.body = ', req.body);
 		var first = req.body.first;
 		var last = req.body.last;
 		var platform = req.body.platform;
 		var token = req.body.token;
 		var pn = req.body.pn;
 		if (!first || !last || !platform || !token || !pn) {
+			console.log('invalid body paramaters');
 			return res.send(400, 'invalid body paramaters');
 		}
 		var name = first + " " +last;
 		models.users.create(pn, name, platform, token, function(err, password) {
 			if (err) {
+				console.log('err in create users');
 				res.send(400, err);
 			} else {
-				console.log('SEND', password, 'TO', pn);
+				console.log('registration successful, password:', password);
 				res.send(200);
 			}
 		});
