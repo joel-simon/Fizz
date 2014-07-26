@@ -1,5 +1,5 @@
 // var onSms = require('./smsHandler.js');
-
+var models = require('./models')
 module.exports = function(app, passport) {
 	
 	app.get('/c/*',
@@ -9,17 +9,32 @@ module.exports = function(app, passport) {
 	});
 
 	app.post('/login',
-		passport.authenticate('facebook-token', { display: 'page', scope: ['user_friends', 'user_groups', 'email'] }),
-		function(req, res) {
-			res.send(200, 'Logged In!');
-		}
+  passport.authenticate('local', { successRedirect: '/',
+                                   failureRedirect: '/login',
+                                   failureFlash: true })
 	);
 
-	app.get('/auth/facebook/callback',  passport.authenticate('facebook', { failureRedirect: '/' }),
-		function(req, res) {
-			res.send('Logged in');
+
+	app.post('/registration', function(req, res) {
+		console.log(req.body);
+		var first = req.body.first;
+		var last = req.body.last;
+		var platform = req.body.platform;
+		var token = req.body.token;
+		var pn = req.body.pn;
+		if (!first || !last || !platform || !token || !pn) {
+			return res.send(400, 'invalid body paramaters');
 		}
-	);
+		var name = first + " " +last;
+		models.users.create(pn, name, platform, token, function(err, password) {
+			if (err) {
+				res.send(400, err);
+			} else {
+				console.log('SEND', password, 'TO', pn);
+				res.send(200);
+			}
+		});
+	});
 
 	app.get('/', ensureAuthenticated, function(req, res) {
 		res.redirect('/home');

@@ -112,30 +112,20 @@ exports.pushIos = function(options) {
 var twilio = require('twilio');
 var client = new twilio.RestClient(config.TWILIO.SID, config.TWILIO.TOKEN);
   
-// exports.sendSms = function(user, eid, msg) {
-//   if (user.pn.length <= 5) return;
-//   phoneManager.getPn(user, eid, function(err, pn) {
-//     if (err) return logError(err);
-
-//     if (args.sendSms) {
-//       log("SENT SMS To:"+user.name+'. On number:'+pn+
-//           '\n\t\tMessage:'+JSON.stringify(msg));
-//     } else {
-//       log("SMS NOT SENT To:"+user.name+'. On number:'+pn+
-//           '\n\t\tMessage:'+JSON.stringify(msg));
-//       // log("SMS NOT SENT '"+msg+"' To "+pn+ "ENABLE SMS WITH 'node app sendSms'");
-//       return;
-//     }
-//     client.sms.messages.create({
-//       to:   user.pn,
-//       from: pn,
-//       body: msg
-//     },
-//     function(error, message) {
-//       if (error) logError(error);
-//     });
-//   });
-// }
+exports.sendSms = function(pn, msg, callback) {
+  if (pn.length <= 5) return callback(err);
+  
+  if (!args.sendSms) return;
+    
+  client.sms.messages.create({
+    to:   user.pn,
+    from: pn,
+    body: msg
+  },
+  function(error, message) {
+    if (error) logError(error);
+  });
+}
 
 exports.sendGroupSms = function(userList, eid, msgFun) {
   async.each(userList,

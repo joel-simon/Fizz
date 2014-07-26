@@ -27,13 +27,9 @@ exports.parse = function(data) {
 	var user = {
 		uid: parseInt(data.uid),
 		pn: data.pn,
-		name: data.name
-	}
-	if (data.fbid) {
-		user.appUserDetails = {
-			fbid: parseInt(data.fbid),
-			lastLogin: parseInt(data.last_login)
-		}
+		name: data.name,
+		lastLogin: parseInt(data.last_login),
+		password: data.password
 	}
 	return user
 }
@@ -70,28 +66,6 @@ exports.getTokens = function(uidList, cb) {
     	else cb (null, result.rows)
 	});
 }
-exports.getFbToken = function(uid, cb) {
-	var q1 = "select uid, fbtoken from users where uid = $1";
-	db.query(q1, [uid], function(err, result) {
-    	if (err) cb(err);
-    	else {
-    		if (result.rows.length === 0) cb (null, null)
-    		else cb (null, result.rows[0].fbtoken)
-    	}
-	});
-}
-
-exports.getFromFbid = function(fbid, cb) {
-	var q1 = "select * from users where fbid = $1";
-	db.query(q1, [fbid], function(err, result) {
-    	if (err) cb(err);
-    	else if (!result.rows.length) cb(null, null);
-    	else {
-    		var user = exports.parse(result.rows[0])
-	    	cb(null, user);
-	    }
-    });
-}
 
 exports.getFromPn = function(pn, cb) {
 	var q1 = "select * from users where pn = $1";
@@ -110,61 +84,35 @@ exports.getFromPn = function(pn, cb) {
 ////////////////////////////////////////////////////////////////////////////////
 
 
+exports.create = function(pn, name, platform, token, callback) {
+	var password = generatePassword();
+	var q1 = "INSERT INTO users (pn, name, platform, token, password) VALUES ($1,$2,$3,$4,$5) RETURNING uid";
+	var values = [pn, name, platform, token, password]
+	db.query(q1, values, function(err, result) {
+		if (err) return callback(err)
+		callback(null, password)
+	});
+};
+
 exports.getOrAddPhoneList =  function(pnList, cb) {
 	async.map(pnList, getOrAddPhone, function(err, userList) {
 		if (err) cb (err);
 		else cb (null, userList);
 	});
 }
-/*
-	User has downloaded the app. 
-	Must already exist as a guest or phone user. 
-*/
-exports.getOrAddMember = function(profile, fbToken, pn, platform, phoneToken, cb) {
-	var fbid = +profile.id;
-	exports.getFromFbid(fbid, function(err, user) {
-		if (err) return cb(err);
-		if (user) return cb(null, user);
-		exports.getFromPn(pn, function(err, pnUser) {
-			if (err) return cb(err);
-			/*
-				they were invited to something before they were a member, becoming a
-				phone user.
-			*/
-			if (pnUser) {
-				var q1 = "UDPATE users SET type = $1, fbid = $2, WHERE uid = $3";
-				db.query(q1, [platform, fbid, pnUser.uid], function(err, result) {
-					if (err) return cb (err);
-					log('Upgraded '+pnUser.uid+' to member.');
-					makeFriends(pnUser.uid)
-				});
-			// they have never had any interaction with fizz. 
-			} else {
-				var q1 = "INSERT into users (pn, name, fbid, platform, last_login, fbtoken) values($1,$2,$3,$4,$5,$6) RETURNING uid, last_login";
-				db.query(q1, [pn, profile.displayName, fbid, platform, Date.now(), fbToken], function(err, result) {
-					if (err) return cb(err);
-					log('Created', profile.displayName+' as Member.');
-					makeFriends(result.rows[0].uid, (result.rows[0].last_login));
-				});
-			}
-		});
-	});
-	
-}
+
 /*
 	User has been invited via phone number.
 	Return user if already exists.
 */
-function getOrAddPhone (pn, name, cb) {
+function getOrAdd (pn, name, cb) {
 	pn = utils.formatPn(pn);
 	exports.getFromPn(pn, function(err, user) {
 		if 			(err)  cb(err);
 		else if (user) cb(null, user);
 		else {
-			// var key = newKey()
-			// store.hset('key->uid', key, user.uid);
-			// user.key = key;
-			var q1 = "INSERT INTO users (pn, name, platform, last_login) VALUES ($1,$2,$3,$4) RETURNING uid";
+			
+			var q1 = "INSERT INTO users (pn, name, platform) VALUES ($1,$2,$3,$4) RETURNING uid";
 			db.query(q1, [pn, name, 'sms', 0], function(err, result) {
 				if (err) return cb(err);
 				log('Created phone user '+name);
@@ -173,4 +121,13 @@ function getOrAddPhone (pn, name, cb) {
 			});
 		}
 	});
+}
+
+
+function generatePassword() {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for( var i=0; i < 5; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    return text;
 }

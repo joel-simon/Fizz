@@ -36,32 +36,15 @@ passport.deserializeUser(function(obj, done) { done(null, obj); });
   ios Login Flow.
 */
 var onAuth = (require('./app/server/socketHandlers/onAuth'));
-// passport.use(new FacebookTokenStrategy({
-//     clientID: config.FB.FACEBOOK_APP_ID,
-//     clientSecret: config.FB.FACEBOOK_APP_SECRET,
-//     callbackURL: config.HOST+"auth/facebook/callback"
-//   },
-//   function(fbToken, refreshToken, profile, pn, iosToken, androidToken, done) {
-//     console.log('Recieved tokens, attempting to verify user.');
-//     pn = utils.formatPn(pn);  
-//     if (!utils.isPn(pn)) {
-//       console.log('Bad phone number:', pn);
-//       return done('Bad phone number')
-//     }
-//     process.nextTick(function () {
-//       onAuth(profile, pn, fbToken, iosToken, function(err, user) {
-//         if (err) console.log('Error in onAuth:', err);
-//         else done(null, user);  
-//       });
-//     });
-//   }));
 
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    models.user.find({ username: username }, function (err, user) {
-      if (err) { return done(err); }
-      if (!user) { return done(null, false); }
-      if (!user.verifyPassword(password)) { return done(null, false); }
+passport.use(new LocalStrategy({
+    usernameField: 'pn',
+    passwordField: 'password'
+  }, function(pn, password, done) {
+    models.users.getFromPn(pn, function(err, user){
+      if (err) return done(err);
+      if (!user) return done(null, false);
+      if (user.password !== password ) return done(null, false);
       return done(null, user);
     });
   }
