@@ -17,10 +17,10 @@ module.exports = function(app, passport) {
 
 	app.post('/registration', function(req, res) {
 		console.log('registration: req.body = ', req.body);
-		var first = req.body.first;
-		var last = req.body.last;
+		var first = req.body.firstName;
+		var last = req.body.lastName;
 		var platform = req.body.platform;
-		var token = req.body.token;
+		var token = req.body.phoneToken;
 		var pn = req.body.pn;
 		if (!first || !last || !platform || !token || !pn) {
 			console.log('invalid body paramaters');
