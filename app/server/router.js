@@ -29,19 +29,6 @@ module.exports = function(app, passport) {
 		res.render('index', {});
 	});
 
-	app.get('/home', ensureAuthenticated, function(req, res) {
-		res.render('home', {});
-	});
-
-	app.get('/admin', function(req, res){
-		res.render('admin', {});
-	});
-
-	app.get('/logout', function(req, res){
-		req.logout();
-		res.redirect('/index');
-	});
-
 	// var handler = require('./smsHandler.js');	
 	// app.post('/onMessage', function(req, res) {
 	// 	var body = req.body.Body;

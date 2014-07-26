@@ -1,22 +1,13 @@
 Error.stackTraceLimit = Infinity;
-/*
-* Fizz
-*/
-// require('newrelic');
 'use strict';
-require('coffee-script');
 require('coffee-script/register')
 var
   args    = require('./app/server/args.js'), //read in command line args.
-  http    = require('http'),
-  connect = require('connect'),
   express = require('express'),
   app     = express(),
   port    = args.port || process.env.PORT || 9001,
   server  = app.listen(port),
   io      = require('socket.io').listen(server),
-  d       = require('domain').create(),  // create domain for error routing.
-  colors  = require('colors'),
   utils   = require('./app/server/utilities.js'),
   log     = utils.log,
   logError= utils.logError,
@@ -24,19 +15,18 @@ var
   redisStore = require('connect-redis')(express),
   redisConns = require('./app/server/adapters/redisStore.js'),
   passport = require('passport'),
-  FacebookStrategy = require('passport-facebook').Strategy,
-  FacebookTokenStrategy = require('./lib/passport-facebook-token').Strategy,
+  LocalStrategy = require('passport-local').Strategy,
   passportSocketIo = require("passport.socketio"),
   models = require('./app/server/models');
 
 
 var config = ((args.dev) ? require('./configDev.json') : require('./config.json'));
 
-var store = redisConns.store,
-    pub = redisConns.pub,
-    sub = redisConns.sub;
+var store = redisConns.store;
+//     pub = redisConns.pub,
+//     sub = redisConns.sub;
 
-var sessionStore = new redisStore({client: store}); // socket.io sessions
+var sessionStore = new redisStore({client: store});
 require.main.exports.io = io;
 
 passport.serializeUser(function(user, done) { done(null, user); });
@@ -46,25 +36,37 @@ passport.deserializeUser(function(obj, done) { done(null, obj); });
   ios Login Flow.
 */
 var onAuth = (require('./app/server/socketHandlers/onAuth'));
-passport.use(new FacebookTokenStrategy({
-    clientID: config.FB.FACEBOOK_APP_ID,
-    clientSecret: config.FB.FACEBOOK_APP_SECRET,
-    callbackURL: config.HOST+"auth/facebook/callback"
-  },
-  function(fbToken, refreshToken, profile, pn, iosToken, androidToken, done) {
-    console.log('Recieved tokens, attempting to verify user.');
-    pn = utils.formatPn(pn);  
-    if (!utils.isPn(pn)) {
-      console.log('Bad phone number:', pn);
-      return done('Bad phone number')
-    }
-    process.nextTick(function () {
-      onAuth(profile, pn, fbToken, iosToken, function(err, user) {
-        if (err) console.log('Error in onAuth:', err);
-        else done(null, user);  
-      });
+// passport.use(new FacebookTokenStrategy({
+//     clientID: config.FB.FACEBOOK_APP_ID,
+//     clientSecret: config.FB.FACEBOOK_APP_SECRET,
+//     callbackURL: config.HOST+"auth/facebook/callback"
+//   },
+//   function(fbToken, refreshToken, profile, pn, iosToken, androidToken, done) {
+//     console.log('Recieved tokens, attempting to verify user.');
+//     pn = utils.formatPn(pn);  
+//     if (!utils.isPn(pn)) {
+//       console.log('Bad phone number:', pn);
+//       return done('Bad phone number')
+//     }
+//     process.nextTick(function () {
+//       onAuth(profile, pn, fbToken, iosToken, function(err, user) {
+//         if (err) console.log('Error in onAuth:', err);
+//         else done(null, user);  
+//       });
+//     });
+//   }));
+
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    models.user.find({ username: username }, function (err, user) {
+      if (err) { return done(err); }
+      if (!user) { return done(null, false); }
+      if (!user.verifyPassword(password)) { return done(null, false); }
+      return done(null, user);
     });
-  }));
+  }
+));
+
 
 //Middleware: Allows cross-domain requests (CORS)
 var allowCrossDomain = function(req, res, next) {

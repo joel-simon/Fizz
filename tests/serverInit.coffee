@@ -1,8 +1,5 @@
-utils     = require('./utilities.js')
-logError = utils.logError
-log = utils.log
 async     = require('async')
-db     = require('./db.js')
+db     = require('../app/server/adapters/db.js')
 async.series [
   # (cb) -> db.query "drop table users, events, messages, new_friends, invites", cb
   (cb) -> db.query "drop schema public cascade;create schema public", cb
@@ -12,13 +9,13 @@ async.series [
             uid serial NOT NULL,
             pn character(12) NOT NULL,
             name character varying(20) NOT NULL,
-            fbid bigint,
+            password text NOT NULL,
+            verified boolean DEFAULT false,
             last_login bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
             token text NOT NULL DEFAULT ''::text,
             last_location latlng,
             last_location_update bigint,
             platform platform NOT NULL,
-            fbtoken text,
             CONSTRAINT users_pkey PRIMARY KEY (uid),
             CONSTRAINT users_pn_key UNIQUE (pn) )", cb
   (cb) -> db.query "CREATE TABLE new_friends (
@@ -78,7 +75,7 @@ async.series [
             FALSE AND accepted IS TRUE)))", cb
 ], (err, results) ->
   if (err)
-    log 'Error in init', err
+    console.log 'Error in init', err
   else
-    log 'DataBase has been initialized.'
+    console.log 'DataBase has been initialized.'
 

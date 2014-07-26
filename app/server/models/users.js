@@ -149,20 +149,7 @@ exports.getOrAddMember = function(profile, fbToken, pn, platform, phoneToken, cb
 			}
 		});
 	});
-	function makeFriends(uid, lastLogin) {
-		return cb(null, { uid: uid, pn : pn, name : profile.displayName, appUserDetails: { fbid:fbid , lastLogin: +lastLogin } });
-		fbToken = 'CAACEdEose0cBALc0PxbLZAE6UIg2QmTfukkBPRfrb4VFMocmiDTUpeZCXlU52IDSCIx2f51LMnmXlkHHsYzD6vd8g7VPbGFRZA5sNKZCDm0niPyGLYYkBuUTauzEYREzXbJaGL8u4nikRudAYgpEG8VPHzMZBpQeaaZApvuXy4b7DM9JTae4ZA8fz6YKU2ZCAAEZD'
-		fb.get(fbToken, '/me/friends/', function(err, friends) {
-			if (err) return cb(err);
-			if (!friends.data) return cb('no friends list');
-			var friendUidList = friends.data.map(function(f){return f.id});
-			var q1 = "UPDATE users SET new_friends = array_append(new_friends, $1) WHERE fbid = ANY($2::bigint[])"
-			db.query(q1, [uid, friendUidList], function(err) {
-				if (err) cb(err);
-				else cb(null, { uid: uid, pn : pn, name : profile.displayName, appUserDetails: { fbid:fbid , lastLogin: lastLogin } });
-			});		
-		});
-	}
+	
 }
 /*
 	User has been invited via phone number.
@@ -187,23 +174,3 @@ function getOrAddPhone (pn, name, cb) {
 		}
 	});
 }
-
-
-exports.getFBFriendList = function(socket) {
-  var user = getUserSession(socket);
-  var idArr = [];
-  fb.get(user.fbToken, '/me/friends', function(err, friends) {
-    err = err || friends.error;
-    if (err) return logError('from facebook.get:', err);
-    if (!friends.data) return logError('no friends data')
-    friends = friends.data.map(function(fbuser){return fbuser.id});
-    async.map(friends, users.get, function(err, friendsList) {
-      if (err) {
-        logError(err);
-      } else {
-        socket.emit('friendList', friendsList);
-      }
-    })
-  });
-}
-

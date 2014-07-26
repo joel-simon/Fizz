@@ -7,6 +7,5 @@ exports = module.exports;
 
 exports.add = function(uid, eid, text) {
 	var q2 = "INSERT INTO messages (mid, eid, data) VALUES ($1, $2, $3)";
-	
 }
 
