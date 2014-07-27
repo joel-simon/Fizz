@@ -15,8 +15,6 @@ $(function(){
       password: '060608'
     },
     success: function(data, status) {
-      console.log('testdsads');
-      console.log(io);
       var socket = io.connect('http://localhost');
         socket.on('onLogin', function (data) {
         console.log(data);

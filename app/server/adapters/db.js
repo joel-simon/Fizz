@@ -32,9 +32,12 @@ exports.query = function(text, values, cb) {
     cb = values;
     values = [];
   }
-	if (typeof(text) !== 'string') return cb('Invalid text:'+text);
-	if (! Array.isArray(values)) return cb('Invalid values:'+values);
-	if (typeof(cb) !== 'function') return cb('Invalid cb');
+	if (typeof(text) !== 'string')
+    return cb('Invalid db.query params. text:'+text);
+	if (! Array.isArray(values))
+    return cb('Invalid db.query params. values:'+values);
+	if (typeof(cb) !== 'function')
+    return cb('Invalid db.query params. cb:'+cb);
 	
   pg.connect(dbstring, function(err, client, done) {
     client.query(text, values, function(err, result) {

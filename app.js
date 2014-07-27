@@ -22,9 +22,6 @@ var
 var config = ((args.dev) ? require('./configDev.json') : require('./config.json'));
 
 var store = redisConns.store;
-//     pub = redisConns.pub,
-//     sub = redisConns.sub;
-
 var sessionStore = new redisStore({client: store});
 
 require.main.exports.io = io;
@@ -55,7 +52,6 @@ passport.use(new LocalStrategy({
 passport.serializeUser(function(user, done) { done(null, user); });
 passport.deserializeUser(function(obj, done) { done(null, obj); });
 
-
 //Middleware: Allows cross-domain requests (CORS)
 var allowCrossDomain = function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
@@ -81,40 +77,25 @@ app.configure(function() {
   app.use(express.errorHandler());
 });
 
- io.set('authorization', passportSocketIo.authorize({
-   passport: passport,
-   cookieParser: express.cookieParser,
-   key:         'connect.sid',       // the name of the cookie where express/connect stores its session_id
-   secret:      config.SECRET.cookieParser,    // the session_secret to parse the cookie
-   store:       sessionStore,        // we NEED to use a sessionstore. no memorystore please
-   success:     onAuthorizeSuccess,  // *optional* callback on success - read more below
-   fail:        onAuthorizeFail     // *optional* callback on fail/error - read more below
+io.set('log level', 2);
+io.set('authorization', passportSocketIo.authorize({
+  passport: passport,
+  cookieParser: express.cookieParser,
+  key:         'connect.sid',       // the name of the cookie where express/connect stores its session_id
+  secret:      config.SECRET.cookieParser,    // the session_secret to parse the cookie
+  store:       sessionStore,        // we NEED to use a sessionstore. no memorystore please
+  success:     onAuthorizeSuccess,  // *optional* callback on success - read more below
+  fail:        onAuthorizeFail     // *optional* callback on fail/error - read more below
  }));
 
-//With Socket.io >= 1.0
-//io.use(passportSocketIo.authorize({
-  //cookieParser: express.cookieParser,
-  //key:         'express.sid',       // the name of the cookie where express/connect stores its session_id
-  //secret:      config.SECRET.cookieParser,// the session_secret to parse the cookie
-  //store:       sessionStore,        // we NEED to use a sessionstore. no memorystore please
-  //success:     onAuthorizeSuccess,  // *optional* callback on success - read more below
-  //fail:        onAuthorizeFail,     // *optional* callback on fail/error - read more below
-//}));
 
 function onAuthorizeSuccess(data, accept) {
-  log('successful connection to socket.io');
-  // console.log(data);
-  // The accept-callback still allows us to decide whether to
-  // accept the connection or not.
   accept(null, true);
 }
 
 function onAuthorizeFail(data, message, error, accept){
-  logError('failed connection to socket.io:'+ message);
   if(error)
     throw new Error(message);
-  // console.log(data);
-  // We use this callback to log all of our failed connections.
   accept(null, false);
 }
 
