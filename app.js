@@ -36,10 +36,19 @@ passport.use(new LocalStrategy({
     passwordField: 'password'
   }, function(pn, password, done) {
     models.users.getFromPn(pn, function(err, user){
-      console.log('Login, err=',err,'. User=',user);
-      if (err) return done(err);
-      if (!user) return done(null, false);
-      if (user.password !== password ) return done(null, false);
+      if (err) {
+        console.log('Err in login:', err);
+        return done(err);
+      }
+      if (!user) {
+        console.log('Err in login: no user found');
+        return done(null, false);
+      }
+      if (user.password !== password ) {
+        console.log('Err in login: passwords do not match. Given =', password, 'Expected=', user.password);
+        return done(null, false);
+      }
+      console.log('login successful!');
       return done(null, user);
     });
   }
