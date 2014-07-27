@@ -46,6 +46,10 @@ passport.use(new LocalStrategy({
   }
 ));
 
+function cookieParserWrapper (socket, next) {
+  var cookieParser = require('cookie-parser')(config.SECRET.cookieParser)
+  cookieParser(socket.request, {}, next)
+}
 
 //Middleware: Allows cross-domain requests (CORS)
 var allowCrossDomain = function(req, res, next) {
@@ -83,7 +87,7 @@ app.configure(function() {
 
 //With Socket.io >= 1.0
 io.use(passportSocketIo.authorize({
-  cookieParser: express.cookieParser,
+  cookieParser: cookieParserWrapper,
   key:         'express.sid',       // the name of the cookie where express/connect stores its session_id
   secret:      config.SECRET.cookieParser,// the session_secret to parse the cookie
   store:       sessionStore,        // we NEED to use a sessionstore. no memorystore please
