@@ -32,11 +32,6 @@ require.main.exports.io = io;
 passport.serializeUser(function(user, done) { done(null, user); });
 passport.deserializeUser(function(obj, done) { done(null, obj); });
 
-/*
-  ios Login Flow.
-*/
-var onAuth = (require('./app/server/socketHandlers/onAuth'));
-
 passport.use(new LocalStrategy({
     usernameField: 'pn',
     passwordField: 'password'
@@ -77,13 +72,23 @@ app.configure(function() {
   app.use(express.errorHandler());
 });
 
-io.set('authorization', passportSocketIo.authorize({
+// io.set('authorization', passportSocketIo.authorize({
+//   cookieParser: express.cookieParser,
+//   key:         'connect.sid',       // the name of the cookie where express/connect stores its session_id
+//   secret:      config.SECRET.cookieParser,    // the session_secret to parse the cookie
+//   store:       sessionStore,        // we NEED to use a sessionstore. no memorystore please
+//   success:     onAuthorizeSuccess,  // *optional* callback on success - read more below
+//   fail:        onAuthorizeFail     // *optional* callback on fail/error - read more below
+// }));
+
+//With Socket.io >= 1.0
+io.use(passportSocketIo.authorize({
   cookieParser: express.cookieParser,
-  key:         'connect.sid',       // the name of the cookie where express/connect stores its session_id
-  secret:      config.SECRET.cookieParser,    // the session_secret to parse the cookie
+  key:         'express.sid',       // the name of the cookie where express/connect stores its session_id
+  secret:      config.SECRET.cookieParser,// the session_secret to parse the cookie
   store:       sessionStore,        // we NEED to use a sessionstore. no memorystore please
   success:     onAuthorizeSuccess,  // *optional* callback on success - read more below
-  fail:        onAuthorizeFail     // *optional* callback on fail/error - read more below
+  fail:        onAuthorizeFail,     // *optional* callback on fail/error - read more below
 }));
 
 function onAuthorizeSuccess(data, accept) {
