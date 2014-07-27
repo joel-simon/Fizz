@@ -5,30 +5,22 @@ output    = require './../output.js'
 db        = require './../adapters/db.js'
 
 module.exports = (data, socket, callback) ->
-  user       = utils.getUserSession socket
-  text       = data.text
-  location   = data.location || ''
-  time       = data.time || 0
+  user        = utils.getUserSession socket
+  description = data.description
+
   eid = data.eid
   uid = data.uid
 
   utils.log "newEvent", {data}, {user}
   
-  models.events.add user, text, (err, data) =>
+  models.events.add user, description, (err, event) =>
     return callback err if err?
-    eid = data.eid
-    creationTime = data.creationTime
-    messages = [{ mid:1, eid, uid, text, marker: null, creationTime }]
-    newEvent =
-      eid : eid
-      creator : user.uid
-      creationTime : creationTime
-      messages : messages
-      invites : [user]
-      guests : [user.uid]
-      clusters : []
+    
+    event.messages = []
+    event.guests   = [user.uid]
+    event.invites  = [user]
 
     if socket.emit?
-      socket.emit 'newEvent', newEvent
+      socket.emit 'newEvent', event
 
-    callback null, newEvent
+    callback null, event

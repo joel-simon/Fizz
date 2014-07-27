@@ -16,14 +16,11 @@ exports.add = (user, text, callback) ->
   # check.is(text, 'string')
 
   q1 = "INSERT INTO events
-      (creator, clusters)
+      (creator, description)
       VALUES ($1, $2)
       RETURNING eid, creation_time"
-  
-  q2 = "INSERT INTO messages (mid, eid, uid, data)
-       VALUES ($1, $2, $3, $4)"
 
-  q3 = "INSERT INTO invites (eid, uid, inviter, confirmed, accepted, accepted_time)
+  q2 = "INSERT INTO invites (eid, uid, inviter, confirmed, accepted, accepted_time)
         VALUES ($1, $2, $3, $4, $5, $6)"
 
   eid = null
@@ -38,11 +35,9 @@ exports.add = (user, text, callback) ->
         process.nextTick arguments[arguments.length-1]
       () ->
         client.query q1, [ user.uid, '{}'], arguments[arguments.length-1]
-      (result, cb) ->
+      (result, cb)->
         eid = result.rows[0].eid
         creationTime = result.rows[0].creation_time
-        client.query q2, [ 1, eid, user.uid, text], cb
-      ()->
         client.query q3, [eid, user.uid, user.uid, true, true, now], arguments[arguments.length-1]
     ],
      (err, results) ->
@@ -51,7 +46,12 @@ exports.add = (user, text, callback) ->
         callback(err)
       else
         client.query 'COMMIT', done
-        callback null, {eid:eid, creationTime:now}
+        callback null, {
+          eid
+          description
+          creator: user.uid
+          creationTime:now
+        }
 
 exports.delete = (eid, callback) ->
   q1 = "UPDATE events set death_time = $1 WHERE eid = $2"
