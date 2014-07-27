@@ -83,10 +83,11 @@ connect = (socket, callback) ->
     }, (err, results) ->
       return callback err if err
       data =
-        me : user
-        newMessages   : results.newMessages
-        newInvitees   : results.newInvitees
-        guests        : results.guests
+        me          : user
+        eventList   : eventList
+        newMessages : results.newMessages
+        newInvitees : results.newInvitees
+        guests      : results.guests
 
       if socket.emit
         socket.emit('onLogin', data);    
