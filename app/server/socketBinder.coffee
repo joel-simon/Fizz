@@ -64,3 +64,5 @@ module.exports = (io) ->
     socket.on 'postRequestEvents',(data) -> postRequestEvents data, socket, onError
     socket.on 'postUpdateLocation', (data) -> postUpdateLocation data, socket, onError
     socket.on 'disconnect', () -> disconnect socket, onError
+
+

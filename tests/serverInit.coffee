@@ -32,8 +32,7 @@ async.series [
   (cb) -> db.query "CREATE TABLE events (
             eid serial NOT NULL,
             creator integer NOT NULL,
-            location text,
-            time bigint,
+            description text,
             creation_time bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
             last_cluster_update bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
             clusters integer[],
@@ -76,6 +75,7 @@ async.series [
 ], (err, results) ->
   if (err)
     console.log 'Error in init', err
+    process.exit(1)
   else
     console.log 'DataBase has been initialized.'
-
+    process.exit(0)

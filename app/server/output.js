@@ -176,7 +176,8 @@ exports.emit = function(options) {
 
   async.each(recipients, function(user, callback) {
     // if (models.users.isConnected(user.uid)) {
-      io.sockets.in(user.uid).emit(eventName, data);
+      if(io)
+        io.sockets.in(user.uid).emit(eventName, data);
     // }
     // if ( iosPush && user.type === "Member" && (!pushRecipients ||
     //             pushRecipients.indexOf(user.uid) !== -1)) {

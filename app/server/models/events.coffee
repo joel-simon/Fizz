@@ -11,9 +11,9 @@ rollback = (client, done) ->
   client.query 'ROLLBACK', (err) ->
     done err
 
-exports.add = (user, text, callback) ->
+exports.add = (user, description, callback) ->
   # check.is(user, 'user')
-  # check.is(text, 'string')
+  # check.is(description, 'string')
 
   q1 = "INSERT INTO events
       (creator, description)
@@ -38,9 +38,8 @@ exports.add = (user, text, callback) ->
       (result, cb)->
         eid = result.rows[0].eid
         creationTime = result.rows[0].creation_time
-        client.query q3, [eid, user.uid, user.uid, true, true, now], arguments[arguments.length-1]
-    ],
-     (err, results) ->
+        client.query q2, [eid, user.uid, user.uid, true, true, now], arguments[arguments.length-1]
+    ], (err, results) ->
       if (err)
         rollback(client, done)
         callback(err)
@@ -130,7 +129,7 @@ exports.getGuestList = (eid, callback) ->
     callback null, result.rows[0]['array_agg']
 
 exports.getInviteList = (eid, cb) ->
-  q = "SELECT users.uid, pn, name, fbid, accepted FROM users, invites WHERE invites.eid = $1 and users.uid = invites.uid"
+  q = "SELECT users.uid, pn, name, accepted FROM users, invites WHERE invites.eid = $1 and users.uid = invites.uid"
   db.query q, [eid], (err, result) ->
     if err?
       cb err 

@@ -27,12 +27,12 @@ module.exports = function(app, passport) {
 			return res.send(400, 'invalid body paramaters');
 		}
 		var name = first + " " +last;
-		models.users.create(pn, name, platform, token, function(err, password) {
+		models.users.create(pn, name, platform, token, function(err, user) {
 			if (err) {
 				console.log('err in create users');
 				res.send(400, err);
 			} else {
-				console.log('registration successful, password:', password);
+				console.log('registration successful, password:', user.password);
 				res.send(200);
 			}
 		});

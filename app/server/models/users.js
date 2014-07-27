@@ -11,7 +11,6 @@ var nameShorten = utils.nameShorten;
 
 var exports = module.exports;
 var async   = require('async');
-var fb      = require('./../adapters/fb.js');
 
 
 var output  = require('./../output.js');
@@ -49,12 +48,6 @@ exports.get = function(uid, cb) {
     	else {
     		var r0 = result.rows[0]
     		var user = { uid: r0.uid, pn : r0.pn, name : r0.name}
-    		if (r0.fbid) {
-    			user.appUserDetails = {
-    				fbid: r0.fbid,
-    				lastLogin: (r0.last_login)
-    			}
-    		}
 	    	cb(null, user);
 	    }
 	});
@@ -90,7 +83,8 @@ exports.create = function(pn, name, platform, token, callback) {
 	var values = [pn, name, platform, token, password]
 	db.query(q1, values, function(err, result) {
 		if (err) return callback(err)
-		callback(null, password)
+		uid = +result.rows[0].uid
+		callback(null, {uid:uid, pn:pn, name:name, platform:platform, password:password})
 	});
 };
 
