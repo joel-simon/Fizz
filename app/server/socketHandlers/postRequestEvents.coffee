@@ -6,5 +6,6 @@ db        = require './../adapters/db.js'
 
 
 module.exports = (data, socket, callback) ->
-  utils.log 'requestEvents', data
+  utils.log 'requestEvents'
+  # console.trace()
   callback null

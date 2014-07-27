@@ -3,16 +3,17 @@ dir = './socketHandlers/'
 
 handlerNames = [
   'connect'
-  'newEvent'
-  'joinEvent'
-  'leaveEvent'
-  'newInvites'
-  'newMessage'
-  'disconnect'
-  'updateLocation'
-  'updateEvent'
-  'requestEvents'
+  'postNewEvent'
+  'postJoinEvent'
+  'postLeaveEvent'
+  'postNewInvites'
+  'postNewMessage'
+  'postUpdateLocation'
+  'postUpdateEvent'
+  'postRequestEvents'
 ]
+
+disconnect = require(dir+'disconnect')
 
 handlers = {}
 for handler in handlerNames
@@ -29,4 +30,6 @@ module.exports = (io) ->
   io.sockets.on 'connection', (socket) ->
     handlers.connect socket, (callback 'connect')
     for k, v of handlers
-      socket.on k, (data) -> v(data, socket, (callback k))
+      # console.log 
+      if k != 'connect' and k != 'disconnect'
+        socket.on k, (data) -> v(data, socket, (callback k))
