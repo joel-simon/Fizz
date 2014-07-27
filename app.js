@@ -16,7 +16,7 @@ var
   redisConns = require('./app/server/adapters/redisStore.js'),
   passport = require('passport'),
   LocalStrategy = require('passport-local').Strategy,
-  passportSocketIo = require("passport.socketio"),
+  passportSocketIo = require("./lib/passport.socketio"),
   models = require('./app/server/models');
 
 var config = ((args.dev) ? require('./configDev.json') : require('./config.json'));
@@ -26,10 +26,8 @@ var store = redisConns.store;
 //     sub = redisConns.sub;
 
 var sessionStore = new redisStore({client: store});
-require.main.exports.io = io;
 
-passport.serializeUser(function(user, done) { done(null, user); });
-passport.deserializeUser(function(obj, done) { done(null, obj); });
+require.main.exports.io = io;
 
 passport.use(new LocalStrategy({
     usernameField: 'pn',
@@ -37,22 +35,26 @@ passport.use(new LocalStrategy({
   }, function(pn, password, done) {
     models.users.getFromPn(pn, function(err, user){
       if (err) {
-        console.log('Err in login:', err);
+        log('Err in login:', err);
         return done(err);
       }
       if (!user) {
-        console.log('Err in login: no user found');
+        log('Err in login: no user found');
         return done(null, false);
       }
       if (user.password !== password ) {
-        console.log('Err in login: passwords do not match. Given =', password, 'Expected=', user.password);
+        log('Err in login: passwords do not match. Given =', password, 'Expected=', user.password);
         return done(null, false);
       }
-      console.log('login successful!');
+      log('login successful!');
       return done(null, user);
     });
   }
 ));
+
+passport.serializeUser(function(user, done) { done(null, user); });
+passport.deserializeUser(function(obj, done) { done(null, obj); });
+
 
 //Middleware: Allows cross-domain requests (CORS)
 var allowCrossDomain = function(req, res, next) {
@@ -75,11 +77,12 @@ app.configure(function() {
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(require('stylus').middleware({ src: __dirname + '/app/client' }));
-  app.use(express.static(__dirname + '/app/client'));
+  app.use(express.static(__dirname + '/app/public'));
   app.use(express.errorHandler());
 });
 
  io.set('authorization', passportSocketIo.authorize({
+   passport: passport,
    cookieParser: express.cookieParser,
    key:         'connect.sid',       // the name of the cookie where express/connect stores its session_id
    secret:      config.SECRET.cookieParser,    // the session_secret to parse the cookie

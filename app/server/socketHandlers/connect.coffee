@@ -37,6 +37,7 @@ QUERIES =
     (events.last_cluster_update >= $2 OR events.last_accepted_update > $2)"
 
 connect = (socket, callback) ->
+  return socket.emit('onLogin', {foo:42}); 
   if args.fakeData
     fakeData = require('./../fakeData').ONLOGIN
     log 'EMITTING FAKE onlogin:', fakeData
@@ -56,7 +57,7 @@ connect = (socket, callback) ->
   db.query eventListQuery, [user.uid], (err, results) ->
     return logError(err) if err
     eventList = results?.rows?.map((e) -> e.eid)
-    eventListString = '{' + invited_list + '}'
+    eventListString = '{' + eventList + '}'
     async.parallel {              
       "newMessages": (cb) -> 
         values = [eventListString, lastLogin]
@@ -73,7 +74,7 @@ connect = (socket, callback) ->
             data[m.eid].push m
           cb null, data
       "guests": (cb) -> 
-        values = [invited_list, lastLogin]
+        values = [eventList, lastLogin]
         db.query QUERIES.guests, values, (err, results) ->
           return cb err if err?
           data = {}
@@ -81,7 +82,7 @@ connect = (socket, callback) ->
             data[u.eid] = u.array_agg
           cb null, data
       "newInvitees": (cb) ->
-        values = [invited_list, lastLogin]
+        values = [eventList, lastLogin]
         db.query QUERIES.invitees, values, (err, results) ->
           return cb err if err?
           data = {}
