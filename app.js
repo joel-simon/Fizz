@@ -42,6 +42,7 @@ passport.use(new LocalStrategy({
     passwordField: 'password'
   }, function(pn, password, done) {
     models.users.getFromPn(pn, function(err, user){
+      console.log('Login, err=',err,'. User=',user);
       if (err) return done(err);
       if (!user) return done(null, false);
       if (user.password !== password ) return done(null, false);

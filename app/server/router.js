@@ -10,8 +10,7 @@ module.exports = function(app, passport) {
 
 	app.post('/login',
   passport.authenticate('local', { successRedirect: '/',
-                                   failureRedirect: '/login',
-                                   failureFlash: true })
+                                   failureRedirect: '/login'})
 	);
 
 
@@ -20,7 +19,7 @@ module.exports = function(app, passport) {
 		var first = req.body.firstName;
 		var last = req.body.lastName;
 		var platform = req.body.platform;
-		var token = req.body.phoneToken;
+		var token = req.body.phoneToken || 'noToken';
 		var pn = req.body.pn;
 		if (!first || !last || !platform || !token || !pn) {
 			console.log('invalid body paramaters');
