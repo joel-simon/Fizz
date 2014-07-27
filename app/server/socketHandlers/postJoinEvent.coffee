@@ -15,8 +15,7 @@ module.exports = (data, socket, callback) ->
     join    : (cb) -> models.events.join eid, uid, cb
     invited : (cb) -> models.events.getInviteList eid, cb
     guests  : (cb) -> models.events.getGuestList eid, cb
-  },
-  (err, results) ->
+  }, (err, results) ->
     return callback err if err?
     output.emit 
       eventName : 'updateGuests'

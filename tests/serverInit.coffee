@@ -46,8 +46,7 @@ async.series [
             mid integer NOT NULL,
             eid integer NOT NULL,
             uid integer NOT NULL,
-            data text,
-            marker latlng,
+            text text,
             creation_time bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
             CONSTRAINT messages_pkey PRIMARY KEY (eid, mid),
             CONSTRAINT messages_eid_fkey FOREIGN KEY (eid)
@@ -55,9 +54,7 @@ async.series [
                 ON UPDATE NO ACTION ON DELETE NO ACTION,
             CONSTRAINT messages_uid_fkey FOREIGN KEY (uid)
                 REFERENCES users (uid) MATCH SIMPLE
-                ON UPDATE NO ACTION ON DELETE NO ACTION,
-            CONSTRAINT valid_message CHECK (data IS NOT NULL AND marker
-              IS NULL OR data IS NULL AND marker IS NOT NULL) )", cb
+                ON UPDATE NO ACTION ON DELETE NO ACTION )", cb
   (cb) -> db.query "CREATE TABLE invites (
           eid integer NOT NULL,
           uid integer NOT NULL,

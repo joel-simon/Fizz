@@ -16,6 +16,13 @@ disconnect     = require dir+'disconnect'
 postUpdateLocation = require(dir+'postUpdateLocation')
 postRequestEvents  = require dir+'postRequestEvents'
 
+makeSocket = (user) ->
+  {
+    join : ()->
+    handshake:
+      user: user
+  }
+
 async.series [
   (cb) -> db.query "truncate table users, events, messages, new_friends, invites", cb
   (cb) -> models.users.create "+13475346100", "Joel Simon", "ios", "PHONETOKEN", cb
@@ -28,8 +35,8 @@ async.series [
   
   [_,joel,andrew,antonio,russell] = results
   console.log joel
-  joelSocket = {handshake:{ user: joel }}
-  andrewSocket = {handshake: {user: andrew}}
+  joelSocket = makeSocket joel
+  andrewSocket = makeSocket andrew
   
   async.series [ #create events
     (cb) -> postNewEvent { text: "JoelEvent1" }, joelSocket, cb
@@ -43,7 +50,7 @@ async.series [
         (cb) -> postNewInvites {eid: e1.eid, inviteList: [antonio] }, andrewSocket, cb
         (cb) -> postNewInvites {eid: e2.eid, inviteList: [joel] }, andrewSocket, cb
         #andrew messages event
-        # (cb) -> newMessage { eid: e1.eid, text: "newMessage1" }, andrewSocket, cb
+        (cb) -> postNewMessage { eid: e1.eid, text: "newMessage1" }, andrewSocket, cb
         # (cb) -> newMessage { eid: e1.eid, text: "newMessage2" }, andrewSocket, cb
         # (cb) -> models.events.delete(e2.eid, cb)
         # (cb) -> suggestInvitedList({eid: e1.eid,})

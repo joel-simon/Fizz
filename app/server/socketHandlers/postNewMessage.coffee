@@ -26,8 +26,7 @@ module.exports = (data, socket, callback) ->
       eventName: 'newMessage'
       recipients: inviteList
       data:
-        eid: eid
-        messages: [msg]
+        message: msg
     output.emit emitBody
     callback null
     # pushIos({

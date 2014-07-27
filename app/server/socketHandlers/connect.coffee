@@ -37,6 +37,7 @@ connect = (socket, callback) ->
 
   user = utils.getUserSession socket
 
+  socket.join(''+user.uid)
   eventListQuery =  "
     SELECT invites.eid FROM
     invites, events WHERE
