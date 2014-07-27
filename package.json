@@ -37,7 +37,7 @@
     "validator": "~1.2.1",
     "chai": "~1.9.1",
     "should": "~4.0.4",
-    "socket.io": "~1.0.6",
+    "socket.io": "0.9.16",
     "passport-local": "~1.0.0"
   },
   "engines": {
