@@ -42,7 +42,7 @@ isHost = (user, event, newInvites, callback) ->
   async.series {
     add: (cb) -> models.events.addInvites event.eid, user.uid, newInvites, true, cb
     creator: (cb) -> models.users.get event.creator, cb
-    messages: (cb) -> models.events.getMoreMessages event.eid, 0, cb
+    messages: (cb) -> models.messages.getMoreMessages event.eid, 0, cb
     invited : (cb)-> models.events.getInviteList event.eid, cb
     guests: (cb) -> models.events.getGuestList event.eid, cb
   }, (err, results) ->

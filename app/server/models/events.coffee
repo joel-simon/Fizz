@@ -109,21 +109,6 @@ exports.leave = (eid, uid, callback) ->
         client.query 'COMMIT', done
         callback null
 
-exports.addMessage = (eid, uid, text, callback) ->
-  #text = sanitize(msg.text).xss()
-  store.hincrby 'messages', ''+eid, 1, (err, mid) ->
-    return callback err if err?
-    q2 = "INSERT INTO messages (mid, eid, uid, text, creation_time) VALUES ($1, $2, $3, $4, $5) returning *"
-    db.query q2, [mid+1, eid, uid, text, Date.now()], (err, result) ->
-      return callback err if err?
-      return callback null, result.rows[0]
-
-exports.getMoreMessages = (eid, mid, cb) ->
-  q1 = "SELECT * FROM messages WHERE eid = $1 and mid > $2 ORDER BY creation_time LIMIT 10"
-  db.query q1, [eid, mid], (err, results) ->
-    return cb err if err?
-    cb null, results.rows
-
 exports.getGuestList = (eid, callback) ->
   q1 = "SELECT array_agg(uid) FROM invites WHERE eid = $1 and accepted = true"
   db.query q1, [eid], (err, result) ->

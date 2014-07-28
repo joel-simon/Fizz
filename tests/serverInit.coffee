@@ -6,7 +6,7 @@ async.series [
   (cb) -> db.query "create type platform as enum ('ios', 'android', 'sms')", cb
   (cb) -> db.query "create type latlng as (lat double precision, lng double precision)", cb
   (cb) -> db.query "CREATE TABLE users (
-            uid serial NOT NULL,
+            uid serial primary KEY,
             pn character(12) NOT NULL,
             name character varying(20) NOT NULL,
             password text NOT NULL,
@@ -16,7 +16,6 @@ async.series [
             last_location latlng,
             last_location_update bigint,
             platform platform NOT NULL DEFAULT 'sms',
-            CONSTRAINT users_pkey PRIMARY KEY (uid),
             CONSTRAINT users_pn_key UNIQUE (pn) )", cb
   (cb) -> db.query "CREATE TABLE new_friends (
             uid integer NOT NULL,
@@ -30,7 +29,7 @@ async.series [
                 REFERENCES users (uid) MATCH SIMPLE
                 ON UPDATE NO ACTION ON DELETE NO ACTION )", cb
   (cb) -> db.query "CREATE TABLE events (
-            eid serial NOT NULL,
+            eid serial primary KEY,
             creator integer NOT NULL,
             description text,
             creation_time bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
@@ -38,17 +37,15 @@ async.series [
             clusters integer[],
             last_accepted_update bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
             death_time bigint,
-            CONSTRAINT events_pkey PRIMARY KEY (eid),
             CONSTRAINT events_creator_fkey FOREIGN KEY (creator)
                 REFERENCES users (uid) MATCH SIMPLE
                 ON UPDATE NO ACTION ON DELETE NO ACTION )", cb
   (cb) -> db.query "CREATE TABLE messages (
-            mid integer NOT NULL,
+            mid serial primary KEY,
             eid integer NOT NULL,
             uid integer NOT NULL,
             text text,
             creation_time bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
-            CONSTRAINT messages_pkey PRIMARY KEY (eid, mid),
             CONSTRAINT messages_eid_fkey FOREIGN KEY (eid)
                 REFERENCES events (eid) MATCH SIMPLE
                 ON UPDATE NO ACTION ON DELETE NO ACTION,

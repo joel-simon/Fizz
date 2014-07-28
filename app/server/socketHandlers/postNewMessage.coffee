@@ -13,7 +13,7 @@ module.exports = (data, socket, callback) ->
 
   async.parallel {
     newMsg : (cb) ->
-      models.events.addMessage eid, user.uid, text, cb
+      models.messages.addMessage eid, user.uid, text, cb
     inviteList: (cb) ->
       models.events.getInviteList eid, cb
   },
