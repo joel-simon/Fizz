@@ -57,9 +57,7 @@ connect = (socket, callback) ->
           data = {}
           for m in results.rows
             m.creationTime = +m.creation_time
-            m.text = m.data
             delete m.creation_time
-            delete m.data
             if not data[m.eid]
               data[m.eid] = []
             data[m.eid].push m
@@ -91,7 +89,8 @@ connect = (socket, callback) ->
         guests      : results.guests
 
       if socket.emit
-        socket.emit('onLogin', data);    
+        socket.emit('onLogin', data)
+      
       callback null, data
       
 module.exports = connect

@@ -60,8 +60,7 @@ async.series [
         # (cb) -> leaveEvent {eid:eid},{handshake: { user: andrew }}, cb
         # (cb) -> users.get(joel.uid, cb)
         # (cb) -> users.getFromPn(joel.pn, cb)
-      ],
-      (err, results) ->
+      ], (err, results) ->
         if (err)
           console.log "ERR:", err if err
           process.exit(1)

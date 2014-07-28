@@ -77,7 +77,7 @@ app.configure(function() {
   app.use(express.errorHandler());
 });
 
-io.set('log level', 2);
+io.set('log level', 1);
 io.set('authorization', passportSocketIo.authorize({
   passport: passport,
   cookieParser: express.cookieParser,
