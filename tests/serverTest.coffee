@@ -16,8 +16,10 @@ postNewInvites = require dir+'postNewInvites'
 postNewMessage = require dir+'postNewMessage'
 connect        = require dir+'connect'
 disconnect     = require dir+'disconnect'
+postUpdateEvent = require dir+'postUpdateEvent'
 postUpdateLocation = require dir+'postUpdateLocation'
 postRequestEvents  = require dir+'postRequestEvents'
+
 
 makeSocket = (user) ->
   {
@@ -59,10 +61,11 @@ async.series [
         # (cb) -> suggestInvitedList({eid: e1.eid,})
         (cb) -> connect joelSocket, cb
 
-        (cb) -> postJoinEvent {eid: e1.eid},{handshake: { user: andrew }}, cb
-        (cb) -> postLeaveEvent {eid: e1.eid},{handshake: { user: andrew }}, cb
-        # (cb) -> users.get(joel.uid, cb)
-        # (cb) -> users.getFromPn(joel.pn, cb)
+        (cb) -> postJoinEvent {eid: e1.eid}, andrewSocket, cb
+        (cb) -> postLeaveEvent {eid: e1.eid}, andrewSocket, cb
+        
+        (cb) -> postUpdateEvent {eid: e1.eid, description: 'hi'}, andrewSocket, cb
+        (cb) -> postUpdateEvent {eid: e2.eid, description: 'hi'}, andrewSocket, cb
       ], (err, results) ->
         if (err)
           console.log "ERR:", err if err

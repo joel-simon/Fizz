@@ -8,7 +8,7 @@ check  = require('easy-types')
 module.exports = (data, socket, callback) ->
   eventName = 'newMessage'
   user = utils.getUserSession socket
-  utils.log eventName, "User:"+ JSON.stringify(user), "Data:"+ JSON.stringify(data)
+  utils.log 'Recieved '+eventName, "User:"+ JSON.stringify(user), "Data:"+ JSON.stringify(data)
   eid  = data.eid
   text = data.text
 

@@ -2,6 +2,7 @@ async = require 'async'
 sanitize = require('validator').sanitize
 store = require('./../adapters/redisStore.js').store
 exports = module.exports
+models = require '../models'
 db = require './../adapters/db.js'
 check = require('easy-types')
 pg = require 'pg'
@@ -56,6 +57,10 @@ exports.delete = (eid, callback) ->
   q1 = "UPDATE events set death_time = $1 WHERE eid = $2"
   db.query q1, [Date.now(), eid], callback
 
+exports.updateDescription = (eid, description, callback) ->
+  q1 = "UPDATE events set description = $2 WHERE eid = $1"
+  db.query q1, [eid, description], callback
+
 # returns null on failure
 exports.get = (eid, callback) ->
   eid = +eid
@@ -63,7 +68,7 @@ exports.get = (eid, callback) ->
   db.query q1, [eid], (err, result) ->
     return callback err if err
     event = result.rows[0]
-    event.creationTime =  event.creation_time
+    event.creationTime = parseInt event.creation_time
     delete event.creation_time
     callback null, event
 
@@ -115,22 +120,28 @@ exports.getGuestList = (eid, callback) ->
     return callback err if err?
     callback null, result.rows[0]['array_agg']
 
-exports.getInviteList = (eid, cb) ->
+exports.getInviteList = (eid, callback) ->
   q = "SELECT users.uid, pn, name, accepted FROM users, invites WHERE invites.eid = $1 and users.uid = invites.uid"
   db.query q, [eid], (err, result) ->
-    if err?
-      cb err 
-    else
-      cb null, result.rows
+    return callback err if err?
+    callback null, result.rows
 
-exports.addInvites = (eid, inviter, users, confirmed, cb) ->
+exports.addInvites = (eid, inviter, users, confirmed, callback) ->
   q = "insert into invites (eid, uid, inviter, confirmed, invited_time, accepted_time) values "
   values = []
   now = Date.now()
   for u in users
     values=values.concat '('+([eid,u.uid,inviter,confirmed, now, now].join(','))+')'
 
-  db.query q+(values.join(',')),[], cb
+  db.query q+(values.join(',')),[], callback
 
-
-
+exports.getFull = (eid, callback) ->
+  messages = require './messages'
+  async.series {
+    event   : (cb) -> exports.get eid, cb
+    messages: (cb) -> messages.getMoreMessages eid, 0, cb
+    invited : (cb) -> exports.getInviteList eid, cb
+    guests  : (cb) -> exports.getGuestList eid, cb
+  }, (err, result) ->
+    return callback err if err?
+    callback null, result.event, result.messages, result.invited, result.guests

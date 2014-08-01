@@ -7,7 +7,7 @@ db        = require './../adapters/db.js'
 
 module.exports = (data, socket, callback) ->
   user = utils.getUserSession socket
-  utils.log 'locationChange', "User:"+ JSON.stringify(user), "Data:"+ JSON.stringify(data)
+  utils.log 'Recieved locationChange', "User:"+ JSON.stringify(user), "Data:"+ JSON.stringify(data)
 
   q1 = "update users set last_location = (lat,lng) where uid = $2"
   q2 = "SELECT (uid, last_location, eid)

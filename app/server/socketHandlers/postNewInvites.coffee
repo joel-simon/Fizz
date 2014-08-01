@@ -8,90 +8,33 @@ db        = require './../adapters/db.js'
 # check = require('easy-types').addTypes(types)
 
 module.exports = (data, socket, callback) ->
+  eventName = 'newInvites'
   user = utils.getUserSession socket
-  utils.log 'newInvites', "User:"+ JSON.stringify(user), "Data:"+ JSON.stringify(data)
+  utils.log 'Recieved '+eventName, "User:"+ JSON.stringify(user), "Data:"+ JSON.stringify(data)
 
-  # check.is(data, { eid: 'posInt', inviteList: '[user]'})
-  eid  = data.eid
-  newInvites = data.inviteList
-  models.events.get eid, (err, event) ->
+  eid = data.eid
+  deltaInviteList = data.inviteList
+
+  models.events.getInviteList eid, (err, oldInviteList) ->
     return callback err if err?
-    if user.uid == event.creator
-      isHost user, event, newInvites, callback
-    else
-      isNotHost user, event, newInvites, callback
+    models.events.addInvites eid, user.uid, deltaInviteList, true, (err) ->
+      return callback err if err?
+      models.events.getFull eid, (err, event, messages, inviteList, guests) ->
+        return callback err if err?
+        creator =  event.creator
+        description =  event.description
+        creationTime = event.creationTime
 
-isNotHost = (user, event, newInvites, callback) ->
-  async.parallel {
-    add: (cb) ->
-      models.events.addInvites event.eid, user.uid, newInvites, false, cb,
-    creator: (cb) ->
-      models.users.get event.creator, cb
-  }, (err, results) ->
-    return callback(err) if err
-    output.emit({ 
-      eventName: 'newSuggestedInvites'
-      data:
-        eid: event.eid
-        inviter: user.uid
-        invitees: newInvites
-      recipients: [results.creator]
-    })
-    callback(null)
+        output.emit {
+          eventName
+          recipients : oldInviteList
+          data : { eid, inviteList }
+        }
 
-isHost = (user, event, newInvites, callback) ->
-  async.series {
-    add: (cb) -> models.events.addInvites event.eid, user.uid, newInvites, true, cb
-    creator: (cb) -> models.users.get event.creator, cb
-    messages: (cb) -> models.messages.getMoreMessages event.eid, 0, cb
-    invited : (cb)-> models.events.getInviteList event.eid, cb
-    guests: (cb) -> models.events.getGuestList event.eid, cb
-  }, (err, results) ->
-    return callback(err) if err?
-    creator = results.creator
-    messages = results.messages
-    oldInvites = results.invited
-    allInvites = newInvites.concat oldInvites
-    
-    data = 
-      eid : event.eid
-      creator : event.creator
-      creationTime : event.creationTime
-      messages : messages
-      invites:  allInvites
-      guests:  results.guests
-      clusters: event.clusters
-      time : event.creationTime
-      location: event.location
-
-    output.emit
-      eventName: 'newEvent'
-      data:data
-      recipients:newInvites
-
-    output.emit
-      eventName: 'updateInvitees'
-      data:
-        eid: event.eid
-        unvitees: allInvites
-      recipients: oldInvites
-    
-    callback null, data
-    # # Push to people that they are invited.
-    # pushIos({
-    #   msg: msgOut,
-    #   userList : newInvites,
-    #   eid: eid
-    # });
-
-    # var data = {}
-    # data[e.eid] = inviteList;
-    # emit({ # Let other people that new people have been invited. 
-    #   eventName: 'updateInvitees',
-    #   data: data,
-    #   recipients: inviteList
-    # });
-    # sms those smsUers who have been invited. 
-    # output.sendGroupSms(results.pnUsers , eid, function(user) {
-    #   return msgOut+'\nRespond to join the event.\n'+server+user.key;
-    # });
+        output.emit {
+          eventName  : 'newEvent'
+          recipients : deltaInviteList
+          data : { eid, creator, description, creationTime
+                   messages, inviteList, guests }
+        }
+        callback null, inviteList

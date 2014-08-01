@@ -7,7 +7,7 @@ check  = require 'easy-types'
 
 module.exports = (data, socket, callback) ->
   user = utils.getUserSession socket
-  utils.log 'Leave Event', "User:"+ JSON.stringify(user), "Data:"+ JSON.stringify(data)
+  utils.log 'Recieved leaveEvent', "User:"+ JSON.stringify(user), "Data:"+ JSON.stringify(data)
   eid  = data.eid
   uid  = user.uid
 
