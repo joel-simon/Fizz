@@ -8,9 +8,10 @@ db        = require './../adapters/db.js'
 # check = require('easy-types').addTypes(types)
 
 module.exports = (data, socket, callback) ->
-  utils.log 'newInvites', data
-  # check.is(data, { eid: 'posInt', inviteList: '[user]'})
   user = utils.getUserSession socket
+  utils.log 'newInvites', "User:"+ JSON.stringify(user), "Data:"+ JSON.stringify(data)
+
+  # check.is(data, { eid: 'posInt', inviteList: '[user]'})
   eid  = data.eid
   newInvites = data.inviteList
   models.events.get eid, (err, event) ->

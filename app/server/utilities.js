@@ -21,7 +21,7 @@ exports.log = function() {
   var date = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
   date = date.substring(0,date.search("GMT")-1);
 
-	var main = '\tInfo- ';
+	var main = 'Info- ';
 	var e;
   var more = ''
 	for (var i = 0; i < arguments.length; i++) {
@@ -29,13 +29,13 @@ exports.log = function() {
 		var s = ((e instanceof Object) ? JSON.stringify(e, null, '') : e)+' ';
     if (i == 0) {
       main += s;
-      main += ' @'+date;
+      // main += ' @'+date;
     } else {
-      more += '\n\t\t'+s;
+      more += '\n  '+s;
     }
 	}
 	console.log(main, more.data);
-  console.log('\t'+'———————————————————————————————————————————————————————————————'.data);
+  console.log('————————————————————————————————————————————————————————————————————————————————'.data);
 }
 
 exports.debug = function() {

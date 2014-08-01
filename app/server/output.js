@@ -170,8 +170,8 @@ exports.emit = function(options) {
   // Deal with a circular dependency by delaying invocation.
   if(!io) io = require('../../app.js').io;
   log('Emitting '+eventName,
-      JSON.stringify(recipients.map(function(u){return u.name})),
-      JSON.stringify(data)
+      'To:   '+JSON.stringify(recipients.map(function(u){return u.name})),
+      'Data: '+JSON.stringify(data)
       );
 
   async.each(recipients, function(user, callback) {

@@ -5,7 +5,7 @@ exports = module.exports
 db = require './../adapters/db.js'
 
 format = (raw) ->
-	raw.creationTime = raw.creation_time
+	raw.creationTime = parseInt raw.creation_time
 	delete raw.creation_time
 	raw
 

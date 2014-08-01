@@ -6,6 +6,7 @@ db        = require './../adapters/db.js'
 
 
 module.exports = (data, socket, callback) ->
-  utils.log 'requestEvents'
+  user = utils.getUserSession socket
+  utils.log 'requestEvents', "User:"+ JSON.stringify(user), "Data:"+ JSON.stringify(data)
   # console.trace()
   callback null

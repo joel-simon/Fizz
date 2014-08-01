@@ -2,18 +2,21 @@
 async     = require('async')
 db     = require('./../app/server/adapters/db.js')
 models = require './../app/server/models'
-
-
 dir = './../app/server/socketHandlers/'
+
+types = require '../app/server/fizzTypes'
+check = require 'easy-types'
+check.prototype.addTypes(types)
+# check.addTypes(types)
 
 postNewEvent   = require dir+'postNewEvent'
 postJoinEvent  = require dir+'postJoinEvent'
 postLeaveEvent = require dir+'postLeaveEvent'
 postNewInvites = require dir+'postNewInvites'
 postNewMessage = require dir+'postNewMessage'
-connect     = require dir+'connect'
+connect        = require dir+'connect'
 disconnect     = require dir+'disconnect'
-postUpdateLocation = require(dir+'postUpdateLocation')
+postUpdateLocation = require dir+'postUpdateLocation'
 postRequestEvents  = require dir+'postRequestEvents'
 
 makeSocket = (user) ->
@@ -34,7 +37,6 @@ async.series [
   return console.log("Error in creating users:", err) if err?
   
   [_,joel,andrew,antonio,russell] = results
-  console.log joel
   joelSocket = makeSocket joel
   andrewSocket = makeSocket andrew
   
@@ -50,14 +52,15 @@ async.series [
         (cb) -> postNewInvites {eid: e1.eid, inviteList: [antonio] }, andrewSocket, cb
         (cb) -> postNewInvites {eid: e2.eid, inviteList: [joel] }, andrewSocket, cb
         #andrew messages event
-        (cb) -> postNewMessage { eid: e1.eid, text: "newMessage1" }, andrewSocket, cb
+        (cb) -> postNewMessage { eid: e1.eid, text: "andrew says hi" }, andrewSocket, cb
+        (cb) -> postNewMessage { eid: e1.eid, text: "joel says hi" }, joelSocket, cb
         # (cb) -> newMessage { eid: e1.eid, text: "newMessage2" }, andrewSocket, cb
         # (cb) -> models.events.delete(e2.eid, cb)
         # (cb) -> suggestInvitedList({eid: e1.eid,})
         (cb) -> connect joelSocket, cb
 
-        # (cb) -> joinEvent {eid:eid},{handshake: { user: andrew }}, cb
-        # (cb) -> leaveEvent {eid:eid},{handshake: { user: andrew }}, cb
+        (cb) -> postJoinEvent {eid: e1.eid},{handshake: { user: andrew }}, cb
+        (cb) -> postLeaveEvent {eid: e1.eid},{handshake: { user: andrew }}, cb
         # (cb) -> users.get(joel.uid, cb)
         # (cb) -> users.getFromPn(joel.pn, cb)
       ], (err, results) ->

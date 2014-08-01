@@ -5,14 +5,12 @@ output    = require './../output.js'
 db        = require './../adapters/db.js'
 
 module.exports = (data, socket, callback) ->
-  user        = utils.getUserSession socket
+  user = utils.getUserSession socket
+  utils.log "newEvent", "User:"+ JSON.stringify(user), "Data:"+ JSON.stringify(data)
   description = data.description
-
   eid = data.eid
   uid = data.uid
 
-  utils.log "newEvent", {data}, {user}
-  
   models.events.add user, description, (err, event) =>
     return callback err if err?
     

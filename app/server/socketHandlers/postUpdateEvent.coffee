@@ -6,5 +6,6 @@ db        = require './../adapters/db.js'
 
 
 module.exports = (data, socket, callback) ->
-  utils.log 'updateEvent', data
+  user = utils.getUserSession socket
+  utils.log 'updateEvent', "User:"+ JSON.stringify(user), "Data:"+ JSON.stringify(data)
   callback null
