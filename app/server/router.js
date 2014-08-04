@@ -1,6 +1,8 @@
 // var onSms = require('./smsHandler.js');
 var models = require('./models')
-var utils = require('./utilities')
+var utils  = require('./utilities')
+var output = require('./output')
+
 module.exports = function(app, passport) {
 	
 	app.get('/c/*',
@@ -34,6 +36,7 @@ module.exports = function(app, passport) {
 				res.send(400, err);
 			} else {
 				utils.log('registration successful', 'password:'+user.password);
+				output.sendSms('Your Fizz code:'+user.password, pn, function(){})
 				res.send(200);
 			}
 		});

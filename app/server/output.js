@@ -112,14 +112,14 @@ exports.pushIos = function(options) {
 var twilio = require('twilio');
 var client = new twilio.RestClient(config.TWILIO.SID, config.TWILIO.TOKEN);
   
-exports.sendSms = function(pn, msg, callback) {
-  if (pn.length <= 5) return callback(err);
+exports.sendSms = function(msg, pn, callback) {
+  // if (pn.length <= 5) return callback('Bad PN'+pn);
   
   if (!args.sendSms) return;
-    
+  
   client.sms.messages.create({
-    to:   user.pn,
-    from: pn,
+    to:   pn,
+    from: '+14123301648',
     body: msg
   },
   function(error, message) {

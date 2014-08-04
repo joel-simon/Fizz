@@ -38,7 +38,8 @@
     "chai": "~1.9.1",
     "should": "~4.0.4",
     "socket.io": "~0.9.16",
-    "passport-local": "~1.0.0"
+    "passport-local": "~1.0.0",
+    "supertest": "~0.13.0"
   },
   "engines": {
     "node": "0.10.18",
@@ -51,7 +52,7 @@
   "devDependencies": {},
   "scripts": {
     "start": "node app.js",
-    "test": "node app test"
+    "test": "mocha $(find test/server -name '*.coffee')"
   },
   "keywords": [
     "Fizz",

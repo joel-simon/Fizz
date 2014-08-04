@@ -53,7 +53,7 @@ exports.get = function(uid, cb) {
 	});
 }
 exports.getTokens = function(uidList, cb) {
-	var q1 = "select uid, token from users where uid = ANY($1::int[])";
+	var q1 = "select uid, phone_token from users where uid = ANY($1::int[])";
 	db.query(q1, [uid], function(err, result) {
     	if (err) cb(err);
     	else cb (null, result.rows)
@@ -79,7 +79,7 @@ exports.getFromPn = function(pn, cb) {
 
 exports.create = function(pn, name, platform, token, callback) {
 	var password = generatePassword();
-	var q1 = "INSERT INTO users (pn, name, platform, token, password) VALUES ($1,$2,$3,$4,$5) RETURNING uid";
+	var q1 = "INSERT INTO users (pn, name, platform, phone_token, password) VALUES ($1,$2,$3,$4,$5) RETURNING uid";
 	var values = [pn, name, platform, token, password]
 	db.query(q1, values, function(err, result) {
 		if (err) return callback(err)
