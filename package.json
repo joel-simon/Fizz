@@ -21,7 +21,7 @@
     "connect-redis": "~1.4.6",
     "crypto": "~0.0.3",
     "debug": "~1.0.0",
-    "easy-types": "0.0.4",
+    "easy-types": "0.0.5",
     "express": "~3.0.6",
     "jade": "~0.27.7",
     "nodemailer": "~0.6.5",

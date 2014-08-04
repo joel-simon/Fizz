@@ -1,5 +1,6 @@
 // var onSms = require('./smsHandler.js');
 var models = require('./models')
+var utils = require('./utilities')
 module.exports = function(app, passport) {
 	
 	app.get('/c/*',
@@ -16,7 +17,7 @@ module.exports = function(app, passport) {
 
 
 	app.post('/registration', function(req, res) {
-		console.log('registration: req.body = ', req.body);
+		utils.log('On registration data', req.body);
 		var first = req.body.firstName;
 		var last = req.body.lastName;
 		var platform = req.body.platform;
@@ -32,7 +33,7 @@ module.exports = function(app, passport) {
 				console.log('err in create users');
 				res.send(400, err);
 			} else {
-				console.log('registration successful, password:', user.password);
+				utils.log('registration successful', 'password:'+user.password);
 				res.send(200);
 			}
 		});
