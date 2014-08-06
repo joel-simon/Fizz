@@ -8,7 +8,6 @@ module.exports = (data, socket, callback) ->
   user = utils.getUserSession socket
   utils.log "Recieved newEvent", "User:"+ JSON.stringify(user), "Data:"+ JSON.stringify(data)
   description = data.description
-  eid = data.eid
   uid = data.uid
 
   models.events.add user, description, (err, event) =>

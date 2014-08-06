@@ -95,10 +95,12 @@ io.set('authorization', passportSocketIo.authorize({
 
 
 function onAuthorizeSuccess(data, accept) {
+  utils.log('socket auth accepted')
   accept(null, true);
 }
 
 function onAuthorizeFail(data, message, error, accept){
+  utils.log('socket auth accepted')
   if(error)
     throw new Error(message);
   accept(null, false);

@@ -6,7 +6,17 @@ async = require('async')
 init = require('../serverInit')
 root = '../../app/server/'
 db = require(root+'adapters/db.js')
-#$(find test/server -name '*.coffee') 
+
+
+# io = require('socket.io-client')
+
+socketURL = 'http://localhost:9001';
+
+# socketOptions =
+#   transports: ['websocket']
+#   'force new connection': true
+
+
 describe 'Routing', ()->
   url = 'http://localhost:9001'
   before (done) ->
@@ -59,3 +69,35 @@ describe 'Routing', ()->
     it 'Should return error on duplicates', (done) ->
       request(url).post(path).send(body).expect(200).end ()-> 
         request(url).post(path).send(body).expect(400).end(done)
+
+  describe 'Login', ()->
+    path = '/login'
+    before (done) =>
+      body =
+        firstName: 'Joel',
+        lastName: 'Simon',
+        platform: 'ios',
+        pn: '+13475346100',
+        phoneToken: 'myToken'
+      request(url).post('/registration').send(body).expect(200).end (err) =>
+        return done err if err?
+        db.query "SELECT * FROM users LIMIT 1", [], (err, results) =>
+          return done err if err?
+          @user = results.rows[0]
+          done null
+
+    it 'asdas', (done) =>
+      body = 
+        pn : @user.pn
+        phoneToken : @user.phoneToken
+        password : @user.password
+        appVersion : "0.0.0"
+      request(url).post(path).send(body).expect(200).end (err, res)-> 
+        return done err if err?
+        socket = require('socket.io-client')('http://localhost:9001')
+        socket.on 'connect', (data) ->
+          console.log 'conect', data
+          done err
+
+          # client1.emit('connection name', chatUser1);
+        

@@ -72,15 +72,3 @@ function ensureAuthenticated(req, res, next) {
 	if (req.isAuthenticated()) return next();
 	res.redirect('/index');
 }
-
-
-
-	// app.get('/auth/facebook',
-	// passport.authenticate('facebook', { display: 'page', scope: ['user_friends', 'user_groups', 'email'] }),
-	// function(req, res){
-	// 	// res.redirect('/home');
-	// });
-	// app.get('/auth/facebook/callback',  passport.authenticate('facebook', { failureRedirect: '/' }),
-	// 	function(req, res) {
-	// 		res.redirect('/home');
-	// });
