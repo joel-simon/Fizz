@@ -8,6 +8,19 @@ check = require('easy-types')
 pg = require 'pg'
 
 dbstring = db.connString;
+
+exports.parse = (data) ->
+  try
+    eid:           parseInt(data.eid),
+    creator:       data.creator
+    description:   data.description
+    key:           data.key
+    creationTime:  parseInt(data.creationTime)
+    deathTime:     parseInt(data.deathTime)
+    lastUpdateTime:parseInt(data.lastUpdateTime)
+  catch
+    null
+
 rollback = (client, done) ->
   client.query 'ROLLBACK', (err) ->
     done err
@@ -17,8 +30,8 @@ exports.add = (user, description, callback) ->
   # check.is(description, 'string')
 
   q1 = "INSERT INTO events
-      (creator, description)
-      VALUES ($1, $2)
+      (creator, description, key)
+      VALUES ($1, $2, $3)
       RETURNING eid, creation_time"
 
   q2 = "INSERT INTO invites (eid, uid, inviter, confirmed, accepted, accepted_time)
@@ -35,7 +48,7 @@ exports.add = (user, description, callback) ->
       () ->
         process.nextTick arguments[arguments.length-1]
       () ->
-        client.query q1, [ user.uid, '{}'], arguments[arguments.length-1]
+        client.query q1, [ user.uid, '{}', randString(5)], arguments[arguments.length-1]
       (result, cb)->
         eid = result.rows[0].eid
         creationTime = result.rows[0].creation_time
@@ -46,7 +59,7 @@ exports.add = (user, description, callback) ->
         callback(err)
       else
         client.query 'COMMIT', done
-        callback null, {
+        callback null, exports.parse {
           eid
           description
           creator: user.uid
@@ -64,13 +77,16 @@ exports.updateDescription = (eid, description, callback) ->
 # returns null on failure
 exports.get = (eid, callback) ->
   eid = +eid
-  q1 = "SELECT * FROM events WHERE events.eid = $1"
+  q1 = "SELECT * FROM events WHERE eid = $1"
   db.query q1, [eid], (err, result) ->
     return callback err if err
-    event = result.rows[0]
-    event.creationTime = parseInt event.creation_time
-    delete event.creation_time
-    callback null, event
+    callback null, exports.parse result.rows[0]
+
+exports.getFromKey = (key, callback) ->
+  q1 = "SELECT * FROM events WHERE key = $1"
+  db.query q1, [key], (err, result) ->
+    return callback err if err
+    callback null, exports.parse result.rows[0]
 
 exports.join = (eid, uid, callback) ->
   q1 = "UPDATE invites SET accepted = true, accepted_time = $1
@@ -121,7 +137,7 @@ exports.getGuestList = (eid, callback) ->
     callback null, result.rows[0]['array_agg']
 
 exports.getInviteList = (eid, callback) ->
-  q = "SELECT users.uid, pn, name, accepted FROM users, invites WHERE invites.eid = $1 and users.uid = invites.uid"
+  q = "SELECT users.uid, pn, name, accepted, platform FROM users, invites WHERE invites.eid = $1 and users.uid = invites.uid"
   db.query q, [eid], (err, result) ->
     return callback err if err?
     callback null, result.rows
@@ -145,3 +161,11 @@ exports.getFull = (eid, callback) ->
   }, (err, result) ->
     return callback err if err?
     callback null, result.event, result.messages, result.invited, result.guests
+
+
+randString = (n) ->
+  text = ""
+  possible = "abcdefghijklmnopqrstuvwxyz0123456789"
+  for i in [0..n]
+    text += possible.charAt(Math.floor(Math.random() * possible.length))
+  text

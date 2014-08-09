@@ -11,6 +11,8 @@ module.exports = function(app, passport) {
 			res.render('home', {});
 	});
 
+
+
 	app.post('/login',
   	passport.authenticate('local'), function(req, res) {
   		res.send(200);
@@ -42,14 +44,26 @@ module.exports = function(app, passport) {
 		});
 	});
 
-	app.get('/', ensureAuthenticated, function(req, res) {
-		res.redirect('/home');
-	});
-	
-	app.get('/index', function(req, res) {
-		res.render('index', {});
+	app.get('/e/:eid',function(req, res) {
+		eid = parseInt(req.params.eid)
+		console.log(eid);
+		if (isNaN(eid)) return res.end()
+		models.events.getFull(eid, function(err, event, messages, inviteList, guests){
+			if (err || ! event) return res.send(404)
+			guestList= inviteList.filter(function (user) { return guests.indexOf(user.uid) >= 0 })
+			noReply  = inviteList.filter(function (user) { return guests.indexOf(user.uid) == -1 })
+			// console.log(guestList);
+			// console.log(noReply);
+			creator = inviteList.filter(function (user) { return user.uid == event.creator })[0]
+			console.log(event.creator, inviteList);
+			res.render('index.jade', {event: event, creator:creator, messages: messages, noReply:noReply, guestList:guestList });
+		});
 	});
 
+	app.get('/', function(req, res) {
+		res.send('Fizz');
+	});
+	
 	// var handler = require('./smsHandler.js');	
 	// app.post('/onMessage', function(req, res) {
 	// 	var body = req.body.Body;
@@ -67,8 +81,8 @@ module.exports = function(app, passport) {
 //   the request is authenticated (typically via a persistent login session),
 //   the request will proceed.  Otherwise, the user will be redirected to the
 //   login page.
-function ensureAuthenticated(req, res, next) {
-	// console.log(req.cookies);
-	if (req.isAuthenticated()) return next();
-	res.redirect('/index');
-}
+// function ensureAuthenticated(req, res, next) {
+// 	// console.log(req.cookies);
+// 	if (req.isAuthenticated()) return next();
+// 	res.redirect('/index');
+// }

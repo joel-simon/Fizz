@@ -28,7 +28,8 @@ exports.parse = function(data) {
 		pn: data.pn,
 		name: data.name,
 		lastLogin: parseInt(data.last_login),
-		password: data.password
+		password: data.password,
+		platform: data.platform
 	}
 	return user
 }
@@ -88,11 +89,16 @@ exports.create = function(pn, name, platform, token, callback) {
 	});
 };
 
-exports.getOrAddPhoneList =  function(pnList, cb) {
-	async.map(pnList, getOrAddPhone, function(err, userList) {
-		if (err) cb (err);
-		else cb (null, userList);
-	});
+exports.getOrAddList =  function(namePnList, cb) {
+	async.map(namePnList,
+		function(namePn, cb) {
+			getOrAdd(namePn.pn, namePn.name, cb)
+		},
+		function(err, userList) {
+			if (err) cb (err);
+			else cb (null, userList);
+		}
+	);
 }
 
 /*
@@ -100,19 +106,12 @@ exports.getOrAddPhoneList =  function(pnList, cb) {
 	Return user if already exists.
 */
 function getOrAdd (pn, name, cb) {
-	pn = utils.formatPn(pn);
+	pn = utils.formatPn(pn)
 	exports.getFromPn(pn, function(err, user) {
-		if 			(err)  cb(err);
-		else if (user) cb(null, user);
+		if 			(err)  cb(err)
+		else if (user) cb(null, user)
 		else {
-			
-			var q1 = "INSERT INTO users (pn, name, platform) VALUES ($1,$2,$3,$4) RETURNING uid";
-			db.query(q1, [pn, name, 'sms', 0], function(err, result) {
-				if (err) return cb(err);
-				log('Created phone user '+name);
-				var uid = +result.rows[0].uid
-				cb(null, { uid:uid, name:name, platform:'sms', uid:uid });
-			});
+			exports.create(pn, name, 'sms', '', cb)
 		}
 	});
 }

@@ -114,7 +114,7 @@ var client = new twilio.RestClient(config.TWILIO.SID, config.TWILIO.TOKEN);
   
 exports.sendSms = function(msg, pn, callback) {
   // if (pn.length <= 5) return callback('Bad PN'+pn);
-  
+  utils.log("Sending SMS", {pn:pn}, {msg: msg})
   if (!args.sendSms) return;
   
   client.sms.messages.create({

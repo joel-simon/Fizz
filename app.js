@@ -77,8 +77,8 @@ app.configure(function() {
   app.use(express.session({ secret: config.SECRET.cookieParser, store: sessionStore }));
   app.use(passport.initialize());
   app.use(passport.session());
-  app.use(require('stylus').middleware({ src: __dirname + '/app/client' }));
-  app.use(express.static(__dirname + '/app/public'));
+  // app.use(require('stylus').middleware({ src: __dirname + '/app/client' }));
+  app.use(express.static(__dirname + '/app/client'));
   app.use(express.errorHandler());
 });
 

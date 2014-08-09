@@ -3,7 +3,7 @@ utils     = require './../utilities.js'
 models    = require './../models'
 output    = require './../output.js'
 db        = require './../adapters/db.js'
-
+check     = require('easy-types')
 # types = require('./../fizzTypes.js')
 # check = require('easy-types').addTypes(types)
 
@@ -13,28 +13,56 @@ module.exports = (data, socket, callback) ->
   utils.log 'Recieved '+eventName, "User:"+ JSON.stringify(user), "Data:"+ JSON.stringify(data)
 
   eid = data.eid
-  deltaInviteList = data.inviteList
+  namePnList = data.inviteList
 
-  models.events.getInviteList eid, (err, oldInviteList) ->
+  check(eid).is('posInt')
+
+  # Get all user objects and make new user objects.
+  models.users.getOrAddList namePnList, (err, newlyInvitedUsers) ->
     return callback err if err?
-    models.events.addInvites eid, user.uid, deltaInviteList, true, (err) ->
+
+    # Get the users who are already invited.
+    models.events.getInviteList eid, (err, oldInvitedUsers) ->
       return callback err if err?
-      models.events.getFull eid, (err, event, messages, inviteList, guests) ->
+
+      # make them invited.
+      models.events.addInvites eid, user.uid, newlyInvitedUsers, true, (err) ->
         return callback err if err?
-        creator =  event.creator
-        description =  event.description
-        creationTime = event.creationTime
 
-        output.emit {
-          eventName
-          recipients : oldInviteList
-          data : { eid, inviteList }
-        }
+        # Get the event Object.
+        models.events.getFull eid, (err, event, messages, inviteList, guests) ->
+          return callback err if err?
+          creator      = event.creator
+          description  = event.description
+          creationTime = event.creationTime
 
-        output.emit {
-          eventName  : 'newEvent'
-          recipients : deltaInviteList
-          data : { eid, creator, description, creationTime
-                   messages, inviteList, guests }
-        }
-        callback null, inviteList
+
+          newlyInvitedSMSUsers = inviteList.filter (user) -> user.platform == 'sms'
+          newlyInvitedNotSMSUsers = inviteList.filter (user) -> user.platform != 'sms'
+
+          # Let the old users know about the new ones.
+          output.emit {
+            eventName
+            recipients : oldInvitedUsers
+            data : { eid, inviteList }
+          }
+
+          # console.log 'inviteList:', inviteList
+          
+          # console.log 'newlyInvitedSMSUsers: ', newlyInvitedSMSUsers
+          # console.log 'newlyInvitedNotSMSUsers:', newlyInvitedNotSMSUsers
+          
+          # Let the new users know about the event.
+          output.emit {
+            eventName  : 'newEvent'
+            recipients : newlyInvitedNotSMSUsers
+            data : { eid, creator, description, creationTime
+                     messages, inviteList, guests }
+          }
+
+
+          newlyInvitedSMSUsers.forEach (smsUser) ->
+            message = 'Click this link: extraFizzy.com/e/'+event.eid
+            output.sendSms message, smsUser 
+
+          callback null, inviteList

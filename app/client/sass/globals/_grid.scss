@@ -1,0 +1,7 @@
+$colCount:          8;
+$colWidthFull:      100%/$colCount;
+$gutterCount:       $colCount + 1;
+$gutter:            $colWidthFull/8;
+$col:               $colWidthFull - $gutter;
+
+$baseline:          1.5rem;

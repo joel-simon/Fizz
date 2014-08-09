@@ -1,72 +1,46 @@
-doctype 5
+doctype html
 html
-	head
-		title Beacon - The New Map-Based Social Media
+  head
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, maximum-scale=1, minimum-scale=1")
+    title(Fizz — Tropical Tuesday at Brillobox tomorrow at 9)
+    link(href="/style/screen.css", rel="stylesheet", type="text/css", media="screen")
+    link(href="/style/print.css", rel="stylesheet", type="text/css", media="print")
+    script(src="/scripts/jquery.js")
+    script(src="/scripts/client.js")
+  body
+    article
+      header
+        author= creator.name+" invited you to"
+        h1=event.description
+      
+      section.guestlist
+        h1 Guestlist
+        ul.interested
+          each user in guestList
+            li=user.name
 
-		meta(name='description', content='Place a Beacon on a map to let your friends know where and what you want to do. Planning spontaneous events has never been so easy!')
-		meta(name='keywords', content='map, social media, event, events, beacon, beacons, friends, google maps, organize, plan, beacon events')
-
-		link(rel='stylesheet', href='/style/bootstrap.css')
-		link(rel='stylesheet', href='/style/index.css')
-
-	body
-		//- Facebook SDK
-		//- div#fb-root
-		//- script(src='/js/fb-sdk.js')
-
-		//- actual document
-		div#header
-			h2.title Beacon
-
-		div#banner
-			div.bannerContent
-				img.bannerImg(src='/img/computer.png', alt='Computer Graphic displaying a map with Beacons')
-				div.bannerTextBox
-					h2.bannerTitle Come Together
-					h2.bannerTitle Right Now
-					h2.bannerTitle.hidden Over Me
-					button.signup-facebook.btn.tm50(type='button') Sign up with Facebook
-					//- img.tm50(src='/img/facebook.png', alt='Disabled Facebook Login Button')
-				div.clear-both
-
-		div.contentBox
-			h1.contentBoxTitle.text-center What is Beacon?
-			hr
-			p.text-justify Beacon is a map based social network for impromptu events. Using either the web or mobile app, friends’ events appear on your map, letting you know an event is happening nearby and who is attending. 
-
-			p.text-justify Rather than setting up a Facebook event or mass texting your friends, Beacon offers an easier solution. But more than that, Beacon acts as an initiator, making accidental hangouts a thing. 
-
-			p.text-justify We provide the structure to bring people together, let your Facebook friends or Twitter followers know where your event is happening, and manage any payments through Venmo integration.
-
-		div.contentBox
-			img.floatRight(src='/img/party2.png', alt='Party Balloon Graphic')
-			h3.contentBoxTitle Skip the Hassle
-			hr.float-left
-			p.text-left.clear-left Beacon keeps casual events simple. Check your news feed for nearby events planned with friends. Or start the party by suggesting an event.
-
-		div.contentBox
-			img.floatLeft(src='/img/unplug2.png', alt='Unplug Graphic')
-			h3.contentBoxTitle.text-right Connect Offline
-			hr.float-right
-			p.text-right.clear-right Meet up face to face with ease. Spend less time online and more where it really matters, with friends and family. 
-
-		div.contentBox
-			img.floatRight(src='/img/megaphone2.png', alt='Megaphone Graphic')
-			h3.contentBoxTitle Get the Word Out
-			hr.float-left
-			p.text-left.clear-left With integrated Twitter and Facebook use, it’s easy to let your friends know where to be.
-
-		div.contentBox
-			img.floatLeft(src='/img/iPhone2.png', alt='iPhone Graphic')
-			h3.contentBoxTitle.text-right On The Go
-			hr.float-right
-			p.text-right.clear-right Organize events on the fly with the Beacon iPhone app. 
-
-
-
-		script(type='text/javascript', src='/js/jQuery/jquery-1.10.2.min.js')
-		script(src='/js/index-controller.js')
-
-
-
-
+        ul.noReply
+          each user in noReply
+            li=user.name
+        
+      
+      section.rsvp
+        h1 Join this event
+        form(action="", method="post")
+          p
+            input(type="text", value="First")
+            input(type="text", value="Last")
+          p
+            input(type="phone", value="number")
+        //- h1
+        //-   | You’ve added yourself
+        //-   br
+        //-   | to the guestlist.
+        //- p Fizz is the best way to get people together to do things.
+        //- form(action="", method="post")
+        //-   input(name="", type="button", value="Get it on the App Store")
+        
+      
+    
+  
