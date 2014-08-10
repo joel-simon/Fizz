@@ -3,6 +3,7 @@ utils     = require './../utilities.js'
 models    = require './../models'
 output    = require './../output.js'
 db        = require './../adapters/db.js'
+check     = require 'easy-types'
 
 module.exports = (data, socket, callback) ->
   eventName = 'completeEvent'
