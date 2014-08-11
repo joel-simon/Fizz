@@ -3,19 +3,12 @@ assert = require('assert')
 request = require('supertest')
 async = require('async')
 # winston = require('winston')
-init = require('../serverInit')
+init = require('../../scripts/serverInit')
 root = '../../app/server/'
 db = require(root+'adapters/db.js')
 
 
-# io = require('socket.io-client')
-
 socketURL = 'http://localhost:9001';
-
-# socketOptions =
-#   transports: ['websocket']
-#   'force new connection': true
-
 
 describe 'Routing', ()->
   url = 'http://localhost:9001'
@@ -86,18 +79,18 @@ describe 'Routing', ()->
           @user = results.rows[0]
           done null
 
-    it 'asdas', (done) =>
-      body = 
-        pn : @user.pn
-        phoneToken : @user.phoneToken
-        password : @user.password
-        appVersion : "0.0.0"
-      request(url).post(path).send(body).expect(200).end (err, res)-> 
-        return done err if err?
-        socket = require('socket.io-client')('http://localhost:9001')
-        socket.on 'connect', (data) ->
-          console.log 'conect', data
-          done err
+    # it 'asdas', (done) =>
+    #   body = 
+    #     pn : @user.pn
+    #     phoneToken : @user.phoneToken
+    #     password : @user.password
+    #     appVersion : "0.0.0"
+    #   request(url).post(path).send(body).expect(200).end (err, res)-> 
+    #     return done err if err?
+    #     socket = require('socket.io-client')('http://localhost:9001')
+    #     socket.on 'connect', (data) ->
+    #       console.log 'conect', data
+    #       done err
 
           # client1.emit('connection name', chatUser1);
         

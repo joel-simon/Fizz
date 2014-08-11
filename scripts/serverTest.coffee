@@ -19,7 +19,7 @@ disconnect     = require dir+'disconnect'
 postUpdateEvent = require dir+'postUpdateEvent'
 postUpdateLocation = require dir+'postUpdateLocation'
 postRequestEvents  = require dir+'postRequestEvents'
-
+postDeleteEvent = require dir+'postDeleteEvent'
 
 makeSocket = (user) ->
   {
@@ -69,8 +69,12 @@ async.series [
         (cb) -> postJoinEvent {eid: e1.eid}, andrewSocket, cb
         (cb) -> postLeaveEvent {eid: e1.eid}, andrewSocket, cb
         
-        (cb) -> postUpdateEvent {eid: e1.eid, description: 'hi'}, andrewSocket, cb
-        (cb) -> postUpdateEvent {eid: e2.eid, description: 'hi'}, andrewSocket, cb
+        (cb) -> postUpdateEvent {eid: e1.eid, description: 'Test Event'}, andrewSocket, cb
+        (cb) -> postUpdateEvent {eid: e2.eid, description: 'Test Event'}, andrewSocket, cb
+
+        (cb) -> postDeleteEvent { eid: e1.eid }, andrewSocket, cb
+        (cb) -> postDeleteEvent { eid: e2.eid }, andrewSocket, cb
+
       ], (err, results) ->
         if (err)
           console.log "ERR:", err if err

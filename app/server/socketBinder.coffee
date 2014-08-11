@@ -39,6 +39,7 @@
 utils = require './utilities'
 dir = './socketHandlers/'
 
+connect = require dir+'connect'
 postNewEvent   = require dir+'postNewEvent'
 postJoinEvent  = require dir+'postJoinEvent'
 postLeaveEvent = require dir+'postLeaveEvent'
@@ -55,7 +56,7 @@ onError = (err) ->
 
 module.exports = (io) ->
   io.sockets.on 'connection', (socket) ->
-    (require(dir+'connect'))(socket, onError)
+    connect(socket, onError)
     socket.on 'postNewEvent',       (data) -> postNewEvent data, socket, onError
     socket.on 'postJoinEvent',      (data) -> postJoinEvent data, socket, onError
     socket.on 'postLeaveEvent',     (data) -> postLeaveEvent data, socket, onError

@@ -5,8 +5,8 @@ db     = require './../adapters/db.js'
 models = require './../models'
 args   = require './../args.js'
 types  = require '../fizzTypes'
-check  = require('easy-types')
-
+check  = require 'easy-types'
+fakeData = require '../../../fakeData'
 check.prototype.addTypes(types)
 
 QUERIES = (eventListString, user) -> 
@@ -59,9 +59,8 @@ QUERIES = (eventListString, user) ->
 
 connect = (socket, callback) ->
   if args.fakeData
-    fakeData = require('./../fakeData').ONLOGIN
-    utils.log 'EMITTING FAKE onlogin:', fakeData
-    socket.emit('onLogin', fakeData) if socket.emit
+    utils.log 'EMITTING FAKE onlogin:', fakeData.ONLOGIN
+    socket.emit('onLogin', fakeData.ONLOGIN) if socket.emit
     return callback null
 
   user = utils.getUserSession socket
