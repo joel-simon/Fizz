@@ -26,6 +26,8 @@ makeSocket = (user) ->
     join : ()->
     handshake:
       user: user
+    emit : () ->
+      console.log.apply null, arguments
   }
 
 async.series [
@@ -54,6 +56,7 @@ async.series [
       return console.log("Error in creating events:", err) if err?
       [e1, e2] = results;
       async.series [
+        (cb) -> postRequestEvents {eid: e1.eid}, joelSocket, cb
         #invite andrew to events
         (cb) -> postNewInvites {eid: e1.eid, inviteList: [andrew, randomPerson] }, joelSocket, cb
         # (cb) -> postNewInvites {eid: e1.eid, inviteList: [antonio, joel] }, andrewSocket, cb
