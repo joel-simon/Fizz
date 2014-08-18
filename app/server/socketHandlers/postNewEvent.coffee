@@ -4,6 +4,7 @@ models    = require './../models'
 output    = require './../output.js'
 db        = require './../adapters/db.js'
 check     = require 'easy-types'
+
 module.exports = (data, socket, callback) ->
   user = utils.getUserSession socket
   utils.log "Recieved newEvent", "User:"+ JSON.stringify(user), "Data:"+ JSON.stringify(data)
@@ -13,13 +14,24 @@ module.exports = (data, socket, callback) ->
   models.events.add user, description, (err, event) =>
     return callback err if err?
     
-    event.messages = []
-    event.guests   = [user.uid]
-    event.invites  = [user]
+    toSend = 
+      eid : event.eid
+      creator: event.creator
+      creationTime : event.creationTime
+      messages : [] #no messages
+      guests   : [user.uid] #host is going
+      invites  : [user] #host is invited
 
-    check(event).is 'event'
+    check(toSend).is {
+      eid : 'posInt'
+      creator : 'posInt'
+      creationTime : 'posInt'
+      messages : '[message]'
+      guests : '[posInt]'
+      invites : '[user]'
+    }
 
     if socket.emit?
-      socket.emit 'newEvent', event
+      socket.emit 'newEvent', toSend
 
-    callback null, event
+    callback null, toSend
