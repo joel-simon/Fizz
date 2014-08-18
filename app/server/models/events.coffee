@@ -15,9 +15,9 @@ exports.parse = (data) ->
     creator:       data.creator
     description:   data.description
     key:           data.key
-    creationTime:  parseInt(data.creationTime)
-    deathTime:     parseInt(data.deathTime)
-    lastUpdateTime:parseInt(data.lastUpdateTime)
+    creationTime:  parseInt(data.creation_time)
+    deathTime:     parseInt(data.death_time)
+    lastUpdateTime:parseInt(data.last_accepted_update)
   catch
     null
 
@@ -48,7 +48,7 @@ exports.add = (user, description, callback) ->
       () ->
         process.nextTick arguments[arguments.length-1]
       () ->
-        client.query q1, [ user.uid, '{}', randString(5)], arguments[arguments.length-1]
+        client.query q1, [ user.uid, description, randString(5)], arguments[arguments.length-1]
       (result, cb)->
         eid = result.rows[0].eid
         creationTime = result.rows[0].creation_time

@@ -11,12 +11,12 @@ module.exports = (data, socket, callback) ->
   utils.log 'Recieved requestEvents', "User:"+ JSON.stringify(user), "Data:"+ JSON.stringify(data)
   models.events.getFull eid, (err, event, messages, inviteList, guests) ->
     return callback err if err
+    utils.log event
     toEmit = {
       eid, messages, inviteList, guests
       creator: event.creator
-      creationTime: event.creation_time
+      creationTime: event.creationTime
       description : event.description
     }
-    console.log 'toEmit:' , toEmit
     socket.emit 'newEvent', toEmit
-    callback toEmit
+    callback null, toEmit

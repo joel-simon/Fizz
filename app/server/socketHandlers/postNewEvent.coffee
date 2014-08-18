@@ -7,8 +7,8 @@ db        = require './../adapters/db.js'
 module.exports = (data, socket, callback) ->
   user = utils.getUserSession socket
   utils.log "Recieved newEvent", "User:"+ JSON.stringify(user), "Data:"+ JSON.stringify(data)
+  
   description = data.description
-  uid = data.uid
 
   models.events.add user, description, (err, event) =>
     return callback err if err?
