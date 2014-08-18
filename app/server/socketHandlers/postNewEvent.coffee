@@ -3,12 +3,12 @@ utils     = require './../utilities.js'
 models    = require './../models'
 output    = require './../output.js'
 db        = require './../adapters/db.js'
-
+check     = require 'easy-types'
 module.exports = (data, socket, callback) ->
   user = utils.getUserSession socket
   utils.log "Recieved newEvent", "User:"+ JSON.stringify(user), "Data:"+ JSON.stringify(data)
   
-  description = data.description
+  description = data.description  
 
   models.events.add user, description, (err, event) =>
     return callback err if err?
@@ -16,6 +16,8 @@ module.exports = (data, socket, callback) ->
     event.messages = []
     event.guests   = [user.uid]
     event.invites  = [user]
+
+    check(event).is 'event'
 
     if socket.emit?
       socket.emit 'newEvent', event

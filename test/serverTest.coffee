@@ -59,22 +59,22 @@ async.series [
       async.series [
         (cb) -> postRequestEvents {eid: e1.eid}, joelSocket, cb
         #invite andrew to events
-        # (cb) -> postNewInvites {eid: e1.eid, inviteList: [andrew, randomPerson] }, joelSocket, cb
-        # (cb) -> postNewInvites {eid: e1.eid, inviteList: [antonio, joel] }, andrewSocket, cb
+        (cb) -> postNewInvites {eid: e1.eid, inviteList: [andrew, randomPerson] }, joelSocket, cb
+        (cb) -> postNewInvites {eid: e2.eid, inviteList: [antonio, joel] }, andrewSocket, cb
 
         #andrew messages event
-        # (cb) -> postNewMessage { eid: e1.eid, text: "andrew says hi" }, andrewSocket, cb
-        # (cb) -> postNewMessage { eid: e1.eid, text: "joel says hi" }, joelSocket, cb
-        # (cb) -> newMessage { eid: e1.eid, text: "newMessage2" }, andrewSocket, cb
-        # (cb) -> models.events.delete(e2.eid, cb)
-        # (cb) -> suggestInvitedList({eid: e1.eid,})
-        # (cb) -> connect joelSocket, cb
+        (cb) -> postNewMessage { eid: e1.eid, text: "andrew says hi" }, andrewSocket, cb
+        (cb) -> postNewMessage { eid: e1.eid, text: "joel says hi" }, joelSocket, cb
 
-        # (cb) -> postJoinEvent {eid: e1.eid}, andrewSocket, cb
-        # (cb) -> postLeaveEvent {eid: e1.eid}, andrewSocket, cb
+        (cb) -> models.events.delete(e2.eid, cb)
+
+        (cb) -> connect joelSocket, cb
+
+        (cb) -> postJoinEvent {eid: e1.eid}, andrewSocket, cb
+        (cb) -> postLeaveEvent {eid: e1.eid}, andrewSocket, cb
         
-        # (cb) -> postUpdateEvent {eid: e1.eid, description: 'hi'}, andrewSocket, cb
-        # (cb) -> postUpdateEvent {eid: e2.eid, description: 'hi'}, andrewSocket, cb
+        (cb) -> postUpdateEvent {eid: e1.eid, description: 'hi'}, andrewSocket, cb
+        (cb) -> postUpdateEvent {eid: e2.eid, description: 'hi'}, andrewSocket, cb
       ], (err, results) ->
         if (err)
           console.log "ERR:", err if err

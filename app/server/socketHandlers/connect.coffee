@@ -4,10 +4,7 @@ output = require './../output.js'
 db     = require './../adapters/db.js'
 models = require './../models'
 args   = require './../args.js'
-types  = require '../fizzTypes'
-check  = require('easy-types')
-
-check.prototype.addTypes(types)
+check  = require 'easy-types'
 
 QUERIES = (eventListString, user) -> 
   newMessages: (cb)->

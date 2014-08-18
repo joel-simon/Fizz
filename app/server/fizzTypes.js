@@ -27,7 +27,6 @@ module.exports = {
   event: {
     eid:        'posInt',
     creator:    'posInt',
-    seats:      'posInt',
     creationTime: 'posInt',
     description: 'string'
   }
