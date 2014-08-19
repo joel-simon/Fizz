@@ -1,4 +1,4 @@
-
+utils = require './../app/server/utilities'
 async     = require('async')
 db     = require('./../app/server/adapters/db.js')
 models = require './../app/server/models'
@@ -26,6 +26,9 @@ makeSocket = (user) ->
     join : ()->
     handshake:
       user: user
+    emit : () ->
+      utils.log 'Emitting '+ arguments[0], ' data :'+JSON.stringify arguments[1]
+      # console.log.apply null, arguments
   }
 
 async.series [
@@ -48,22 +51,23 @@ async.series [
   andrewSocket = makeSocket andrew
   
   async.series [ #create events
-    (cb) -> postNewEvent { text: "JoelEvent1" }, joelSocket, cb
-    (cb) -> postNewEvent { text: "AndrewsEvent1" }, andrewSocket, cb
+    (cb) -> postNewEvent { description: "JoelEvent1" }, joelSocket, cb
+    (cb) -> postNewEvent { description: "AndrewsEvent1" }, andrewSocket, cb
     ], (err, results) ->
       return console.log("Error in creating events:", err) if err?
       [e1, e2] = results;
       async.series [
+        (cb) -> postRequestEvents {eid: e1.eid}, joelSocket, cb
         #invite andrew to events
         (cb) -> postNewInvites {eid: e1.eid, inviteList: [andrew, randomPerson] }, joelSocket, cb
-        # (cb) -> postNewInvites {eid: e1.eid, inviteList: [antonio, joel] }, andrewSocket, cb
+        (cb) -> postNewInvites {eid: e2.eid, inviteList: [antonio, joel] }, andrewSocket, cb
 
         #andrew messages event
         (cb) -> postNewMessage { eid: e1.eid, text: "andrew says hi" }, andrewSocket, cb
         (cb) -> postNewMessage { eid: e1.eid, text: "joel says hi" }, joelSocket, cb
-        # (cb) -> newMessage { eid: e1.eid, text: "newMessage2" }, andrewSocket, cb
-        # (cb) -> models.events.delete(e2.eid, cb)
-        # (cb) -> suggestInvitedList({eid: e1.eid,})
+
+        (cb) -> models.events.delete(e2.eid, cb)
+
         (cb) -> connect joelSocket, cb
 
         (cb) -> postJoinEvent {eid: e1.eid}, andrewSocket, cb

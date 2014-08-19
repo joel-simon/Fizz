@@ -4,10 +4,10 @@ output = require './../output.js'
 db     = require './../adapters/db.js'
 models = require './../models'
 args   = require './../args.js'
+
 types  = require '../fizzTypes'
 check  = require 'easy-types'
 fakeData = require '../../../fakeData'
-check.prototype.addTypes(types)
 
 QUERIES = (eventListString, user) -> 
   newMessages: (cb)->
