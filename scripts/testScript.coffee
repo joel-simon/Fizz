@@ -32,7 +32,7 @@ makeSocket = (user) ->
   }
 
 async.series [
-  (cb) -> db.query "truncate table users, events, messages, new_friends, invites", cb
+  (cb) -> db.query "truncate table users, events, messages, invites", cb
   (cb) -> models.users.create "+13475346100", "Joel Simon", "ios", "PHONETOKEN", cb
   (cb) -> models.users.create "+13107102956", "Andrew Sweet", "ios", "PHONETOKEN", cb
   (cb) -> models.users.create "+19494647070", "Antonio Ono", "ios", "PHONETOKEN", cb

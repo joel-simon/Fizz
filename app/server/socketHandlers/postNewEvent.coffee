@@ -3,7 +3,6 @@ utils     = require './../utilities.js'
 models    = require './../models'
 output    = require './../output.js'
 db        = require './../adapters/db.js'
-check     = require 'easy-types'
 
 module.exports = (data, socket, callback) ->
   user = utils.getUserSession socket
@@ -21,15 +20,6 @@ module.exports = (data, socket, callback) ->
       messages : [] #no messages
       guests   : [user.uid] #host is going
       invites  : [user] #host is invited
-
-    check(toSend).is {
-      eid : 'posInt'
-      creator : 'posInt'
-      creationTime : 'posInt'
-      messages : '[message]'
-      guests : '[posInt]'
-      invites : '[user]'
-    }
 
     if socket.emit?
       socket.emit 'newEvent', toSend

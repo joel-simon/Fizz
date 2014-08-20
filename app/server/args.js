@@ -38,7 +38,8 @@ process.argv.forEach(function (val, index) {
         exports.fakeData = true;
         break;
       default:
-        console.log('Valid commands : "test", "pushIos", "sendSms", "fake data".');
+        console.log('Valid commands: [pushIos, sendSms]');
+        console.log(val);
     }
   }
 });

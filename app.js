@@ -19,13 +19,7 @@ var
   passportSocketIo = require("./lib/passport.socketio"),
   models = require('./app/server/models');
 
-
-var types = require('./app/server/fizzTypes')
-var check = require('easy-types')
-check.prototype.addTypes(types)
-
 var config = ((args.dev) ? require('./configDev.json') : require('./config.json'));
-
 var store = redisConns.store;
 var sessionStore = new redisStore({client: store});
 

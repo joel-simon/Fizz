@@ -15,7 +15,6 @@ var async   = require('async');
 
 var output  = require('./../output.js');
 var emit    = output.emit;
-var check   = require('easy-types');
 var io;
 
 var pg = require('pg');
@@ -23,13 +22,13 @@ var db = require('./../adapters/db.js');
 var dbstring = db.connString;
 
 exports.parse = function(data) {
+	if (!data) return null
 	var user = {
 		uid: parseInt(data.uid),
 		pn: data.pn,
 		name: data.name,
-		lastLogin: parseInt(data.last_login),
-		password: data.password,
-		platform: data.platform
+		password : data.password,
+		platform : data.platform
 	}
 	return user
 }
@@ -44,13 +43,8 @@ exports.isConnected = function(uid, callback) {
 exports.get = function(uid, cb) {
 	var q1 = "select * from users where uid = $1";
 	db.query(q1, [uid], function(err, result) {
-    	if (err) cb(err);
-    	else if (!result.rows.length) cb(null, null);
-    	else {
-    		var r0 = result.rows[0]
-    		var user = { uid: r0.uid, pn : r0.pn, name : r0.name}
-	    	cb(null, user);
-	    }
+    	if (err) return cb(err);
+    	cb(null, exports.parse(result.rows[0]));
 	});
 }
 exports.getTokens = function(uidList, cb) {
@@ -80,12 +74,12 @@ exports.getFromPn = function(pn, cb) {
 
 exports.create = function(pn, name, platform, token, callback) {
 	var password = generatePassword();
-	var q1 = "INSERT INTO users (pn, name, platform, phone_token, password) VALUES ($1,$2,$3,$4,$5) RETURNING uid";
+	var q1 = "INSERT INTO users (pn, name, platform, phone_token, password) VALUES ($1,$2,$3,$4,$5) RETURNING *";
 	var values = [pn, name, platform, token, password]
 	db.query(q1, values, function(err, result) {
 		if (err) return callback(err)
-		uid = +result.rows[0].uid
-		callback(null, {uid:uid, pn:pn, name:name, platform:platform, password:password})
+		var user = exports.parse(result.rows[0]);
+	  callback(null, user);
 	});
 };
 

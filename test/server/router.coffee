@@ -3,7 +3,7 @@ assert = require('assert')
 request = require('supertest')
 async = require('async')
 # winston = require('winston')
-init = require('../../scripts/serverInit')
+init = require('../../scripts/init')
 root = '../../app/server/'
 db = require(root+'adapters/db.js')
 

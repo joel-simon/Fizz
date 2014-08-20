@@ -3,7 +3,6 @@ utils     = require './../utilities.js'
 models    = require './../models'
 output    = require './../output.js'
 db        = require './../adapters/db.js'
-check     = require 'easy-types'
 
 module.exports = (data, socket, callback) ->
   eventName = 'completeEvent'
@@ -15,6 +14,5 @@ module.exports = (data, socket, callback) ->
     return callback err if err?
     models.events.getInviteList eid, (err, recipients) ->
       return callback err if err?
-      check(recipients).is '[user]'
       output.emit { eventName, recipients, data: { eid } }
       callback null

@@ -3,9 +3,6 @@ utils     = require './../utilities.js'
 models    = require './../models'
 output    = require './../output.js'
 db        = require './../adapters/db.js'
-check     = require('easy-types')
-# types = require('./../fizzTypes.js')
-# check = require('easy-types').addTypes(types)
 
 module.exports = (data, socket, callback) ->
   eventName = 'newInvites'
@@ -14,8 +11,6 @@ module.exports = (data, socket, callback) ->
 
   eid = data.eid
   namePnList = data.inviteList
-
-  check(eid).is('posInt')
 
   # Get all user objects and make new user objects.
   models.users.getOrAddList namePnList, (err, newlyInvitedUsers) ->

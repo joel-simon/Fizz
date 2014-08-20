@@ -4,7 +4,6 @@ store = require('./../adapters/redisStore.js').store
 exports = module.exports
 models = require '../models'
 db = require './../adapters/db.js'
-check = require('easy-types')
 pg = require 'pg'
 
 dbstring = db.connString;
@@ -26,9 +25,6 @@ rollback = (client, done) ->
     done err
 
 exports.add = (user, description, callback) ->
-  # check.is(user, 'user')
-  # check.is(description, 'string')
-
   q1 = "INSERT INTO events
       (creator, description, key)
       VALUES ($1, $2, $3)
@@ -40,7 +36,6 @@ exports.add = (user, description, callback) ->
   eid = null
   creationTime = Date.now()
   now = Date.now()
-  console.log creationTime
   pg.connect dbstring, (err, client, done) ->
     return callback err if err
     async.waterfall [
@@ -144,12 +139,13 @@ exports.getInviteList = (eid, callback) ->
     callback null, result.rows
 
 exports.addInvites = (eid, inviter, users, confirmed, callback) ->
+  if users.length == 0
+    return callback null, null
   q = "insert into invites (eid, uid, inviter, confirmed, invited_time, accepted_time) values "
   values = []
   now = Date.now()
   for u in users
     values=values.concat '('+([eid,u.uid,inviter,confirmed, now, now].join(','))+')'
-
   db.query q+(values.join(',')),[], callback
 
 exports.getFull = (eid, callback) ->
