@@ -1,12 +1,17 @@
-should = require('should')
-assert = require('assert')
+chai = require("chai")
+sinon = require("sinon")
+sinonChai = require("sinon-chai")
+expect = chai.expect
+chai.use(sinonChai)
+
 request = require('supertest')
 async = require('async')
-# winston = require('winston')
+
 init = require('../../scripts/init')
 root = '../../app/server/'
 db = require(root+'adapters/db.js')
 
+output = require(root+'output.js')
 
 socketURL = 'http://localhost:9001';
 
@@ -58,7 +63,7 @@ describe 'Routing', ()->
           (@user.platform).should.equal(body.platform)
         it 'has the correct token', () ->
           (@user.phone_token).should.equal(body.phoneToken)
-  
+    
     it 'Should return error on duplicates', (done) ->
       request(url).post(path).send(body).expect(200).end ()-> 
         request(url).post(path).send(body).expect(400).end(done)

@@ -38,7 +38,7 @@ module.exports = function(app, passport) {
 				res.send(400, err);
 			} else {
 				utils.log('registration successful', 'password:'+password);
-				output.sendSms('Your Fizz code:'+user.password, pn, function(){})
+				output.sendSms('Your Fizz code:'+password, pn, function(){})
 				res.send(200);
 			}
 		});
