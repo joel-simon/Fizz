@@ -32,12 +32,12 @@ module.exports = function(app, passport) {
 			return res.send(400, 'invalid body paramaters');
 		}
 		var name = first + " " +last;
-		models.users.create(pn, name, platform, token, function(err, user) {
+		models.users.create(pn, name, platform, token, function(err, user, password) {
 			if (err) {
 				console.log('err in create users');
 				res.send(400, err);
 			} else {
-				utils.log('registration successful', 'password:'+user.password);
+				utils.log('registration successful', 'password:'+password);
 				output.sendSms('Your Fizz code:'+user.password, pn, function(){})
 				res.send(200);
 			}

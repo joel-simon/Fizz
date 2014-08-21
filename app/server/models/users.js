@@ -26,9 +26,9 @@ exports.parse = function(data) {
 	var user = {
 		uid: parseInt(data.uid),
 		pn: data.pn,
-		name: data.name,
-		password : data.password,
-		platform : data.platform
+		name: data.name
+		// password : data.password,
+		// platform : data.platform
 	}
 	return user
 }
@@ -58,13 +58,13 @@ exports.getTokens = function(uidList, cb) {
 exports.getFromPn = function(pn, cb) {
 	var q1 = "select * from users where pn = $1";
 	db.query(q1, [pn], function(err, result) {
-    	if (err) cb(err);
-    	else if (!result.rows.length) cb(null, null);
-    	else {
-    	  var user = exports.parse(result.rows[0])
-	    	cb(null, user);
-	    }
-    });
+  	if (err) cb(err);
+  	else if (!result.rows.length) cb(null, null);
+  	else {
+  	  var user = exports.parse(result.rows[0])
+    	cb(null, user);
+    }
+  });
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -79,7 +79,7 @@ exports.create = function(pn, name, platform, token, callback) {
 	db.query(q1, values, function(err, result) {
 		if (err) return callback(err)
 		var user = exports.parse(result.rows[0]);
-	  callback(null, user);
+	  callback(null, user, password);
 	});
 };
 

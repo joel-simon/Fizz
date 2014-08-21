@@ -17,7 +17,7 @@ exports.addMessage = (eid, uid, text, callback) ->
     return callback null, format(result.rows[0])
 
 exports.getMoreMessages = (eid, mid, cb) ->
-  q1 = "SELECT * FROM messages WHERE eid = $1 and mid > $2 ORDER BY creation_time LIMIT 10"
+  q1 = "SELECT * FROM messages WHERE eid = $1 and mid >= $2 ORDER BY creation_time LIMIT 10"
   db.query q1, [eid, mid], (err, results) ->
     return cb err if err?
-    cb null, results.rows
+    cb null, results.rows.map format
