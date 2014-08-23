@@ -71,18 +71,28 @@ exports.updateDescription = (eid, description, callback) ->
   db.query q1, [eid, description], callback
 
 # returns null on failure
+  # if typeof options == 'number'
+  #   key = 'eid'
+  #   value = options
+  # else if options.eid?
+  #   key = 'eid'
+  #   value = options.eid
+  # else if options.key?
+  #   key = 'eid'
+  #   value = options.eid
 exports.get = (eid, callback) ->
-  eid = +eid
   q1 = "SELECT * FROM events WHERE eid = $1"
   db.query q1, [eid], (err, result) ->
     return callback err if err
     callback null, exports.parse result.rows[0]
 
-exports.getFromKey = (key, callback) ->
-  q1 = "SELECT * FROM events WHERE key = $1"
+exports.getFullFromKey = (key, callback) ->
+  q1 = "SELECT eid FROM events WHERE key = $1"
   db.query q1, [key], (err, result) ->
     return callback err if err
-    callback null, exports.parse result.rows[0]
+    return callback null, null if not result.rows[0]?
+    eid = result.rows[0].eid
+    exports.getFull eid, callback
 
 exports.join = (eid, uid, callback) ->
   q1 = "UPDATE invites SET accepted = true, accepted_time = $1
