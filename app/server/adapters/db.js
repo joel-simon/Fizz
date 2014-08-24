@@ -1,6 +1,6 @@
 var pg = require('pg');
-// var dbstring = 'postgres://Fizz:derptopia@fizzdbinstance.cdzhdhngrg63.us-east-1.rds.amazonaws.com:5432/fizzdb';
-var dbstring = 'postgres://localhost/fizzdb';
+var config = require('./../config')
+var dbstring = config.DB.POSTGRES_URL
 
 var utils   = require('./../utilities.js');
 var log     = utils.log;
