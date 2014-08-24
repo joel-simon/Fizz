@@ -14,6 +14,7 @@ module.exports = (app, passport) ->
       return res.send 400 if err?
       models.invites.accept invite, (err) ->
         return res.send 400 if err?
+        utils.log "Joined by sms", invite
         res.send 200
 
   app.post '/leave', (req, res) ->
@@ -22,6 +23,7 @@ module.exports = (app, passport) ->
       return res.send 400 if err?
       models.invites.unaccept invite, (err) ->
         return res.send 400 if err?
+        utils.log "Left by sms", invite
         res.send 200
 
   app.post '/registration', (req, res) ->
