@@ -10,7 +10,7 @@ $(document).click(function(e) {
 		console.log('test');
 		$.ajax({
 		  type: "POST",
-		  url: 'http://localhost:9001/leave',
+		  url: '/leave',
 		  data: { key: key },
 		  success: function (foo) {
 		  	console.log($('.rsvp h1'));
@@ -25,7 +25,7 @@ $(document).click(function(e) {
 	} else if (confirm('Join this event?')) {
 		$.ajax({
 		  type: "POST",
-		  url: 'http://localhost:9001/Join',
+		  url: '/Join',
 		  data: { key: key },
 		  success: function (foo) {
 		  	$('.rsvp h1').text('You are attending')

@@ -8,7 +8,7 @@ module.exports =
     q = "select eid, uid, inviter, accepted from invites where key = $1 limit 1"
     db.query q, [options.key], (err, results) ->
       return callback err if err?
-      callback null, results.rows[0]
+      callback null, results.rows[0] || {}
 
   add : ({ eid, uid, inviter, accepted }, callback) ->
     key = randString 16
