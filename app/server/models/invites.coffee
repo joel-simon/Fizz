@@ -13,7 +13,6 @@ module.exports =
   add : ({ eid, uid, inviter, accepted }, callback) ->
     key = randString 16
     accepted ?= false
-    console.log {eid, uid, inviter, accepted}
     q = "INSERT INTO invites (eid, uid, inviter, accepted, key) VALUES ($1, $2, $3, $4, $5)"
     db.query q, [eid, uid, inviter, accepted, key], (err, result) ->
       return callback err if err?

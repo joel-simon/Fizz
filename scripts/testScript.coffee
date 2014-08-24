@@ -33,7 +33,7 @@ makeSocket = (user) ->
 
 async.series [
   (cb) -> db.query "truncate table users, events, messages, invites", cb
-  (cb) -> models.users.create "+13475346101", "Joel Simon", "sms", "PHONETOKEN", cb
+  (cb) -> models.users.create "+13475346100", "Joel Simon", "ios", "PHONETOKEN", cb
   (cb) -> models.users.create "+13107102956", "Andrew Sweet", "sms", "PHONETOKEN", cb
   (cb) -> models.users.create "+19494647070", "Antonio Ono", "sms", "PHONETOKEN", cb
   (cb) -> models.users.create "+3523189733", "Russell Cullen", "sms", "PHONETOKEN", cb
@@ -59,7 +59,7 @@ async.series [
       async.series [
         # (cb) -> postRequestEvents {eid: e1.eid}, joelSocket, cb
         #invite andrew to events
-        (cb) -> postNewInvites {eid: e1.eid, inviteList: [andrew, randomPerson, antonio, russell] }, joelSocket, cb
+        (cb) -> postNewInvites {eid: e1.eid, inviteList: [andrew, antonio, russell] }, joelSocket, cb
         # (cb) -> postNewInvites {eid: e2.eid, inviteList: [antonio, joel] }, andrewSocket, cb
 
         #andrew messages event
