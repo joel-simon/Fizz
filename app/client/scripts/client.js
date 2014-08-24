@@ -5,7 +5,7 @@ $(document).ready(function (argument) {
 	})[0]
 });
 
-$(document).click(function(e) {
+$(document).on('touchstart click', function(e) {
 	if (accepted && confirm('Leave this event?')) {
 		console.log('test');
 		$.ajax({

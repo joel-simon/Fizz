@@ -39,7 +39,7 @@ module.exports = (app, passport) ->
         res.send 400, err
       else
         utils.log 'registration successful', 'password:'+password
-        output.sendSms 'Your Fizz code:'+password, pn, ()->
+        output.sendSms 'Your Fizz code:'+password, {pn, name, platform}
         res.send 200
       
   app.get '/e/:key', (req, res) ->

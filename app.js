@@ -109,4 +109,4 @@ require('./app/server/router')(app, passport);
 log('Server Started', args);
 
 if (args.init) require('./tests/serverInit');
-if (args.testing) require('./tests/serverTest');
+if (args.testing) require('./scripts/testScript')

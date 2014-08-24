@@ -33,7 +33,7 @@ makeSocket = (user) ->
 
 async.series [
   (cb) -> db.query "truncate table users, events, messages, invites", cb
-  (cb) -> models.users.create "+13475346100", "Joel Simon", "ios", "PHONETOKEN", cb
+  (cb) -> models.users.create "+13475346101", "Joel Simon", "ios", "PHONETOKEN", cb
   (cb) -> models.users.create "+13107102956", "Andrew Sweet", "ios", "PHONETOKEN", cb
   (cb) -> models.users.create "+19494647070", "Antonio Ono", "ios", "PHONETOKEN", cb
   (cb) -> models.users.create "+3523189733", "Russell Cullen", "ios", "PHONETOKEN", cb
@@ -45,7 +45,7 @@ async.series [
 
   randomPerson =
     name: 'random'
-    pn: '+12123456789'
+    pn: '+13475346100'
 
   joelSocket = makeSocket joel
   andrewSocket = makeSocket andrew
@@ -82,9 +82,7 @@ async.series [
       ], (err, results) ->
         if (err)
           console.log "ERR:", err if err
-          process.exit(1)
+          # process.exit(1)
         else
           console.log "All Done"
-          process.exit(0)
-        # function(cb){ getMoreMessages({eid:eid, oldestMid:0}, {handshake:{user:joel}}, cb) },
-      
+          # process.exit(0)

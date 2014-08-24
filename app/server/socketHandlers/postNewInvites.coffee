@@ -47,7 +47,9 @@ module.exports = (data, socket, callback) ->
           }
 
           newlyInvitedSMSUsers.forEach (smsUser) ->
-            message = "Click this link: extraFizzy.com/e/#{keyMapping[smsUser.uid]}"
+            url = 'http://54.86.103.35:9001/e/'
+            # url = 'extraFizzy.com/e/'
+            message = "Invited to a fizz event: #{url}#{keyMapping[smsUser.uid]}"
             output.sendSms message, smsUser 
 
           callback null, inviteList
