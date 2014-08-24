@@ -1,5 +1,3 @@
-Error.stackTraceLimit = Infinity;
-'use strict';
 require('coffee-script/register')
 var
   args    = require('./app/server/args.js'), //read in command line args.
@@ -9,8 +7,6 @@ var
   server  = app.listen(port),
   io      = require('socket.io').listen(server),
   utils   = require('./app/server/utilities.js'),
-  log     = utils.log,
-  logError= utils.logError,
   redis   = require('redis'),
   redisStore = require('connect-redis')(express),
   redisConns = require('./app/server/adapters/redisStore.js'),
@@ -23,26 +19,24 @@ var config = ((args.dev) ? require('./configDev.json') : require('./config.json'
 var store = redisConns.store;
 var sessionStore = new redisStore({client: store});
 
-require.main.exports.io = io;
-
 passport.use(new LocalStrategy({
     usernameField: 'pn',
     passwordField: 'password'
   }, function(pn, password, done) {
-    models.users.getFromPn(pn, function(err, user){
+    models.users.get({pn:pn}, function(err, user){
       if (err) {
-        log('Err in login:', err);
+        utils.log('Err in login:', err);
         return done(err);
       }
       if (!user) {
-        log('Err in login: no user found');
+        utils.log('Err in login: no user found');
         return done(null, false);
       }
       if (user.password !== password ) {
-        log('Err in login: passwords do not match. Given =', password, 'Expected=', user.password);
+        utils.log('Err in login: passwords do not match. Given =', password, 'Expected=', user.password);
         return done(null, false);
       }
-      log('login successful!');
+      utils.log('login successful!');
       return done(null, user);
     });
   }
@@ -106,7 +100,7 @@ function onAuthorizeFail(data, message, error, accept){
 require('./app/server/socketBinder')(io)
 require('./app/server/router')(app, passport);
 
-log('Server Started', args);
+utils.log('Server Started', args);
 
 if (args.init) require('./tests/serverInit');
 if (args.testing) require('./scripts/testScript')

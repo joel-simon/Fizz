@@ -24,10 +24,6 @@ exports.update = (eid, callback) ->
   q1 = "UPDATE events set last_accepted_update = $1 WHERE eid = $2"
   db.query q1, [Date.now(), eid], callback
 
-rollback = (client, done) ->
-  client.query 'ROLLBACK', (err) ->
-    done err
-
 exports.add = (user, description, callback) ->
   q1 = "INSERT INTO events
       (creator, description, key)

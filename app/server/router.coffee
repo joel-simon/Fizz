@@ -30,19 +30,25 @@ module.exports = (app, passport) ->
     utils.log 'On registration data', req.body
     { firstName, lastName, platform, phoneToken, pn } = req.body
     phoneToken = phoneToken || 'no phoneToken'
-
     if !firstName || !lastName || !platform || !pn
-      console.log 'invalid body paramaters', firstName, lastName, platform, phoneToken, pn
       return res.send 400, 'invalid body paramaters'
+    
     name = "#{firstName} #{lastName}"
-    models.users.create pn, name, platform, phoneToken, (err, user, password) ->
-      if err
-        # utils.logError 'err in create users', err
-        res.send 400, err
+    models.users.get {pn}, (err, user) ->
+      return res.send 400 if err?
+      if not user?
+        models.users.create pn, name, platform, phoneToken, done
       else
-        utils.log 'registration successful', 'password:'+password
-        output.sendSms 'Your Fizz code:'+password, {pn, name, platform}
-        res.send 200
+        models.users.newPassword {pn}, done
+      
+    done = (err, user, password) ->
+      if err?
+        utils.logError err
+        return res.send 400 
+      utils.log 'registration successful', 'password:'+password
+      output.sendSms 'Your Fizz code:'+password, {pn, name, platform}
+      # console.log !!res, !!res.send
+      res.send 200
       
   app.get '/e/:key', (req, res) ->
     key = req.params.key

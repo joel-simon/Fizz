@@ -1,14 +1,11 @@
 utils   = require './../utilities.js'
 async   = require 'async'
-
 exports = module.exports;
-
 output  = require './../output.js'
-emit    = output.emit
 
-#  pg = require('pg');
 db = require('./../adapters/db.js');
-#  dbstring = db.connString;
+_ = require 'underscore'
+
 
 exports.parse = (data) ->
   return null if not data?
@@ -18,26 +15,19 @@ exports.parse = (data) ->
     name: data.name
   }
 
-########################################
-# GET USER
-########################################
-exports.get = (uid, cb) ->
-  q1 = "select * from users where uid = $1"
-  db.query q1, [uid], (err, result) ->
+exports.get = (options, cb) ->
+  column = _.keys(options)[0]
+  value = options[column]
+  q1 = "select * from users where #{column} = $1"
+  db.query q1, [value], (err, result) ->
     return cb err if err?
     cb null, exports.parse result.rows[0]
 
-exports.getTokens = (uidList, cb) ->
-  q1 = "select uid, phone_token from users where uid = ANY($1::int[])"
-  db.query q1, [uid], (err, result) ->
-    cb err if err?
-    else cb null, result.rows
-
-exports.getFromPn = (pn, cb) ->
-  q1 = "select * from users where pn = $1"
-  db.query q1, [pn], (err, result) ->
-    return cb err if err?
-    cb null, exports.parse result.rows[0]
+# exports.getAll = (columns, uidList, cb) ->
+#   q1 = "select uid, phone_token from users where uid = ANY($1::int[])"
+#   db.query q1, [uid], (err, result) ->
+#     cb err if err?
+#     else cb null, result.rows
 
 ########################################
 # GETTING/CREATING/MODIFYING USERS
@@ -53,14 +43,22 @@ exports.create = (pn, name, platform, token, callback) ->
     callback null, user, password
 
 exports.getOrAddList = (namePnList, callback) ->
-  async.map namePnList, ((namePn, cb) -> getOrAdd namePn.pn, namePn.name, cb ),
-    callback
+  async.map namePnList, getOrAdd, callback
 
+exports.newPassword = (options, callback) ->
+  column = _.keys(options)[0]
+  value = options[column]
+  password = generatePassword()
+  q = "UPDATE users SET password = $1 WHERE #{column} = $2 RETURNING *"
+  db.query q, [password, value], (err, result) ->
+    return callback err if err?
+    user = exports.parse result.rows[0]
+    callback null, user, result.rows[0].password
 #User has been invited via phone number.
 # Return user if already exists.
-getOrAdd = (pn, name, cb) ->
+getOrAdd = ({ pn, name }, cb) ->
   pn = utils.formatPn pn
-  exports.getFromPn pn, (err, user) ->
+  exports.get {pn}, (err, user) ->
     if err
       cb err
     else if user
