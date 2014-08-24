@@ -12,7 +12,7 @@ module.exports = (data, socket, callback) ->
 
   models.events.add user, description, (err, event) =>
     return callback err if err?
-    models.invites.add {eid, uid: user.uid, inviter: user.uid, accepted : true}, (err) ->
+    models.invites.add {eid: event.eid, uid: user.uid, inviter: user.uid, accepted : true}, (err) ->
       return callback err if err?
       
       toSend = 

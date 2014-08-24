@@ -49,7 +49,7 @@ async.series [
 
   joelSocket = makeSocket joel
   andrewSocket = makeSocket andrew
-  
+
   async.series [ #create events
     (cb) -> postNewEvent { description: "JoelEvent1" }, joelSocket, cb
     (cb) -> postNewEvent { description: "AndrewsEvent1" }, andrewSocket, cb
