@@ -68,7 +68,9 @@ describe 'connect', () ->
         @userC = results[3][0]
         async.series [
           (cb)=> models.events.add @userB, "BEvent1", cb
-          (cb)=> models.events.addInvites 1, @userB.uid, [@userA], true, cb
+          (cb)=> models.invites.add { eid: 1, inviter: @userB.uid, uid: @userB.uid, accepted: true }, cb
+          (cb)=> models.invites.addList 1, @userB.uid, [@userA], cb
+          (cb)=> models.events.update 1, cb
         ], (err, results) =>
           return done err if err?
           @userSocketA = makeSocket @userA
@@ -77,17 +79,20 @@ describe 'connect', () ->
           async.series [
             (cb) => connect @userSocketA, cb
             (cb) => disconnect @userSocketA, cb
+
             (cb) => connect @userSocketA, cb
             (cb) => disconnect @userSocketA, cb
-            (cb) => models.events.addInvites 1, @userB.uid, [@userC], true, cb
-            (cb) => models.events.join 1, @userC.uid, cb
+
+            (cb) => models.invites.add { eid: 1, inviter: @userB.uid, uid: @userC.uid, accepted: true }, cb
+            (cb) => models.events.update 1, cb
             (cb) => models.messages.addMessage 1, @userC.uid, 'hello', cb
             (cb) => models.messages.addMessage 1, @userC.uid, 'world', cb
             (cb) => connect @userSocketA, cb
-
             (cb) => disconnect @userSocketA, cb
+
             (cb) => models.events.delete 1, cb
             (cb) => connect @userSocketA, cb
+            (cb) => disconnect @userSocketA, cb
           ], done
 
 
@@ -97,16 +102,20 @@ describe 'connect', () ->
     it 'emits the new event on the first connect', () =>
       data = {
         eventList: [ 1 ]
-        guests: {}
+        guests: {
+          1 : [2]
+        }
         me: @userA
-        newInvitees: {}
+        newInvitees: {
+          1: [{ uid: 2, name: "userB", pn: "+12345678901"},
+              { uid: 1, name: "userA", pn: "+12345678900" }]
+        }
         newMessages: {}
       }
-      data.guests[ 1 ] = [@userB.uid]
-      data.newInvitees[ 1 ] = [{ name: "userA", pn: "+12345678900", uid: 1 }, { name: "userB", pn: "+12345678901", uid: 2 }]
       firstCall = @userSocketA.emit.getCall(0).args
       expect(firstCall[0]).to.equal 'onLogin'
-      expect(firstCall[1]).to.deep.equal data
+      expect(firstCall[1]).to.deep.equal.data
+      # expect(firstCall[1].newInvitees).to.deep.include.members data.newInvitees
 
     it 'does not emit the new initees on second connect', () =>
       data = {
@@ -120,7 +129,7 @@ describe 'connect', () ->
       expect(firstCall[0]).to.equal 'onLogin'
       expect(firstCall[1]).to.deep.equal data
 
-    it 'emits a new message and guest', (done) =>
+    it 'emits a new message and guest on third connect', (done) =>
       models.messages.getMoreMessages 1, 1, (err, messages) =>
         data = {
           eventList: [ 1 ]
@@ -129,9 +138,9 @@ describe 'connect', () ->
           newInvitees: { 1 : [ @userC ] }
           newMessages: { 1 : messages }
         }
-        firstCall = @userSocketA.emit.getCall(2).args
-        expect(firstCall[0]).to.equal 'onLogin'
-        expect(firstCall[1]).to.deep.equal data
+        secondCall = @userSocketA.emit.getCall(2).args
+        expect(secondCall[0]).to.equal 'onLogin'
+        expect(secondCall[1]).to.deep.equal data
         done()
 
     it 'emits the right event list after an event has been ended', () =>
@@ -142,6 +151,6 @@ describe 'connect', () ->
         newInvitees: { }
         newMessages: { }
       }
-      firstCall = @userSocketA.emit.getCall(3).args
-      expect(firstCall[0]).to.equal 'onLogin'
-      expect(firstCall[1]).to.deep.equal data
+      thirdCall = @userSocketA.emit.getCall(3).args
+      expect(thirdCall[0]).to.equal 'onLogin'
+      expect(thirdCall[1]).to.deep.equal data

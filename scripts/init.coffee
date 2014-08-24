@@ -49,10 +49,11 @@ module.exports = (callback) ->
     (cb) -> db.query "CREATE TABLE invites (
             eid integer NOT NULL,
             uid integer NOT NULL,
-            confirmed boolean NOT NULL DEFAULT false,
+            confirmed boolean NOT NULL DEFAULT true,
             accepted boolean NOT NULL DEFAULT false,
+            key text NOT NULL,
             invited_time bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
-            accepted_time bigint NOT NULL,
+            accepted_time bigint,
             inviter integer,
             CONSTRAINT invites_pkey PRIMARY KEY (eid, uid),
             CONSTRAINT my_fk FOREIGN KEY (inviter)

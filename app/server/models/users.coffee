@@ -18,10 +18,6 @@ exports.parse = (data) ->
     name: data.name
   }
 
-exports.isConnected = (uid, callback) ->
-  io = require('../../app.js').io
-  io.sockets.clients(''+uid).length > 0
-
 ########################################
 # GET USER
 ########################################
@@ -39,7 +35,7 @@ exports.getTokens = (uidList, cb) ->
 
 exports.getFromPn = (pn, cb) ->
   q1 = "select * from users where pn = $1"
-  db.query q1, [uid], (err, result) ->
+  db.query q1, [pn], (err, result) ->
     return cb err if err?
     cb null, exports.parse result.rows[0]
 

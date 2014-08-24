@@ -5,7 +5,7 @@ exports = module.exports
 models = require '../models'
 db = require './../adapters/db.js'
 pg = require 'pg'
-
+_ = require 'underscore'
 dbstring = db.connString;
 
 exports.parse = (data) ->
@@ -20,6 +20,10 @@ exports.parse = (data) ->
   catch
     null
 
+exports.update = (eid, callback) ->
+  q1 = "UPDATE events set last_accepted_update = $1 WHERE eid = $2"
+  db.query q1, [Date.now(), eid], callback
+
 rollback = (client, done) ->
   client.query 'ROLLBACK', (err) ->
     done err
@@ -29,38 +33,15 @@ exports.add = (user, description, callback) ->
       (creator, description, key)
       VALUES ($1, $2, $3)
       RETURNING eid, creation_time"
-
-  q2 = "INSERT INTO invites (eid, uid, inviter, confirmed, accepted, accepted_time)
-        VALUES ($1, $2, $3, $4, $5, $6)"
-
-  eid = null
-  creationTime = Date.now()
-  now = Date.now()
-  pg.connect dbstring, (err, client, done) ->
-    return callback err if err
-    async.waterfall [
-      (cb) ->
-        client.query 'BEGIN', cb
-      () ->
-        process.nextTick arguments[arguments.length-1]
-      () ->
-        client.query q1, [ user.uid, description, randString(5)], arguments[arguments.length-1]
-      (result, cb)->
-        eid = result.rows[0].eid
-        # creationTime = result.rows[0].creation_time
-        client.query q2, [eid, user.uid, user.uid, true, true, now], arguments[arguments.length-1]
-    ], (err, results) ->
-      if (err)
-        rollback(client, done)
-        callback(err)
-      else
-        client.query 'COMMIT', done
-        callback null, exports.parse {
-          eid
-          description
-          creator: user.uid
-          creation_time : creationTime
-        }
+  db.query q1, [ user.uid, description, randString(5)], (err, {rows}) ->
+    return callback err if err?
+    eid = rows[0].eid
+    callback null, exports.parse {
+      eid
+      description
+      creator: user.uid
+      creation_time : Date.now()
+    }
 
 exports.delete = (eid, callback) ->
   q1 = "UPDATE events set death_time = $1 WHERE eid = $2"
@@ -94,48 +75,6 @@ exports.getFullFromKey = (key, callback) ->
     eid = result.rows[0].eid
     exports.getFull eid, callback
 
-exports.join = (eid, uid, callback) ->
-  q1 = "UPDATE invites SET accepted = true, accepted_time = $1
-        WHERE eid = $2 and uid = $3"
-  q2 = "UPDATE events SET last_accepted_update = $1 where eid = $2"
-
-  pg.connect dbstring, (err, client, done) ->
-    return callback err if err
-    async.series [
-      (cb) -> client.query 'BEGIN', cb
-      (cb) -> process.nextTick cb
-      (cb) -> client.query q1, [ Date.now(), eid, uid ], cb
-      (cb) -> client.query q2, [ Date.now(), eid ], cb
-    ], (err, results) ->
-      if err
-        rollback client, done
-        callback err
-      else
-        client.query 'COMMIT', done
-        callback null
-
-exports.leave = (eid, uid, callback) ->
-  q1 = "UPDATE invites SET
-        accepted = false,
-        accepted_time = $1
-        WHERE eid = $2 and uid = $3"
-  q2 = "UPDATE events SET last_accepted_update = $1 where eid = $2"
-
-  pg.connect dbstring, (err, client, done) ->
-    return logError err if err;
-    async.series [
-      (cb) -> client.query 'BEGIN', cb
-      (cb) -> process.nextTick cb
-      (cb) -> client.query q1, [ Date.now(), eid, uid ], cb
-      (cb) -> client.query q2, [ Date.now(), eid ], cb
-    ], (err, results) ->
-      if err
-        rollback client, done
-        callback err
-      else
-        client.query 'COMMIT', done
-        callback null
-
 exports.getGuestList = (eid, callback) ->
   q1 = "SELECT array_agg(uid) FROM invites WHERE eid = $1 and accepted = true"
   db.query q1, [eid], (err, result) ->
@@ -148,16 +87,6 @@ exports.getInviteList = (eid, callback) ->
     return callback err if err?
     callback null, result.rows
 
-exports.addInvites = (eid, inviter, users, confirmed, callback) ->
-  if users.length == 0
-    return callback null, null
-  q = "insert into invites (eid, uid, inviter, confirmed, invited_time, accepted_time) values "
-  values = []
-  now = Date.now()
-  for u in users
-    values=values.concat '('+([eid,u.uid,inviter,confirmed, now, now].join(','))+')'
-  db.query q+(values.join(',')),[], callback
-
 exports.getFull = (eid, callback) ->
   messages = require './messages'
   async.series {
@@ -168,7 +97,6 @@ exports.getFull = (eid, callback) ->
   }, (err, result) ->
     return callback err if err?
     callback null, result.event, result.messages, result.invited, result.guests
-
 
 randString = (n) ->
   text = ""

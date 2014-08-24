@@ -10,7 +10,8 @@ module.exports = (data, socket, callback) ->
   eid  = data.eid
   uid  = user.uid
   async.parallel {
-    leave  : (cb) -> models.events.leave eid, uid, cb
+    leave  : (cb) -> models.invites.unaccept {eid, uid}, cb
+    update : (cb) -> models.events.update eid, cb
     invited: (cb) -> models.events.getInviteList eid, cb
     guests : (cb) -> models.events.getGuestList eid, cb
   }, (err, results) ->

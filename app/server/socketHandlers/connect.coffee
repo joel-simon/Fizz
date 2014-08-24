@@ -33,7 +33,7 @@ QUERIES = (eventListString, lastLogin) ->
     events.eid = invites.eid AND 
     invites.accepted = true AND
     events.eid = ANY($1::int[]) AND
-    (events.last_cluster_update >= $2 OR events.last_accepted_update > $2)
+    events.last_accepted_update >= $2
     GROUP BY invites.eid"
     db.query q, [eventListString, lastLogin], (err, results) ->
       return cb err if err?

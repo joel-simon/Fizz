@@ -41,7 +41,7 @@ async.series [
 
   return console.log("Error in creating users:", err) if err?
   
-  [_,joel,andrew,antonio,russell] = results
+  [_,[joel,_ ], [andrew, _], [antonio, _],[russell,_]] = results
 
   randomPerson =
     name: 'random'

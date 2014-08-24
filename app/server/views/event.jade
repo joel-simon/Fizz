@@ -7,13 +7,23 @@ html
     link(href="/style/screen.css", rel="stylesheet", type="text/css", media="screen")
     link(href="/style/print.css", rel="stylesheet", type="text/css", media="print")
     script(src="/scripts/jquery.js")
+    script
+      var user = !{JSON.stringify(user)};
+      var accepted = #{accepted};
+      var key = "#{key}";
     script(src="/scripts/client.js")
   body
     article
       header
+        h2="hello "+user.name
         author= creator.name+" invited you to"
         h1=event.description
       
+      section.rsvp
+        if accepted
+          h1 You are attending
+        else
+          h1 Click anywhere to join
       section.guestlist
         h1 Guestlist
         ul.interested
@@ -25,14 +35,13 @@ html
             li=user.name
         
       
-      section.rsvp
-        h1 Join this event
-        form(action="", method="post")
-          p
-            input(type="text", value="First")
-            input(type="text", value="Last")
-          p
-            input(type="phone", value="number")
+      
+        //- form(action="/join", method="post")
+        //-   p
+        //-     input(type="text", name="first", placeholder="First")
+        //-     input(type="text", name="last", placeholder="Last")
+        //-   p
+        //-     input(type="phone", name="number", placeholder="number")
         //- h1
         //-   | You’ve added yourself
         //-   br

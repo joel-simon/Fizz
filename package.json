@@ -40,7 +40,8 @@
     "socket.io": "~0.9.16",
     "passport-local": "~1.0.0",
     "supertest": "~0.13.0",
-    "socket.io-client": "~1.0.6"
+    "socket.io-client": "~1.0.6",
+    "underscore": "~1.6.0"
   },
   "engines": {
     "node": "0.10.18",

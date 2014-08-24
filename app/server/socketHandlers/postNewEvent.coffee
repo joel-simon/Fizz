@@ -12,16 +12,18 @@ module.exports = (data, socket, callback) ->
 
   models.events.add user, description, (err, event) =>
     return callback err if err?
-    
-    toSend = 
-      eid : event.eid
-      creator: event.creator
-      creationTime : event.creationTime
-      messages : [] #no messages
-      guests   : [user.uid] #host is going
-      invites  : [user] #host is invited
+    models.invites.add {eid, uid: user.uid, inviter: user.uid, accepted : true}, (err) ->
+      return callback err if err?
+      
+      toSend = 
+        eid : event.eid
+        creator: event.creator
+        creationTime : event.creationTime
+        messages : [] #no messages
+        guests   : [user.uid] #host is going
+        invites  : [user] #host is invited
 
-    if socket.emit?
-      socket.emit 'newEvent', toSend
+      if socket.emit?
+        socket.emit 'newEvent', toSend
 
-    callback null, toSend
+      callback null, toSend

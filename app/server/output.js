@@ -93,18 +93,18 @@ var pushIos = function(msg, user, eid, hoursToExpiration) {
   });
 }
 
-exports.pushIos = function(options) {
-  var msg = options.msg;
-  var userList = options.userList;
-  var eid = options.eid || null;
-  if (!userList) return logError('no userList given');
-  console.log('Pushing to'+JSON.stringify());
-  async.each(userList, function(user, callback) {
-    if (user.type === "Member") {
-      pushIos(msg, user, eid,  1);
-    }
-  });
-}
+// exports.pushIos = function(options) {
+//   var msg = options.msg;
+//   var userList = options.userList;
+//   var eid = options.eid || null;
+//   if (!userList) return logError('no userList given');
+//   console.log('Pushing to'+JSON.stringify());
+//   async.each(userList, function(user, callback) {
+//     if (user.type === "Member") {
+//       pushIos(msg, user, eid,  1);
+//     }
+//   });
+// }
 
 ////////////////////////////////////////////////////////////////////////////////
 // TWILIO
@@ -113,7 +113,6 @@ var twilio = require('twilio');
 var client = new twilio.RestClient(config.TWILIO.SID, config.TWILIO.TOKEN);
   
 exports.sendSms = function(msg, pn, callback) {
-  // if (pn.length <= 5) return callback('Bad PN'+pn);
   utils.log("Sending SMS", {pn:pn}, {msg: msg})
   if (!args.sendSms) return;
   
@@ -144,19 +143,11 @@ exports.sendGroupSms = function(userList, eid, msgFun) {
 ////////////////////////////////////////////////////////////////////////////////
 // EMIT 
 ////////////////////////////////////////////////////////////////////////////////
-/**
- * Emit from a certain person
- * @param {Number} userId
- * @param {String} eventName
- * @param {Object} Data
- */
 
-// var foo='BC45506F3DD570B9C51363068DFBEF0FE178B7F7318D3CA7485F6040F980B74A'
-// exports.emit({
-//   eventName:'foo',
-//   data: 'foo',
-//   recipients:
-// })
+// exports.isConnected = (uid, callback) ->
+//   io = require('../../app.js').io
+//   io.sockets.clients(''+uid).length > 0
+
 var io;
 exports.emit = function(options) {
   var 
@@ -175,9 +166,9 @@ exports.emit = function(options) {
       );
 
   async.each(recipients, function(user, callback) {
-    // if (models.users.isConnected(user.uid)) {
-      if(io)
-        io.sockets.in(user.uid).emit(eventName, data);
+    // if (models.users.isConnected(user.uid)) {  
+    if (io)
+      io.sockets.in(user.uid).emit(eventName, data);
     // }
     // if ( iosPush && user.type === "Member" && (!pushRecipients ||
     //             pushRecipients.indexOf(user.uid) !== -1)) {

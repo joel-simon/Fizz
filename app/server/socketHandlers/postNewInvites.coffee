@@ -3,10 +3,11 @@ utils     = require './../utilities.js'
 models    = require './../models'
 output    = require './../output.js'
 db        = require './../adapters/db.js'
-
+_ = require 'underscore'
 module.exports = (data, socket, callback) ->
   eventName = 'newInvites'
   user = utils.getUserSession socket
+  console.log user
   utils.log 'Recieved '+eventName, "User:"+ JSON.stringify(user), "Data:"+ JSON.stringify(data)
 
   eid = data.eid
@@ -21,19 +22,15 @@ module.exports = (data, socket, callback) ->
       return callback err if err?
 
       # make them invited.
-      models.events.addInvites eid, user.uid, newlyInvitedUsers, true, (err) ->
-        return callback err if err?
+      models.invites.addList eid, user.uid, newlyInvitedUsers, (err, keyMapping) ->
 
+        return callback err if err?
         # Get the event Object.
         models.events.getFull eid, (err, event, messages, inviteList, guests) ->
           return callback err if err?
-          creator      = event.creator
-          description  = event.description
-          creationTime = event.creationTime
+          { creator, description, creationTime } = event
 
-
-          newlyInvitedSMSUsers = inviteList.filter (user) -> user.platform == 'sms'
-          newlyInvitedNotSMSUsers = inviteList.filter (user) -> user.platform != 'sms'
+          [newlyInvitedSMSUsers, newlyInvitedNotSMSUsers] = _.partition inviteList, (u)-> u.platform == 'sms'
 
           # Let the old users know about the new ones.
           output.emit {
@@ -42,12 +39,6 @@ module.exports = (data, socket, callback) ->
             data : { eid, inviteList }
           }
 
-          # console.log 'inviteList:', inviteList
-          
-          # console.log 'newlyInvitedSMSUsers: ', newlyInvitedSMSUsers
-          # console.log 'newlyInvitedNotSMSUsers:', newlyInvitedNotSMSUsers
-          
-          # Let the new users know about the event.
           output.emit {
             eventName  : 'newEvent'
             recipients : newlyInvitedNotSMSUsers
@@ -55,9 +46,8 @@ module.exports = (data, socket, callback) ->
                      messages, inviteList, guests }
           }
 
-
           newlyInvitedSMSUsers.forEach (smsUser) ->
-            message = 'Click this link: extraFizzy.com/e/'+event.eid
+            message = "Click this link: extraFizzy.com/e/#{keyMapping[smsUser.uid]}"
             output.sendSms message, smsUser 
 
           callback null, inviteList
