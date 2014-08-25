@@ -91,10 +91,8 @@ function onAuthorizeSuccess(data, accept) {
   accept(null, true);
 }
 
-function onAuthorizeFail(data, message, error, accept){
-  utils.log('socket auth accepted')
-  if(error)
-    throw new Error(message);
+function onAuthorizeFail(data, message, error, accept) {
+  utils.log('socket auth failed', {data:data}, {message:message}, {error:error})
   accept(null, false);
 }
 
