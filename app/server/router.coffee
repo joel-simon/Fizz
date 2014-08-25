@@ -5,9 +5,19 @@ output = require('./output')
 
 module.exports = (app, passport) ->
 
-  app.post '/login', passport.authenticate 'local', (req, res)->
+  loginOptions = 
+    successRedirect: '/success'
+    failureRedirect: '/fail'
+    failureFlash: false
+
+  app.post('/login', passport.authenticate('local', loginOptions))
+  
+  app.get '/success', (req, res) ->
     res.send 200
   
+  app.get '/fail', (req, res) ->
+    res.send 401
+
   app.post '/join', (req, res) ->
     { key } = req.body
     models.invites.get {key}, (err, invite) ->
@@ -34,9 +44,9 @@ module.exports = (app, passport) ->
       return res.send 400, 'invalid body paramaters'
     
     name = "#{firstName} #{lastName}"
-    models.users.get {pn}, (err, user) ->
+    models.users.isVerified {pn}, (err, isVerified) ->
       return res.send 400 if err?
-      if not user?
+      if not isVerified?
         models.users.create pn, name, platform, phoneToken, done
       else
         models.users.newPassword {pn}, done

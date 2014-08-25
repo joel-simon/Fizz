@@ -6,7 +6,6 @@ output  = require './../output.js'
 db = require('./../adapters/db.js');
 _ = require 'underscore'
 
-
 exports.parse = (data) ->
   return null if not data?
   {
@@ -22,6 +21,32 @@ exports.get = (options, cb) ->
   db.query q1, [value], (err, result) ->
     return cb err if err?
     cb null, exports.parse result.rows[0]
+
+exports.verify = (options, cb) ->
+  column = _.keys(options)[0]
+  value = options[column]
+  q1 = "UPDATE users SET verified = true where #{column} = $1"
+  db.query q1, [value], (err, result) ->
+    return cb err if err?
+    cb null
+
+exports.isVerified = (options, cb) ->
+  column = _.keys(options)[0]
+  value = options[column]
+  q1 = "select verified from users where #{column} = $1"
+  db.query q1, [value], (err, result) ->
+    return cb err if err?
+    cb null, result.rows[0]?.verified
+
+exports.getFull = (options, cb) ->
+  column = _.keys(options)[0]
+  value = options[column]
+  q1 = "select * from users where #{column} = $1"
+  db.query q1, [value], (err, result) ->
+    return cb err if err?
+    user = exports.parse result.rows[0]
+    password = result.rows[0].password
+    cb null, user, password
 
 # exports.getAll = (columns, uidList, cb) ->
 #   q1 = "select uid, phone_token from users where uid = ANY($1::int[])"

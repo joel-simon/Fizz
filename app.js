@@ -23,7 +23,7 @@ passport.use(new LocalStrategy({
     usernameField: 'pn',
     passwordField: 'password'
   }, function(pn, password, done) {
-    models.users.get({pn:pn}, function(err, user){
+    models.users.getFull({pn:pn}, function(err, user, uPassword) {
       if (err) {
         utils.log('Err in login:', err);
         return done(err);
@@ -32,12 +32,16 @@ passport.use(new LocalStrategy({
         utils.log('Err in login: no user found');
         return done(null, false);
       }
-      if (user.password !== password ) {
-        utils.log('Err in login: passwords do not match. Given =', password, 'Expected=', user.password);
+      if (uPassword !== password ) {
+        utils.log('Err in login: passwords do not match. Given =', password, 'Expected=', uPassword);
         return done(null, false);
       }
       utils.log('login successful!');
       return done(null, user);
+      // models.users.verify({uid:user.uid}, function(err) {
+      //   if (err) return done(err);
+      //   return done(null, user);
+      // });
     });
   }
 ));
@@ -102,5 +106,5 @@ require('./app/server/router')(app, passport);
 
 utils.log('Server Started', args);
 
-if (args.init) require('./tests/serverInit');
+// if (args.init) require('./scripts/init');
 if (args.testing) require('./scripts/testScript')
