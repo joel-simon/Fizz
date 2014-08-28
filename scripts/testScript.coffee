@@ -52,7 +52,7 @@ async.series [
 
   async.series [ #create events
     (cb) -> postNewEvent { description: "JoelEvent1" }, joelSocket, cb
-    # (cb) -> postNewEvent { description: "AndrewsEvent1" }, andrewSocket, cb
+    (cb) -> postNewEvent { description: "AndrewsEvent1" }, andrewSocket, cb
     ], (err, results) ->
       return console.log("Error in creating events:", err) if err?
       [e1, e2] = results;
@@ -60,6 +60,7 @@ async.series [
         # (cb) -> postRequestEvents {eid: e1.eid}, joelSocket, cb
         #invite andrew to events
         (cb) -> postNewInvites {eid: e1.eid, inviteList: [andrew, antonio, russell] }, joelSocket, cb
+        (cb) -> postUpdateLocation {location: { lat: 3.14, lng: 1.14 }}, joelSocket, cb
         # (cb) -> postNewInvites {eid: e2.eid, inviteList: [antonio, joel] }, andrewSocket, cb
 
         #andrew messages event

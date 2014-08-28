@@ -55,26 +55,22 @@ exports.query = function(text, values, cb) {
   });
 }
 
-// exports.transaction = function(queries, cb) {
-//   pg.connect(dbstring, function(err, client, done) {
-//     if (err) return cb(err);
-//     client.query('BEGIN', function(err) {
-//       process.nextTick(function(){
-//         async.eachSeries(queries, function(query, cb2) {
-//           client.query(query.string, query.values, function())
-//         });
-//       });
-//     });
-//       function(cb) {},
-
-//       function(cb) {client.query(q1, [ eid, uid ], cb) },
-//       function(cb) {client.query(q2, [ eid ])}
-//     ],
-//     function(err, results) {
-//       if (err) return rollback(client, done);
-//       client.query('COMMIT', done);
-//       return cb(null);
-//     });
-//   });
-// }
+exports.transaction = function(main, cb) {
+  pg.connect(dbstring, function(err, client, done) {
+    if (err) return cb(err);
+    client.query('BEGIN', function(err) {
+      process.nextTick( function() {
+        main(function(err, results) {
+          if (err) {
+            rollback(client, done);
+            return cb (err)
+          } else {
+            client.query('COMMIT', done);
+            return cb(null);
+          }
+        }) 
+      });
+    });
+  });
+}
 

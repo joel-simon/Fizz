@@ -33,7 +33,7 @@ passport.use(new LocalStrategy({
         return done(null, false);
       }
       if (uPassword !== password ) {
-        utils.log('Err in login: passwords do not match. Given =', password, 'Expected=', uPassword);
+        utils.log('Err in login: passwords do not match. Given ='+password, 'Expected='+uPassword);
         return done(null, false);
       }
       utils.log('login successful!');

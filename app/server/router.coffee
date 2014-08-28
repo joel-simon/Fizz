@@ -64,7 +64,7 @@ module.exports = (app, passport) ->
     key = req.params.key
     models.invites.get {key}, (err, {eid, uid, inviter, accepted}) ->
       return res.send 404 if err or not eid?
-      models.users.get uid, (err, user) ->
+      models.users.get {uid}, (err, user) ->
         return res.send 404 if err?
         models.events.getFull eid, (err, event, messages, inviteList, guests) ->
           utils.logError err if err?
