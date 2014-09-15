@@ -2,7 +2,6 @@ async     = require 'async'
 utils     = require './../utilities.js'
 models    = require './../models'
 output    = require './../output'
-db        = require './../adapters/db.js'
 
 module.exports = (data, socket, callback) ->
   user = utils.getUserSession socket
@@ -24,7 +23,5 @@ module.exports = (data, socket, callback) ->
         guests   : [user.uid] #host is going
         invites  : [user] #host is invited
 
-      if socket.emit?
-        socket.emit 'newEvent', toSend
-
+      socket.emit 'newEvent', toSend
       callback null, toSend

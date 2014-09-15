@@ -82,9 +82,8 @@ connect = (socket, callback) ->
           newInvitees : results.newInvitees
           guests      : results.guests
 
-        if socket.emit
-          socket.emit('onLogin', data)
         
+        socket.emit 'onLogin', data
         callback null, data
       
 module.exports = connect

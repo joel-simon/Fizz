@@ -6,21 +6,16 @@ output  = require './../output.js'
 db = require('./../adapters/db.js');
 _ = require 'underscore'
 
-exports.parse = (data) ->
-  return null if not data?
-  {
-    uid: parseInt data.uid
-    pn: data.pn
-    name: data.name
-  }
-
-exports.get = (options, cb) ->
-  column = _.keys(options)[0]
-  value = options[column]
-  q1 = "select * from users where #{column} = $1"
+exports.get = (where, fields, cb) ->
+  if not cb
+    cb = fields
+    fields = ['uid', 'pn', 'name']
+  column = _.keys(where)[0]
+  value = where[column]
+  q1 = "select #{fields} from users where #{column} = $1"
   db.query q1, [value], (err, result) ->
     return cb err if err?
-    cb null, exports.parse result.rows[0]
+    cb null, result.rows[0]
 
 exports.verify = (options, cb) ->
   column = _.keys(options)[0]
@@ -44,7 +39,7 @@ exports.getFull = (options, cb) ->
   q1 = "select * from users where #{column} = $1"
   db.query q1, [value], (err, result) ->
     return cb err if err?
-    user = exports.parse result.rows[0]
+    user = result.rows[0]
     password = result.rows[0].password
     cb null, user, password
 
@@ -64,7 +59,7 @@ exports.create = (pn, name, platform, token, callback) ->
   values = [pn, name, platform, token, password]
   db.query q1, values, (err, result) ->
     return callback err if err?
-    user = exports.parse result.rows[0]
+    user = result.rows[0]
     callback null, user, password
 
 exports.getOrAddList = (namePnList, callback) ->
@@ -77,7 +72,7 @@ exports.newPassword = (options, callback) ->
   q = "UPDATE users SET password = $1 WHERE #{column} = $2 RETURNING *"
   db.query q, [password, value], (err, result) ->
     return callback err if err?
-    user = exports.parse result.rows[0]
+    user = result.rows[0]
     callback null, user, result.rows[0].password
 #User has been invited via phone number.
 # Return user if already exists.
