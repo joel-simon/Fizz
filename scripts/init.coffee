@@ -12,7 +12,7 @@ module.exports = (callback) ->
               name character varying(20) NOT NULL,
               password character(6) NOT NULL,
               verified boolean DEFAULT false,
-              lastLogin bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
+              last_login bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
               phone_token text NOT NULL DEFAULT ''::text,
               last_location latlng,
               last_location_update bigint,
