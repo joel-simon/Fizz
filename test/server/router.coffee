@@ -11,7 +11,7 @@ init = require('../../scripts/init')
 root = '../../app/server/'
 db = require(root+'adapters/db.js')
 
-output = require(root+'output.js')
+output = require(root+'output')
 
 socketURL = 'http://localhost:9001';
 

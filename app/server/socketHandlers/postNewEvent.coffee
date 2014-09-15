@@ -1,7 +1,7 @@
 async     = require 'async'
 utils     = require './../utilities.js'
 models    = require './../models'
-output    = require './../output.js'
+output    = require './../output'
 db        = require './../adapters/db.js'
 
 module.exports = (data, socket, callback) ->
@@ -18,6 +18,7 @@ module.exports = (data, socket, callback) ->
       toSend = 
         eid : event.eid
         creator: event.creator
+        description : description
         creationTime : event.creationTime
         messages : [] #no messages
         guests   : [user.uid] #host is going

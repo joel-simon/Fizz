@@ -1,6 +1,6 @@
 utils  = require './../utilities.js'
 async  = require 'async'
-output = require './../output.js'
+output = require './../output'
 db     = require './../adapters/db.js'
 models = require './../models'
 args   = require './../args.js'

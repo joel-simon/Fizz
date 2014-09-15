@@ -1,8 +1,7 @@
 async     = require 'async'
 utils     = require './../utilities.js'
 models    = require './../models'
-output    = require './../output.js'
-db        = require './../adapters/db.js'
+output    = require './../output'
 
 module.exports = (data, socket, callback) ->
   eventName = 'newMessage'

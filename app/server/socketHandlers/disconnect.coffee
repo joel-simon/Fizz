@@ -1,6 +1,6 @@
 utils     = require './../utilities.js'
 models    = require './../models'
-output    = require './../output.js'
+output    = require './../output'
 db        = require './../adapters/db.js'
 
 module.exports = (socket, callback) ->
