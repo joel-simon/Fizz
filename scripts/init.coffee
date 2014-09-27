@@ -12,10 +12,10 @@ module.exports = (callback) ->
               name character varying(20) NOT NULL,
               password character(6) NOT NULL,
               verified boolean DEFAULT false,
-              last_login bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
-              phone_token text NOT NULL DEFAULT ''::text,
-              last_location latlng,
-              last_location_update bigint,
+              \"lastLogin\" bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
+              \"phoneToken\" text NOT NULL DEFAULT ''::text,
+              \"lastLocation\" latlng,
+              \"lastLocationUpdate\" bigint,
               platform platform NOT NULL DEFAULT 'sms',
               CONSTRAINT users_pn_key UNIQUE (pn) )", cb
 
@@ -24,11 +24,11 @@ module.exports = (callback) ->
               creator integer NOT NULL,
               description text,
               key text,
-              creation_time bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
-              last_cluster_update bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
+              \"creationTime\" bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
+              \"lastClusterUpdate\" bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
               clusters integer[],
-              last_accepted_update bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
-              death_time bigint default 0,
+              \"lastAcceptedUpdate\" bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
+              \"deathTime\" bigint default 0,
               CONSTRAINT events_creator_fkey FOREIGN KEY (creator)
                   REFERENCES users (uid) MATCH SIMPLE
                   ON UPDATE NO ACTION ON DELETE NO ACTION )", cb
@@ -38,7 +38,7 @@ module.exports = (callback) ->
               eid integer NOT NULL,
               uid integer NOT NULL,
               text text,
-              creation_time bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
+              \"creationTime\" bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
               CONSTRAINT messages_eid_fkey FOREIGN KEY (eid)
                   REFERENCES events (eid) MATCH SIMPLE
                   ON UPDATE NO ACTION ON DELETE NO ACTION,
@@ -52,8 +52,8 @@ module.exports = (callback) ->
             confirmed boolean NOT NULL DEFAULT true,
             accepted boolean NOT NULL DEFAULT false,
             key text NOT NULL,
-            invited_time bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
-            accepted_time bigint,
+            \"invitedTime\" bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
+            \"acceptedTime\" bigint,
             inviter integer,
             CONSTRAINT invites_pkey PRIMARY KEY (eid, uid),
             CONSTRAINT my_fk FOREIGN KEY (inviter)

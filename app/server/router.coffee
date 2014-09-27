@@ -1,10 +1,10 @@
 # onSms = require('./smsHandler.js');
 models = require('./models')
 utils  = require('./utilities')
-output = require('./output')
 
-module.exports = (app, passport) ->
 
+module.exports = (app, io, passport) ->
+  output = require('./output')(io)
   loginOptions = 
     successRedirect: '/success'
     failureRedirect: '/fail'

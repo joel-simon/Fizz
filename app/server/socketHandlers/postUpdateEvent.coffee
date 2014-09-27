@@ -1,9 +1,8 @@
 async     = require 'async'
 utils     = require './../utilities.js'
 models    = require './../models'
-output    = require './../output'
 
-module.exports = (data, socket, callback) ->
+module.exports = (data, socket, output, callback) ->
   eventName = 'updateEvent'
   user = utils.getUserSession socket
   utils.log 'Recieved '+eventName, "User:"+ JSON.stringify(user), "Data:"+ JSON.stringify(data)

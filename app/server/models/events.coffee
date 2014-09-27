@@ -14,23 +14,24 @@ exports.parse = (data) ->
     creator:       data.creator
     description:   data.description
     key:           data.key
-    creationTime:  parseInt(data.creation_time)
-    deathTime:     parseInt(data.death_time)
-    lastUpdateTime:parseInt(data.last_accepted_update)
+    creationTime:  parseInt(data.creationTime)
+    deathTime:     parseInt(data.deathTime)
+    lastUpdateTime:parseInt(data.lastAcceptedUpdate)
   catch
     null
 
 exports.update = (eid, callback) ->
-  q1 = "UPDATE events set last_accepted_update = $1 WHERE eid = $2"
+  q1 = 'UPDATE events set "lastAcceptedUpdate" = $1 WHERE eid = $2'
   db.query q1, [Date.now(), eid], callback
 
 exports.add = (user, description, callback) ->
-  q1 = "INSERT INTO events
+  q1 = 'INSERT INTO events
       (creator, description, key)
       VALUES ($1, $2, $3)
-      RETURNING eid, creation_time"
-  db.query q1, [ user.uid, description, randString(5)], (err, {rows}) ->
+      RETURNING eid, "creationTime"'
+  db.query q1, [ user.uid, description, randString(5)], (err, results) ->
     return callback err if err?
+    {rows} = results
     eid = rows[0].eid
     callback null, exports.parse {
       eid
@@ -40,23 +41,13 @@ exports.add = (user, description, callback) ->
     }
 
 exports.delete = (eid, callback) ->
-  q1 = "UPDATE events set death_time = $1 WHERE eid = $2"
+  q1 = 'UPDATE events set "deathTime" = $1 WHERE eid = $2'
   db.query q1, [Date.now(), eid], callback
 
 exports.updateDescription = (eid, description, callback) ->
-  q1 = "UPDATE events set description = $2 WHERE eid = $1"
+  q1 = 'UPDATE events set description = $2 WHERE eid = $1'
   db.query q1, [eid, description], callback
 
-# returns null on failure
-  # if typeof options == 'number'
-  #   key = 'eid'
-  #   value = options
-  # else if options.eid?
-  #   key = 'eid'
-  #   value = options.eid
-  # else if options.key?
-  #   key = 'eid'
-  #   value = options.eid
 exports.get = (eid, callback) ->
   q1 = "SELECT * FROM events WHERE eid = $1"
   db.query q1, [eid], (err, result) ->

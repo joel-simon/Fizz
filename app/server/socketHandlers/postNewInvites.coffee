@@ -1,10 +1,9 @@
 async     = require 'async'
 utils     = require './../utilities.js'
 models    = require './../models'
-output    = require './../output'
 _ = require 'underscore'
 
-module.exports = (data, socket, callback) ->
+module.exports = (data, socket, output, callback) ->
   eventName = 'newInvites'
   user = utils.getUserSession socket
   console.log user
@@ -36,7 +35,7 @@ module.exports = (data, socket, callback) ->
           output.emit {
             eventName
             recipients : oldInvitedUsers
-            data : { eid, inviteList }
+            data : { eid, newlyInvitedUsers}
           }
 
           output.emit {

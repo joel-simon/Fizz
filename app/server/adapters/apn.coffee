@@ -1,4 +1,3 @@
-
 apn      = require 'apn'
 utils    = require '../utilities.js'
 
@@ -23,7 +22,7 @@ apnConnection.on 'connected', () ->
 
 apnConnection.on('socketError', utils.logError);
 
-feedback = new apn.Feedback{
+feedback = new apn.Feedback {
   "batchFeedback": false
   "interval": 300
 }
@@ -32,19 +31,18 @@ feedback.on "feedback", (devices) ->
   utils.log devices
 
 module.exports = 
-  send : (msg, phoneToken, eid) ->
+  send : (data, phoneToken, eid) ->
     hoursToExpiration = 1
 
-    try {
-      myDevice = new apn.Device phoneToken
+    try
+      myDevice = new apn.Device(phoneToken)
       note = new apn.Notification()
-      note.expiry = Math.floor(Date.now() / 1000) + 3600*hoursToExpiration;
-      note.badge = 1;
-      note.sound = "ping.aiff";
+      note.expiry = Math.floor(Date.now() / 1000) + 3600*hoursToExpiration
+      note.badge = 1
+      note.sound = "ping.aiff"
       note.alert = msg
-      note.payload = { 'messageFrom':'Fizz', eid }
+      note.payload = data
   
       apnConnection.pushNotification note, myDevice
-    } catch(e) {
+    catch e
       return utils.logError "Status: FAILED.",'ERR:'+e,'Token:'+phoneToken
-    }

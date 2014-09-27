@@ -39,31 +39,33 @@
 utils = require './utilities'
 dir = './socketHandlers/'
 
-connect = require dir+'connect'
-postNewEvent   = require dir+'postNewEvent'
-postJoinEvent  = require dir+'postJoinEvent'
-postLeaveEvent = require dir+'postLeaveEvent'
-postNewInvites = require dir+'postNewInvites'
-postNewMessage = require dir+'postNewMessage'
-disconnect     = require dir+'disconnect'
-postUpdateLocation = require(dir+'postUpdateLocation')
+connect         = require dir+'connect'
+disconnect      = require dir+'disconnect'
+postDeleteEvent = require dir+'postDeleteEvent'
+postJoinEvent   = require dir+'postJoinEvent'
+postLeaveEvent  = require dir+'postLeaveEvent'
+postNewEvent    = require dir+'postNewEvent'
+postNewInvites  = require dir+'postNewInvites'
+postNewMessage  = require dir+'postNewMessage'
 postRequestEvents  = require dir+'postRequestEvents'
+postUpdateEvent    = require dir+'postUpdateEvent' 
+postUpdateLocation = require dir+'postUpdateLocation'
 
 onError = (err) ->
   if err
     utils.logError err
-    console.trace()
 
 module.exports = (io) ->
+  output = require('./output')(io)
   io.sockets.on 'connection', (socket) ->
-    connect(socket, onError)
-    socket.on 'postNewEvent',       (data) -> postNewEvent data, socket, onError
-    socket.on 'postJoinEvent',      (data) -> postJoinEvent data, socket, onError
-    socket.on 'postLeaveEvent',     (data) -> postLeaveEvent data, socket, onError
-    socket.on 'postNewInvites',     (data) -> postNewInvites data, socket, onError
-    socket.on 'postNewMessage',     (data) -> postNewMessage data, socket, onError
-    socket.on 'postRequestEvents',(data) -> postRequestEvents data, socket, onError
-    socket.on 'postUpdateLocation', (data) -> postUpdateLocation data, socket, onError
+    connect socket, onError
+    socket.on 'postDeleteEvent',    (data) -> postDeleteEvent data, socket, output, onError
+    socket.on 'postJoinEvent',      (data) -> postJoinEvent data, socket, output, onError
+    socket.on 'postLeaveEvent',     (data) -> postLeaveEvent data, socket, output, onError
+    socket.on 'postNewEvent',       (data) -> postNewEvent data, socket, output, onError
+    socket.on 'postNewInvites',     (data) -> postNewInvites data, socket, output, onError
+    socket.on 'postNewMessage',     (data) -> postNewMessage data, socket, output, onError
+    socket.on 'postRequestEvents',  (data) -> postRequestEvents data, socket, output, onError
+    socket.on 'postUpdateEvent', (data) -> postUpdateLocation data, socket, output, onError
+    socket.on 'postUpdateLocation', (data) -> postUpdateLocation data, socket, output, onError
     socket.on 'disconnect', () -> disconnect socket, onError
-
-

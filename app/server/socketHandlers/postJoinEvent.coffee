@@ -1,9 +1,9 @@
 async  = require 'async'
 utils  = require './../utilities.js'
 models = require './../models'
-output = require './../output'
 db     = require './../adapters/db.js'
-module.exports = (data, socket, callback) ->
+
+module.exports = (data, socket, output, callback) ->
   user = utils.getUserSession socket
   utils.log 'Received joinEvent.', "User:"+ JSON.stringify(user), "Data:"+ JSON.stringify(data)
   eid  = data.eid

@@ -62,7 +62,7 @@ describe 'Routing', ()->
         it 'has the correct platform', () ->
           (@user.platform).should.equal(body.platform)
         it 'has the correct token', () ->
-          (@user.phone_token).should.equal(body.phoneToken)
+          (@user.phoneToken).should.equal(body.phoneToken)
     
     describe 'On repeated registration from same number', (done) ->
       it 'resets the password', (done) =>

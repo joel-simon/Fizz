@@ -1,7 +1,7 @@
 utils   = require './../utilities.js'
 async   = require 'async'
 exports = module.exports;
-output  = require './../output.js'
+output  = require './../output'
 
 db = require('./../adapters/db.js');
 _ = require 'underscore'
@@ -12,7 +12,7 @@ exports.get = (where, fields, cb) ->
     fields = ['uid', 'pn', 'name']
   column = _.keys(where)[0]
   value = where[column]
-  q1 = "select #{fields} from users where #{column} = $1"
+  q1 = "select #{fields} from users where \"#{column}\" = $1"
   db.query q1, [value], (err, result) ->
     return cb err if err?
     cb null, result.rows[0]
@@ -20,7 +20,7 @@ exports.get = (where, fields, cb) ->
 exports.verify = (options, cb) ->
   column = _.keys(options)[0]
   value = options[column]
-  q1 = "UPDATE users SET verified = true where #{column} = $1"
+  q1 = "UPDATE users SET verified = true where \"#{column}\" = $1"
   db.query q1, [value], (err, result) ->
     return cb err if err?
     cb null
@@ -28,7 +28,7 @@ exports.verify = (options, cb) ->
 exports.isVerified = (options, cb) ->
   column = _.keys(options)[0]
   value = options[column]
-  q1 = "select verified from users where #{column} = $1"
+  q1 = "select verified from users where \"#{column}\" = $1"
   db.query q1, [value], (err, result) ->
     return cb err if err?
     cb null, result.rows[0]?.verified
@@ -36,7 +36,7 @@ exports.isVerified = (options, cb) ->
 exports.getFull = (options, cb) ->
   column = _.keys(options)[0]
   value = options[column]
-  q1 = "select * from users where #{column} = $1"
+  q1 = "select * from users where \"#{column}\" = $1"
   db.query q1, [value], (err, result) ->
     return cb err if err?
     user = result.rows[0]
@@ -55,7 +55,7 @@ exports.getFull = (options, cb) ->
 
 exports.create = (pn, name, platform, token, callback) ->
   password = generatePassword()
-  q1 = "INSERT INTO users (pn, name, platform, phone_token, password) VALUES ($1,$2,$3,$4,$5) RETURNING *"
+  q1 = "INSERT INTO users (pn, name, platform, \"phoneToken\", password) VALUES ($1,$2,$3,$4,$5) RETURNING uid, pn, name"
   values = [pn, name, platform, token, password]
   db.query q1, values, (err, result) ->
     return callback err if err?
@@ -69,7 +69,7 @@ exports.newPassword = (options, callback) ->
   column = _.keys(options)[0]
   value = options[column]
   password = generatePassword()
-  q = "UPDATE users SET password = $1 WHERE #{column} = $2 RETURNING *"
+  q = "UPDATE users SET password = $1 WHERE \"#{column}\" = $2 RETURNING *"
   db.query q, [password, value], (err, result) ->
     return callback err if err?
     user = result.rows[0]

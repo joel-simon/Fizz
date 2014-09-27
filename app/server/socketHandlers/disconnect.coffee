@@ -5,9 +5,9 @@ db        = require './../adapters/db.js'
 
 module.exports = (socket, callback) ->
   user = utils.getUserSession socket
-  q1 = "UPDATE users
-        SET last_login = (extract(epoch from now())*1000)::bigint
-        WHERE uid = $1 returning last_login"
+  q1 = 'UPDATE users
+        SET "lastLogin" = (extract(epoch from now())*1000)::bigint
+        WHERE uid = $1 returning "lastLogin"'
   db.query q1, [user.uid], (err, result) ->
     return callback err if err?
     callback null
