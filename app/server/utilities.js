@@ -16,7 +16,6 @@ exports.getUserSession = function(socket) {
   return socket.handshake.user
 }
 
-var mail = require("nodemailer").mail;
 exports.log = function() {
   var date = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
   date = date.substring(0,date.search("GMT")-1);
