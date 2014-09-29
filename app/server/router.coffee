@@ -59,7 +59,7 @@ module.exports = (app, io, passport) ->
       output.sendSms 'Your Fizz code:'+password, {pn, name, platform}
       # console.log !!res, !!res.send
       res.send 200
-      
+  
   app.get '/e/:key', (req, res) ->
     key = req.params.key
     models.invites.get {key}, (err, {eid, uid, inviter, accepted}) ->

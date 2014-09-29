@@ -37,7 +37,7 @@ async.series [
   (cb) -> db.query "truncate table users, events, messages, invites", cb
   (cb) -> models.users.create "+13475346100", "Joel Simon", "ios", "PHONETOKEN", cb
   (cb) -> models.users.create "+13107102956", "Andrew Sweet", "ios", "PHONETOKEN", cb
-  (cb) -> models.users.create "+19494647070", "Antonio Ono", "ios", "PHONETOKEN", cb
+  (cb) -> models.users.create "+19494647070", "Antonio Ono", "sms", "PHONETOKEN", cb
   (cb) -> models.users.create "+13523189733", "Russell Cullen", "ios", "PHONETOKEN", cb
  ], (err, results) ->
 
@@ -61,7 +61,7 @@ async.series [
       async.series [
         # (cb) -> postRequestEvents {eid: e1.eid}, joelSocket, cb
         #invite andrew to events
-        (cb) -> postNewInvites {eid: e1.eid, inviteList: [andrew, antonio, russell] }, joelSocket,  output,cb
+        (cb) -> postNewInvites {eid: e1.eid, inviteList: [andrew, antonio, russell] }, joelSocket, output,cb
         # (cb) -> postUpdateLocation {location: { lat: 3.14, lng: 1.14 }}, joelSocket, output, cb
         # (cb) -> postNewInvites {eid: e2.eid, inviteList: [antonio, joel] }, andrewSocket, cb
 

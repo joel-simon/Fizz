@@ -9,7 +9,7 @@ _ = require 'underscore'
 exports.get = (where, fields, cb) ->
   if not cb
     cb = fields
-    fields = ['uid', 'pn', 'name']
+    fields = ['uid', 'pn', 'name', 'platform']
   column = _.keys(where)[0]
   value = where[column]
   q1 = "select #{fields} from users where \"#{column}\" = $1"
