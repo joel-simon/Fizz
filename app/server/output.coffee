@@ -16,7 +16,7 @@ module.exports = (io) -> {
     { eventName, data, recipients } = options
 
     utils.log 'Emitting '+eventName,
-      'To:   '+JSON.stringify recipients.map( (u)-> u.name ),
+      'To:   '+JSON.stringify recipients.map( (u)-> [u.uid, u.name] ),
       'Data: '+JSON.stringify data
 
     recipients.forEach (user) ->

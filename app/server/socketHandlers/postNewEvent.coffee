@@ -22,5 +22,8 @@ module.exports = (data, socket, output, callback) ->
         guests   : [user.uid] #host is going
         invites  : [user] #host is invited
 
+      utils.log 'Emitting newEvent',
+        "To: #{user.name}",
+        "Data: "+JSON.stringify(toSend)
       socket.emit 'newEvent', toSend
       callback null, toSend

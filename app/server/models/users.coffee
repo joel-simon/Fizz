@@ -40,7 +40,7 @@ exports.getFull = (options, cb) ->
   db.query q1, [value], (err, result) ->
     return cb err if err?
     user = result.rows[0]
-    password = result.rows[0].password
+    password = result.rows[0]?.password
     cb null, user, password
 
 # exports.getAll = (columns, uidList, cb) ->

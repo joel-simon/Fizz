@@ -32,12 +32,13 @@ exports.add = (user, description, callback) ->
   db.query q1, [ user.uid, description, randString(5)], (err, results) ->
     return callback err if err?
     {rows} = results
-    eid = rows[0].eid
-    callback null, exports.parse {
+    {eid, creationTime} = rows[0]
+
+    callback null, {
       eid
       description
       creator: user.uid
-      creation_time : Date.now()
+      creationTime
     }
 
 exports.delete = (eid, callback) ->
