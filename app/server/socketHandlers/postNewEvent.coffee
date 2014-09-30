@@ -20,7 +20,7 @@ module.exports = (data, socket, output, callback) ->
         creationTime : event.creationTime
         messages : [] #no messages
         guests   : [user.uid] #host is going
-        invites  : [user] #host is invited
+        inviteList : [user] #host is invited
 
       utils.log 'Emitting newEvent',
         "To: #{user.name}",
