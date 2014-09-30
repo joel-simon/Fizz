@@ -30,7 +30,6 @@ module.exports = (data, socket, output, callback) ->
           { creator, description, creationTime } = event
 
           [newlyInvitedSMSUsers, newlyInvitedNotSMSUsers] = _.partition newlyInvitedUsers, (u)-> u.platform == 'sms'
-          
           # Let the old users know about the new ones.
           output.emit {
             eventName
