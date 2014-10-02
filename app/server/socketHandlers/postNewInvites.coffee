@@ -31,12 +31,18 @@ module.exports = (data, socket, output, callback) ->
 
           [newlyInvitedSMSUsers, newlyInvitedNotSMSUsers] = _.partition newlyInvitedUsers, (u)-> u.platform == 'sms'
           # Let the old users know about the new ones.
+          
           output.emit {
             eventName
             recipients : oldInvitedUsers
             data : { eid, newlyInvitedUsers}
           }
 
+          output.push { 
+            eid
+            recipients : newlyInvitedNotSMSUsers
+            msg : user.name+' has invited you to an event!'
+          }
           output.emit {
             eventName  : 'newEvent'
             recipients : newlyInvitedNotSMSUsers

@@ -14,4 +14,5 @@ module.exports = (data, socket, output, callback) ->
     models.events.getInviteList eid, (err, recipients) ->
       return callback err if err?
       output.emit { eventName, recipients, data: { message } }
+      output.push { eid, recipients, msg : "#{user.name}: #{text}" }
       callback null
