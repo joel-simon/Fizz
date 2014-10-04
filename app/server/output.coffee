@@ -15,9 +15,10 @@ module.exports = (io) -> {
   emit : (options) ->
     { eventName, data, recipients } = options
 
-    utils.log 'Emitting '+eventName,
-      'To:   '+JSON.stringify recipients.map( (u)-> [u.uid, u.name] ),
-      'Data: '+JSON.stringify data
+    utils.log "Emitting #{eventName}",
+      "Data: #{JSON.stringify data}",
+      'To:'+ JSON.stringify(recipients.map( (u)-> [u.uid, u.name] ))
+      
 
     recipients.forEach (user) ->
       io.sockets.in(''+user.uid).emit eventName, data

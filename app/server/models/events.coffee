@@ -67,7 +67,7 @@ exports.getGuestList = (eid, callback) ->
   q1 = "SELECT array_agg(uid) FROM invites WHERE eid = $1 and accepted = true"
   db.query q1, [eid], (err, result) ->
     return callback err if err?
-    callback null, result.rows[0]['array_agg']
+    callback null, result.rows[0]['array_agg'] || []
 
 exports.getInviteList = (eid, callback) ->
   q = "SELECT users.uid, pn, name, accepted, platform FROM users, invites WHERE invites.eid = $1 and users.uid = invites.uid"
