@@ -24,13 +24,13 @@ module.exports = (io) -> {
 
   push : ({ recipients, msg, eid }) ->
     recipients.forEach (user) ->
-      models.users.get {id: user.uid}, ['platform', 'phone_token'], (err, results) ->
+      models.users.getFull {uid: user.uid}, (err, user, userData) ->
         if err? 
           return utils.logError err
-        { platform, phone_token } = results
+        { platform, phoneToken } = userData
         data = {message: msg, eid}
         if platform == 'ios'
-          apn.send data, phone_token
+          apn.send data, phoneToken
         else if platform == 'android'
           gcm.send data, [phone_token]
   }

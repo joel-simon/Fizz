@@ -1,8 +1,6 @@
 utils   = require './../utilities.js'
 async   = require 'async'
 exports = module.exports;
-output  = require './../output'
-
 db = require('./../adapters/db.js');
 _ = require 'underscore'
 
@@ -39,9 +37,11 @@ exports.getFull = (options, cb) ->
   q1 = "select * from users where \"#{column}\" = $1"
   db.query q1, [value], (err, result) ->
     return cb err if err?
-    user = result.rows[0]
-    password = result.rows[0]?.password
-    cb null, user, password
+    data = result.rows[0]
+    if data.uid
+      cb null, _.pick(data,'uid', 'name','pn'), data
+    else
+      cb null, null, null
 
 # exports.getAll = (columns, uidList, cb) ->
 #   q1 = "select uid, phone_token from users where uid = ANY($1::int[])"

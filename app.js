@@ -23,7 +23,7 @@ passport.use(new LocalStrategy({
     usernameField: 'pn',
     passwordField: 'password'
   }, function(pn, password, done) {
-    models.users.getFull({pn:pn}, function(err, user, uPassword) {
+    models.users.getFull({pn:pn}, function(err, user, data) {
       if (err) {
         utils.log('Err in login:', err);
         return done(err);
@@ -32,8 +32,8 @@ passport.use(new LocalStrategy({
         utils.log('Err in login: no user found');
         return done(null, false);
       }
-      if (uPassword !== password ) {
-        utils.log('Err in login: passwords do not match. Given ='+password, 'Expected='+uPassword);
+      if (data.password !== password ) {
+        utils.log('Err in login: passwords do not match. Given ='+password, 'Expected='+data.password);
         return done(null, false);
       }
       utils.log('login successful!');

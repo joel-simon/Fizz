@@ -16,14 +16,8 @@ process.argv.forEach(function (val, index) {
       case 'test':
         exports.testing = true;
         break;
-      case 'test':
-        exports.debug = true;
-        break;
       case 'init':
         exports.init = true;
-        break;
-      case 'test':
-        exports.testing = true;
         break;
       case 'dev':
         exports.dev = true;
@@ -31,14 +25,8 @@ process.argv.forEach(function (val, index) {
       case 'sendSms':
         exports.sendSms = true;
         break;
-      case 'pushIos':
-        exports.pushIos = true;
-        break;
-      case 'fakeData':
-        exports.fakeData = true;
-        break;
       default:
-        console.log('Valid commands: [pushIos, sendSms]');
+        console.log('Valid commands: [init, dev, sendSms]');
         console.log(val);
     }
   }

@@ -74,7 +74,7 @@ exports.logError = function(e) {
   var date = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
   date = date.substring(0,date.search("GMT")-1)
 
-  var s = '\t'
+  var s = ''
 	// s += __line + __function;
 
   if (e instanceof EvalError) {
