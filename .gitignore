@@ -12,3 +12,4 @@ err.txt
 *.swp
 .elasticbeanstalk/
 node_modules
+*.scssc
