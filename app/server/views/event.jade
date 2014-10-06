@@ -3,7 +3,7 @@ html
   head
     meta(charset="utf-8")
     meta(name="viewport", content="width=device-width, maximum-scale=1, minimum-scale=1")
-    title(Fizz — Tropical Tuesday at Brillobox tomorrow at 9)
+    title(Let’s — event.description)
     link(href="/style/screen.css", rel="stylesheet", type="text/css", media="screen")
     link(href="/style/print.css", rel="stylesheet", type="text/css", media="print")
     script(src="/scripts/jquery.js")
@@ -16,15 +16,14 @@ html
   body
     article
       header
-        h2="hello "+user.name
-        author= creator.name+" invited you to"
-        h1=event.description
+        author= creator.name+" invited you"
+        h1 Donec id elit non mi porta gravida at eget metus.
       
       section.rsvp
         if accepted
-          h1 You are attending
+          a Get the app
         else
-          h1 Click anywhere to join
+          a Join Event
       section.guestlist
         h1 Guestlist
         ul.interested
