@@ -1,4 +1,4 @@
-/* line 17, ../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+/* line 17, ../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -20,45 +20,45 @@ time, mark, audio, video {
   vertical-align: baseline;
 }
 
-/* line 22, ../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+/* line 22, ../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 html {
   line-height: 1;
 }
 
-/* line 24, ../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+/* line 24, ../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 ol, ul {
   list-style: none;
 }
 
-/* line 26, ../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+/* line 26, ../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 table {
   border-collapse: collapse;
   border-spacing: 0;
 }
 
-/* line 28, ../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+/* line 28, ../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 caption, th, td {
   text-align: left;
   font-weight: normal;
   vertical-align: middle;
 }
 
-/* line 30, ../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+/* line 30, ../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 q, blockquote {
   quotes: none;
 }
-/* line 103, ../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+/* line 103, ../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 q:before, q:after, blockquote:before, blockquote:after {
   content: "";
   content: none;
 }
 
-/* line 32, ../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+/* line 32, ../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 a img {
   border: none;
 }
 
-/* line 116, ../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+/* line 116, ../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary {
   display: block;
 }
@@ -71,14 +71,19 @@ html {
 }
 
 /* line 12, ../sass/globals/_type.scss */
-html {
+body {
   font-family: "Futura", serif;
   font-size: 12pt;
   line-height: 1.5em;
   color: white;
 }
-/* line 27, ../sass/globals/_type.scss */
-html figure h1 {
+/* line 16, ../sass/globals/_type.scss */
+body a {
+  text-decoration: none;
+  color: white;
+}
+/* line 23, ../sass/globals/_type.scss */
+body figure h1 {
   font-family: "Futura-MediumItalic";
 }
 
@@ -118,15 +123,18 @@ body article header h1 {
   font-size: 4rem;
   line-height: 1.25em;
   text-transform: lowercase;
+  letter-spacing: -0.04688em;
+}
+@media screen and (min-width: 36em) {
+  /* line 28, ../sass/_layout.scss */
+  body article header h1 {
+    font-size: 6rem;
+  }
 }
 @media screen and (min-width: 36em) {
   /* line 22, ../sass/_layout.scss */
   body article header {
     margin-left: 0;
-  }
-  /* line 39, ../sass/_layout.scss */
-  body article header h1 {
-    font-size: 6rem;
   }
 }
 @media screen and (min-width: 60em) {
@@ -135,12 +143,12 @@ body article header h1 {
     float: left;
     width: 50%;
   }
-  /* line 48, ../sass/_layout.scss */
+  /* line 41, ../sass/_layout.scss */
   body article header h1 {
     font-size: 6rem;
   }
 }
-/* line 53, ../sass/_layout.scss */
+/* line 46, ../sass/_layout.scss */
 body article header author {
   font-size: .666em;
   font-family: "FuturaStd-Bold";
@@ -148,63 +156,69 @@ body article header author {
   text-transform: uppercase !important;
   font-family: "FuturaStd-BoldOblique";
 }
-/* line 59, ../sass/_layout.scss */
-body article section.guestlist {
+/* line 52, ../sass/_layout.scss */
+body article > section {
   width: 100%;
   margin-left: 1.5625%;
 }
 @media screen and (min-width: 36em) {
-  /* line 59, ../sass/_layout.scss */
-  body article section.guestlist {
+  /* line 52, ../sass/_layout.scss */
+  body article > section {
     width: 50%;
     float: left;
     margin-left: 0;
   }
 }
 @media screen and (min-width: 60em) {
-  /* line 59, ../sass/_layout.scss */
+  /* line 63, ../sass/_layout.scss */
   body article section.guestlist {
-    width: 12.5%;
+    width: 37.5%;
   }
 }
-/* line 73, ../sass/_layout.scss */
+/* line 70, ../sass/_layout.scss */
 body article section.guestlist h1 {
   font-size: .666em;
   font-family: "FuturaStd-Bold";
   letter-spacing: .25em;
   text-transform: uppercase !important;
 }
-/* line 77, ../sass/_layout.scss */
+/* line 74, ../sass/_layout.scss */
 body article section.guestlist ul.noReply {
   opacity: .5;
 }
-/* line 82, ../sass/_layout.scss */
-body article section.rsvp {
-  width: 100%;
-  margin-left: 1.5625%;
-}
-@media screen and (min-width: 36em) {
-  /* line 82, ../sass/_layout.scss */
-  body article section.rsvp {
-    width: 50%;
-    float: left;
-    margin-left: 0;
-  }
-}
 @media screen and (min-width: 60em) {
-  /* line 82, ../sass/_layout.scss */
+  /* line 79, ../sass/_layout.scss */
   body article section.rsvp {
-    width: 37.5%;
+    width: 12.5%;
   }
 }
-/* line 96, ../sass/_layout.scss */
+/* line 85, ../sass/_layout.scss */
 body article section.rsvp h1 {
   font-size: 2em;
   line-height: 1.25em;
   font-family: "Futura-MediumItalic";
   text-transform: lowercase;
 }
-/* line 105, ../sass/_layout.scss */
+/* line 92, ../sass/_layout.scss */
+body article section.rsvp a {
+  font-size: 2em;
+  border-bottom: .09375em white solid;
+  width: auto;
+  display: inline-block;
+  padding-bottom: 0.25em;
+  font-family: "Futura-MediumItalic";
+  font-size: 4rem;
+  line-height: 1.25em;
+  text-transform: lowercase;
+  letter-spacing: -0.04688em;
+}
+@media screen and (min-width: 36em) {
+  /* line 92, ../sass/_layout.scss */
+  body article section.rsvp a {
+    font-size: 6rem;
+  }
+}
+/* line 99, ../sass/_layout.scss */
 body article section.rsvp form input {
   background: none;
   outline: none;
@@ -218,7 +232,7 @@ body article section.rsvp form input {
   text-transform: lowercase;
   font-family: "Futura-MediumItalic";
 }
-/* line 116, ../sass/_layout.scss */
+/* line 110, ../sass/_layout.scss */
 body article section.rsvp form input:focus {
   background-color: rgba(255, 255, 255, 0.5);
 }

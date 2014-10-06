@@ -17,24 +17,23 @@ html
     article
       header
         author= creator.name+" invited you"
-        h1 Donec id elit non mi porta gravida at eget metus.
-      
+        h1 Donec id elit non mi porta gravida at eget metus.        
+
       section.rsvp
         if accepted
-          a Get the app
+          a(href="#") Get the app
         else
-          a Join Event
+          a(href="#") Join Event
+
       section.guestlist
         h1 Guestlist
         ul.interested
           each user in guestList
             li=user.name
-
         ul.noReply
           each user in noReply
             li=user.name
-        
-      
+
       
         //- form(action="/join", method="post")
         //-   p

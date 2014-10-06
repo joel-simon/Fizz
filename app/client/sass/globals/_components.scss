@@ -1,0 +1,19 @@
+@mixin button {
+    font-size: 2em;
+    border-bottom: .09375em white solid;
+    width: auto;
+    display: inline-block;
+    padding-bottom: .25em
+}
+
+@mixin bigTitle {
+    font-family:    $fontItalic;
+    font-size:      4rem;
+    line-height:    1.25em;
+    text-transform: lowercase;
+    letter-spacing: -(.03125em + .0625)/2;
+    
+    @media screen and (min-width: 36em) {
+        font-size:      6rem;
+    }
+}

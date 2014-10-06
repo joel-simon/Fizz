@@ -9,17 +9,13 @@ $fontBoldItalic:"FuturaStd-BoldOblique";
     line-height:    1.5em;
 }
 
-html {
+body {
     @include typeBody;
     color:  white;
     
-    article {
-        
-        header {
-
-            h1 {
-            }
-        }
+    a {
+        text-decoration: none;
+        color: white;
     }
     
     figure {

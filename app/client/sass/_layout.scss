@@ -26,19 +26,12 @@ body {
             margin-left: $gutter;
             
             h1 {
-                font-family:    $fontItalic;
-                font-size:      4rem;
-                line-height:    1.25em;
-                text-transform: lowercase;
+                @include bigTitle;
             }
 
             
             @media screen and (min-width: 36em) {
                 margin-left: 0;
-                
-                h1 {
-                    font-size:      6rem;
-                }
             }
 
             @media screen and (min-width: 60em) {
@@ -56,7 +49,7 @@ body {
             }
         }
         
-        section.guestlist {
+        > section {
             width:      100%;
             margin-left:$gutter;
             
@@ -65,9 +58,13 @@ body {
                 float:  left;
                 margin-left: 0;
             }
+        }
+        
+        section.guestlist {
             
             @media screen and (min-width: 60em) {
-                width:  ($col + $gutter) * 1;
+                width:  ($col + $gutter) * 3;
+
             }
             
             h1 {
@@ -80,17 +77,9 @@ body {
         }
         
         section.rsvp {
-            width: 100%;
-            margin-left: $gutter;
-            
-            @media screen and (min-width: 36em) {
-                width:  ($col + $gutter) * 4;
-                float:  left;
-                margin-left: 0;
-            }
 
             @media screen and (min-width: 60em) {
-                width:  ($col + $gutter) * 3;
+                width:  ($col + $gutter) * 1;
             }
         
             h1 {
@@ -98,6 +87,11 @@ body {
                 line-height: 1.25em;
                 font-family: $fontItalic;
                 text-transform: lowercase;
+            }
+            
+            a {
+                @include button;
+                @include bigTitle;
             }
 
             form {
