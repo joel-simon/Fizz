@@ -95,7 +95,7 @@ body {
 /* line 5, ../sass/_layout.scss */
 body article {
   height: 100%;
-  width: 100%;
+  width: 98.4375%;
   margin-left: 1.5625%;
 }
 /* line 10, ../sass/_layout.scss */
@@ -112,119 +112,195 @@ body article::after {
 }
 /* line 22, ../sass/_layout.scss */
 body article header {
-            /*
-width:      100%;
-            height:     100%;
-*/
   display: inline-block;
   margin-left: 1.5625%;
+  position: fixed;
+  top: 0;
 }
-/* line 30, ../sass/_layout.scss */
+/* line 28, ../sass/_layout.scss */
 body article header h1 {
-  font-family: "Futura-MediumItalic";
-  font-size: 4rem;
-  line-height: 1.25em;
   text-transform: lowercase;
-  letter-spacing: -0.04688em;
+  font-family: "Futura-MediumItalic";
+  line-height: 1.25em;
+  font-size: 10vw;
+  letter-spacing: -.046875em;
 }
-@media screen and (min-width: 36em) {
-  /* line 30, ../sass/_layout.scss */
+@media screen and (max-aspect-ratio: 3 / 4) {
+  /* line 28, ../sass/_layout.scss */
   body article header h1 {
-    font-size: 6rem;
+    font-size: 15vw;
+  }
+}
+@media screen and (max-aspect-ratio: 2 / 3) {
+  /* line 28, ../sass/_layout.scss */
+  body article header h1 {
+    font-size: 17vw;
+  }
+}
+@media screen and (min-aspect-ratio: 3 / 2) {
+  /* line 28, ../sass/_layout.scss */
+  body article header h1 {
+    font-size: 9vw;
+  }
+}
+@media screen and (min-aspect-ratio: 16 / 9) {
+  /* line 28, ../sass/_layout.scss */
+  body article header h1 {
+    font-size: 6vw;
   }
 }
 @media screen and (min-width: 36em) {
   /* line 22, ../sass/_layout.scss */
   body article header {
     margin-left: 0;
+    width: 75%;
   }
 }
 @media screen and (min-width: 60em) {
   /* line 22, ../sass/_layout.scss */
   body article header {
     float: left;
-    width: 50%;
-  }
-  /* line 43, ../sass/_layout.scss */
-  body article header h1 {
-    font-size: 6rem;
   }
 }
-/* line 48, ../sass/_layout.scss */
+/* line 43, ../sass/_layout.scss */
 body article header author {
-  font-size: .666em;
+  font-size: .6em;
   font-family: "FuturaStd-Bold";
   letter-spacing: .25em;
   text-transform: uppercase !important;
   font-family: "FuturaStd-BoldOblique";
 }
-/* line 54, ../sass/_layout.scss */
+/* line 49, ../sass/_layout.scss */
 body article > section {
   width: 100%;
   margin-left: 1.5625%;
 }
 @media screen and (min-width: 36em) {
-  /* line 54, ../sass/_layout.scss */
+  /* line 49, ../sass/_layout.scss */
   body article > section {
     width: 50%;
     float: left;
     margin-left: 0;
   }
 }
-@media screen and (min-width: 60em) {
-  /* line 65, ../sass/_layout.scss */
+/* line 60, ../sass/_layout.scss */
+body article section.guestlist {
+  margin-top: 4em;
+  width: auto;
+  margin-left: 62.5%;
+  margin-top: 75vh;
+}
+@media screen and (min-width: 36em) {
+  /* line 60, ../sass/_layout.scss */
   body article section.guestlist {
-    width: 37.5%;
+    /*                 margin-left: ($col + $gutter) * 6   ; */
+    margin-left: 75%;
+    margin-top: 50vh;
   }
 }
-/* line 70, ../sass/_layout.scss */
+@media screen and (min-width: 60em) {
+  /* line 60, ../sass/_layout.scss */
+  body article section.guestlist {
+    margin-left: 87.5%;
+  }
+}
+/* line 76, ../sass/_layout.scss */
 body article section.guestlist h1 {
-  font-size: .666em;
+  font-size: .6em;
   font-family: "FuturaStd-Bold";
   letter-spacing: .25em;
   text-transform: uppercase !important;
 }
-/* line 74, ../sass/_layout.scss */
+/* line 80, ../sass/_layout.scss */
 body article section.guestlist ul {
   text-transform: lowercase;
+  position: relative;
+  margin-bottom: .25em;
 }
-/* line 78, ../sass/_layout.scss */
+@media screen and (min-width: 60em) {
+  /* line 86, ../sass/_layout.scss */
+  body article section.guestlist ul li h1 {
+    position: absolute;
+    left: -13em;
+    text-align: right;
+    width: 12em;
+    padding-top: .333em;
+  }
+}
+/* line 98, ../sass/_layout.scss */
 body article section.guestlist ul.noReply {
   opacity: .5;
 }
-@media screen and (min-width: 60em) {
-  /* line 83, ../sass/_layout.scss */
+/* line 103, ../sass/_layout.scss */
+body article section.rsvp {
+  position: fixed;
+  bottom: 1.5625%;
+  left: 1.5625%;
+  width: 4em;
+}
+@media screen and (min-width: 36em) {
+  /* line 103, ../sass/_layout.scss */
   body article section.rsvp {
-    width: 12.5%;
+    /*                 width:  ($col + $gutter) * 1; */
+    width: auto;
+    margin-top: 1.5rem;
+    display: block;
+    float: none;
+    /*                 left: ($col + $gutter) * 4 + $gutter; */
   }
 }
-/* line 89, ../sass/_layout.scss */
+/* line 119, ../sass/_layout.scss */
 body article section.rsvp h1 {
   font-size: 2em;
   line-height: 1.25em;
   font-family: "Futura-MediumItalic";
   text-transform: lowercase;
 }
-/* line 96, ../sass/_layout.scss */
+/* line 126, ../sass/_layout.scss */
 body article section.rsvp a {
   font-size: 2em;
-  border-bottom: .09375em white solid;
+  /*     border-bottom: .09375em white solid; */
   width: auto;
   display: inline-block;
-  padding-bottom: 0.25em;
-  font-family: "Futura-MediumItalic";
-  font-size: 4rem;
-  line-height: 1.25em;
+  /*     padding-bottom: .125em */
   text-transform: lowercase;
-  letter-spacing: -0.04688em;
+  font-family: "Futura-MediumItalic";
+  line-height: 1.25em;
+  font-size: 10vw;
+  letter-spacing: -.046875em;
+  opacity: 1;
+  position: relative;
+  z-index: 3;
 }
-@media screen and (min-width: 36em) {
-  /* line 96, ../sass/_layout.scss */
+@media screen and (max-aspect-ratio: 3 / 4) {
+  /* line 126, ../sass/_layout.scss */
   body article section.rsvp a {
-    font-size: 6rem;
+    font-size: 15vw;
   }
 }
-/* line 103, ../sass/_layout.scss */
+@media screen and (max-aspect-ratio: 2 / 3) {
+  /* line 126, ../sass/_layout.scss */
+  body article section.rsvp a {
+    font-size: 17vw;
+  }
+}
+@media screen and (min-aspect-ratio: 3 / 2) {
+  /* line 126, ../sass/_layout.scss */
+  body article section.rsvp a {
+    font-size: 9vw;
+  }
+}
+@media screen and (min-aspect-ratio: 16 / 9) {
+  /* line 126, ../sass/_layout.scss */
+  body article section.rsvp a {
+    font-size: 6vw;
+  }
+}
+/* line 133, ../sass/_layout.scss */
+body article section.rsvp a:hover {
+  opacity: .5;
+}
+/* line 140, ../sass/_layout.scss */
 body article section.rsvp form input {
   background: none;
   outline: none;
@@ -238,7 +314,7 @@ body article section.rsvp form input {
   text-transform: lowercase;
   font-family: "Futura-MediumItalic";
 }
-/* line 114, ../sass/_layout.scss */
+/* line 151, ../sass/_layout.scss */
 body article section.rsvp form input:focus {
   background-color: rgba(255, 255, 255, 0.5);
 }

@@ -18,15 +18,16 @@ html
       header
         author= creator.name+" invited you"
         h1 Donec id elit non mi porta gravida at eget metus.        
-
-      section.rsvp
-        if accepted
-          a(href="#") Get the app
-        else
-          a(href="#") Join Event
+        section.rsvp
+          if accepted
+            a(href="#") Get the app
+          else
+            a(href="#") Join Event
 
       section.guestlist
         ul.interested
+          li
+            h1 Attending
           each user in guestList
             li=user.name
           li Cedrick Durfee
@@ -41,6 +42,8 @@ html
           li Denice Lavigne
           li Idell Morace
         ul.noReply
+          li
+            h1 No response
           each user in noReply
             li=user.name
           li Cedrick Durfee
