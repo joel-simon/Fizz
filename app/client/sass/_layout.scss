@@ -20,10 +20,12 @@ body {
         }
 
         header {
-            width:      100%;
+            /*
+width:      100%;
             height:     100%;
+*/
             display:    inline-block;
-            margin-left: $gutter;
+            margin-left:$gutter;
             
             h1 {
                 @include bigTitle;
@@ -60,15 +62,17 @@ body {
             }
         }
         
-        section.guestlist {
-            
+        section.guestlist {            
             @media screen and (min-width: 60em) {
                 width:  ($col + $gutter) * 3;
-
             }
             
             h1 {
                 @include smallCaps;
+            }
+            
+            ul {
+                text-transform: lowercase;
             }
             
             ul.noReply {
