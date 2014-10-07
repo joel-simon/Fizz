@@ -24,7 +24,13 @@ QUERIES = (eventListString, lastLogin) ->
           data[m.eid] = []
         data[m.eid].push m
       cb null, data
-
+  numMessages: (cb) ->
+    q = 'SELECT eid, COUNT(*)::int as "numM"
+      FROM messages
+      WHERE eid = ANY($1::int[])
+      GROUP BY eid'
+    db.query q,[eventListString], (err, results) ->
+      cb null, results.rows || []
   guests: (cb) ->
     q = 'SELECT array_agg(invites.uid), invites.eid
     FROM invites, events WHERE
@@ -73,12 +79,14 @@ connect = (socket, callback) ->
         return callback err if err
         data =
           me          : user
-          eventList   : eventList
+          eventList   : results.numMessages
           newMessages : results.newMessages
           newInvitees : results.newInvitees
           guests      : results.guests
 
-        
+        utils.log 'Emitting newEvent',
+          "To: #{user.name}",
+          "Data: "+JSON.stringify(data)
         socket.emit 'onLogin', data
         callback null, data
       

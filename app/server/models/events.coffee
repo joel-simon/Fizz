@@ -73,7 +73,7 @@ exports.getInviteList = (eid, callback) ->
   q = "SELECT users.uid, pn, name, accepted, platform FROM users, invites WHERE invites.eid = $1 and users.uid = invites.uid"
   db.query q, [eid], (err, result) ->
     return callback err if err?
-    callback null, result.rows
+    callback null, result.rows || []
 
 exports.getFull = (eid, callback) ->
   messages = require './messages'

@@ -33,5 +33,5 @@ module.exports = (io) -> {
         if platform == 'ios'
           apn.send data, phoneToken
         else if platform == 'android'
-          gcm.send data, [phone_token]
+          gcm.send data, [phoneToken]
   }

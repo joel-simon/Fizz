@@ -54,7 +54,7 @@ async.series [
 
   async.series [ #create events
     (cb) -> postNewEvent { description: "JoelEvent1" }, joelSocket, output, cb
-    # (cb) -> postNewEvent { description: "AndrewsEvent1" }, andrewSocket, output, cb
+    (cb) -> postNewEvent { description: "AndrewsEvent1" }, andrewSocket, output, cb
     ], (err, results) ->
       return console.log("Error in creating events:", err) if err?
       [e1, e2] = results;
@@ -63,16 +63,17 @@ async.series [
         #invite andrew to events
         (cb) -> postNewInvites {eid: e1.eid, inviteList: [andrew, antonio, russell] }, joelSocket, output,cb
         # (cb) -> postUpdateLocation {location: { lat: 3.14, lng: 1.14 }}, joelSocket, output, cb
-        # (cb) -> postNewInvites {eid: e2.eid, inviteList: [antonio, joel] }, andrewSocket, cb
+        (cb) -> postNewInvites {eid: e2.eid, inviteList: [antonio, joel] }, andrewSocket, output, cb
 
         # (cb) -> postJoinEvent {eid: e1.eid}, andrewSocket, output, cb
         #andrew messages event
-        # (cb) -> postNewMessage { eid: e1.eid, text: "andrew says hi" }, andrewSocket, output, cb
-        # (cb) -> postNewMessage { eid: e1.eid, text: "joel says hi" }, joelSocket, output, cb
+        (cb) -> postNewMessage { eid: e1.eid, text: "andrew says hi" }, andrewSocket, output, cb
+        (cb) -> postNewMessage { eid: e1.eid, text: "joel says hi" }, joelSocket, output, cb
+        (cb) -> postNewMessage { eid: e2.eid, text: "joel says here also" }, joelSocket, output, cb
 
         # (cb) -> models.events.delete(e2.eid, cb)
 
-        # (cb) -> connect joelSocket, cb
+        (cb) -> connect joelSocket, cb
 
         
         # (cb) -> postLeaveEvent {eid: e1.eid}, andrewSocket, output, cb
