@@ -5,11 +5,7 @@ db     = require './../adapters/db.js'
 models = require './../models'
 args   = require './../args.js'
 
-types  = require '../fizzTypes'
-fakeData = require '../../../fakeData'
-
 QUERIES = (eventListString, lastLogin) -> 
-  # console.log 'lastLogin', lastLogin
   newMessages: (cb)->
     q = 'SELECT *
     FROM messages WHERE
@@ -33,12 +29,11 @@ QUERIES = (eventListString, lastLogin) ->
       cb null, results.rows || []
   guests: (cb) ->
     q = 'SELECT array_agg(invites.uid), invites.eid
-    FROM invites, events WHERE
-    events.eid = invites.eid AND 
-    invites.accepted = true AND
-    events.eid = ANY($1::int[]) AND
-    events."lastAcceptedUpdate" >= $2
-    GROUP BY invites.eid'
+    FROM invites WHERE
+    accepted = true AND
+    eid = ANY($1::int[]) AND
+    "acceptedTime" >= $2
+    GROUP BY eid'
     db.query q, [eventListString, lastLogin], (err, results) ->
       return cb err if err?
       data = {}
@@ -60,7 +55,7 @@ QUERIES = (eventListString, lastLogin) ->
         data[u.eid].push({uid:u.uid,name:u.name,pn:u.pn})
       cb null, data
 
-connect = (socket, callback) ->
+module.exports = (socket, callback) ->
   user = utils.getUserSession socket
   socket.join(''+user.uid)
   eventListQuery = 'SELECT invites.eid FROM
@@ -71,7 +66,7 @@ connect = (socket, callback) ->
   db.query eventListQuery, [user.uid], (err, results) ->
     return callback(err) if err?
     eventList = results?.rows?.map((e) -> e.eid)
-    eventListString = '{' + eventList + '}'
+    eventListString = '{'+eventList+'}'
     db.query 'select "lastLogin" from users where uid = $1', [user.uid], (err, result)->
       return callback(err) if err?
       lastLogin = result.rows[0].lastLogin
@@ -89,5 +84,3 @@ connect = (socket, callback) ->
           "Data: "+JSON.stringify(data)
         socket.emit 'onLogin', data
         callback null, data
-      
-module.exports = connect

@@ -65,16 +65,17 @@ async.series [
         # (cb) -> postUpdateLocation {location: { lat: 3.14, lng: 1.14 }}, joelSocket, output, cb
         (cb) -> postNewInvites {eid: e2.eid, inviteList: [antonio, joel] }, andrewSocket, output, cb
 
-        # (cb) -> postJoinEvent {eid: e1.eid}, andrewSocket, output, cb
+        (cb) -> postJoinEvent {eid: e1.eid}, andrewSocket, output, cb
         #andrew messages event
         (cb) -> postNewMessage { eid: e1.eid, text: "andrew says hi" }, andrewSocket, output, cb
         (cb) -> postNewMessage { eid: e1.eid, text: "joel says hi" }, joelSocket, output, cb
         (cb) -> postNewMessage { eid: e2.eid, text: "joel says here also" }, joelSocket, output, cb
 
+
         # (cb) -> models.events.delete(e2.eid, cb)
 
         (cb) -> connect joelSocket, cb
-
+        (cb) -> postRequestEvents {eidList: [e1.eid, e2.eid]}, joelSocket, output, cb
         
         # (cb) -> postLeaveEvent {eid: e1.eid}, andrewSocket, output, cb
         
