@@ -17,7 +17,7 @@ exports.addMessage = (eid, uid, text, callback) ->
   			returning *'
   db.query q2, [eid, uid, text, Date.now()], (err, result) ->
     return callback err if err?
-    return callback null, parse result.rows[0]
+    callback null, parse result.rows[0]
 
 exports.getMoreMessages = (eid, mid, cb) ->
   q1 = 'SELECT

@@ -11,7 +11,8 @@ QUERIES = (eventListString, lastLogin) ->
     FROM messages WHERE
     messages.eid = ANY($1::int[]) AND
     messages."creationTime" >= $2
-    order by "creationTime"'
+    order by "creationTime"
+    LIMIT 10'
     db.query q, [eventListString, lastLogin], (err, results) ->
       return cb err if err?
       data = {}
@@ -79,7 +80,7 @@ module.exports = (socket, callback) ->
           newInvitees : results.newInvitees
           guests      : results.guests
 
-        utils.log 'Emitting newEvent',
+        utils.log 'Emitting onLogin',
           "To: #{user.name}",
           "Data: "+JSON.stringify(data)
         socket.emit 'onLogin', data

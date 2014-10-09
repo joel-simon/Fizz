@@ -75,7 +75,9 @@ async.series [
         # (cb) -> models.events.delete(e2.eid, cb)
 
         (cb) -> connect joelSocket, cb
-        (cb) -> postRequestEvents {eidList: [e1.eid, e2.eid]}, joelSocket, output, cb
+        (cb) -> disconnect joelSocket, cb
+        (cb) -> connect joelSocket, cb
+        # (cb) -> postRequestEvents {eidList: [e1.eid, e2.eid]}, joelSocket, output, cb
         
         # (cb) -> postLeaveEvent {eid: e1.eid}, andrewSocket, output, cb
         
