@@ -38,6 +38,8 @@ exports.getFull = (options, cb) ->
   db.query q1, [value], (err, result) ->
     return cb err if err?
     data = result.rows[0]
+    return cb null, null if not data?
+    
     if data.uid
       cb null, _.pick(data,'uid', 'name','pn'), data
     else

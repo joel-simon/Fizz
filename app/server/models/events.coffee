@@ -38,7 +38,7 @@ exports.add = (user, description, callback) ->
       eid
       description
       creator: user.uid
-      creationTime
+      creationTime : parseInt creationTime
     }
 
 exports.delete = (eid, callback) ->

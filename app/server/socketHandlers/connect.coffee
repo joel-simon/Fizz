@@ -22,10 +22,11 @@ QUERIES = (eventListString, lastLogin) ->
         data[m.eid].push m
       cb null, data
   numMessages: (cb) ->
-    q = 'SELECT eid, COUNT(*)::int as "numM"
-      FROM messages
-      WHERE eid = ANY($1::int[])
-      GROUP BY eid'
+    q = 'SELECT events.eid, count(messages)::int as "numM"
+      FROM messages RIGHT OUTER JOIN events on (messages.eid = events.eid)
+      WHERE 
+        events.eid = ANY($1::int[])
+      GROUP BY events.eid'
     db.query q,[eventListString], (err, results) ->
       cb null, results.rows || []
   guests: (cb) ->
@@ -68,11 +69,13 @@ module.exports = (socket, callback) ->
     return callback(err) if err?
     eventList = results?.rows?.map((e) -> e.eid)
     eventListString = '{'+eventList+'}'
+    console.log {eventListString}
     db.query 'select "lastLogin" from users where uid = $1', [user.uid], (err, result)->
       return callback(err) if err?
       lastLogin = result.rows[0].lastLogin
       async.parallel QUERIES(eventListString, lastLogin), (err, results) ->
         return callback err if err
+
         data =
           me          : user
           eventList   : results.numMessages

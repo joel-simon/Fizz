@@ -69,7 +69,7 @@ async.series [
         #andrew messages event
         (cb) -> postNewMessage { eid: e1.eid, text: "andrew says hi" }, andrewSocket, output, cb
         (cb) -> postNewMessage { eid: e1.eid, text: "joel says hi" }, joelSocket, output, cb
-        (cb) -> postNewMessage { eid: e2.eid, text: "joel says here also" }, joelSocket, output, cb
+        # (cb) -> postNewMessage { eid: e2.eid, text: "joel says here also" }, joelSocket, output, cb
 
 
         # (cb) -> models.events.delete(e2.eid, cb)
