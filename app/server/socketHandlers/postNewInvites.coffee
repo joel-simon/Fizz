@@ -3,20 +3,30 @@ utils     = require './../utilities.js'
 models    = require './../models'
 _ = require 'underscore'
 
+without = (a, b) ->
+  a = _.map a, JSON.stringify
+  b = _.map b, JSON.stringify
+  _.map _.difference(a,b), JSON.parse
+
 module.exports = (data, socket, output, callback) ->
-  eventName = 'newInvites'
   user = utils.getUserSession socket
-  utils.log 'Recieved '+eventName, "User:"+ JSON.stringify(user), "Data:"+ JSON.stringify(data)
+  utils.log "Recieved newInvites",
+            "User:#{JSON.stringify(user)}",
+            "Data:#{JSON.stringify(data)}"
 
   eid = data.eid
-  namePnList = data.inviteList
+  namePnList = _.uniq (data.inviteList || []), ((item) -> item.pn)
 
-  # Get all user objects and make new user objects.
-  models.users.getOrAddList namePnList, (err, newlyInvitedUsers) ->
+  # Get the users who are already invited.
+  models.events.getInviteList eid, (err, oldInvitedUsers) ->
     return callback err if err?
-    # Get the users who are already invited.
-    models.events.getInviteList eid, (err, oldInvitedUsers) ->
+    # Get all user objects and make new user objects.
+    models.users.getOrAddList namePnList, (err, newlyInvitedUsers) ->
       return callback err if err?
+      newlyInvitedUsers = without newlyInvitedUsers, oldInvitedUsers
+      return callback null, null if newlyInvitedUsers.length is 0
+      # newlyInvitedUsers.map(JSON.stringify)
+      # newlyInvitedUsers = _.difference newlyInvitedUsers, oldInvitedUsers
       # make them invited.
       models.invites.addList eid, user.uid, newlyInvitedUsers, (err, keyMapping) ->
         return callback err if err?

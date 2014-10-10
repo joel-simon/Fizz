@@ -13,7 +13,13 @@ module.exports =
   add : ({ eid, uid, inviter, accepted }, callback) ->
     key = randString 16
     accepted ?= false
-    q = 'INSERT INTO invites (eid, uid, inviter, accepted, key) VALUES ($1, $2, $3, $4, $5)'
+    q = 'INSERT INTO invites
+          (eid, uid, inviter, accepted, key)
+        SELECT $1, $2, $3, $4, $5
+        WHERE
+          NOT EXISTS (
+            SELECT 1 FROM invites WHERE eid = $1 AND uid = $2
+          )'
     db.query q, [eid, uid, inviter, accepted, key], (err, result) ->
       return callback err if err?
       callback null, { eid, uid, inviter, accepted, key }
@@ -28,17 +34,29 @@ module.exports =
     q = 'UPDATE invites SET accepted = false, "acceptedTime" = $1 WHERE eid = $2 and uid = $3'
     db.query q, [now, eid, uid], callback
   
-  addList: (eid, inviter, users, callback) ->
+  addList: (eid, inviter, users, callback) =>
     if users.length == 0
       return callback null, null
-    q = 'insert into invites (eid, uid, inviter, key) values '
+
+    # async.each users,
+    #           ((user, cb) => module.exports.add {uid:user.uid, eid, inviter}, cb),
+    #           callback
+    # q = 'insert into invites (eid, uid, inviter, key) values '
     values = []
     keyMapping = {}
     for u in users
-      key = randString 12
-      keyMapping[u.uid] = key
-      values.push '('+([eid,u.uid,inviter, "'#{key}'"].join(','))+')'  
-    q += (values.join(','))
+      if not keyMapping[u.uid]?
+        key = randString 12
+        keyMapping[u.uid] = key
+        values.push "INSERT INTO invites
+            (eid, uid, inviter, key)
+          SELECT #{ [eid, u.uid, inviter, "'"+key+"'"].join ',' }
+          WHERE
+            NOT EXISTS (
+              SELECT 1 FROM invites WHERE eid = #{eid} AND uid = #{u.uid}
+            );"
+    q = values.join ''
+    # console.log q
     db.query q, [], (err, results) ->
       return callback err if err?
       callback null, keyMapping
