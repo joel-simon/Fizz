@@ -28,7 +28,7 @@ module.exports = (callback) ->
               \"lastClusterUpdate\" bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
               clusters integer[],
               \"lastAcceptedUpdate\" bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
-              \"deathTime\" bigint default 0,
+              \"deathTime\" bigint,
               CONSTRAINT events_creator_fkey FOREIGN KEY (creator)
                   REFERENCES users (uid) MATCH SIMPLE
                   ON UPDATE NO ACTION ON DELETE NO ACTION )", cb

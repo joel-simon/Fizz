@@ -21,7 +21,7 @@ disconnect     = require dir+'disconnect'
 postUpdateEvent = require dir+'postUpdateEvent'
 postUpdateLocation = require dir+'postUpdateLocation'
 postRequestEvents  = require dir+'postRequestEvents'
-postDeleteEvent = require dir+'postDeleteEvent'
+postCompleteEvent = require dir+'postCompleteEvent'
 
 makeSocket = (user) ->
   {
@@ -74,9 +74,13 @@ async.series [
 
         # (cb) -> models.events.delete(e2.eid, cb)
 
+        
+        (cb) -> postCompleteEvent { eid: e2.eid, completed: true }, andrewSocket, output, cb
         (cb) -> connect joelSocket, cb
         (cb) -> disconnect joelSocket, cb
+        (cb) -> postCompleteEvent { eid: e2.eid, completed: false }, andrewSocket, output, cb
         (cb) -> connect joelSocket, cb
+        (cb) -> disconnect joelSocket, cb
         # (cb) -> postRequestEvents {eidList: [e1.eid, e2.eid]}, joelSocket, output, cb
         
         # (cb) -> postLeaveEvent {eid: e1.eid}, andrewSocket, output, cb
@@ -84,8 +88,8 @@ async.series [
         # (cb) -> postUpdateEvent {eid: e1.eid, description: 'Test Event'}, andrewSocket, cb
         # (cb) -> postUpdateEvent {eid: e2.eid, description: 'Test Event'}, andrewSocket, cb
 
-        # (cb) -> postDeleteEvent { eid: e1.eid }, andrewSocket, cb
-        # (cb) -> postDeleteEvent { eid: e2.eid }, andrewSocket, cb
+        # (cb) -> postCompleteEvent { eid: e1.eid }, andrewSocket, cb
+        # (cb) -> postCompleteEvent { eid: e2.eid }, andrewSocket, cb
 
       ], (err, results) ->
         if (err)

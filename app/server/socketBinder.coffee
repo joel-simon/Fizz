@@ -41,7 +41,7 @@ dir = './socketHandlers/'
 
 connect         = require dir+'connect'
 disconnect      = require dir+'disconnect'
-postDeleteEvent = require dir+'postDeleteEvent'
+postCompleteEvent = require dir+'postCompleteEvent'
 postJoinEvent   = require dir+'postJoinEvent'
 postLeaveEvent  = require dir+'postLeaveEvent'
 postNewEvent    = require dir+'postNewEvent'
@@ -59,13 +59,13 @@ module.exports = (io) ->
   output = require('./output')(io)
   io.sockets.on 'connection', (socket) ->
     connect socket, onError
-    socket.on 'postDeleteEvent',    (data) -> postDeleteEvent data, socket, output, onError
+    socket.on 'postCompleteEvent',  (data) -> postCompleteEvent data, socket, output, onError
     socket.on 'postJoinEvent',      (data) -> postJoinEvent data, socket, output, onError
     socket.on 'postLeaveEvent',     (data) -> postLeaveEvent data, socket, output, onError
     socket.on 'postNewEvent',       (data) -> postNewEvent data, socket, output, onError
     socket.on 'postNewInvites',     (data) -> postNewInvites data, socket, output, onError
     socket.on 'postNewMessage',     (data) -> postNewMessage data, socket, output, onError
     socket.on 'postRequestEvents',  (data) -> postRequestEvents data, socket, output, onError
-    socket.on 'postUpdateEvent', (data) -> postUpdateLocation data, socket, output, onError
+    socket.on 'postUpdateEvent',    (data) -> postUpdateLocation data, socket, output, onError
     socket.on 'postUpdateLocation', (data) -> postUpdateLocation data, socket, output, onError
     socket.on 'disconnect', () -> disconnect socket, onError

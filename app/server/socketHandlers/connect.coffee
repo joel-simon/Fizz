@@ -22,7 +22,10 @@ QUERIES = (eventListString, lastLogin) ->
         data[m.eid].push m
       cb null, data
   numMessages: (cb) ->
-    q = 'SELECT events.eid, count(messages)::int as "numM"
+    q = 'SELECT 
+        events.eid,
+        count(messages)::int as "numM",
+        "deathTime" is not NULL as completed
       FROM messages RIGHT OUTER JOIN events on (messages.eid = events.eid)
       WHERE 
         events.eid = ANY($1::int[])
@@ -64,8 +67,9 @@ module.exports = (socket, callback) ->
     invites, events WHERE
     invites.uid = $1 AND
     invites.eid = events.eid AND
-    events."deathTime" = 0'
-  db.query eventListQuery, [user.uid], (err, results) ->
+    (events."deathTime" is NULL OR
+      events."deathTime" > $2)'
+  db.query eventListQuery, [user.uid, Date.now()], (err, results) ->
     return callback(err) if err?
     eventList = results?.rows?.map((e) -> e.eid)
     eventListString = '{'+eventList+'}'

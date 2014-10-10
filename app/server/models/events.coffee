@@ -41,9 +41,10 @@ exports.add = (user, description, callback) ->
       creationTime : parseInt creationTime
     }
 
-exports.delete = (eid, callback) ->
+exports.updateCompleted = ({eid, completed}, callback) ->
+  completed = if completed then (Date.now() + (60*60*24*1000)) else null
   q1 = 'UPDATE events set "deathTime" = $1 WHERE eid = $2'
-  db.query q1, [Date.now(), eid], callback
+  db.query q1, [completed, eid], callback
 
 exports.updateDescription = (eid, description, callback) ->
   q1 = 'UPDATE events set description = $2 WHERE eid = $1'
