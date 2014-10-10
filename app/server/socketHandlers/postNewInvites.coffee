@@ -6,7 +6,6 @@ _ = require 'underscore'
 module.exports = (data, socket, output, callback) ->
   eventName = 'newInvites'
   user = utils.getUserSession socket
-  console.log user
   utils.log 'Recieved '+eventName, "User:"+ JSON.stringify(user), "Data:"+ JSON.stringify(data)
 
   eid = data.eid
@@ -15,25 +14,21 @@ module.exports = (data, socket, output, callback) ->
   # Get all user objects and make new user objects.
   models.users.getOrAddList namePnList, (err, newlyInvitedUsers) ->
     return callback err if err?
-
     # Get the users who are already invited.
     models.events.getInviteList eid, (err, oldInvitedUsers) ->
       return callback err if err?
-
       # make them invited.
       models.invites.addList eid, user.uid, newlyInvitedUsers, (err, keyMapping) ->
-
         return callback err if err?
         # Get the event Object.
         models.events.getFull eid, (err, event, messages, inviteList, guests) ->
           return callback err if err?
           { creator, description, creationTime } = event
-
           [newlyInvitedSMSUsers, newlyInvitedNotSMSUsers] = _.partition newlyInvitedUsers, (u)-> u.platform == 'sms'
           # Let the old users know about the new ones.
           
           output.emit {
-            eventName
+            eventName : 'newInvitees'
             recipients : oldInvitedUsers
             data : { eid, newlyInvitedUsers}
           }
