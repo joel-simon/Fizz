@@ -23,6 +23,7 @@ passport.use(new LocalStrategy({
     usernameField: 'pn',
     passwordField: 'password'
   }, function(pn, password, done) {
+    pn = utils.formatPn(pn)
     models.users.getFull({pn:pn}, function(err, user, data) {
       if (err) {
         utils.log('Err in login:', err);

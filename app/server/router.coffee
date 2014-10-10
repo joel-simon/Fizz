@@ -39,6 +39,7 @@ module.exports = (app, io, passport) ->
   app.post '/registration', (req, res) ->
     utils.log 'On registration data', req.body
     { firstName, lastName, platform, phoneToken, pn } = req.body
+    pn = utils.formatPn pn
     phoneToken = phoneToken || 'no phoneToken'
     if !firstName || !lastName || !platform || !pn
       return res.send 400, 'invalid body paramaters'
