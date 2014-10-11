@@ -13,7 +13,8 @@ var
   passport = require('passport'),
   LocalStrategy = require('passport-local').Strategy,
   passportSocketIo = require("./lib/passport.socketio"),
-  models = require('./app/server/models');
+  models = require('./app/server/models')
+  sanitizer = require('sanitizer');
 
 var config = ((args.dev) ? require('./configDev.json') : require('./config.json'));
 var store = redisConns.store;
@@ -66,6 +67,19 @@ app.configure(function() {
   app.locals.pretty = true;
   app.use(express.cookieParser());
   app.use(express.bodyParser());
+  app.use(function(req, res, next){
+    var bstring = JSON.stringify(req.body || {});
+    var rstring = JSON.stringify(req.params || {});
+    if (bstring !== sanitizer.sanitize(bstring)){
+      console.log(bstring, sanitizer.sanitize(bstring));
+      return res.send(400);
+    }
+    if (rstring !== sanitizer.sanitize(rstring)){
+      console.log(rstring, sanitizer.sanitize(rstring));
+      return res.send(400);
+    }
+    next()
+  });
   app.use(express.methodOverride());
   app.use(express.session({ secret: config.SECRET.cookieParser, store: sessionStore }));
   app.use(passport.initialize());
