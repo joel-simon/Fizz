@@ -13,7 +13,9 @@ colors.setTheme({
 module.exports = exports;
 
 exports.getUserSession = function(socket) {
-  return socket.handshake.user
+  if (!socket) return null
+  if (!socket.handshake) return null
+  return socket.handshake.user || null
 }
 
 exports.log = function() {
