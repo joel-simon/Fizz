@@ -1,0 +1,31 @@
+@mixin button {
+    font-size: 2em;
+/*     border-bottom: .09375em white solid; */
+    width: auto;
+    display: inline-block;
+/*     padding-bottom: .125em */
+}
+
+@mixin bigTitle {
+    text-transform: lowercase;
+    font-family:    $fontItalic;
+    line-height:    1.25em;
+    font-size:      10vw;
+    letter-spacing:-.046875em;
+	
+    @media screen and (max-aspect-ratio: 3/4) {
+        font-size:      15vw;
+	}
+    
+    @media screen and (max-aspect-ratio: 2/3) {
+        font-size:      17vw;
+	}
+
+    @media screen and (min-aspect-ratio: 3/2) {
+        font-size:      9vw;
+	}
+    
+    @media screen and (min-aspect-ratio: 16/9) {
+        font-size:      6vw;
+	}
+}

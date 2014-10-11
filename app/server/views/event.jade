@@ -3,7 +3,7 @@ html
   head
     meta(charset="utf-8")
     meta(name="viewport", content="width=device-width, maximum-scale=1, minimum-scale=1")
-    title(Fizz — Tropical Tuesday at Brillobox tomorrow at 9)
+    title(Let’s — event.description)
     link(href="/style/screen.css", rel="stylesheet", type="text/css", media="screen")
     link(href="/style/print.css", rel="stylesheet", type="text/css", media="print")
     script(src="/scripts/jquery.js")
@@ -16,26 +16,47 @@ html
   body
     article
       header
-        h2="hello "+user.name
-        author= creator.name+" invited you to"
-        h1=event.description
-      
-      section.rsvp
-        if accepted
-          h1 You are attending
-        else
-          h1 Click anywhere to join
+        author= creator.name+" invited you"
+        h1 Donec id elit non mi porta gravida at eget metus.        
+        section.rsvp
+          if accepted
+            a(href="#") Get the app
+          else
+            a(href="#") Join Event
+
       section.guestlist
-        h1 Guestlist
         ul.interested
+          li
+            h1 Attending
           each user in guestList
             li=user.name
-
+          li Cedrick Durfee
+          li Oren Asay
+          li Sid Bumbalough
+          li Bernardina Ree
+          li Jerrell Lehrer
+          li Dorothea Hutter
+          li Juliet Mattix
+          li Orville Trunzo
+          li Shawanda Gosse
+          li Denice Lavigne
+          li Idell Morace
         ul.noReply
+          li
+            h1 No response
           each user in noReply
             li=user.name
-        
-      
+          li Cedrick Durfee
+          li Oren Asay
+          li Sid Bumbalough
+          li Bernardina Ree
+          li Jerrell Lehrer
+          li Dorothea Hutter
+          li Juliet Mattix
+          li Orville Trunzo
+          li Shawanda Gosse
+          li Denice Lavigne
+          li Idell Morace
       
         //- form(action="/join", method="post")
         //-   p

@@ -18,6 +18,21 @@ Russell =
   pn: "+3523189733"
   name: "CoolBrow"
   appUserDetails: { fbid : 987654321 }
+Bob =
+  uid: 5
+  pn: "+3523189733"
+  name: "bob"
+  appUserDetails: { fbid : 123 }
+Linda =
+  uid: 6
+  pn: "+3523189733"
+  name: "linda"
+  appUserDetails: { fbid : 2345 }
+Brent =
+  uid: 7
+  pn: "+3523189733"
+  name: "brent"
+  appUserDetails: { fbid : 987632354321 }
 
 JoelsEvent =
   "eid" : 1
