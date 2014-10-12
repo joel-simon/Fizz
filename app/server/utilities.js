@@ -1,8 +1,7 @@
 var colors  = require('colors');
-var fs = require('fs');
 var debug = true;
-var sanitize = require('validator').sanitize;
 var stackTrace = require('stack-trace');
+
 colors.setTheme({
   info: 'green',
   debug: 'blue',
@@ -126,10 +125,11 @@ exports.isPn = function(pn) {
 }
 
 exports.formatPn = function(pn) {
-  pn = pn.replace(/ /g,'');
-  if (pn[0] !== '+') pn = '+'+pn;
-  if (pn [1] !== '1') {
-    pn = '+1'+pn.substring(1);
+  pn = pn.replace(/\D/g,'')
+  if (pn [0] !== '1') {
+    pn = '+1'+pn
+  } else {
+    pn = '+'+pn
   }
   return pn;
 }

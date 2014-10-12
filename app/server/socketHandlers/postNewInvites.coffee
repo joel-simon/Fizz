@@ -8,6 +8,12 @@ without = (a, b) ->
   b = _.map b, JSON.stringify
   _.map _.difference(a,b), JSON.parse
 
+formatInviteList = (invL = []) ->
+  for namePn in invL
+    namePn.pn = utils.formatPn namePn.pn
+  _.uniq invL, (item)-> item.pn
+  
+
 module.exports = (data, socket, output, callback) ->
   user = utils.getUserSession socket
   utils.log "Recieved newInvites",
@@ -15,7 +21,7 @@ module.exports = (data, socket, output, callback) ->
             "Data:#{JSON.stringify(data)}"
 
   eid = data.eid
-  namePnList = _.uniq (data.inviteList || []), ((item) -> item.pn)
+  namePnList = formatInviteList data.inviteList
 
   # Get the users who are already invited.
   models.events.getInviteList eid, (err, oldInvitedUsers) ->

@@ -73,7 +73,6 @@ module.exports = (socket, callback) ->
     return callback(err) if err?
     eventList = results?.rows?.map((e) -> e.eid)
     eventListString = '{'+eventList+'}'
-    console.log {eventListString}
     db.query 'select "lastLogin" from users where uid = $1', [user.uid], (err, result)->
       return callback(err) if err?
       lastLogin = result.rows[0].lastLogin
