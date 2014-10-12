@@ -61,8 +61,11 @@ async.series [
       async.series [
         # (cb) -> postRequestEvents {eid: e1.eid}, joelSocket, cb
         #invite andrew to events
-        (cb) -> postNewInvites {eid: e1.eid, inviteList: [andrew] }, joelSocket, output,cb
-        (cb) -> postNewInvites {eid: e1.eid, inviteList: [andrew] }, joelSocket, output,cb
+        (cb) -> postNewInvites {eid: e1.eid, inviteList: [andrew] }, joelSocket, output, cb
+        (cb) -> postNewInvites {eid: e1.eid, inviteList: [andrew] }, joelSocket, output, cb
+
+        (cb) -> postUpdateEvent {eid: e1.eid, description: 'test'}, joelSocket, output, cb
+        (cb) -> postUpdateEvent {eid: e1.eid, description: 'test test'}, joelSocket, output, cb
         # (cb) -> postUpdateLocation {location: { lat: 3.14, lng: 1.14 }}, joelSocket, output, cb
         # (cb) -> postNewInvites {eid: e2.eid, inviteList: [antonio, joel] }, andrewSocket, output, cb
 
