@@ -25,7 +25,8 @@ QUERIES = (eventListString, lastLogin) ->
     q = 'SELECT 
         events.eid,
         count(messages)::int as "numM",
-        "deathTime" is not NULL as completed
+        "deathTime" is not NULL as completed,
+        description
       FROM messages RIGHT OUTER JOIN events on (messages.eid = events.eid)
       WHERE 
         events.eid = ANY($1::int[])

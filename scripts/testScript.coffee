@@ -63,27 +63,28 @@ async.series [
         (cb) -> postNewInvites {eid: e1.eid, inviteList: [andrew] }, joelSocket, output, cb
         (cb) -> postNewInvites {eid: e1.eid, inviteList: [andrew] }, joelSocket, output, cb
 
-        # (cb) -> postUpdateEvent {eid: e1.eid, description: 'test'}, joelSocket, output, cb
-        # (cb) -> postUpdateEvent {eid: e1.eid, description: 'test test'}, joelSocket, output, cb
+        (cb) -> postUpdateEvent {eid: e1.eid, description: 'test'}, joelSocket, output, cb
+        (cb) -> postUpdateEvent {eid: e1.eid, description: 'test test'}, joelSocket, output, cb
         
         # (cb) -> postUpdateLocation {location: { lat: 3.14, lng: 1.14 }}, joelSocket, output, cb
         # (cb) -> postNewInvites {eid: e2.eid, inviteList: [antonio, joel] }, andrewSocket, output, cb
 
         # (cb) -> postJoinEvent {eid: e1.eid}, andrewSocket, output, cb
         #andrew messages event
-        # (cb) -> postNewMessage { eid: e1.eid, text: "andrew says hi" }, andrewSocket, output, cb
-        # (cb) -> postNewMessage { eid: e1.eid, text: "joel says hi" }, joelSocket, output, cb
+        (cb) -> postNewMessage { eid: e1.eid, text: "andrew says hi" }, andrewSocket, output, cb
+        (cb) -> postNewMessage { eid: e1.eid, text: "joel says hi" }, joelSocket, output, cb
         # (cb) -> postNewMessage { eid: e2.eid, text: "joel says here also" }, joelSocket, output, cb
 
 
         # (cb) -> models.events.delete(e2.eid, cb)
 
         
-        (cb) -> postCompleteEvent { eid: e1.eid, completed: true }, andrewSocket, output, cb
-        # (cb) -> connect joelSocket, cb
-        # (cb) -> disconnect joelSocket, cb
-        (cb) -> postCompleteEvent { eid: e1.eid, completed: false }, andrewSocket, output, cb
-        # (cb) -> connect joelSocket, cb
+        # (cb) -> postCompleteEvent { eid: e1.eid, completed: true }, andrewSocket, output, cb
+        (cb) -> connect joelSocket, cb
+        (cb) -> disconnect joelSocket, cb
+        (cb) -> postUpdateEvent {eid: e1.eid, description: 'fubber'}, joelSocket, output, cb
+        # (cb) -> postCompleteEvent { eid: e1.eid, completed: false }, andrewSocket, output, cb
+        (cb) -> connect joelSocket, cb
         # (cb) -> disconnect joelSocket, cb
         # (cb) -> postRequestEvents {eidList: [e1.eid, e2.eid]}, joelSocket, output, cb
         
