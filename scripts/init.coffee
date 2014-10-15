@@ -61,4 +61,5 @@ module.exports = (callback) ->
                 ON UPDATE NO ACTION ON DELETE NO ACTION,
             CONSTRAINT invite_logic CHECK (NOT (confirmed IS
               FALSE AND accepted IS TRUE)))", cb
+    (cb) -> db.query "insert into users (uid, pn, name, password) values (0, '', 'server', '')", cb
   ], callback
