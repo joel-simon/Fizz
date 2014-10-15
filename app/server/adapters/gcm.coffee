@@ -10,5 +10,5 @@ module.exports =
     # message.addDataWithKeyValue 'message', text
     # message.addDataWithKeyValue 'eid', 123
     sender.send message, registrationIds, 4, (err, result) ->
-    	if err or result.failure >= 0
+    	if err or result.failure > 0
     		utils.logError 'gcm push failed', result
