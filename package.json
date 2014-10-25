@@ -39,7 +39,7 @@
     "supertest": "~0.13.0",
     "socket.io-client": "~1.0.6",
     "underscore": "~1.6.0",
-    "gcm": "~1.0.1",
+    "node-gcm": "~1.0.1",
     "sanitizer": "~0.1.2"
   },
   "engines": {

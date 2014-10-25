@@ -41,7 +41,7 @@ exports.getFull = (options, cb) ->
     return cb null, null if not data?
     
     if data.uid
-      cb null, _.pick(data,'uid', 'name','pn'), data
+      cb null, _.pick(data, 'uid', 'name', 'pn', 'platform'), data
     else
       cb null, null, null
 
@@ -57,7 +57,9 @@ exports.getFull = (options, cb) ->
 
 exports.create = (pn, name, platform, token, callback) ->
   password = generatePassword()
-  q1 = "INSERT INTO users (pn, name, platform, \"phoneToken\", password) VALUES ($1,$2,$3,$4,$5) RETURNING uid, pn, name"
+  q1 = 'INSERT INTO users
+          (pn, name, platform, "phoneToken", password) VALUES ($1,$2,$3,$4,$5)
+        RETURNING uid, pn, name, platform'
   values = [pn, name, platform, token, password]
   db.query q1, values, (err, result) ->
     return callback err if err?

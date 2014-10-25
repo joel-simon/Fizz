@@ -17,7 +17,7 @@ html
     article
       header
         author= creator.name+" invited you"
-        h1 Donec id elit non mi porta gravida at eget metus.
+        h1=event.description
         section.rsvp
           if accepted
             a(href="#") Leave Event
@@ -25,38 +25,38 @@ html
             a(href="#") Join Event
 
       section.guestlist
-        ul.interested
+        ul#interested
           li
             h1 Attending
           each user in guestList
             li=user.name
-          li Cedrick Durfee
-          li Oren Asay
-          li Sid Bumbalough
-          li Bernardina Ree
-          li Jerrell Lehrer
-          li Dorothea Hutter
-          li Juliet Mattix
-          li Orville Trunzo
-          li Shawanda Gosse
-          li Denice Lavigne
-          li Idell Morace
-        ul.noReply
+          //- li Cedrick Durfee
+          //- li Oren Asay
+          //- li Sid Bumbalough
+          //- li Bernardina Ree
+          //- li Jerrell Lehrer
+          //- li Dorothea Hutter
+          //- li Juliet Mattix
+          //- li Orville Trunzo
+          //- li Shawanda Gosse
+          //- li Denice Lavigne
+          //- li Idell Morace
+        ul#noReply
           li
             h1 No response
           each user in noReply
             li=user.name
-          li Cedrick Durfee
-          li Oren Asay
-          li Sid Bumbalough
-          li Bernardina Ree
-          li Jerrell Lehrer
-          li Dorothea Hutter
-          li Juliet Mattix
-          li Orville Trunzo
-          li Shawanda Gosse
-          li Denice Lavigne
-          li Idell Morace
+          //- li Cedrick Durfee
+          //- li Oren Asay
+          //- li Sid Bumbalough
+          //- li Bernardina Ree
+          //- li Jerrell Lehrer
+          //- li Dorothea Hutter
+          //- li Juliet Mattix
+          //- li Orville Trunzo
+          //- li Shawanda Gosse
+          //- li Denice Lavigne
+          //- li Idell Morace
       
         //- form(action="/join", method="post")
         //-   p
