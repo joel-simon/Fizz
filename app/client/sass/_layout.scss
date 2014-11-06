@@ -70,7 +70,7 @@ body {
             }
             
             @media screen and (min-width: 60em) {
-                margin-left: ($col + $gutter) * 7;
+/*                 margin-left: ($col + $gutter) * ; */
             }
             
             h1 {
@@ -153,6 +153,22 @@ body {
                     }
                 }
             }
+        }
+    }
+    
+    .modal {
+        @include modal;
+        
+        h1 {
+            @include bigTitle;
+            margin-left:$gutter;
+        }
+        
+        a {
+            @include bigTitle;
+            margin-left: $gutter;
+            position: fixed;
+            bottom: $baseline;
         }
     }
 }
