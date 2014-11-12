@@ -155,4 +155,19 @@ body {
             }
         }
     }
+    .modal {
+        @include modal;
+        
+        h1 {
+            @include bigTitle;
+            margin-left:$gutter;
+        }
+        
+        a {
+            @include bigTitle;
+            margin-left: $gutter;
+            position: fixed;
+            bottom: $baseline;
+        }
+    }
 }

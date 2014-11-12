@@ -1,6 +1,18 @@
 var userHtml;
 $(document).ready(function (argument) {
-  userHtml = $($('.guestlist >>').get().filter(function(li){
+  var isAndroid = navigator.userAgent.toLowerCase().indexOf("android") > -1;
+  var isIos = navigator.userAgent.toLowerCase().indexOf("ios") > -1;
+  
+  if (isIos) {
+    $('.modal a').attr("href", "itms://appstore.com/apps/apple").text('get the ios app')
+  } else if (isAndroid) {
+    $('.modal a').attr("href", "com.lets.android").text('get the android app')
+  }
+
+  $('.modal').click(function(){$('.modal').hide()});
+
+  
+  userHtml = $($('.guestlist >>').get().filter(function(li) {
       return $(li).text() == user.name;
     })[0]);
 
@@ -28,6 +40,7 @@ $(document).ready(function (argument) {
           accepted = true;
         }
       });
+      $('.modal').show()
     }
   });
 });

@@ -201,7 +201,7 @@ body article section.guestlist {
 @media screen and (min-width: 60em) {
   /* line 60, ../sass/_layout.scss */
   body article section.guestlist {
-    margin-left: 87.5%;
+    /*                 margin-left: ($col + $gutter) * ; */
   }
 }
 /* line 76, ../sass/_layout.scss */
@@ -317,4 +317,83 @@ body article section.rsvp form input {
 /* line 151, ../sass/_layout.scss */
 body article section.rsvp form input:focus {
   background-color: rgba(255, 255, 255, 0.5);
+}
+/* line 159, ../sass/_layout.scss */
+body .modal {
+  display: none;
+  background: rgba(0, 0, 0, 0.75);
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+}
+/* line 162, ../sass/_layout.scss */
+body .modal h1 {
+  text-transform: lowercase;
+  font-family: "Futura-MediumItalic";
+  line-height: 1.25em;
+  font-size: 10vw;
+  letter-spacing: -.046875em;
+  margin-left: 1.5625%;
+}
+@media screen and (max-aspect-ratio: 3 / 4) {
+  /* line 162, ../sass/_layout.scss */
+  body .modal h1 {
+    font-size: 15vw;
+  }
+}
+@media screen and (max-aspect-ratio: 2 / 3) {
+  /* line 162, ../sass/_layout.scss */
+  body .modal h1 {
+    font-size: 17vw;
+  }
+}
+@media screen and (min-aspect-ratio: 3 / 2) {
+  /* line 162, ../sass/_layout.scss */
+  body .modal h1 {
+    font-size: 9vw;
+  }
+}
+@media screen and (min-aspect-ratio: 16 / 9) {
+  /* line 162, ../sass/_layout.scss */
+  body .modal h1 {
+    font-size: 6vw;
+  }
+}
+/* line 167, ../sass/_layout.scss */
+body .modal a {
+  text-transform: lowercase;
+  font-family: "Futura-MediumItalic";
+  line-height: 1.25em;
+  font-size: 10vw;
+  letter-spacing: -.046875em;
+  margin-left: 1.5625%;
+  position: fixed;
+  bottom: 1.5rem;
+}
+@media screen and (max-aspect-ratio: 3 / 4) {
+  /* line 167, ../sass/_layout.scss */
+  body .modal a {
+    font-size: 15vw;
+  }
+}
+@media screen and (max-aspect-ratio: 2 / 3) {
+  /* line 167, ../sass/_layout.scss */
+  body .modal a {
+    font-size: 17vw;
+  }
+}
+@media screen and (min-aspect-ratio: 3 / 2) {
+  /* line 167, ../sass/_layout.scss */
+  body .modal a {
+    font-size: 9vw;
+  }
+}
+@media screen and (min-aspect-ratio: 16 / 9) {
+  /* line 167, ../sass/_layout.scss */
+  body .modal a {
+    font-size: 6vw;
+  }
 }
