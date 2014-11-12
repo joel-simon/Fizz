@@ -1,8 +1,8 @@
 # onSms = require('./smsHandler.js');
-models = require('./models')
-utils  = require('./utilities')
-
-
+models = require './models'
+utils  = require './utilities'
+output = require './output'
+async = require 'async'
 module.exports = (app, io, passport) ->
   output = require('./output')(io)
   loginOptions = 
@@ -22,20 +22,39 @@ module.exports = (app, io, passport) ->
     { key } = req.body
     models.invites.get {key}, (err, invite) ->
       return res.send 400 if err?
-      models.invites.accept invite, (err) ->
+      eid = invite.eid
+      async.series {
+        accept: (cb) -> models.invites.accept invite, cb
+        invited: (cb) -> models.events.getInviteList eid, cb
+        guests : (cb) -> models.events.getGuestList eid, cb  
+      }, (err, results) ->
         return res.send 400 if err?
         utils.log "Joined by sms", invite
+        output.emit {
+          eventName : 'updateGuests'
+          recipients : results.invited
+          data : { eid, guests: results.guests }
+        }
         res.send 200
 
   app.post '/leave', (req, res) ->
     { key } = req.body
     models.invites.get {key}, (err, invite) ->
       return res.send 400 if err?
-      models.invites.unaccept invite, (err) ->
+      eid = invite.eid
+      async.series {
+        unaccept: (cb) -> models.invites.unaccept invite, cb
+        invited: (cb) -> models.events.getInviteList eid, cb
+        guests : (cb) -> models.events.getGuestList eid, cb  
+      }, (err, results) ->
         return res.send 400 if err?
         utils.log "Left by sms", invite
+        output.emit {
+          eventName : 'updateGuests'
+          recipients : results.invited
+          data : { eid, guests: results.guests }
+        }
         res.send 200
-
   app.post '/registration', (req, res) ->
     utils.log 'On registration data', req.body
     { firstName, lastName, platform, phoneToken, pn } = req.body
