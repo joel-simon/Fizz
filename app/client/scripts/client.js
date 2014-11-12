@@ -2,13 +2,22 @@ var userHtml;
 $(document).ready(function (argument) {
   var isAndroid = navigator.userAgent.toLowerCase().indexOf("android") > -1;
   var isIos = navigator.userAgent.toLowerCase().indexOf("iphone") > -1;
-    
+  var modal = $('.modal');
+  var canClick = false
+
+  modal.hide();
+
   if (isIos) {
     $('.modal a').attr("href", "itms://appstore.com/apps/apple").text('get the ios app')
   } else if (isAndroid) {
     $('.modal a').attr("href", "com.lets.android").text('get the android app')
   }
   
+  $('.modal a').click(function(event) {
+    console.log('CLICKED');
+    modal.hide();
+  });
+
   userHtml = $($('.guestlist >>').get().filter(function(li) {
       return $(li).text() == user.name;
     })[0]);
@@ -20,7 +29,6 @@ $(document).ready(function (argument) {
         url: '/leave',
         data: { key: key },
         success: function (foo) {
-          console.log($('.rsvp h1'));
           $('.rsvp a').text('Join Event');
           userHtml.appendTo($('#noReply'));
           accepted = false;
@@ -37,11 +45,8 @@ $(document).ready(function (argument) {
           accepted = true;
         }
       });
-      $('.modal').show()
-      setTimeout(function(){
-        $('.modal a').click(function(){
-          $('.modal').hide()
-        });
+      setTimeout(function() {
+        modal.show()
       }, 500);
     }
   });
