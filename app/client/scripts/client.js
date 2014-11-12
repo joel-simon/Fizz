@@ -39,7 +39,9 @@ $(document).ready(function (argument) {
       });
       $('.modal').show()
       setTimeout(function(){
-        $('.modal').click(function(){$('.modal').hide()});
+        $('.modal a').click(function(){
+          $('.modal').hide()
+        });
       }, 500);
     }
   });
