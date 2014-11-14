@@ -117,8 +117,9 @@ body article {
 /* line 16, ../sass/_layout.scss */
 body article aside {
   margin-bottom: 1.5rem;
+  position: fixed;
 }
-/* line 20, ../sass/_layout.scss */
+/* line 21, ../sass/_layout.scss */
 body article::after {
   content: "";
   background-image: url("../images/bg.jpg");
@@ -130,13 +131,13 @@ body article::after {
   position: fixed;
   z-index: -1;
 }
-/* line 32, ../sass/_layout.scss */
+/* line 33, ../sass/_layout.scss */
 body article header {
   display: inline-block;
   position: fixed;
   top: 3rem;
 }
-/* line 37, ../sass/_layout.scss */
+/* line 38, ../sass/_layout.scss */
 body article header h1 {
   text-transform: lowercase;
   font-family: "Futura-MediumItalic";
@@ -145,43 +146,43 @@ body article header h1 {
   letter-spacing: -.046875em;
 }
 @media screen and (max-aspect-ratio: 3 / 4) {
-  /* line 37, ../sass/_layout.scss */
+  /* line 38, ../sass/_layout.scss */
   body article header h1 {
     font-size: 15vw;
   }
 }
 @media screen and (max-aspect-ratio: 2 / 3) {
-  /* line 37, ../sass/_layout.scss */
+  /* line 38, ../sass/_layout.scss */
   body article header h1 {
     font-size: 17vw;
   }
 }
 @media screen and (min-aspect-ratio: 3 / 2) {
-  /* line 37, ../sass/_layout.scss */
+  /* line 38, ../sass/_layout.scss */
   body article header h1 {
     font-size: 9vw;
   }
 }
 @media screen and (min-aspect-ratio: 16 / 9) {
-  /* line 37, ../sass/_layout.scss */
+  /* line 38, ../sass/_layout.scss */
   body article header h1 {
     font-size: 6vw;
   }
 }
 @media screen and (min-width: 36em) {
-  /* line 32, ../sass/_layout.scss */
+  /* line 33, ../sass/_layout.scss */
   body article header {
     margin-left: 0;
     width: 75%;
   }
 }
 @media screen and (min-width: 60em) {
-  /* line 32, ../sass/_layout.scss */
+  /* line 33, ../sass/_layout.scss */
   body article header {
     float: left;
   }
 }
-/* line 50, ../sass/_layout.scss */
+/* line 51, ../sass/_layout.scss */
 body article header author {
   font-size: .6em;
   font-family: "FuturaStd-Bold";
@@ -190,20 +191,20 @@ body article header author {
   text-transform: uppercase !important;
   font-family: "FuturaStd-BoldOblique";
 }
-/* line 56, ../sass/_layout.scss */
+/* line 57, ../sass/_layout.scss */
 body article > section {
   width: 100%;
   margin-left: 1.5625%;
 }
 @media screen and (min-width: 36em) {
-  /* line 56, ../sass/_layout.scss */
+  /* line 57, ../sass/_layout.scss */
   body article > section {
     width: 50%;
     float: left;
     margin-left: 0;
   }
 }
-/* line 67, ../sass/_layout.scss */
+/* line 68, ../sass/_layout.scss */
 body article section.guestlist {
   margin-top: 4em;
   width: auto;
@@ -211,7 +212,7 @@ body article section.guestlist {
   margin-top: 75vh;
 }
 @media screen and (min-width: 36em) {
-  /* line 67, ../sass/_layout.scss */
+  /* line 68, ../sass/_layout.scss */
   body article section.guestlist {
     /*                 margin-left: ($col + $gutter) * 6   ; */
     margin-left: 75%;
@@ -219,12 +220,12 @@ body article section.guestlist {
   }
 }
 @media screen and (min-width: 60em) {
-  /* line 67, ../sass/_layout.scss */
+  /* line 68, ../sass/_layout.scss */
   body article section.guestlist {
     /*                 margin-left: ($col + $gutter) * ; */
   }
 }
-/* line 83, ../sass/_layout.scss */
+/* line 84, ../sass/_layout.scss */
 body article section.guestlist h1 {
   font-size: .6em;
   font-family: "FuturaStd-Bold";
@@ -232,14 +233,14 @@ body article section.guestlist h1 {
   margin-right: -.25em;
   text-transform: uppercase !important;
 }
-/* line 87, ../sass/_layout.scss */
+/* line 88, ../sass/_layout.scss */
 body article section.guestlist ul {
   text-transform: lowercase;
   position: relative;
   margin-bottom: .25em;
 }
 @media screen and (min-width: 60em) {
-  /* line 93, ../sass/_layout.scss */
+  /* line 94, ../sass/_layout.scss */
   body article section.guestlist ul li h1 {
     position: absolute;
     left: -13em;
@@ -248,11 +249,11 @@ body article section.guestlist ul {
     padding-top: .333em;
   }
 }
-/* line 105, ../sass/_layout.scss */
+/* line 106, ../sass/_layout.scss */
 body article section.guestlist ul.noReply {
   opacity: .5;
 }
-/* line 110, ../sass/_layout.scss */
+/* line 111, ../sass/_layout.scss */
 body article section.rsvp {
   position: fixed;
   bottom: 1.5625%;
@@ -260,7 +261,7 @@ body article section.rsvp {
   width: 4em;
 }
 @media screen and (min-width: 36em) {
-  /* line 110, ../sass/_layout.scss */
+  /* line 111, ../sass/_layout.scss */
   body article section.rsvp {
     /*                 width:  ($col + $gutter) * 1; */
     width: auto;
@@ -270,14 +271,14 @@ body article section.rsvp {
     /*                 left: ($col + $gutter) * 4 + $gutter; */
   }
 }
-/* line 126, ../sass/_layout.scss */
+/* line 127, ../sass/_layout.scss */
 body article section.rsvp h1 {
   font-size: 2em;
   line-height: 1.25em;
   font-family: "Futura-MediumItalic";
   text-transform: lowercase;
 }
-/* line 133, ../sass/_layout.scss */
+/* line 134, ../sass/_layout.scss */
 body article section.rsvp a {
   font-size: 2em;
   /*     border-bottom: .09375em white solid; */
@@ -294,34 +295,34 @@ body article section.rsvp a {
   z-index: 3;
 }
 @media screen and (max-aspect-ratio: 3 / 4) {
-  /* line 133, ../sass/_layout.scss */
+  /* line 134, ../sass/_layout.scss */
   body article section.rsvp a {
     font-size: 15vw;
   }
 }
 @media screen and (max-aspect-ratio: 2 / 3) {
-  /* line 133, ../sass/_layout.scss */
+  /* line 134, ../sass/_layout.scss */
   body article section.rsvp a {
     font-size: 17vw;
   }
 }
 @media screen and (min-aspect-ratio: 3 / 2) {
-  /* line 133, ../sass/_layout.scss */
+  /* line 134, ../sass/_layout.scss */
   body article section.rsvp a {
     font-size: 9vw;
   }
 }
 @media screen and (min-aspect-ratio: 16 / 9) {
-  /* line 133, ../sass/_layout.scss */
+  /* line 134, ../sass/_layout.scss */
   body article section.rsvp a {
     font-size: 6vw;
   }
 }
-/* line 140, ../sass/_layout.scss */
+/* line 141, ../sass/_layout.scss */
 body article section.rsvp a:hover {
   opacity: .5;
 }
-/* line 147, ../sass/_layout.scss */
+/* line 148, ../sass/_layout.scss */
 body article section.rsvp form input {
   background: none;
   outline: none;
@@ -335,11 +336,11 @@ body article section.rsvp form input {
   text-transform: lowercase;
   font-family: "Futura-MediumItalic";
 }
-/* line 158, ../sass/_layout.scss */
+/* line 159, ../sass/_layout.scss */
 body article section.rsvp form input:focus {
   background-color: rgba(255, 255, 255, 0.5);
 }
-/* line 166, ../sass/_layout.scss */
+/* line 167, ../sass/_layout.scss */
 body .modal {
   background: rgba(0, 0, 0, 0.75);
   position: fixed;
@@ -349,7 +350,7 @@ body .modal {
   left: 0;
   z-index: 9999;
 }
-/* line 169, ../sass/_layout.scss */
+/* line 170, ../sass/_layout.scss */
 body .modal h1 {
   text-transform: lowercase;
   font-family: "Futura-MediumItalic";
@@ -360,30 +361,30 @@ body .modal h1 {
   margin-top: 3rem;
 }
 @media screen and (max-aspect-ratio: 3 / 4) {
-  /* line 169, ../sass/_layout.scss */
+  /* line 170, ../sass/_layout.scss */
   body .modal h1 {
     font-size: 15vw;
   }
 }
 @media screen and (max-aspect-ratio: 2 / 3) {
-  /* line 169, ../sass/_layout.scss */
+  /* line 170, ../sass/_layout.scss */
   body .modal h1 {
     font-size: 17vw;
   }
 }
 @media screen and (min-aspect-ratio: 3 / 2) {
-  /* line 169, ../sass/_layout.scss */
+  /* line 170, ../sass/_layout.scss */
   body .modal h1 {
     font-size: 9vw;
   }
 }
 @media screen and (min-aspect-ratio: 16 / 9) {
-  /* line 169, ../sass/_layout.scss */
+  /* line 170, ../sass/_layout.scss */
   body .modal h1 {
     font-size: 6vw;
   }
 }
-/* line 175, ../sass/_layout.scss */
+/* line 176, ../sass/_layout.scss */
 body .modal a {
   text-transform: lowercase;
   font-family: "Futura-MediumItalic";
@@ -395,25 +396,25 @@ body .modal a {
   bottom: 0.75rem;
 }
 @media screen and (max-aspect-ratio: 3 / 4) {
-  /* line 175, ../sass/_layout.scss */
+  /* line 176, ../sass/_layout.scss */
   body .modal a {
     font-size: 15vw;
   }
 }
 @media screen and (max-aspect-ratio: 2 / 3) {
-  /* line 175, ../sass/_layout.scss */
+  /* line 176, ../sass/_layout.scss */
   body .modal a {
     font-size: 17vw;
   }
 }
 @media screen and (min-aspect-ratio: 3 / 2) {
-  /* line 175, ../sass/_layout.scss */
+  /* line 176, ../sass/_layout.scss */
   body .modal a {
     font-size: 9vw;
   }
 }
 @media screen and (min-aspect-ratio: 16 / 9) {
-  /* line 175, ../sass/_layout.scss */
+  /* line 176, ../sass/_layout.scss */
   body .modal a {
     font-size: 6vw;
   }

@@ -15,6 +15,7 @@ body {
         
         aside {
             margin-bottom: $baseline;
+            position: fixed;
         }
         
         &::after {
