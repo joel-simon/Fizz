@@ -1,11 +1,21 @@
+$mainTitleTopMargin: $baseline * 2;
+
 body {
     min-height:         100vh;
+    max-width: 100vw;
+    overflow-x: hidden;
     background-color:   black;
+    position: relative;
     
     article {
         height:             100%;
         width:              100%-$gutter;
         margin-left: $gutter;
+        position: relative;
+        
+        aside {
+            margin-bottom: $baseline;
+        }
         
         &::after {
             content:            "";
@@ -21,14 +31,12 @@ body {
 
         header {
             display:    inline-block;
-            margin-left:$gutter;
             position: fixed;
-            top: 0;
+            top: $mainTitleTopMargin;
             
             h1 {
                 @include bigTitle;
             }
-
             
             @media screen and (min-width: 36em) {
                 margin-left: 0;
@@ -37,7 +45,6 @@ body {
 
             @media screen and (min-width: 60em) {
                 float: left;
-
             }
                         
             author {
@@ -162,13 +169,14 @@ body {
         h1 {
             @include bigTitle;
             margin-left:$gutter;
+            margin-top: $mainTitleTopMargin;
         }
         
         a {
             @include bigTitle;
             margin-left: $gutter;
             position: fixed;
-            bottom: $baseline;
+            bottom: $baseline/2;
         }
     }
 }

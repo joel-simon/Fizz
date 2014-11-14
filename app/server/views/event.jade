@@ -1,3 +1,5 @@
+
+
 doctype html
 html
   head
@@ -15,6 +17,10 @@ html
     script(src="/scripts/client.js")
   body
     article
+      aside.intro
+        | Joel invited you with <em>Let’s</em>, a simple way to get people together. 
+        span.small-caps RSVP 
+        | below.
       header
         h1 Donec id elit non mi porta gravida at eget metus.        
         section.rsvp
@@ -22,7 +28,6 @@ html
             a(href="#") Get the app
           else
             a(href="#") Join Event
-
       section.guestlist
         ul.interested
           li
@@ -72,6 +77,6 @@ html
         //-   input(name="", type="button", value="Get it on the App Store")
         
       
-    div.modal
-        h1 Here is amazing copy about downloading our app
-        a(href="#appStoreLinkDependingOnUserPlatform") Get the app
+     div.modal
+       h1 Get messages and post your own events with the app
+       a(href="#appStoreLinkDependingOnUserPlatform") Get the app

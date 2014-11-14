@@ -9,9 +9,21 @@ $fontBoldItalic:"FuturaStd-BoldOblique";
     line-height:    1.5em;
 }
 
+@mixin smallCaps {
+    font-size: .6em;
+    font-family: $fontBold;
+    letter-spacing: .25em;
+    margin-right: -.25em;
+    text-transform: uppercase !important;
+}
+
 body {
     @include typeBody;
     color:  white;
+    
+    em {
+        font-family: $fontItalic;
+    }
     
     a {
         text-decoration: none;
@@ -25,11 +37,8 @@ body {
         }
         
     }
-}
-
-@mixin smallCaps {
-    font-size: .6em;
-    font-family: $fontBold;
-    letter-spacing: .25em;
-    text-transform: uppercase !important;
+    
+    .small-caps {
+        @include smallCaps;
+    }
 }
