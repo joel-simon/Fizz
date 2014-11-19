@@ -4,9 +4,9 @@ db = require './../adapters/db.js'
 _  = require 'underscore'
 
 module.exports =
-  get : (options, callback) ->
+  get : ({ key }, callback) ->
     q = 'select eid, uid, inviter, accepted from invites where key = $1 limit 1'
-    db.query q, [options.key], (err, results) ->
+    db.query q, [key], (err, results) ->
       return callback err if err?
       callback null, results.rows[0] || {}
 

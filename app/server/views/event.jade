@@ -11,18 +11,23 @@ html
     script
       var user = !{JSON.stringify(user)};
       var accepted = #{accepted};
-      var key = "#{key}";
+      var key = "#{event.key}";
     script(src="/scripts/client.js")
   body
     article
       header
         author= creator.name+" invited you"
         h1=event.description
-        section.rsvp
-          if accepted
-            a(href="#") Leave Event
-          else
-            a(href="#") Join Event
+        
+        if event.deathTime == null
+          section.rsvp
+            if accepted
+              a(href="#") Leave Event
+            else
+              a(href="#") Join Event
+        else
+          section.eventEnded
+            h1 Event ending soon
 
       section.guestlist
         ul#interested
@@ -30,33 +35,11 @@ html
             h1 Attending
           each user in guestList
             li=user.name
-          //- li Cedrick Durfee
-          //- li Oren Asay
-          //- li Sid Bumbalough
-          //- li Bernardina Ree
-          //- li Jerrell Lehrer
-          //- li Dorothea Hutter
-          //- li Juliet Mattix
-          //- li Orville Trunzo
-          //- li Shawanda Gosse
-          //- li Denice Lavigne
-          //- li Idell Morace
         ul#noReply
           li
             h1 No response
           each user in noReply
             li=user.name
-          //- li Cedrick Durfee
-          //- li Oren Asay
-          //- li Sid Bumbalough
-          //- li Bernardina Ree
-          //- li Jerrell Lehrer
-          //- li Dorothea Hutter
-          //- li Juliet Mattix
-          //- li Orville Trunzo
-          //- li Shawanda Gosse
-          //- li Denice Lavigne
-          //- li Idell Morace
       
       div.modal
         h1 Here is amazing copy about downloading our app

@@ -15,7 +15,7 @@ exports.parse = (data) ->
     description:   data.description
     key:           data.key
     creationTime:  parseInt(data.creationTime)
-    deathTime:     parseInt(data.deathTime)
+    deathTime:     if data.deathTime then parseInt(data.creationTime) else null
     lastUpdateTime:parseInt(data.lastAcceptedUpdate)
   catch
     null

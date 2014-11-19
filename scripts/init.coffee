@@ -2,7 +2,6 @@ async     = require('async')
 db     = require('../app/server/adapters/db.js')
 module.exports = (callback) ->
   async.series [
-    # (cb) -> db.query "drop table users, events, messages, new_friends, invites", cb
     (cb) -> db.query "drop schema public cascade;create schema public", cb
     (cb) -> db.query "create type platform as enum ('ios', 'android', 'sms')", cb
     (cb) -> db.query "create type latlng as (lat double precision, lng double precision)", cb

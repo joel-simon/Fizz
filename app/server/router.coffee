@@ -55,6 +55,7 @@ module.exports = (app, io, passport) ->
           data : { eid, guests: results.guests }
         }
         res.send 200
+
   app.post '/registration', (req, res) ->
     utils.log 'On registration data', req.body
     { firstName, lastName, platform, phoneToken, pn } = req.body
@@ -77,23 +78,23 @@ module.exports = (app, io, passport) ->
         return res.send 400 
       utils.log 'registration successful', 'password:'+password
       output.sendSms 'Your Fizz code:'+password, {pn, name, platform}
-      # console.log !!res, !!res.send
       res.send 200
   
   app.get '/e/:key', (req, res) ->
     key = req.params.key
-    models.invites.get {key}, (err, {eid, uid, inviter, accepted}) ->
+    return res.send 404 if !key
+    models.invites.get { key }, (err, { eid, uid, inviter, accepted }) ->
       return res.send 404 if err or not eid?
-      models.users.get {uid}, (err, user) ->
+      models.users.get { uid }, (err, user) ->
         return res.send 404 if err?
         models.events.getFull eid, (err, event, messages, inviteList, guests) ->
-          utils.logError err if err?
-          if err || ! event
+          if err || !event
             return res.send 404
           guestList= inviteList.filter (user) -> guests.indexOf(user.uid) >= 0
           noReply  = inviteList.filter (user) -> guests.indexOf(user.uid) == -1
-          creator  = inviteList.filter((user) -> user.uid == event.creator )[0]
-          res.render 'event.jade', { user, accepted, event, creator, messages, noReply, guestList, key}
+          creator  = inviteList.filter((user) -> user.uid == event.creator)[0]
+          options = { user, accepted, event, creator, messages, noReply, guestList }
+          res.render 'event.jade', options
 
   app.get '/', (req, res) ->
     res.send 'Fizz'
