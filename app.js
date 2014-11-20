@@ -118,16 +118,4 @@ require('./app/server/socketBinder')(io)
 require('./app/server/router')(app, io, passport);
 
 utils.log('Server Started', args);
-
-if (args.init) {
-  var init = require('./scripts/init')
-  init(function(err, results) {
-    if (err) {
-      console.log('Error in init', err);
-      process.exit(1);
-    } else {
-      utils.log('DataBase has been initialized.')
-      if (args.testing) require('./scripts/testScript')
-    }
-  });
-}
+if (args.testing) require('./scripts/testScript')

@@ -2,12 +2,12 @@ module.exports = exports;
 
 process.argv.forEach(function (val, index) {
   if (index > 1) {
-    switch(val.split('=')[0]) {
+    split = val.split('=')
+    switch(split[0]) {
       case 'port':
-        val = val.split('=');
-        if (val.length !== 2 || typeof val[1] != 'number')
+        if (split.length !== 2 || typeof parseInt(split[1]) != 'number')
           throw "Invalid Port, use 'port=x'"
-        exports.port = val[1]
+        exports.port = parseInt(parseInt(split[1]))
         break;
       case 'test':
         exports.testing = true;

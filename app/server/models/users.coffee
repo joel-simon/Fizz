@@ -15,6 +15,12 @@ exports.get = (where, fields, cb) ->
     return cb err if err?
     cb null, result.rows[0]
 
+exports.setPlatform = (pn, platform, cb) ->
+  q1 = "UPDATE users SET platform = $2 where pn = $1"
+  db.query q1, [pn, platform], (err, result) ->
+    return cb err if err?
+    cb null
+
 exports.verify = (options, cb) ->
   column = _.keys(options)[0]
   value = options[column]

@@ -10,7 +10,7 @@ module.exports = (data, socket, output, callback) ->
   utils.log "Recieved postUpdateLocation",
             "User: " + JSON.stringify(user),
             "Data: " + JSON.stringify(data)
-  
+  return callback()
   q0 = 'UPDATE
           users
         SET

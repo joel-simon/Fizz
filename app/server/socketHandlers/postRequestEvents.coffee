@@ -9,7 +9,6 @@ module.exports = (data, socket, output, callback) ->
   eidList.forEach (eid) ->
     models.events.getFull eid, (err, event, messages, inviteList, guests) ->
       return callback err if err
-      utils.log event
       toEmit = {
         eid, messages, inviteList, guests
         creator: event.creator
