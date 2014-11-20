@@ -1,8 +1,4 @@
 module.exports = exports;
-exports.sendSms = false;
-exports.pushIos = false;
-exports.dev= false;
-exports.test = false;
 
 process.argv.forEach(function (val, index) {
   if (index > 1) {

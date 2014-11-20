@@ -9,7 +9,7 @@ var
   utils   = require('./app/server/utilities.js'),
   redis   = require('redis'),
   redisStore = require('connect-redis')(express),
-  redisConns = require('./app/server/adapters/redisStore.js'),
+  redisConns = require('./app/server/adapters/redisStore.coffee'),
   passport = require('passport'),
   LocalStrategy = require('passport-local').Strategy,
   passportSocketIo = require("./lib/passport.socketio"),

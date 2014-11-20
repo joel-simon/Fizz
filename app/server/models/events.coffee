@@ -1,6 +1,5 @@
 async = require 'async'
 sanitize = require('validator').sanitize
-store = require('./../adapters/redisStore.js').store
 exports = module.exports
 models = require '../models'
 db = require './../adapters/db.js'
