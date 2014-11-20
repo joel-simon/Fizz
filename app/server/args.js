@@ -16,17 +16,12 @@ process.argv.forEach(function (val, index) {
       case 'test':
         exports.testing = true;
         break;
-      case 'init':
-        exports.init = true;
-        break;
       case 'dev':
         exports.dev = true;
-        break
-      case 'sendSms':
         exports.sendSms = true;
-        break;
+        break
       default:
-        console.log('Valid commands: [init, dev, sendSms]');
+        console.log('Valid commands: [dev, port=n, test]');
         console.log(val);
     }
   }
