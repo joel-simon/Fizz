@@ -3,6 +3,8 @@ models = require './models'
 utils  = require './utilities'
 output = require './output'
 async = require 'async'
+chrono = require './chrono-lets.coffee'
+
 module.exports = (app, io, passport) ->
   output = require('./output')(io)
   loginOptions = 
@@ -11,12 +13,16 @@ module.exports = (app, io, passport) ->
     failureFlash: false
 
   app.post('/login', passport.authenticate('local', loginOptions))
-  
-  app.get '/success', (req, res) ->
-    res.send 200
-  
-  app.get '/fail', (req, res) ->
-    res.send 401
+  app.get '/success', (req, res) -> res.send 200
+  app.get '/fail', (req, res) -> res.send 401
+
+  app.get '/NLP/:string', (req, res) ->
+    parsed = chrono.parseDate(req.params.string)
+    toSend = if parsed 
+                { dateString: parsed.toString(), millis: parsed.getTime() }
+              else
+                'Null'
+    res.send toSend
 
   app.post '/join', (req, res) ->
     { key } = req.body

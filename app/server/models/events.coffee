@@ -6,7 +6,7 @@ models = require '../models'
 db = require './../adapters/db.js'
 pg = require 'pg'
 _ = require 'underscore'
-dbstring = db.connString;
+chrono = require '../chrono-lets.coffee'
 
 exports.parse = (data) ->
   try
@@ -15,7 +15,8 @@ exports.parse = (data) ->
     description:   data.description
     key:           data.key
     creationTime:  parseInt(data.creationTime)
-    deathTime:     if data.deathTime then parseInt(data.creationTime) else null
+    deathTime:     if data.deathTime then parseInt(data.deathTime) else null
+    startTime:     if data.startTime then parseInt(data.startTime) else null
     lastUpdateTime:parseInt(data.lastAcceptedUpdate)
   catch
     null
@@ -24,16 +25,16 @@ exports.update = (eid, callback) ->
   q1 = 'UPDATE events set "lastAcceptedUpdate" = $1 WHERE eid = $2'
   db.query q1, [Date.now(), eid], callback
 
-exports.add = (user, description, callback) ->
+exports.add = (user, description, startTime, callback) ->
   q1 = 'INSERT INTO events
-      (creator, description, key)
+      (creator, description, key, "startTime")
       VALUES ($1, $2, $3)
       RETURNING eid, "creationTime"'
-  db.query q1, [ user.uid, description, randString(5)], (err, results) ->
+  params = [ user.uid, description, randString(5), startTime ]
+  db.query q1, params, (err, results) ->
     return callback err if err?
-    {rows} = results
-    {eid, creationTime} = rows[0]
-
+    { rows } = results
+    { eid, creationTime } = rows[0]
     callback null, {
       eid
       description
