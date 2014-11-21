@@ -10,6 +10,9 @@ module.exports = (io) ->
   output = require('./output')(io)
   io.sockets.on 'connection', (socket) ->
     socketBinders.connect socket, onError
+    socket.on 'disconnect', () ->
+      socketBinders.disconnect(socket, onError)
+    # socketBinders.connect socket, onError
     Object.keys(socketBinders).forEach (message) ->
       if message != 'connect' and message != 'disconnect'
         handler = socketBinders[message]
