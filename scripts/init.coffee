@@ -5,13 +5,17 @@ module.exports = (callback) ->
     (cb) -> db.query "drop schema public cascade;create schema public", cb
     (cb) -> db.query "create type platform as enum ('ios', 'android', 'sms')", cb
     (cb) -> db.query "create type latlng as (lat double precision, lng double precision)", cb
+    (cb) -> db.query "CREATE FUNCTION getNow() RETURNS bigint
+                        as 'SELECT (EXTRACT(EPOCH FROM now())*1000)::bigint'
+                        LANGUAGE SQL
+                      ", cb
     (cb) -> db.query "CREATE TABLE users (
               uid serial primary KEY,
               pn character(12) NOT NULL,
               name character varying(20) NOT NULL,
               password character(6) NOT NULL,
               verified boolean DEFAULT false,
-              \"lastLogin\" bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
+              \"lastLogin\" bigint NOT NULL DEFAULT getNow(),
               \"phoneToken\" text NOT NULL DEFAULT ''::text,
               \"lastLocation\" latlng,
               \"lastLocationUpdate\" bigint,
@@ -23,10 +27,10 @@ module.exports = (callback) ->
               creator integer NOT NULL,
               description text,
               key text,
-              \"creationTime\" bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
-              \"lastClusterUpdate\" bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
+              \"creationTime\" bigint NOT NULL DEFAULT getNow(),
+              \"lastClusterUpdate\" bigint NOT NULL DEFAULT getNow(),
               clusters integer[],
-              \"lastAcceptedUpdate\" bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
+              \"lastAcceptedUpdate\" bigint NOT NULL DEFAULT getNow(),
               \"deathTime\" bigint,
               CONSTRAINT events_creator_fkey FOREIGN KEY (creator)
                   REFERENCES users (uid) MATCH SIMPLE
@@ -37,7 +41,7 @@ module.exports = (callback) ->
               eid integer NOT NULL,
               uid integer NOT NULL,
               text text,
-              \"creationTime\" bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
+              \"creationTime\" bigint NOT NULL DEFAULT getNow(),
               CONSTRAINT messages_eid_fkey FOREIGN KEY (eid)
                   REFERENCES events (eid) MATCH SIMPLE
                   ON UPDATE NO ACTION ON DELETE NO ACTION,
@@ -51,7 +55,7 @@ module.exports = (callback) ->
             confirmed boolean NOT NULL DEFAULT true,
             accepted boolean NOT NULL DEFAULT false,
             key text NOT NULL,
-            \"invitedTime\" bigint NOT NULL DEFAULT (extract(epoch from now())*1000)::bigint,
+            \"invitedTime\" bigint NOT NULL DEFAULT getNow(),
             \"acceptedTime\" bigint,
             inviter integer,
             CONSTRAINT invites_pkey PRIMARY KEY (eid, uid),
