@@ -19,6 +19,7 @@ QUERIES = (eventListString, lastLogin) ->
       for m in results.rows
         if not data[m.eid]
           data[m.eid] = []
+        m.creationTime = parseInt(m.creationTime)
         data[m.eid].push m
       cb null, data
   numMessages: (cb) ->
@@ -35,11 +36,12 @@ QUERIES = (eventListString, lastLogin) ->
       cb null, results.rows || []
   guests: (cb) ->
     q = 'SELECT array_agg(invites.uid), invites.eid
-    FROM invites WHERE
-    accepted = true AND
-    eid = ANY($1::int[]) AND
-    "acceptedTime" >= $2
-    GROUP BY eid'
+    FROM invites, events WHERE
+    invites.eid = events.eid AND
+    invites.accepted = true AND
+    invites.eid = ANY($1::int[]) AND
+    events."lastAcceptedUpdate" >= $2
+    GROUP BY invites.eid'
     db.query q, [eventListString, lastLogin], (err, results) ->
       return cb err if err?
       data = {}
@@ -48,7 +50,7 @@ QUERIES = (eventListString, lastLogin) ->
       cb null, data
 
   newInvitees: (cb) ->
-    q = 'SELECT users.uid, users.pn, users.name, invites.eid 
+    q = 'SELECT users.uid, users.pn, users.name, invites.eid, users.platform 
     FROM invites, users WHERE
     users.uid = invites.uid AND
     invites."invitedTime" >= $2 AND
@@ -58,7 +60,7 @@ QUERIES = (eventListString, lastLogin) ->
       data = {}
       for u in results.rows
         data[u.eid] = [] if not data[u.eid]?
-        data[u.eid].push({uid:u.uid,name:u.name,pn:u.pn})
+        data[u.eid].push({ uid:u.uid,name:u.name,pn:u.pn, platform:u.platform })
       cb null, data
 
 module.exports = (socket, callback) ->

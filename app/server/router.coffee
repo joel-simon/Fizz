@@ -75,7 +75,7 @@ module.exports = (app, io, passport) ->
         console.log 'is Verified'
         #this tells us the user either failed to finish registering
         # or they are switching from sms
-        models.user.setPlatform pn, platform, (err) ->
+        models.users.setPlatform pn, platform, (err) ->
           return res.send 400 if err?
           models.users.newPassword {pn}, done
       

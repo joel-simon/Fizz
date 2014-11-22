@@ -13,14 +13,16 @@ module.exports =
   add : ({ eid, uid, inviter, accepted }, callback) ->
     key = randString 16
     accepted ?= false
+    acceptedTime = if accepted then Date.now() else null
     q = 'INSERT INTO invites
-          (eid, uid, inviter, accepted, key)
-        SELECT $1, $2, $3, $4, $5
+          (eid, uid, inviter, accepted, key, "acceptedTime")
+        SELECT $1, $2, $3, $4, $5, $6
         WHERE
           NOT EXISTS (
             SELECT 1 FROM invites WHERE eid = $1 AND uid = $2
           )'
-    db.query q, [eid, uid, inviter, accepted, key], (err, result) ->
+    params = [eid, uid, inviter, accepted, key, acceptedTime]
+    db.query q, params, (err, result) ->
       return callback err if err?
       callback null, { eid, uid, inviter, accepted, key }
   

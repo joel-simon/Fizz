@@ -68,6 +68,7 @@ exports.create = (pn, name, platform, token, callback) ->
         RETURNING uid, pn, name, platform'
   values = [pn, name, platform, token, password]
   db.query q1, values, (err, result) ->
+    # console.log err, result
     return callback err if err?
     user = result.rows[0]
     callback null, user, password
