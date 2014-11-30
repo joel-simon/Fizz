@@ -4,6 +4,7 @@ apiKey = 'AIzaSyD2HoTbAXUqrjEyHj7zRWEqrlR7FaoTYO4'
 # create a message with default values
 module.exports =
   send: (data, registrationIds, callback) ->
+    utils.log 'pushing', {data}, {registrationIds}
     sender = new gcm.Sender apiKey
     message = new gcm.Message()
     message.addDataWithObject data

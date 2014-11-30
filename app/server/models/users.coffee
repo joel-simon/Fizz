@@ -44,7 +44,7 @@ exports.getFull = (options, cb) ->
   db.query q1, [value], (err, result) ->
     return cb err if err?
     data = result.rows[0]
-    return cb null, null if not data?
+    return cb null, null, null if not data?
     
     if data.uid
       cb null, _.pick(data, 'uid', 'name', 'pn', 'platform'), data
@@ -69,6 +69,19 @@ exports.create = (pn, name, platform, token, callback) ->
   values = [pn, name, platform, token, password]
   db.query q1, values, (err, result) ->
     # console.log err, result
+    return callback err if err?
+    user = result.rows[0]
+    callback null, user, password
+
+exports.reRegister = (pn, name, platform, token, callback) ->
+  utils.log 'reregistering', {pn}, {name}, {platform}, {token}
+  password = generatePassword()
+  q1 = 'UPDATE users
+          SET (name, platform, "phoneToken", password) = ($1,$2,$3,$4)
+        WHERE pn = $5
+        RETURNING uid, pn, name, platform'
+  values = [ name, platform, token, password, pn ]
+  db.query q1, values, (err, result) ->
     return callback err if err?
     user = result.rows[0]
     callback null, user, password
