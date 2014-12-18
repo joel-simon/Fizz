@@ -13,7 +13,7 @@ html
     script
       var user = !{JSON.stringify(user)};
       var accepted = #{accepted};
-      var key = "#{event.key}";
+      var key = "#{key}";
     script(src="/scripts/client.js")
   body
     article
@@ -22,40 +22,34 @@ html
         span.small-caps RSVP 
         | below.
       header
-<<<<<<< HEAD
         h1 Donec id elit non mi porta gravida at eget metus.        
         section.rsvp
           if accepted
             a(href="#") Leave
           else
             a(href="#") Join
-=======
-        author= creator.name+" invited you"
-        h1=event.description
-        
-        if event.deathTime == null
-          section.rsvp
-            if accepted
-              a(href="#") Leave Event
-            else
-              a(href="#") Join Event
-        else
-          section.eventEnded
-            h1 Event ending soon
-
->>>>>>> master
       section.guestlist
-        ul#interested
+        ul.interested
           li
             h1 Attending
           each user in guestList
             li=user.name
-        ul#noReply
+          li Cedrick Durfee
+          li Oren Asay
+          li Sid Bumbalough
+          li Bernardina Ree
+          li Jerrell Lehrer
+          li Dorothea Hutter
+          li Juliet Mattix
+          li Orville Trunzo
+          li Shawanda Gosse
+          li Denice Lavigne
+          li Idell Morace
+        ul.noReply
           li
             h1 No response
           each user in noReply
             li=user.name
-<<<<<<< HEAD
           li Cedrick Durfee
           li Oren Asay
           li Sid Bumbalough
@@ -85,9 +79,3 @@ html
      div.modal
        h1 Thanks for RSVP-ing. Get the app to see messages and post your own events.
        a(href="#appStoreLinkDependingOnUserPlatform") Get the app
-=======
-      
-      div.modal
-        h1 Here is amazing copy about downloading our app
-        a(href="https://google.com") Get the app
->>>>>>> master
