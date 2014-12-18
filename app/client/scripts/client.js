@@ -29,7 +29,7 @@ $(document).ready(function (argument) {
         url: '/leave',
         data: { key: key },
         success: function (foo) {
-          $('.rsvp a').text('Join Event');
+          $('.rsvp a').text('Join');
           userHtml.appendTo($('#noReply'));
           accepted = false;
         }
@@ -40,7 +40,7 @@ $(document).ready(function (argument) {
         url: '/Join',
         data: { key: key },
         success: function (foo) {
-          $('.rsvp a').text('Leave Event')
+          $('.rsvp a').text('Leave')
           userHtml.appendTo($('#interested'));
           accepted = true;
         }
