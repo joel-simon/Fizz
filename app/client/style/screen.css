@@ -1,87 +1,426 @@
-/*
-Syntax error: Invalid CSS after "@mixin modal {": expected "}", was "<<<<<<< HEAD"
-        on line 34 of /Users/Antonio/Documents/Projects/Let's/Web/app/client/sass/globals/_components.scss
-        from line 6 of /Users/Antonio/Documents/Projects/Let's/Web/app/client/sass/_globals.scss
-        from line 1 of /Users/Antonio/Documents/Projects/Let's/Web/app/client/sass/screen.scss
+/* line 17, ../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  font-size: 100%;
+  vertical-align: baseline;
+}
 
-Backtrace:
-/Users/Antonio/Documents/Projects/Let's/Web/app/client/sass/globals/_components.scss:34
-/Users/Antonio/Documents/Projects/Let's/Web/app/client/sass/_globals.scss:6
-/Users/Antonio/Documents/Projects/Let's/Web/app/client/sass/screen.scss:1
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/scss/parser.rb:1147:in `expected'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/scss/parser.rb:1085:in `expected'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/scss/parser.rb:1080:in `tok!'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/scss/parser.rb:536:in `block'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/scss/parser.rb:186:in `mixin_directive'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/scss/parser.rb:174:in `special_directive'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/scss/parser.rb:146:in `directive'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/scss/parser.rb:553:in `block_child'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/scss/parser.rb:546:in `block_contents'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/scss/parser.rb:82:in `stylesheet'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/scss/parser.rb:27:in `parse'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/engine.rb:342:in `_to_tree'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/engine.rb:274:in `to_tree'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/tree/visitors/perform.rb:225:in `visit_import'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/tree/visitors/base.rb:37:in `visit'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/tree/visitors/perform.rb:100:in `visit'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/tree/visitors/perform.rb:227:in `block in visit_import'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/tree/visitors/perform.rb:227:in `map'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/tree/visitors/perform.rb:227:in `visit_import'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/tree/visitors/base.rb:37:in `visit'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/tree/visitors/perform.rb:100:in `visit'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/tree/visitors/base.rb:53:in `block in visit_children'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/tree/visitors/base.rb:53:in `map'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/tree/visitors/base.rb:53:in `visit_children'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/tree/visitors/perform.rb:109:in `block in visit_children'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/tree/visitors/perform.rb:121:in `with_environment'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/tree/visitors/perform.rb:108:in `visit_children'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/tree/visitors/base.rb:37:in `block in visit'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/tree/visitors/perform.rb:128:in `visit_root'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/tree/visitors/base.rb:37:in `visit'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/tree/visitors/perform.rb:100:in `visit'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/tree/visitors/perform.rb:7:in `visit'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/tree/root_node.rb:20:in `render'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/engine.rb:315:in `_render'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.2.19/lib/sass/engine.rb:262:in `render'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/compiler.rb:139:in `block (2 levels) in compile'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/compiler.rb:126:in `timed'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/compiler.rb:138:in `block in compile'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/logger.rb:45:in `red'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/compiler.rb:137:in `compile'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/compiler.rb:118:in `compile_if_required'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/compiler.rb:103:in `block (2 levels) in run'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/compiler.rb:101:in `each'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/compiler.rb:101:in `block in run'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/compiler.rb:126:in `timed'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/compiler.rb:100:in `run'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/commands/watch_project.rb:147:in `recompile'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/path.rb:73:in `call'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/path.rb:73:in `run_callback'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/path.rb:55:in `callback_action'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/path.rb:35:in `update'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/state/directory.rb:39:in `block in modified'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/state/directory.rb:37:in `each'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/state/directory.rb:37:in `modified'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/state/directory.rb:18:in `refresh'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/backends/polling.rb:17:in `block (2 levels) in run'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/backends/polling.rb:17:in `each'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/backends/polling.rb:17:in `block in run'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/backends/polling.rb:15:in `loop'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/backends/polling.rb:15:in `run'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm/monitor.rb:26:in `run'
-/Library/Ruby/Gems/2.0.0/gems/fssm-0.2.10/lib/fssm.rb:70:in `monitor'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/commands/watch_project.rb:87:in `perform'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/commands/base.rb:18:in `execute'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/commands/project_base.rb:19:in `execute'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/exec/sub_command_ui.rb:43:in `perform!'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/lib/compass/exec/sub_command_ui.rb:15:in `run!'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/bin/compass:30:in `block in <top (required)>'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/bin/compass:44:in `call'
-/Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/bin/compass:44:in `<top (required)>'
-/usr/bin/compass:23:in `load'
-/usr/bin/compass:23:in `<main>'
-*/
-body:before {
-  white-space: pre;
-  font-family: monospace;
-  content: "Syntax error: Invalid CSS after \"@mixin modal {\": expected \"}\", was \"<<<<<<< HEAD\"\A         on line 34 of /Users/Antonio/Documents/Projects/Let's/Web/app/client/sass/globals/_components.scss\A         from line 6 of /Users/Antonio/Documents/Projects/Let's/Web/app/client/sass/_globals.scss\A         from line 1 of /Users/Antonio/Documents/Projects/Let's/Web/app/client/sass/screen.scss"; }
+/* line 22, ../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+html {
+  line-height: 1;
+}
+
+/* line 24, ../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+ol, ul {
+  list-style: none;
+}
+
+/* line 26, ../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* line 28, ../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+caption, th, td {
+  text-align: left;
+  font-weight: normal;
+  vertical-align: middle;
+}
+
+/* line 30, ../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+q, blockquote {
+  quotes: none;
+}
+/* line 103, ../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+q:before, q:after, blockquote:before, blockquote:after {
+  content: "";
+  content: none;
+}
+
+/* line 32, ../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+a img {
+  border: none;
+}
+
+/* line 116, ../../../../../../../../../Library/Ruby/Gems/2.0.0/gems/compass-0.12.5/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary {
+  display: block;
+}
+
+/* line 4, ../sass/globals/_boilerplate.scss */
+html {
+  height: 100%;
+  text-rendering: optimizeLegibility;
+  -webkit-touch-callout: none;
+}
+
+/* line 20, ../sass/globals/_type.scss */
+body {
+  font-family: "Futura", serif;
+  font-size: 12pt;
+  line-height: 1.5em;
+  color: white;
+}
+/* line 24, ../sass/globals/_type.scss */
+body em {
+  font-family: "Futura-MediumItalic";
+}
+/* line 28, ../sass/globals/_type.scss */
+body a {
+  text-decoration: none;
+  color: white;
+}
+/* line 35, ../sass/globals/_type.scss */
+body figure h1 {
+  font-family: "Futura-MediumItalic";
+}
+/* line 41, ../sass/globals/_type.scss */
+body .small-caps {
+  font-size: .6em;
+  font-family: "FuturaStd-Bold";
+  letter-spacing: .25em;
+  margin-right: -.25em;
+  text-transform: uppercase !important;
+}
+
+/* line 3, ../sass/_layout.scss */
+body {
+  min-height: 100vh;
+  max-width: 100vw;
+  overflow-x: hidden;
+  background-color: black;
+  position: relative;
+}
+/* line 10, ../sass/_layout.scss */
+body article {
+  height: 100%;
+  width: 98.4375%;
+  margin-left: 1.5625%;
+  position: relative;
+}
+/* line 16, ../sass/_layout.scss */
+body article aside {
+  margin-bottom: 1.5rem;
+  position: fixed;
+}
+/* line 21, ../sass/_layout.scss */
+body article::after {
+  content: "";
+  background-image: url("../images/bg.jpg");
+  opacity: 0.8;
+  top: 0;
+  left: 0;
+  min-height: 100%;
+  min-width: 100%;
+  position: fixed;
+  z-index: -1;
+}
+/* line 33, ../sass/_layout.scss */
+body article header {
+  display: inline-block;
+  position: fixed;
+  top: 3rem;
+}
+/* line 38, ../sass/_layout.scss */
+body article header h1 {
+  text-transform: lowercase;
+  font-family: "Futura-MediumItalic";
+  line-height: 1.25em;
+  font-size: 10vw;
+  letter-spacing: -.046875em;
+}
+@media screen and (max-aspect-ratio: 3 / 4) {
+  /* line 38, ../sass/_layout.scss */
+  body article header h1 {
+    font-size: 15vw;
+  }
+}
+@media screen and (max-aspect-ratio: 2 / 3) {
+  /* line 38, ../sass/_layout.scss */
+  body article header h1 {
+    font-size: 17vw;
+  }
+}
+@media screen and (min-aspect-ratio: 3 / 2) {
+  /* line 38, ../sass/_layout.scss */
+  body article header h1 {
+    font-size: 9vw;
+  }
+}
+@media screen and (min-aspect-ratio: 16 / 9) {
+  /* line 38, ../sass/_layout.scss */
+  body article header h1 {
+    font-size: 6vw;
+  }
+}
+@media screen and (min-width: 36em) {
+  /* line 33, ../sass/_layout.scss */
+  body article header {
+    margin-left: 0;
+    width: 75%;
+  }
+}
+@media screen and (min-width: 60em) {
+  /* line 33, ../sass/_layout.scss */
+  body article header {
+    float: left;
+  }
+}
+/* line 51, ../sass/_layout.scss */
+body article header author {
+  font-size: .6em;
+  font-family: "FuturaStd-Bold";
+  letter-spacing: .25em;
+  margin-right: -.25em;
+  text-transform: uppercase !important;
+  font-family: "FuturaStd-BoldOblique";
+}
+/* line 57, ../sass/_layout.scss */
+body article > section {
+  width: 100%;
+  margin-left: 1.5625%;
+}
+@media screen and (min-width: 36em) {
+  /* line 57, ../sass/_layout.scss */
+  body article > section {
+    width: 50%;
+    float: left;
+    margin-left: 0;
+  }
+}
+/* line 68, ../sass/_layout.scss */
+body article section.guestlist {
+  margin-top: 4em;
+  width: auto;
+  margin-left: 62.5%;
+  margin-top: 75vh;
+}
+@media screen and (min-width: 36em) {
+  /* line 68, ../sass/_layout.scss */
+  body article section.guestlist {
+    /*                 margin-left: ($col + $gutter) * 6   ; */
+    margin-left: 75%;
+    margin-top: 50vh;
+  }
+}
+@media screen and (min-width: 60em) {
+  /* line 68, ../sass/_layout.scss */
+  body article section.guestlist {
+    /*                 margin-left: ($col + $gutter) * ; */
+  }
+}
+/* line 84, ../sass/_layout.scss */
+body article section.guestlist h1 {
+  font-size: .6em;
+  font-family: "FuturaStd-Bold";
+  letter-spacing: .25em;
+  margin-right: -.25em;
+  text-transform: uppercase !important;
+}
+/* line 88, ../sass/_layout.scss */
+body article section.guestlist ul {
+  text-transform: lowercase;
+  position: relative;
+  margin-bottom: .25em;
+}
+@media screen and (min-width: 60em) {
+  /* line 94, ../sass/_layout.scss */
+  body article section.guestlist ul li h1 {
+    position: absolute;
+    left: -13em;
+    text-align: right;
+    width: 12em;
+    padding-top: .333em;
+  }
+}
+/* line 106, ../sass/_layout.scss */
+body article section.guestlist ul.noReply {
+  opacity: .5;
+}
+/* line 111, ../sass/_layout.scss */
+body article section.rsvp {
+  position: fixed;
+  bottom: 1.5625%;
+  left: 1.5625%;
+  width: 4em;
+}
+@media screen and (min-width: 36em) {
+  /* line 111, ../sass/_layout.scss */
+  body article section.rsvp {
+    /*                 width:  ($col + $gutter) * 1; */
+    width: auto;
+    margin-top: 1.5rem;
+    display: block;
+    float: none;
+    /*                 left: ($col + $gutter) * 4 + $gutter; */
+  }
+}
+/* line 127, ../sass/_layout.scss */
+body article section.rsvp h1 {
+  font-size: 2em;
+  line-height: 1.25em;
+  font-family: "Futura-MediumItalic";
+  text-transform: lowercase;
+}
+/* line 134, ../sass/_layout.scss */
+body article section.rsvp a {
+  font-size: 2em;
+  /*     border-bottom: .09375em white solid; */
+  width: auto;
+  display: inline-block;
+  /*     padding-bottom: .125em */
+  text-transform: lowercase;
+  font-family: "Futura-MediumItalic";
+  line-height: 1.25em;
+  font-size: 10vw;
+  letter-spacing: -.046875em;
+  opacity: 1;
+  position: relative;
+  z-index: 3;
+}
+@media screen and (max-aspect-ratio: 3 / 4) {
+  /* line 134, ../sass/_layout.scss */
+  body article section.rsvp a {
+    font-size: 15vw;
+  }
+}
+@media screen and (max-aspect-ratio: 2 / 3) {
+  /* line 134, ../sass/_layout.scss */
+  body article section.rsvp a {
+    font-size: 17vw;
+  }
+}
+@media screen and (min-aspect-ratio: 3 / 2) {
+  /* line 134, ../sass/_layout.scss */
+  body article section.rsvp a {
+    font-size: 9vw;
+  }
+}
+@media screen and (min-aspect-ratio: 16 / 9) {
+  /* line 134, ../sass/_layout.scss */
+  body article section.rsvp a {
+    font-size: 6vw;
+  }
+}
+/* line 141, ../sass/_layout.scss */
+body article section.rsvp a:hover {
+  opacity: .5;
+}
+/* line 148, ../sass/_layout.scss */
+body article section.rsvp form input {
+  background: none;
+  outline: none;
+  border: 0;
+  padding: .25em 0;
+  font-family: "Futura", serif;
+  font-size: 12pt;
+  line-height: 1.5em;
+  color: white;
+  border-bottom: 1pt white solid;
+  text-transform: lowercase;
+  font-family: "Futura-MediumItalic";
+}
+/* line 159, ../sass/_layout.scss */
+body article section.rsvp form input:focus {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+/* line 167, ../sass/_layout.scss */
+body .modal {
+  background: rgba(0, 0, 0, 0.75);
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  display: none;
+}
+/* line 171, ../sass/_layout.scss */
+body .modal.open {
+  display: block;
+}
+/* line 175, ../sass/_layout.scss */
+body .modal h1 {
+  text-transform: lowercase;
+  font-family: "Futura-MediumItalic";
+  line-height: 1.25em;
+  font-size: 10vw;
+  letter-spacing: -.046875em;
+  margin-left: 1.5625%;
+  margin-top: 3rem;
+}
+@media screen and (max-aspect-ratio: 3 / 4) {
+  /* line 175, ../sass/_layout.scss */
+  body .modal h1 {
+    font-size: 15vw;
+  }
+}
+@media screen and (max-aspect-ratio: 2 / 3) {
+  /* line 175, ../sass/_layout.scss */
+  body .modal h1 {
+    font-size: 17vw;
+  }
+}
+@media screen and (min-aspect-ratio: 3 / 2) {
+  /* line 175, ../sass/_layout.scss */
+  body .modal h1 {
+    font-size: 9vw;
+  }
+}
+@media screen and (min-aspect-ratio: 16 / 9) {
+  /* line 175, ../sass/_layout.scss */
+  body .modal h1 {
+    font-size: 6vw;
+  }
+}
+/* line 181, ../sass/_layout.scss */
+body .modal a {
+  text-transform: lowercase;
+  font-family: "Futura-MediumItalic";
+  line-height: 1.25em;
+  font-size: 10vw;
+  letter-spacing: -.046875em;
+  margin-left: 1.5625%;
+  position: fixed;
+  bottom: 0.75rem;
+}
+@media screen and (max-aspect-ratio: 3 / 4) {
+  /* line 181, ../sass/_layout.scss */
+  body .modal a {
+    font-size: 15vw;
+  }
+}
+@media screen and (max-aspect-ratio: 2 / 3) {
+  /* line 181, ../sass/_layout.scss */
+  body .modal a {
+    font-size: 17vw;
+  }
+}
+@media screen and (min-aspect-ratio: 3 / 2) {
+  /* line 181, ../sass/_layout.scss */
+  body .modal a {
+    font-size: 9vw;
+  }
+}
+@media screen and (min-aspect-ratio: 16 / 9) {
+  /* line 181, ../sass/_layout.scss */
+  body .modal a {
+    font-size: 6vw;
+  }
+}

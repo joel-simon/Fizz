@@ -163,7 +163,6 @@ body {
             }
         }
     }
-<<<<<<< HEAD
     
     .modal {
         @include modal;
@@ -172,29 +171,18 @@ body {
         &.open {
             display: block;
         }
-=======
-    .modal {
-        @include modal;
->>>>>>> master
         
         h1 {
             @include bigTitle;
             margin-left:$gutter;
-<<<<<<< HEAD
             margin-top: $mainTitleTopMargin;
-=======
->>>>>>> master
         }
         
         a {
             @include bigTitle;
             margin-left: $gutter;
             position: fixed;
-<<<<<<< HEAD
             bottom: $baseline/2;
-=======
-            bottom: $baseline;
->>>>>>> master
         }
     }
 }
