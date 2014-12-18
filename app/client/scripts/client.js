@@ -3,19 +3,22 @@ $(document).ready(function (argument) {
   var isAndroid = navigator.userAgent.toLowerCase().indexOf("android") > -1;
   var isIos = navigator.userAgent.toLowerCase().indexOf("iphone") > -1;
   var modal = $('.modal');
+  var article = $('article');
   var canClick = false
 
-  modal.hide();
-
+  modal.removeClass("open");
+  article.removeClass("blur");
+  
   if (isIos) {
-    $('.modal a').attr("href", "itms://appstore.com/apps/apple").text('get the ios app')
+    $('.modal a').attr("href", "itms://appstore.com/apps/apple").text('download')
   } else if (isAndroid) {
-    $('.modal a').attr("href", "com.lets.android").text('get the android app')
+    $('.modal a').attr("href", "com.lets.android").text('download')
   }
   
   $('.modal a').click(function(event) {
     console.log('CLICKED');
-    modal.hide();
+    modal.removeClass("open");
+    article.removeClass("blur");
   });
 
   userHtml = $($('.guestlist >>').get().filter(function(li) {
@@ -46,8 +49,9 @@ $(document).ready(function (argument) {
         }
       });
       setTimeout(function() {
-        modal.show()
-      }, 500);
+        modal.addClass("open");
+        article.addClass("blur");
+      }, 0);
     }
   });
 });

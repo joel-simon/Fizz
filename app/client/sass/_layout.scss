@@ -1,26 +1,32 @@
-$mainTitleTopMargin: $baseline * 2;
+$mainTitleTopMargin: .25em;
 
 body {
     min-height:         100vh;
-    max-width:          100vw;
     overflow-x:         hidden;
     background:         -webkit-linear-gradient(#ff0000 0%, #ffb700 100%) fixed;
 
     position:           relative;
-    margin-left:        $fixedGutter;
     
     article {
-        height:     100vw;
-        width:      100vw;
-        position:   relative;
+        height:             100vw;
+        width:              100vw;
+        position:           relative;
+        margin-left:        $fixedGutter;
+        @include transition(.5s .5s linear);
+        @include transition-property(-webkit-filter);
+        
+        &.blur {
+            -webkit-filter: blur(2em);
+        }
 
         header {
             display:    inline-block;
-            top: $mainTitleTopMargin;
             margin-left: -$fixedGutter/2;
             
             h1 {
                 @include bigTitle;
+                margin-bottom: .5em;
+                margin-top: $mainTitleTopMargin;
             }
 
             author {
@@ -30,7 +36,6 @@ body {
         }
         
         section.guestlist {
-            margin-top: 3em;
 
             h1 {
                 @include smallCaps;
@@ -89,23 +94,30 @@ body {
     
     .modal {
         @include modal;
-        display: none;
+        @include transition(.5s .5s linear);
+        @include transition-property(opacity, -webkit-filter);
+        padding-left: $fixedGutter;
+        opacity: 0;
+        left: 100vw;
+        -webkit-filter: blur(2em);
         
         &.open {
-            display: block;
+            opacity: 1;
+            left: 0;
+            -webkit-filter: none;
         }
         
         h1 {
             @include bigTitle;
-            margin-left:$gutter;
             margin-top: $mainTitleTopMargin;
         }
         
         a {
             @include bigTitle;
-            margin-left: $gutter;
             position: fixed;
+            left: $fixedGutter;
             bottom: $baseline/2;
+            font-family: $fontItalic;
         }
     }
 }
