@@ -31,6 +31,10 @@
 }
 
 @mixin modal {
+<<<<<<< HEAD
+=======
+    display: none;
+>>>>>>> master
     background: rgba(0,0,0,.75);
     position: fixed;
     height: 100vh;

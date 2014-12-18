@@ -1,8 +1,7 @@
 var colors  = require('colors');
-var fs = require('fs');
 var debug = true;
-var sanitize = require('validator').sanitize;
 var stackTrace = require('stack-trace');
+
 colors.setTheme({
   info: 'green',
   debug: 'blue',
@@ -13,7 +12,9 @@ colors.setTheme({
 module.exports = exports;
 
 exports.getUserSession = function(socket) {
-  return socket.handshake.user
+  if (!socket) return null
+  if (!socket.handshake) return null
+  return socket.handshake.user || null
 }
 
 exports.log = function() {
@@ -74,7 +75,7 @@ exports.logError = function(e) {
   var date = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
   date = date.substring(0,date.search("GMT")-1)
 
-  var s = '\t'
+  var s = ''
 	// s += __line + __function;
 
   if (e instanceof EvalError) {
@@ -124,10 +125,11 @@ exports.isPn = function(pn) {
 }
 
 exports.formatPn = function(pn) {
-  pn = pn.replace(/ /g,'');
-  if (pn[0] !== '+') pn = '+'+pn;
-  if (pn [1] !== '1') {
-    pn = '+1'+pn.substring(1);
+  pn = pn.replace(/\D/g,'')
+  if (pn [0] !== '1') {
+    pn = '+1'+pn
+  } else {
+    pn = '+'+pn
   }
   return pn;
 }

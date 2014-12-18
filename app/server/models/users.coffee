@@ -1,8 +1,6 @@
 utils   = require './../utilities.js'
 async   = require 'async'
 exports = module.exports;
-output  = require './../output'
-
 db = require('./../adapters/db.js');
 _ = require 'underscore'
 
@@ -16,6 +14,12 @@ exports.get = (where, fields, cb) ->
   db.query q1, [value], (err, result) ->
     return cb err if err?
     cb null, result.rows[0]
+
+exports.setPlatform = (pn, platform, cb) ->
+  q1 = "UPDATE users SET platform = $2 where pn = $1"
+  db.query q1, [pn, platform], (err, result) ->
+    return cb err if err?
+    cb null
 
 exports.verify = (options, cb) ->
   column = _.keys(options)[0]
@@ -39,9 +43,13 @@ exports.getFull = (options, cb) ->
   q1 = "select * from users where \"#{column}\" = $1"
   db.query q1, [value], (err, result) ->
     return cb err if err?
-    user = result.rows[0]
-    password = result.rows[0]?.password
-    cb null, user, password
+    data = result.rows[0]
+    return cb null, null, null if not data?
+    
+    if data.uid
+      cb null, _.pick(data, 'uid', 'name', 'pn', 'platform'), data
+    else
+      cb null, null, null
 
 # exports.getAll = (columns, uidList, cb) ->
 #   q1 = "select uid, phone_token from users where uid = ANY($1::int[])"
@@ -55,8 +63,24 @@ exports.getFull = (options, cb) ->
 
 exports.create = (pn, name, platform, token, callback) ->
   password = generatePassword()
-  q1 = "INSERT INTO users (pn, name, platform, \"phoneToken\", password) VALUES ($1,$2,$3,$4,$5) RETURNING uid, pn, name"
+  q1 = 'INSERT INTO users
+          (pn, name, platform, "phoneToken", password) VALUES ($1,$2,$3,$4,$5)
+        RETURNING uid, pn, name, platform'
   values = [pn, name, platform, token, password]
+  db.query q1, values, (err, result) ->
+    # console.log err, result
+    return callback err if err?
+    user = result.rows[0]
+    callback null, user, password
+
+exports.reRegister = (pn, name, platform, token, callback) ->
+  utils.log 'reregistering', {pn}, {name}, {platform}, {token}
+  password = generatePassword()
+  q1 = 'UPDATE users
+          SET (name, platform, "phoneToken", password) = ($1,$2,$3,$4)
+        WHERE pn = $5
+        RETURNING uid, pn, name, platform'
+  values = [ name, platform, token, password, pn ]
   db.query q1, values, (err, result) ->
     return callback err if err?
     user = result.rows[0]

@@ -31,7 +31,7 @@ feedback.on "feedback", (devices) ->
   utils.log devices
 
 module.exports = 
-  send : (data, phoneToken, eid) ->
+  send : (data, phoneToken) ->
     hoursToExpiration = 1
 
     try
@@ -40,9 +40,9 @@ module.exports =
       note.expiry = Math.floor(Date.now() / 1000) + 3600*hoursToExpiration
       note.badge = 1
       note.sound = "ping.aiff"
-      note.alert = msg
+      note.alert = data.message
       note.payload = data
   
       apnConnection.pushNotification note, myDevice
     catch e
-      return utils.logError "Status: FAILED.",'ERR:'+e,'Token:'+phoneToken
+      return utils.logError "Failed to do apn push.\nERR:#{e}\nToken:#{phoneToken}"

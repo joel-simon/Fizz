@@ -5,12 +5,18 @@ models    = require './../models'
 module.exports = (data, socket, output, callback) ->
   user = utils.getUserSession socket
   utils.log "Recieved newEvent", "User:"+ JSON.stringify(user), "Data:"+ JSON.stringify(data)
-  
-  description = data.description  
+  description = data.description
+
+  return console.log('No description') if !description? or description == ''
 
   models.events.add user, description, (err, event) =>
     return callback err if err?
-    models.invites.add {eid: event.eid, uid: user.uid, inviter: user.uid, accepted : true}, (err) ->
+    inviteParams =
+      eid: event.eid
+      uid: user.uid
+      inviter: user.uid
+      accepted : true
+    models.invites.add inviteParams, (err) ->
       return callback err if err?
       
       toSend = 
@@ -20,7 +26,7 @@ module.exports = (data, socket, output, callback) ->
         creationTime : event.creationTime
         messages : [] #no messages
         guests   : [user.uid] #host is going
-        invites  : [user] #host is invited
+        inviteList : [user] #host is invited
 
       utils.log 'Emitting newEvent',
         "To: #{user.name}",

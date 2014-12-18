@@ -1,6 +1,5 @@
 async = require 'async'
 sanitize = require('validator').sanitize
-store = require('./../adapters/redisStore.js').store
 exports = module.exports
 models = require '../models'
 db = require './../adapters/db.js'
@@ -15,7 +14,7 @@ exports.parse = (data) ->
     description:   data.description
     key:           data.key
     creationTime:  parseInt(data.creationTime)
-    deathTime:     parseInt(data.deathTime)
+    deathTime:     if data.deathTime then parseInt(data.creationTime) else null
     lastUpdateTime:parseInt(data.lastAcceptedUpdate)
   catch
     null
@@ -38,12 +37,13 @@ exports.add = (user, description, callback) ->
       eid
       description
       creator: user.uid
-      creationTime
+      creationTime : parseInt creationTime
     }
 
-exports.delete = (eid, callback) ->
+exports.updateCompleted = ({eid, completed}, callback) ->
+  completed = if completed then (Date.now() + (60*60*24*1000)) else null
   q1 = 'UPDATE events set "deathTime" = $1 WHERE eid = $2'
-  db.query q1, [Date.now(), eid], callback
+  db.query q1, [completed, eid], callback
 
 exports.updateDescription = (eid, description, callback) ->
   q1 = 'UPDATE events set description = $2 WHERE eid = $1'
@@ -67,13 +67,13 @@ exports.getGuestList = (eid, callback) ->
   q1 = "SELECT array_agg(uid) FROM invites WHERE eid = $1 and accepted = true"
   db.query q1, [eid], (err, result) ->
     return callback err if err?
-    callback null, result.rows[0]['array_agg']
+    callback null, result.rows[0]['array_agg'] || []
 
 exports.getInviteList = (eid, callback) ->
-  q = "SELECT users.uid, pn, name, accepted, platform FROM users, invites WHERE invites.eid = $1 and users.uid = invites.uid"
+  q = "SELECT users.uid, pn, name, platform FROM users, invites WHERE invites.eid = $1 and users.uid = invites.uid"
   db.query q, [eid], (err, result) ->
     return callback err if err?
-    callback null, result.rows
+    callback null, result.rows || []
 
 exports.getFull = (eid, callback) ->
   messages = require './messages'

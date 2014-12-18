@@ -9,11 +9,12 @@ var
   utils   = require('./app/server/utilities.js'),
   redis   = require('redis'),
   redisStore = require('connect-redis')(express),
-  redisConns = require('./app/server/adapters/redisStore.js'),
+  redisConns = require('./app/server/adapters/redisStore.coffee'),
   passport = require('passport'),
   LocalStrategy = require('passport-local').Strategy,
   passportSocketIo = require("./lib/passport.socketio"),
-  models = require('./app/server/models');
+  models = require('./app/server/models')
+  sanitizer = require('sanitizer');
 
 var config = ((args.dev) ? require('./configDev.json') : require('./config.json'));
 var store = redisConns.store;
@@ -23,7 +24,8 @@ passport.use(new LocalStrategy({
     usernameField: 'pn',
     passwordField: 'password'
   }, function(pn, password, done) {
-    models.users.getFull({pn:pn}, function(err, user, uPassword) {
+    pn = utils.formatPn(pn)
+    models.users.getFull({pn:pn}, function(err, user, data) {
       if (err) {
         utils.log('Err in login:', err);
         return done(err);
@@ -32,8 +34,8 @@ passport.use(new LocalStrategy({
         utils.log('Err in login: no user found');
         return done(null, false);
       }
-      if (uPassword !== password ) {
-        utils.log('Err in login: passwords do not match. Given ='+password, 'Expected='+uPassword);
+      if (data.password !== password ) {
+        utils.log('Err in login: passwords do not match. Given ='+password, 'Expected='+data.password);
         return done(null, false);
       }
       utils.log('login successful!');
@@ -65,6 +67,19 @@ app.configure(function() {
   app.locals.pretty = true;
   app.use(express.cookieParser());
   app.use(express.bodyParser());
+  app.use(function(req, res, next){
+    var bstring = JSON.stringify(req.body || {});
+    var rstring = JSON.stringify(req.params || {});
+    if (bstring !== sanitizer.sanitize(bstring)){
+      console.log(bstring, sanitizer.sanitize(bstring));
+      return res.send(400);
+    }
+    if (rstring !== sanitizer.sanitize(rstring)){
+      console.log(rstring, sanitizer.sanitize(rstring));
+      return res.send(400);
+    }
+    next()
+  });
   app.use(express.methodOverride());
   app.use(express.session({ secret: config.SECRET.cookieParser, store: sessionStore }));
   app.use(passport.initialize());
@@ -103,16 +118,4 @@ require('./app/server/socketBinder')(io)
 require('./app/server/router')(app, io, passport);
 
 utils.log('Server Started', args);
-
-if (args.init) {
-  var init = require('./scripts/init')
-  init(function(err, results) {
-    if (err) {
-      console.log('Error in init', err);
-      process.exit(1);
-    } else {
-      utils.log('DataBase has been initialized.')
-      if (args.testing) require('./scripts/testScript')
-    }
-  });
-}
+if (args.testing) require('./scripts/testScript')

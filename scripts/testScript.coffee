@@ -21,7 +21,7 @@ disconnect     = require dir+'disconnect'
 postUpdateEvent = require dir+'postUpdateEvent'
 postUpdateLocation = require dir+'postUpdateLocation'
 postRequestEvents  = require dir+'postRequestEvents'
-postDeleteEvent = require dir+'postDeleteEvent'
+postCompleteEvent = require dir+'postCompleteEvent'
 
 makeSocket = (user) ->
   {
@@ -34,7 +34,6 @@ makeSocket = (user) ->
   }
 
 async.series [
-  (cb) -> db.query "truncate table users, events, messages, invites", cb
   (cb) -> models.users.create "+13475346100", "Joel Simon", "ios", "PHONETOKEN", cb
   (cb) -> models.users.create "+13107102956", "Andrew Sweet", "ios", "PHONETOKEN", cb
   (cb) -> models.users.create "+19494647070", "Antonio Ono", "sms", "PHONETOKEN", cb
@@ -43,11 +42,11 @@ async.series [
 
   return console.log("Error in creating users:", err) if err?
   
-  [_,[joel,_ ], [andrew, _], [antonio, _],[russell,_]] = results
+  [[joel,_ ], [andrew, _], [antonio, _],[russell,_]] = results
 
   randomPerson =
     name: 'random'
-    pn: '+13475346100'
+    pn: '+13475346101'
 
   joelSocket = makeSocket joel
   andrewSocket = makeSocket andrew
@@ -61,27 +60,41 @@ async.series [
       async.series [
         # (cb) -> postRequestEvents {eid: e1.eid}, joelSocket, cb
         #invite andrew to events
-        (cb) -> postNewInvites {eid: e1.eid, inviteList: [andrew, antonio, russell] }, joelSocket, output,cb
+        (cb) -> postNewInvites {eid: e1.eid, inviteList: [randomPerson] }, joelSocket, output, cb
+        # (cb) -> postNewInvites {eid: e1.eid, inviteList: [andrew] }, joelSocket, output, cb
+
+        # (cb) -> postUpdateEvent {eid: e1.eid, description: 'test'}, joelSocket, output, cb
+        # (cb) -> postUpdateEvent {eid: e1.eid, description: 'test test'}, joelSocket, output, cb
+        
         # (cb) -> postUpdateLocation {location: { lat: 3.14, lng: 1.14 }}, joelSocket, output, cb
-        # (cb) -> postNewInvites {eid: e2.eid, inviteList: [antonio, joel] }, andrewSocket, cb
+        # (cb) -> postNewInvites {eid: e2.eid, inviteList: [antonio, joel] }, andrewSocket, output, cb
 
         # (cb) -> postJoinEvent {eid: e1.eid}, andrewSocket, output, cb
         #andrew messages event
         # (cb) -> postNewMessage { eid: e1.eid, text: "andrew says hi" }, andrewSocket, output, cb
         # (cb) -> postNewMessage { eid: e1.eid, text: "joel says hi" }, joelSocket, output, cb
+        # (cb) -> postNewMessage { eid: e2.eid, text: "joel says here also" }, joelSocket, output, cb
+
 
         # (cb) -> models.events.delete(e2.eid, cb)
 
+        
+        # (cb) -> postCompleteEvent { eid: e1.eid, completed: true }, andrewSocket, output, cb
         # (cb) -> connect joelSocket, cb
-
+        # (cb) -> disconnect joelSocket, cb
+        # (cb) -> postUpdateEvent {eid: e1.eid, description: 'fubber'}, joelSocket, output, cb
+        # (cb) -> postCompleteEvent { eid: e1.eid, completed: false }, andrewSocket, output, cb
+        # (cb) -> connect joelSocket, cb
+        # (cb) -> disconnect joelSocket, cb
+        # (cb) -> postRequestEvents {eidList: [e1.eid, e2.eid]}, joelSocket, output, cb
         
         # (cb) -> postLeaveEvent {eid: e1.eid}, andrewSocket, output, cb
         
         # (cb) -> postUpdateEvent {eid: e1.eid, description: 'Test Event'}, andrewSocket, cb
         # (cb) -> postUpdateEvent {eid: e2.eid, description: 'Test Event'}, andrewSocket, cb
 
-        # (cb) -> postDeleteEvent { eid: e1.eid }, andrewSocket, cb
-        # (cb) -> postDeleteEvent { eid: e2.eid }, andrewSocket, cb
+        # (cb) -> postCompleteEvent { eid: e1.eid }, andrewSocket, cb
+        # (cb) -> postCompleteEvent { eid: e2.eid }, andrewSocket, cb
 
       ], (err, results) ->
         if (err)

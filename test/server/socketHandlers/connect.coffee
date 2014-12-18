@@ -3,14 +3,11 @@ sinon = require("sinon")
 sinonChai = require("sinon-chai")
 expect = chai.expect
 chai.use(sinonChai)
-
 async = require 'async'
 root = '../../../app/server/'
 init = require '../../../scripts/init'
 models = require(root+'models')
-
-connect = require(root+'socketHandlers/connect')
-disconnect = require(root+'socketHandlers/disconnect')
+handlers = require(root+'socketHandlers')
 
 makeSocket = (user) ->
   {
@@ -20,6 +17,10 @@ makeSocket = (user) ->
     emit : () ->
   }
 
+output = 
+  emit: () ->
+  push: () ->
+
 populateTests = (callback) ->
   async.series [
     (cb) -> init cb
@@ -28,129 +29,116 @@ populateTests = (callback) ->
     (cb) -> models.users.create "+19494647070", "Antonio Ono", "ios", "PHONETOKEN", cb
     (cb) -> models.users.create "+13523189733", "Russell Cullen", "android", "PHONETOKEN", cb
    ], (err, results) ->
-    console.log 'done with populateTests'
+    users = []
+    for elem, i in results
+      if i != 0
+        users.push elem[0]
     return callback err if err?
-    callback null
+    callback null, {users}
 
 describe 'connect', () ->
+  before (done) =>
+    populateTests (err, data) =>
+      @users = data.users
+      @sockets = data.users.map ((user) -> makeSocket user)
+      return done err if err?
+      done()
 
   describe 'With nothing new', () =>
     before (done) =>
-      init (err) =>
-        return done err if err?
-        models.users.create "+13475346100", "A", "ios", "", (err, @user) =>
-          return done err if err?
-          @userSocket = makeSocket @user
-          @userSocket.emit = sinon.spy()
-          connect @userSocket, done
-
+      @sockets[0].emit = sinon.spy()
+      handlers.connect @sockets[0], done
     it 'emits the correct thing', () =>
-      data = {
+      data =
         eventList: []
         guests: {  }
-        me: @user
+        me: @users[0]
         newInvitees: {  }
         newMessages: {  }
-      }
-      expect(@userSocket.emit).to.be.calledWithExactly 'onLogin', data
+      expect(@sockets[0].emit).to.be.calledWithExactly 'onLogin', data
 
   describe 'With a new event', () =>
+    #
+    # user 1 invites user 0 to a new event
+    #
+    event = { description: 'An event' }
     before (done) =>
       async.series [
-        (cb)-> init cb
-        (cb)-> models.users.create "+12345678900", "userA", "ios", "", cb
-        (cb)-> models.users.create "+12345678901", "userB", "ios", "", cb
-        (cb)-> models.users.create "+12345678902", "userC", "ios", "", cb
-      ], (err, results) =>
-        return done err if err?
-        @userA = results[1][0]
-        @userB = results[2][0]
-        @userC = results[3][0]
-        async.series [
-          (cb)=> models.events.add @userB, "BEvent1", cb
-          (cb)=> models.invites.add { eid: 1, inviter: @userB.uid, uid: @userB.uid, accepted: true }, cb
-          (cb)=> models.invites.addList 1, @userB.uid, [@userA], cb
-          (cb)=> models.events.update 1, cb
-        ], (err, results) =>
-          return done err if err?
-          @userSocketA = makeSocket @userA
-          @userSocketA.emit = sinon.spy()
-
-          async.series [
-            (cb) => connect @userSocketA, cb
-            (cb) => disconnect @userSocketA, cb
-
-            (cb) => connect @userSocketA, cb
-            (cb) => disconnect @userSocketA, cb
-
-            (cb) => models.invites.add { eid: 1, inviter: @userB.uid, uid: @userC.uid, accepted: true }, cb
-            (cb) => models.events.update 1, cb
-            (cb) => models.messages.addMessage 1, @userC.uid, 'hello', cb
-            (cb) => models.messages.addMessage 1, @userC.uid, 'world', cb
-            (cb) => connect @userSocketA, cb
-            (cb) => disconnect @userSocketA, cb
-
-            (cb) => models.events.delete 1, cb
-            (cb) => connect @userSocketA, cb
-            (cb) => disconnect @userSocketA, cb
-          ], done
-
-
-    # it 'called emit twice', () =>
-    #   expect(@userSocketA.emit.callCount).to.equal 2
-
+        (cb) => handlers.postNewEvent event, @sockets[1], output, cb
+        (cb) => models.invites.addList 1, @users[1].uid, [@users[0]], cb
+        (cb) => handlers.connect @sockets[0], cb
+        (cb) => handlers.disconnect @sockets[0], cb
+      ], done
     it 'emits the new event on the first connect', () =>
-      data = {
-        eventList: [ 1 ]
-        guests: {
-          1 : [2]
-        }
-        me: @userA
-        newInvitees: {
-          1: [{ uid: 2, name: "userB", pn: "+12345678901"},
-              { uid: 1, name: "userA", pn: "+12345678900" }]
-        }
+      data =
+        eventList: [{ "eid":1,"numM":0,"completed":false,"description":"An event" }]
+        guests: { 1: [ @users[1].uid ] }
+        me: @users[0]
+        newInvitees:
+          1: [ @users[1], @users[0] ]
         newMessages: {}
-      }
-      firstCall = @userSocketA.emit.getCall(0).args
-      expect(firstCall[0]).to.equal 'onLogin'
-      expect(firstCall[1]).to.deep.equal.data
-      # expect(firstCall[1].newInvitees).to.deep.include.members data.newInvitees
-
-    it 'does not emit the new initees on second connect', () =>
-      data = {
-        eventList: [ 1 ]
-        guests: {}
-        me: @userA
-        newInvitees: {}
-        newMessages: {}
-      }
-      firstCall = @userSocketA.emit.getCall(1).args
+      firstCall = @sockets[0].emit.getCall(1).args
       expect(firstCall[0]).to.equal 'onLogin'
       expect(firstCall[1]).to.deep.equal data
 
-    it 'emits a new message and guest on third connect', (done) =>
+  describe "Connect again with no changes", () =>
+    before (done) =>
+      async.series [
+        (cb) => handlers.connect @sockets[0], cb
+        (cb) => handlers.disconnect @sockets[0], cb
+      ], done
+    it 'does not emit the new initees on second connect', () =>
+      data = {
+        eventList: [ 
+          { "eid":1,"numM":0,"completed":false,"description":"An event" }
+        ]
+        guests: {}
+        me: @users[0]
+        newInvitees: {}
+        newMessages: {}
+      }
+      secondCall = @sockets[0].emit.getCall(2).args
+      expect(secondCall[0]).to.equal 'onLogin'
+      expect(secondCall[1]).to.deep.equal data
+
+  describe "Connect again with changes", () =>
+    #
+    # User 1 invites user 2 who joins and posts a message.
+    #
+    message = { eid: 1, text: 'myMessage' }
+    before (done) =>
+      async.series [
+        (cb) => models.invites.addList 1, @users[1].uid, [@users[2]], cb
+        (cb) => handlers.postJoinEvent { eid:1 }, @sockets[2], output, cb
+        (cb) => handlers.postNewMessage message, @sockets[2], output, cb
+        (cb) => handlers.connect @sockets[0], cb
+        (cb) => handlers.disconnect @sockets[0], cb
+      ], done
+    it 'displays new guest and their message', (done) =>
       models.messages.getMoreMessages 1, 1, (err, messages) =>
         data = {
-          eventList: [ 1 ]
-          guests: { 1 : [2,3] }
-          me: @userA
-          newInvitees: { 1 : [ @userC ] }
+          me: @users[0]
+          eventList: [{ "eid":1,"numM":1,"completed":false,"description":"An event" }]
+          guests: { 1 : [ @users[1].uid, @users[2].uid ] }
+          newInvitees: { 1 : [ @users[2] ] }
           newMessages: { 1 : messages }
         }
-        secondCall = @userSocketA.emit.getCall(2).args
-        expect(secondCall[0]).to.equal 'onLogin'
-        expect(secondCall[1]).to.deep.equal data
+        thirdconnect = @sockets[0].emit.getCall(3).args
+        expect(messages.length).to.equal 1
+        expect(thirdconnect[0]).to.equal 'onLogin'
+        expect(thirdconnect[1]).to.deep.equal data
         done()
 
-    it 'emits the right event list after an event has been ended', () =>
-      data = {
-        eventList: [ ]
-        guests: { }
-        me: @userA
-        newInvitees: { }
-        newMessages: { }
-      }
-      thirdCall = @userSocketA.emit.getCall(3).args
-      expect(thirdCall[0]).to.equal 'onLogin'
-      expect(thirdCall[1]).to.deep.equal data
+    # it 'emits the right event list after an event has been ended', () =>
+    #   data = {
+    #     eventList: [ ]
+    #     guests: { }
+    #     me: @users[0]
+    #     newInvitees: { }
+    #     newMessages: { }
+    #   }
+    #   thirdCall = @sockets[0].emit.getCall(3).args
+    #   expect(thirdCall[0]).to.equal 'onLogin'
+    #   expect(thirdCall[1]).to.deep.equal data
+
+

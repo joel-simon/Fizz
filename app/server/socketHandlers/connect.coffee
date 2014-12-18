@@ -5,32 +5,41 @@ db     = require './../adapters/db.js'
 models = require './../models'
 args   = require './../args.js'
 
-types  = require '../fizzTypes'
-fakeData = require '../../../fakeData'
-
 QUERIES = (eventListString, lastLogin) -> 
-  # console.log 'lastLogin', lastLogin
   newMessages: (cb)->
     q = 'SELECT *
     FROM messages WHERE
     messages.eid = ANY($1::int[]) AND
     messages."creationTime" >= $2
-    order by "creationTime"'
+    order by "creationTime"
+    LIMIT 10'
     db.query q, [eventListString, lastLogin], (err, results) ->
       return cb err if err?
       data = {}
       for m in results.rows
         if not data[m.eid]
           data[m.eid] = []
+        m.creationTime = parseInt(m.creationTime)
         data[m.eid].push m
       cb null, data
-
+  numMessages: (cb) ->
+    q = 'SELECT 
+        events.eid,
+        count(messages)::int as "numM",
+        "deathTime" is not NULL as completed,
+        description
+      FROM messages RIGHT OUTER JOIN events on (messages.eid = events.eid)
+      WHERE 
+        events.eid = ANY($1::int[])
+      GROUP BY events.eid'
+    db.query q,[eventListString], (err, results) ->
+      cb null, results.rows || []
   guests: (cb) ->
     q = 'SELECT array_agg(invites.uid), invites.eid
     FROM invites, events WHERE
-    events.eid = invites.eid AND 
+    invites.eid = events.eid AND
     invites.accepted = true AND
-    events.eid = ANY($1::int[]) AND
+    invites.eid = ANY($1::int[]) AND
     events."lastAcceptedUpdate" >= $2
     GROUP BY invites.eid'
     db.query q, [eventListString, lastLogin], (err, results) ->
@@ -41,7 +50,7 @@ QUERIES = (eventListString, lastLogin) ->
       cb null, data
 
   newInvitees: (cb) ->
-    q = 'SELECT users.uid, users.pn, users.name, invites.eid 
+    q = 'SELECT users.uid, users.pn, users.name, invites.eid, users.platform 
     FROM invites, users WHERE
     users.uid = invites.uid AND
     invites."invitedTime" >= $2 AND
@@ -51,35 +60,37 @@ QUERIES = (eventListString, lastLogin) ->
       data = {}
       for u in results.rows
         data[u.eid] = [] if not data[u.eid]?
-        data[u.eid].push({uid:u.uid,name:u.name,pn:u.pn})
+        data[u.eid].push({ uid:u.uid,name:u.name,pn:u.pn, platform:u.platform })
       cb null, data
 
-connect = (socket, callback) ->
+module.exports = (socket, callback) ->
   user = utils.getUserSession socket
   socket.join(''+user.uid)
   eventListQuery = 'SELECT invites.eid FROM
     invites, events WHERE
     invites.uid = $1 AND
     invites.eid = events.eid AND
-    events."deathTime" = 0'
-  db.query eventListQuery, [user.uid], (err, results) ->
+    (events."deathTime" is NULL OR
+      events."deathTime" > $2)'
+  db.query eventListQuery, [user.uid, Date.now()], (err, results) ->
     return callback(err) if err?
     eventList = results?.rows?.map((e) -> e.eid)
-    eventListString = '{' + eventList + '}'
+    eventListString = '{'+eventList+'}'
     db.query 'select "lastLogin" from users where uid = $1', [user.uid], (err, result)->
       return callback(err) if err?
       lastLogin = result.rows[0].lastLogin
       async.parallel QUERIES(eventListString, lastLogin), (err, results) ->
         return callback err if err
+
         data =
           me          : user
-          eventList   : eventList
+          eventList   : results.numMessages
           newMessages : results.newMessages
           newInvitees : results.newInvitees
           guests      : results.guests
 
-        
+        utils.log 'Emitting onLogin',
+          "To: #{user.name}",
+          "Data: "+JSON.stringify(data)
         socket.emit 'onLogin', data
         callback null, data
-      
-module.exports = connect

@@ -7,7 +7,7 @@ module.exports = (data, socket, output, callback) ->
   utils.log 'Recieved leaveEvent', "User:"+ JSON.stringify(user), "Data:"+ JSON.stringify(data)
   eid  = data.eid
   uid  = user.uid
-  async.parallel {
+  async.series {
     leave  : (cb) -> models.invites.unaccept {eid, uid}, cb
     update : (cb) -> models.events.update eid, cb
     invited: (cb) -> models.events.getInviteList eid, cb
@@ -16,8 +16,9 @@ module.exports = (data, socket, output, callback) ->
     return callback err if err?
     guests  = results.guests
     invited = results.invited
-    output.emit 
+    output.emit {
       eventName : 'updateGuests'
       recipients: invited
       data      : { eid, guests }
+    }
     callback null
