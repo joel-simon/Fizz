@@ -13,6 +13,8 @@ $(document).ready(function (argument) {
     $('.modal a').attr("href", "itms://appstore.com/apps/apple").text('download')
   } else if (isAndroid) {
     $('.modal a').attr("href", "com.lets.android").text('download')
+  } else {
+    $('.modal a').attr("href", "http://www.lets.bz").text('Get the app.')
   }
   
   $('.modal a').click(function(event) {

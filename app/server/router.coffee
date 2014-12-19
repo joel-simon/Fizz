@@ -100,7 +100,7 @@ module.exports = (app, io, passport) ->
           guestList= inviteList.filter (user) -> guests.indexOf(user.uid) >= 0
           noReply  = inviteList.filter (user) -> guests.indexOf(user.uid) == -1
           creator  = inviteList.filter((user) -> user.uid == event.creator)[0]
-          options = { user, accepted, event, creator, messages, noReply, guestList }
+          options = { user, accepted, event, creator, messages, noReply, guestList, key }
           res.render 'event.jade', options
 
   app.get '/', (req, res) ->

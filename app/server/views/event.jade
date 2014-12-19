@@ -25,53 +25,39 @@ html
           else
             a(href="#") Join
       section.guestlist
-        ul.interested
+        ul#interested
           li
             h1 Attending
           each user in guestList
             li=user.name
-          li Cedrick Durfee
-          li Oren Asay
-          li Sid Bumbalough
-          li Bernardina Ree
-          li Jerrell Lehrer
-          li Dorothea Hutter
-          li Juliet Mattix
-          li Orville Trunzo
-          li Shawanda Gosse
-          li Denice Lavigne
-          li Idell Morace
-        ul.noReply
+          //- li Cedrick Durfee
+          //- li Oren Asay
+          //- li Sid Bumbalough
+          //- li Bernardina Ree
+          //- li Jerrell Lehrer
+          //- li Dorothea Hutter
+          //- li Juliet Mattix
+          //- li Orville Trunzo
+          //- li Shawanda Gosse
+          //- li Denice Lavigne
+          //- li Idell Morace
+        ul#noReply
           li
             h1 No response
           each user in noReply
             li=user.name
-          li Cedrick Durfee
-          li Oren Asay
-          li Sid Bumbalough
-          li Bernardina Ree
-          li Jerrell Lehrer
-          li Dorothea Hutter
-          li Juliet Mattix
-          li Orville Trunzo
-          li Shawanda Gosse
-          li Denice Lavigne
-          li Idell Morace
+          //- li Cedrick Durfee
+          //- li Oren Asay
+          //- li Sid Bumbalough
+          //- li Bernardina Ree
+          //- li Jerrell Lehrer
+          //- li Dorothea Hutter
+          //- li Juliet Mattix
+          //- li Orville Trunzo
+          //- li Shawanda Gosse
+          //- li Denice Lavigne
+          //- li Idell Morace
       
-        //- form(action="/join", method="post")
-        //-   p
-        //-     input(type="text", name="first", placeholder="First")
-        //-     input(type="text", name="last", placeholder="Last")
-        //-   p
-        //-     input(type="phone", name="number", placeholder="number")
-        //- h1
-        //-   | You’ve added yourself
-        //-   br
-        //-   | to the guestlist.
-        //- p Fizz is the best way to get people together to do things.
-        //- form(action="", method="post")
-        //-   input(name="", type="button", value="Get it on the App Store")
-              
      div.modal
        h1 Thanks for RSVPing — Use the app to get updates and host your own events
        a(href="#appStoreLinkDependingOnUserPlatform") Get the app
