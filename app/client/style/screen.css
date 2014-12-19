@@ -133,7 +133,7 @@ body article header {
 /* line 26, ../sass/_layout.scss */
 body article header h1 {
   text-transform: lowercase;
-  font-family: "Futura";
+  font-family: "Futura-MediumItalic";
   line-height: 1.25em;
   font-size: 10vw;
   letter-spacing: -.046875em;
@@ -206,7 +206,7 @@ body article section.rsvp a {
   display: inline-block;
   /*     padding-bottom: .125em */
   text-transform: lowercase;
-  font-family: "Futura";
+  font-family: "Futura-MediumItalic";
   line-height: 1.25em;
   font-size: 10vw;
   letter-spacing: -.046875em;
@@ -291,7 +291,7 @@ body .modal.open {
 /* line 110, ../sass/_layout.scss */
 body .modal h1 {
   text-transform: lowercase;
-  font-family: "Futura";
+  font-family: "Futura-MediumItalic";
   line-height: 1.25em;
   font-size: 10vw;
   letter-spacing: -.046875em;
@@ -324,7 +324,7 @@ body .modal h1 {
 /* line 115, ../sass/_layout.scss */
 body .modal a {
   text-transform: lowercase;
-  font-family: "Futura";
+  font-family: "Futura-MediumItalic";
   line-height: 1.25em;
   font-size: 10vw;
   letter-spacing: -.046875em;
