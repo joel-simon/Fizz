@@ -25,16 +25,16 @@ html
           else
             a(href="#") Join
       section.guestlist
-        ul#interested
-          li
-            h1 Attending
-          each user in guestList
-            li=user.name
-        ul#noReply
-          li
-            h1 No response
-          each user in noReply
-            li=user.name
+        section.interested
+          h1 Attending
+          ul
+            each user in guestList
+              li=user.name
+        section.noReply
+          h1 No response
+          ul
+            each user in noReply
+              li=user.name
       
      div.modal
        h1 Thanks for RSVPing — Use the app to get updates and host your own events
