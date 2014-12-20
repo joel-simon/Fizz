@@ -32,19 +32,31 @@ body {
         }
         
         section.guestlist {
-
-            h1 {
-                @include smallCaps;
-            }
             
-            ul {
-                text-transform: lowercase;
-                position: relative;
-                margin-bottom: .25em;
-            }
-            
-            ul#noReply {
-                opacity: .5;
+            section {
+                h1 {
+                    @include smallCaps;
+                }
+                
+                ul {
+                    text-transform: lowercase;
+                    position: relative;
+                    margin-bottom: .25em;
+                }
+                
+                &.interested {
+                    ul {
+                        li {
+                            &:nth-child(1) { // Host
+                                font-family: $fontItalic;
+                            }
+                        }
+                    }
+                }
+                
+                &.noReply {
+                    opacity: .5;
+                }
             }
         }
         
