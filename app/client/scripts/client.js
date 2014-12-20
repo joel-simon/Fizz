@@ -22,6 +22,8 @@ $(document).ready(function (argument) {
     modal.removeClass("open");
     article.removeClass("blur");
   });
+  
+//   $('body').css("background-image", "-webkit-linear-gradient(#ff0000 0%, #ffb700 100%");
 
   userHtml = $($('.guestlist >>').get().filter(function(li) {
       return $(li).text() == user.name;

@@ -1,15 +1,11 @@
-$mainTitleTopMargin: .25em;
-
 body {
-    min-height:         100vh;
-    overflow-x:         hidden;
-    background:         -webkit-linear-gradient(#ff0000 0%, #ffb700 100%) fixed;
-
-    position:           relative;
+    min-height:             100vh;
+    overflow-x:             hidden;
+    background:             -webkit-linear-gradient(#ff0000 0%, #ffb700 100%);
+    background-attachment:  fixed;
+    position:               relative;
     
     article {
-        height:             100vw;
-        width:              100vw;
         position:           relative;
         margin-left:        $fixedGutter;
         @include transition(.5s .5s linear);
@@ -47,7 +43,7 @@ body {
                 margin-bottom: .25em;
             }
             
-            ul.noReply {
+            ul#noReply {
                 opacity: .5;
             }
         }
