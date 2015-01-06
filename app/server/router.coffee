@@ -10,6 +10,9 @@ module.exports = (app, io, passport) ->
     failureRedirect: '/fail'
     failureFlash: false
 
+  app.get '/', (req, res) ->
+    res.render 'index.jade', {}
+
   app.post('/login', passport.authenticate('local', loginOptions))
   
   app.get '/success', (req, res) ->
@@ -103,7 +106,5 @@ module.exports = (app, io, passport) ->
           options = { user, accepted, event, creator, messages, noReply, guestList, key }
           res.render 'event.jade', options
 
-  app.get '/', (req, res) ->
-    res.send 'Fizz'
   
   app.get '*', (req, res) -> res.render '404', { title: 'Page Not Found' }
