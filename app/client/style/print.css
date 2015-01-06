@@ -360,3 +360,16 @@ body .modal a {
     font-size: 6vw;
   }
 }
+
+/* line 3, ../sass/print.scss */
+body {
+  background: none !important;
+}
+/* line 6, ../sass/print.scss */
+body * {
+  color: black !important;
+}
+/* line 10, ../sass/print.scss */
+body .rsvp {
+  display: none;
+}

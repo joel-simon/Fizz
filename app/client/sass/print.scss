@@ -1,0 +1,13 @@
+@import "screen.scss";
+
+body {
+    background: none !important;
+    
+    * {
+        color: black !important;
+    }
+    
+    .rsvp {
+        display: none;
+    }
+}
